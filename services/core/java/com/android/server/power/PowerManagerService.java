@@ -64,6 +64,7 @@ import android.os.WorkSource;
 import android.provider.Settings;
 import android.service.dreams.DreamManagerInternal;
 import android.util.EventLog;
+import android.util.Log;
 import android.util.Slog;
 import android.util.TimeUtils;
 import android.view.Display;
@@ -76,6 +77,7 @@ import java.util.Arrays;
 
 import libcore.util.Objects;
 
+import static android.os.PowerManagerInternal.POWER_HINT_INTERACTION;
 import static android.os.PowerManagerInternal.WAKEFULNESS_ASLEEP;
 import static android.os.PowerManagerInternal.WAKEFULNESS_AWAKE;
 import static android.os.PowerManagerInternal.WAKEFULNESS_DREAMING;
@@ -91,6 +93,11 @@ public final class PowerManagerService extends SystemService
 
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_SPEW = DEBUG && true;
+
+    //SPRD: add debug info for wake up @{
+    private static final boolean DEBUG_WAKEUP = (!"user".equals(SystemProperties.get("ro.build.type")))
+                                                ||("true".equals(SystemProperties.get("debug.wakelock")));
+    //SPRD: add debug info for wake up @}
 
     // Message: Sent when a user activity timeout occurs to update the power state.
     private static final int MSG_USER_ACTIVITY_TIMEOUT = 1;
@@ -150,7 +157,6 @@ public final class PowerManagerService extends SystemService
     private static final int SCREEN_BRIGHTNESS_BOOST_TIMEOUT = 5 * 1000;
 
     // Power hints defined in hardware/libhardware/include/hardware/power.h.
-    private static final int POWER_HINT_INTERACTION = 2;
     private static final int POWER_HINT_LOW_POWER = 5;
 
     // Power features defined in hardware/libhardware/include/hardware/power.h.
@@ -418,6 +424,13 @@ public final class PowerManagerService extends SystemService
     // Time when we last logged a warning about calling userActivity() without permission.
     private long mLastWarningAboutUserActivityPermission = Long.MIN_VALUE;
 
+    /*incall-screen timeout*/
+    private final TimeoutTask mTimeoutTask = new TimeoutTask();
+    private  int mInCallScreenTimeOut =5000;  //5s
+    private boolean mIncallScreenTimeOutflag = false;
+    private long mStartATime =0;
+    /*end*/
+
     // If true, the device is in low power mode.
     private boolean mLowPowerModeEnabled;
 
@@ -461,6 +474,13 @@ public final class PowerManagerService extends SystemService
     private static native void nativeSetAutoSuspend(boolean enable);
     private static native void nativeSendPowerHint(int hintId, int data);
     private static native void nativeSetFeature(int featureId, int data);
+
+    // SPRD: Default mButtonOffTimeoutSetting 0.
+    private int mButtonOffTimeoutSetting = 0;
+    // SPRD: Default and minimum button light off timeout in milliseconds.
+    private static final int DEFAULT_BUTTON_OFF_TIMEOUT = 1500;
+    //SPRD：whale2 open touch trigger powerhint.
+    private final boolean TOUCH_TRIGGER_POWERHINT = (1 == SystemProperties.getInt("persist.sys.powerHint.enable", 0));
 
     public PowerManagerService(Context context) {
         super(context);
@@ -578,6 +598,10 @@ public final class PowerManagerService extends SystemService
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_OFF_TIMEOUT),
                     false, mSettingsObserver, UserHandle.USER_ALL);
+            // SPRD: Register for settings changes update BUTTON_LIGHT_OFF_TIMEOUT.
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.BUTTON_LIGHT_OFF_TIMEOUT),
+                    false, mSettingsObserver, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.SLEEP_TIMEOUT),
                     false, mSettingsObserver, UserHandle.USER_ALL);
@@ -605,6 +629,15 @@ public final class PowerManagerService extends SystemService
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.DOUBLE_TAP_TO_WAKE),
                     false, mSettingsObserver, UserHandle.USER_ALL);
+
+            //SPRD: add debug info for wake up @{
+            if (DEBUG_WAKEUP ) {
+                filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_SCREEN_OFF);
+                mContext.registerReceiver(new ScreenOffReceiver(), filter, null, mHandler);
+            }
+            //SPRD: add debug info for wake up @}
+
             // Go.
             readConfigurationLocked();
             updateSettingsLocked();
@@ -672,6 +705,12 @@ public final class PowerManagerService extends SystemService
         mScreenOffTimeoutSetting = Settings.System.getIntForUser(resolver,
                 Settings.System.SCREEN_OFF_TIMEOUT, DEFAULT_SCREEN_OFF_TIMEOUT,
                 UserHandle.USER_CURRENT);
+
+        //SPRD: add for debug @{
+        if(DEBUG_WAKEUP){
+            Slog.d(TAG,"updateSettingsLocked mScreenOffTimeoutSetting:"+mScreenOffTimeoutSetting);
+        }
+        //SPRD: add for debug @}
         mSleepTimeoutSetting = Settings.Secure.getIntForUser(resolver,
                 Settings.Secure.SLEEP_TIMEOUT, DEFAULT_SLEEP_TIMEOUT,
                 UserHandle.USER_CURRENT);
@@ -706,6 +745,20 @@ public final class PowerManagerService extends SystemService
         if (oldScreenAutoBrightnessAdjustmentSetting != mScreenAutoBrightnessAdjustmentSetting) {
             mTemporaryScreenAutoBrightnessAdjustmentSettingOverride = Float.NaN;
         }
+        /* SPRD: SPRD: DEFAULT_BUTTON_OFF_TIMEOUT,
+	 * default to 1.5 seconds.
+	 * add KEY_LIGHT_OFF_TIMEOUT from add a database from the setting.
+	@{ */
+        final int buttonOffTimeoutSetting =
+		Settings.System.getInt(resolver,
+		Settings.System.BUTTON_LIGHT_OFF_TIMEOUT, DEFAULT_BUTTON_OFF_TIMEOUT);
+        Slog.d(TAG,"buttonOffTimeoutSetting = " + buttonOffTimeoutSetting +
+		" mButtonOffTimeoutSetting = " + mButtonOffTimeoutSetting);
+        if (buttonOffTimeoutSetting != mButtonOffTimeoutSetting) {
+            mButtonOffTimeoutSetting = buttonOffTimeoutSetting;
+            scheduleButtonLightTimeout_internal(SystemClock.uptimeMillis());
+        }
+        /* @} */
 
         mScreenBrightnessModeSetting = Settings.System.getIntForUser(resolver,
                 Settings.System.SCREEN_BRIGHTNESS_MODE,
@@ -725,6 +778,19 @@ public final class PowerManagerService extends SystemService
         mDirty |= DIRTY_SETTINGS;
     }
 
+    /* SPRD: Add scheduleButtonLightTimeout. @}*/
+    public void scheduleButtonLightTimeout_internal(long now){
+        Slog.v(TAG, "scheduleButtonTimeout");
+        if(mDisplayManagerInternal != null){
+             Slog.d(TAG, "mButtonOffTimeoutSetting = " +mButtonOffTimeoutSetting);
+             mDisplayManagerInternal.updateButtonTimeout(mButtonOffTimeoutSetting);
+             if (mBootCompleted) {
+                 mDisplayManagerInternal.scheduleButtonTimeout(now);
+             }
+         }
+    }
+    /* @} */
+
     void updateLowPowerModeLocked() {
         if (mIsPowered && mLowPowerModeSetting) {
             if (DEBUG_SPEW) {
@@ -741,6 +807,9 @@ public final class PowerManagerService extends SystemService
 
         if (mLowPowerModeEnabled != lowPowerModeEnabled) {
             mLowPowerModeEnabled = lowPowerModeEnabled;
+            if (getDeBugPowerHintLog()) {
+                Log.d(TAG, "Update LowPower Mode start powerHint.");
+            }
             powerHintInternal(POWER_HINT_LOW_POWER, lowPowerModeEnabled ? 1 : 0);
             BackgroundThread.getHandler().post(new Runnable() {
                 @Override
@@ -773,10 +842,11 @@ public final class PowerManagerService extends SystemService
     private void acquireWakeLockInternal(IBinder lock, int flags, String tag, String packageName,
             WorkSource ws, String historyTag, int uid, int pid) {
         synchronized (mLock) {
-            if (DEBUG_SPEW) {
+            //SPRD: add DEBUG_WAKEUP controller for debug info
+            if (DEBUG_SPEW || DEBUG_WAKEUP) {
                 Slog.d(TAG, "acquireWakeLockInternal: lock=" + Objects.hashCode(lock)
                         + ", flags=0x" + Integer.toHexString(flags)
-                        + ", tag=\"" + tag + "\", ws=" + ws + ", uid=" + uid + ", pid=" + pid);
+                        + ", tag=\"" + tag + "\", ws=" + ws + ", uid=" + uid + ", pid=" + pid +" packageName="+packageName );
             }
 
             WakeLock wakeLock;
@@ -841,6 +911,12 @@ public final class PowerManagerService extends SystemService
                 opUid = wakeLock.mWorkSource != null ? wakeLock.mWorkSource.get(0)
                         : wakeLock.mOwnerUid;
             }
+			//SPRD: add DEBUG_WAKEUP controller for debug info
+			if(DEBUG_WAKEUP){
+			 Slog.d(TAG,"acquire the wakelock flags=0x" + Integer.toHexString(wakeLock.mFlags)+" tag="+ wakeLock.mTag +" packagename="+ opPackageName +" with wakeup flag");
+				}else{
+				Slog.d(TAG,"acquire the wakelock flags=0x" + Integer.toHexString(wakeLock.mFlags)+"  packagename="+ opPackageName +" with wakeup flag");
+				}
             wakeUpNoUpdateLocked(SystemClock.uptimeMillis(), wakeLock.mTag, opUid,
                     opPackageName, opUid);
         }
@@ -850,7 +926,8 @@ public final class PowerManagerService extends SystemService
         synchronized (mLock) {
             int index = findWakeLockIndexLocked(lock);
             if (index < 0) {
-                if (DEBUG_SPEW) {
+                //SPRD: add DEBUG_WAKEUP controller for debug info
+                if (DEBUG_SPEW || DEBUG_WAKEUP) {
                     Slog.d(TAG, "releaseWakeLockInternal: lock=" + Objects.hashCode(lock)
                             + " [not found], flags=0x" + Integer.toHexString(flags));
                 }
@@ -858,7 +935,8 @@ public final class PowerManagerService extends SystemService
             }
 
             WakeLock wakeLock = mWakeLocks.get(index);
-            if (DEBUG_SPEW) {
+            //SPRD: add DEBUG_WAKEUP controller for debug info
+            if (DEBUG_SPEW || DEBUG_WAKEUP) {
                 Slog.d(TAG, "releaseWakeLockInternal: lock=" + Objects.hashCode(lock)
                         + " [" + wakeLock.mTag + "], flags=0x" + Integer.toHexString(flags));
             }
@@ -996,6 +1074,11 @@ public final class PowerManagerService extends SystemService
 
     // Called from native code.
     private void userActivityFromNative(long eventTime, int event, int flags) {
+        Slog.i(TAG, "userActivityFromNative,"+mIncallScreenTimeOutflag);
+        // Bug 605470 reset time when useractivityFromNative
+        if(mIncallScreenTimeOutflag == true) {
+            resetTimerLocked();
+        }
         userActivityInternal(eventTime, event, flags, Process.SYSTEM_UID);
     }
 
@@ -1022,7 +1105,13 @@ public final class PowerManagerService extends SystemService
         Trace.traceBegin(Trace.TRACE_TAG_POWER, "userActivity");
         try {
             if (eventTime > mLastInteractivePowerHintTime) {
-                powerHintInternal(POWER_HINT_INTERACTION, 0);
+                if ((event != PowerManager.USER_ACTIVITY_EVENT_BUTTON && event != PowerManager.USER_ACTIVITY_EVENT_TOUCH)
+                        || TOUCH_TRIGGER_POWERHINT) {
+                    if (getDeBugPowerHintLog()) {
+                        Log.d(TAG, "userActivityNoUpdateLocked Start powerHint.");
+                    }
+                    powerHintInternal(POWER_HINT_INTERACTION, 0);
+                }
                 mLastInteractivePowerHintTime = eventTime;
             }
 
@@ -1076,18 +1165,22 @@ public final class PowerManagerService extends SystemService
 
         Trace.traceBegin(Trace.TRACE_TAG_POWER, "wakeUp");
         try {
-            switch (mWakefulness) {
+                switch (mWakefulness) {
                 case WAKEFULNESS_ASLEEP:
-                    Slog.i(TAG, "Waking up from sleep (uid " + reasonUid +")...");
+                    Slog.i(TAG, "Waking up from sleep due to "+opPackageName+" " +reason+" (uid " + reasonUid +")...");
                     break;
                 case WAKEFULNESS_DREAMING:
-                    Slog.i(TAG, "Waking up from dream (uid " + reasonUid +")...");
+                    Slog.i(TAG, "Waking up from dream due to "+opPackageName+" "+reason+" (uid " + reasonUid +")...");
                     break;
                 case WAKEFULNESS_DOZING:
-                    Slog.i(TAG, "Waking up from dozing (uid " + reasonUid +")...");
+                    Slog.i(TAG, "Waking up from dozing due to "+opPackageName+" "+reason+" (uid " + reasonUid +")...");
                     break;
             }
 
+            // Bug 605470 incall-screen, will screen off after inCallsleeptimeout for all wakeUp things
+            if(mIncallScreenTimeOutflag == true) {
+                resetTimerLocked();
+            }
             mLastWakeTime = eventTime;
             setWakefulnessLocked(WAKEFULNESS_AWAKE, 0);
 
@@ -2141,6 +2234,8 @@ public final class PowerManagerService extends SystemService
             mHoldingWakeLockSuspendBlocker = false;
         }
         if (!needDisplaySuspendBlocker && mHoldingDisplaySuspendBlocker) {
+            //SPRD: add SuspendWhenScreenOffDueToProximityConfig debug info
+            Slog.i(TAG,"release display suspend blocker");
             mDisplaySuspendBlocker.release();
             mHoldingDisplaySuspendBlocker = false;
         }
@@ -2166,6 +2261,8 @@ public final class PowerManagerService extends SystemService
             // sensor may not be correctly configured as a wake-up source.
             if (!mDisplayPowerRequest.useProximitySensor || !mProximityPositive
                     || !mSuspendWhenScreenOffDueToProximityConfig) {
+                //SPRD: add SuspendWhenScreenOffDueToProximityConfig debug info
+                Slog.i(TAG,"SuspendWhenScreenOffDueToProximityConfig = " + mSuspendWhenScreenOffDueToProximityConfig);
                 return true;
             }
         }
@@ -2260,6 +2357,9 @@ public final class PowerManagerService extends SystemService
 
     private void shutdownOrRebootInternal(final boolean shutdown, final boolean confirm,
             final String reason, boolean wait) {
+        Log.d(TAG,
+                "Reboots the device , UID : " + Binder.getCallingUid() + " , PID : "
+                        + Binder.getCallingPid() + " , shutdown = " + shutdown+" , reason  : "+reason);
         if (mHandler == null || !mSystemReady) {
             throw new IllegalStateException("Too early to call shutdown() or reboot()");
         }
@@ -2439,6 +2539,51 @@ public final class PowerManagerService extends SystemService
         // Control light outside of lock.
         light.setFlashing(color, Light.LIGHT_FLASH_HARDWARE, (on ? 3 : 0), 0);
     }
+
+    //Bug 605470  Add for timing out screen when calling start
+    private void setScreenOffTimeoutsLocked(int time,boolean enableflag) {
+         Slog.i(TAG, "setScreenOffTimeoutsLocked,enableflag:"+enableflag);
+         if(enableflag) {
+              mHandler.removeCallbacks(mTimeoutTask);
+              mInCallScreenTimeOut = time;
+              mIncallScreenTimeOutflag =enableflag;
+              long when = SystemClock.uptimeMillis();
+              when = when + time ;
+              mHandler.postAtTime(mTimeoutTask, when);
+          }else{
+              mIncallScreenTimeOutflag =enableflag;
+              mHandler.removeCallbacks(mTimeoutTask);
+          }
+     }
+
+     private void resetTimerLocked() {
+         long now = SystemClock.uptimeMillis();
+         if(now<=mStartATime+1000){
+             Slog.i(TAG,"Call too frequently,don't need to call.");
+             return ;
+         }
+         mHandler.removeCallbacks(mTimeoutTask);
+         Slog.i(TAG, "resetTimerLocked");
+         mStartATime = SystemClock.uptimeMillis();
+         mHandler.postDelayed(mTimeoutTask, mInCallScreenTimeOut);
+     }
+
+     private void cancelTimerLocked() {
+          Slog.i(TAG, "cancelTimerLocked");
+         mHandler.removeCallbacks(mTimeoutTask);
+     }
+
+     private class TimeoutTask implements Runnable {
+         public void run() {
+             synchronized (mLock) {
+                 long now = SystemClock.uptimeMillis();
+                 try{
+                    goToSleepInternal(now, PowerManager.GO_TO_SLEEP_REASON_TIMEOUT, 0, Process.SYSTEM_UID);
+                 }catch(Exception e){}
+               }
+          }
+     }
+     // Bug 605470 Add for timing out when calling end
 
     private void boostScreenBrightnessInternal(long eventTime, int uid) {
         synchronized (mLock) {
@@ -3015,6 +3160,9 @@ public final class PowerManagerService extends SystemService
                 return;
             }
             mContext.enforceCallingOrSelfPermission(android.Manifest.permission.DEVICE_POWER, null);
+            if (getDeBugPowerHintLog()) {
+                Log.d(TAG, "BinderService Start powerHint.");
+            }
             powerHintInternal(hintId, data);
         }
 
@@ -3152,6 +3300,27 @@ public final class PowerManagerService extends SystemService
             }
         }
 
+        /*
+         * Bug 605470
+         * This method must only be called by the phone.
+         *  Used by Incall screen timeout
+         */
+        @Override // Binder call
+         public void setTimeoutLocked(int time,boolean flag) {
+                 if (mContext.checkCallingOrSelfPermission(android.Manifest.permission.DEVICE_POWER)
+                     != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                  }
+
+                  final long ident = Binder.clearCallingIdentity();
+                  final int uid = Binder.getCallingUid();
+                  try {
+                        setScreenOffTimeoutsLocked(time,flag);
+                  } finally {
+                       Binder.restoreCallingIdentity(ident);
+                  }
+         }
+
         @Override // Binder call
         public void wakeUp(long eventTime, String reason, String opPackageName) {
             if (eventTime > SystemClock.uptimeMillis()) {
@@ -3215,6 +3384,18 @@ public final class PowerManagerService extends SystemService
                 Binder.restoreCallingIdentity(ident);
             }
         }
+
+         /* SPRD: Add scheduleButtonLightTimeout. @}*/
+         @Override // Binder call
+        public void scheduleButtonLightTimeout(long now) {
+            final long ident = Binder.clearCallingIdentity();
+            try {
+                 scheduleButtonLightTimeout_internal(now);
+            } finally {
+                Binder.restoreCallingIdentity(ident);
+            }
+        }
+         /* @} */
 
         @Override // Binder call
         public boolean isPowerSaveMode() {
@@ -3283,6 +3464,32 @@ public final class PowerManagerService extends SystemService
             final long ident = Binder.clearCallingIdentity();
             try {
                 shutdownOrRebootInternal(true, confirm, null, wait);
+            } finally {
+                Binder.restoreCallingIdentity(ident);
+            }
+        }
+
+        /**
+         * Shuts down the device for poweroff alarm
+         *
+         * @param confirm If true, shows a shutdown confirmation dialog.
+         * @param wait If true, this call waits for the shutdown to complete and does not return.
+         */
+        @Override // Binder call
+        public void shutdownForAlarm(boolean confirm, boolean isPowerOffAlarm) {
+            final long ident = Binder.clearCallingIdentity();
+            try {
+                ShutdownThread.shutdownForAlarm(mContext, confirm, isPowerOffAlarm);
+            } finally {
+                Binder.restoreCallingIdentity(ident);
+            }
+        }
+
+	 @Override // Binder call
+        public void rebootAnimation() {
+            final long ident = Binder.clearCallingIdentity();
+            try {
+                 ShutdownThread.rebootAnimation(mContext);
             } finally {
                 Binder.restoreCallingIdentity(ident);
             }
@@ -3534,5 +3741,34 @@ public final class PowerManagerService extends SystemService
         public void uidGone(int uid) {
             uidGoneInternal(uid);
         }
+
+        @Override
+        public void powerHint(int hintId, int data) {
+            if (getDeBugPowerHintLog()) {
+                Log.d(TAG, "LocalService Start powerHint.");
+            }
+            powerHintInternal(hintId, data);
+        }
+    }
+
+    //SPRD: add debug info for wake up @{
+    private final class ScreenOffReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Slog.d(TAG, "onReceive SCREEN_OFF");
+            synchronized(mLock) {
+            for(int i=0; i<mWakeLocks.size(); i++) {
+                WakeLock wakelock = mWakeLocks.get(i);
+                Slog.d(TAG, "onReceive SCREEN_OFF remain wakelock:" + wakelock.mLock + " flag:" + wakelock.mFlags + " tag:" + wakelock.mTag + " pkg:" + wakelock.mPackageName);
+            }
+          }
+        }
+    }
+    //SPRD: add debug info for wake up @}
+
+    private boolean getDeBugPowerHintLog() {
+        boolean DEBUG_POWER_HINT = SystemProperties.getBoolean("debug.power.hint", false)
+                || SystemProperties.getBoolean("debug.power.all", false);
+        return DEBUG_POWER_HINT;
     }
 }

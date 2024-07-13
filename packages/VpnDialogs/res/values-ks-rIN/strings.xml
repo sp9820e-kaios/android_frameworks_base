@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="prompt">"कनेक्शन अर्जी"</string>
+<string name="warning">""<xliff:g id="app">%s</xliff:g> यछान छिव सेट करुन VPN कनेक्शन युस इजाज़त दिय नेटवर्क ट्रैफिक निगरानी करनस.अगर तुहुय आगुरिस पेठ बरोस छिव करान तेली कर्यिव मंज़ूर. <![CDATA[ <br /> <br /> <img src="vpn_icon" /> ]]> लबनह यियः तुहुन्ज़ी स्क्रीनस पेठकेन येम्सात VPN आसि चलान." "</string>
+<string name="legacy_title">"VPN छु जोडिथ"</string>
+<string name="configure">"तरतीब दियेव"</string>
+<string name="disconnect">"मुन्कतः"</string>
+<string name="session">"सेशन:"</string>
+<string name="duration">"वक़्त:"</string>
+<string name="data_transmitted">"सोज़:"</string>
+<string name="data_received">"बरामद कोर:"</string>
+<string name="data_value_format">" <xliff:g id="number">%1$s</xliff:g> बाइटस / <xliff:g id="number">%2$s</xliff:g>पैकेटस"</string>
+</resources>

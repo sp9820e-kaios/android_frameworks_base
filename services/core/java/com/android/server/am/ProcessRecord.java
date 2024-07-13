@@ -145,6 +145,12 @@ final class ProcessRecord {
     Object adjTarget;           // Debugging: target component impacting oom_adj.
     Runnable crashHandler;      // Optional local handler to be invoked in the process crash.
 
+    /* SPRD: add for bug 284692, add set process protect status interface @{ */
+    int protectStatus;
+    int protectMinAdj;
+    int protectMaxAdj;
+    /* }@ */
+
     // all activities running in the process
     final ArrayList<ActivityRecord> activities = new ArrayList<>();
     // all ServiceRecord running in this process
@@ -418,6 +424,11 @@ final class ProcessRecord {
         persistent = false;
         removed = false;
         lastStateTime = lastPssTime = nextPssTime = SystemClock.uptimeMillis();
+        /* SPRD: add for bug 284692, add set process protect status interface @{ */
+        protectStatus = 0;
+        protectMinAdj = 0;
+        protectMaxAdj = 0;
+        /* }@ */
     }
 
     public void setPid(int _pid) {
@@ -543,7 +554,7 @@ final class ProcessRecord {
             }
             EventLog.writeEvent(EventLogTags.AM_KILL, userId, pid, processName, setAdj, reason);
             Process.killProcessQuiet(pid);
-            Process.killProcessGroup(info.uid, pid);
+            Process.killProcessGroup(uid, pid);
             if (!persistent) {
                 killed = true;
                 killedByAm = true;

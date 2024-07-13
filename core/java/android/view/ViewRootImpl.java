@@ -19,6 +19,7 @@ package android.view;
 import android.Manifest;
 import android.animation.LayoutTransition;
 import android.app.ActivityManagerNative;
+import android.app.ActivityManager;
 import android.content.ClipDescription;
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -216,6 +217,7 @@ public final class ViewRootImpl implements ViewParent,
     boolean mReportNextDraw;
     boolean mFullRedrawNeeded;
     boolean mNewSurfaceNeeded;
+    boolean mTmpRelayoutNeeded;
     boolean mHasHadWindowFocus;
     boolean mLastWasImTarget;
     boolean mWindowsAnimating;
@@ -341,6 +343,15 @@ public final class ViewRootImpl implements ViewParent,
     /** Set to true once doDie() has been called. */
     private boolean mRemoved;
 
+    /* SPRD: add for dynamic navigationbar @{ */
+    boolean mCanHaveNavigationBar = false;
+    boolean mSwipeFromBottom = false;
+
+    int mDisplayHeight = -1;
+
+    static final int HEIGHT_TO_SKIP = 10;
+    /* @} */
+
     /**
      * Consistency verifier for debugging purposes.
      */
@@ -394,6 +405,13 @@ public final class ViewRootImpl implements ViewParent,
         mFallbackEventHandler = new PhoneFallbackEventHandler(context);
         mChoreographer = Choreographer.getInstance();
         mDisplayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
+        /* SPRD: add for dynamic navigationbar @{ */
+        mDisplayHeight = mDisplay.getMode().getPhysicalHeight();
+        String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
+        if ("0".equals(navBarOverride)) {
+            mCanHaveNavigationBar = true;
+        }
+        /* @} */
         loadSystemProperties();
     }
 
@@ -1536,7 +1554,12 @@ public final class ViewRootImpl implements ViewParent,
         int relayoutResult = 0;
 
         if (mFirst || windowShouldResize || insetsChanged ||
-                viewVisibilityChanged || params != null) {
+                viewVisibilityChanged || params != null ||
+                (mTmpRelayoutNeeded && viewVisibility == View.VISIBLE)) {
+            if (!(mFirst || windowShouldResize || insetsChanged ||
+                viewVisibilityChanged || params != null) && (mTmpRelayoutNeeded && viewVisibility == View.VISIBLE)) {
+                Log.i(TAG, "give another change to relayoutWindow " + mWindowAttributes.getTitle());
+            }
 
             if (viewVisibility == View.VISIBLE) {
                 // If this window is giving internal insets to the window
@@ -2031,6 +2054,11 @@ public final class ViewRootImpl implements ViewParent,
         mWillDrawSoon = false;
         mNewSurfaceNeeded = false;
         mViewVisibility = viewVisibility;
+        mTmpRelayoutNeeded = false;
+        if(ActivityManager.isUserAMonkey() && !mSurface.isValid() && viewVisibility == View.VISIBLE) {
+            Slog.e(TAG, "mTmpRelayoutNeeded = true;    " + mWindowAttributes.getTitle());
+            mTmpRelayoutNeeded = true;
+        }
 
         if (mAttachInfo.mHasWindowFocus && !isInLocalFocusMode()) {
             final boolean imTarget = WindowManager.LayoutParams
@@ -6022,7 +6050,49 @@ public final class ViewRootImpl implements ViewParent,
 
         @Override
         public void onInputEvent(InputEvent event) {
-            enqueueInputEvent(event, this, 0, true);
+            /* SPRD: add for dynamic navigationbar @{ */
+            boolean handled = false;
+            if (mCanHaveNavigationBar && event instanceof MotionEvent) {
+                MotionEvent e = (MotionEvent) event;
+                switch (e.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mSwipeFromBottom = false;
+                        int orientation = mDisplay.getOrientation();
+                        if (orientation%2 == 0 && e.getRawY() > mDisplayHeight - HEIGHT_TO_SKIP ||
+                                    orientation%2 == 1 && e.getRawX() > mDisplayHeight - HEIGHT_TO_SKIP) {
+                            boolean keyguardShowing = false;
+                            boolean hasNavigationBar = false;
+                            try {
+                                keyguardShowing = mWindowSession.isKeyguardShowingAndNotOccluded();
+                                hasNavigationBar = mWindowSession.hasNavigationBar();
+                            } catch (Exception er) {
+                                Log.e(TAG, "throw exception, " + er);
+                            }
+                            if (!keyguardShowing && !hasNavigationBar) {
+                                mSwipeFromBottom = true;
+                                handled = true;
+                            }
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mSwipeFromBottom == true) {
+                            mSwipeFromBottom = false;
+                            handled = true;
+                        }
+                        break;
+                    default:
+                        if (mSwipeFromBottom == true) {
+                            handled = true;
+                        }
+                        break;
+                }
+            }
+            if (!handled) {
+                enqueueInputEvent(event, this, 0, true);
+            } else {
+                finishInputEvent(event, true);
+            }
+            /* @} */
         }
 
         @Override
@@ -6376,7 +6446,14 @@ public final class ViewRootImpl implements ViewParent,
                 handleWindowContentChangedEvent(event);
             } break;
         }
-        mAccessibilityManager.sendAccessibilityEvent(event);
+        // SPRD: Bug 571638 com.android.dialer is crash.@{
+        try{
+            mAccessibilityManager.sendAccessibilityEvent(event);
+        }catch (IllegalStateException ex){
+            Log.e(TAG,"Failed to send Accessibility Event.",ex);
+            return false;
+        }
+        //@}
         return true;
     }
 

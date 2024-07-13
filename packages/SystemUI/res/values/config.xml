@@ -118,8 +118,12 @@
     <integer name="quick_settings_user_time_settings_tile_span">1</integer>
 
     <!-- The default tiles to display in QuickSettings -->
+    <!-- Bug 474760 New feature add audio profile switch to status bar quick setting page. -->
+    <!-- SPRD: modify for 4G and data connection quick setting -->
+    <!-- SPRD: modify for bug 496951 -->
+    <!-- SPRD 583693/585904 PikeL only support QSTiles -->
     <string name="quick_settings_tiles_default" translatable="false">
-        wifi,bt,inversion,dnd,cell,airplane,rotation,flashlight,location,cast,hotspot
+        bt,data,lte,airplane,audioprofile,location
     </string>
 
     <!-- The tiles to display in QuickSettings -->
@@ -295,6 +299,16 @@
 
     <!-- Duration of the expansion animation in the volume dialog -->
     <item name="volume_expand_animation_duration" type="integer">300</item>
-
+    <!-- SPRD: modify for bug 474984 @{ -->
+    <string name="feature_display_for_operator" translatable="false">plugin.sprd.supportoperator.SystemUIFeaturesForOperator</string>
+    <bool name="enable_signal_strenth_color">true</bool>
+    <!-- @} -->
+    <!--SPRD: use addon to support the function of changing RINGER_MODE-->
+    <string name="feature_systemui" translatable="false">plugin.sprd.systemuiaddon.AddonSystemuiUtils</string>
+    <!--SPRD: Bug535096 use addon to support lock app-->
+    <string name="feature_lock_app_systemui" translatable="false">plugin.sprd.systemuilockapp.SystemUILockApp</string>
+    <!--SPRD: Bug535100 use addon to support dynamic navigationbar-->
+    <string name="feature_dynamic_navigationbat_systemui" translatable="false">plugin.sprd.systemuidynanavigationbar.SystemUIDynaNavigationBar</string>
+    <!--SPRD: Bug #554542 add statusbar new feature. Can set keyguard background in wallpaper -->
+    <string name="feature_lock_screen" translatable="false">plugin.sprd.lockscreen.SprdLockScreenAddon</string>
 </resources>
-

@@ -36,6 +36,12 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.telephony.TelephonyManager;
+import android.os.ParcelFileDescriptor;
+import android.os.SystemProperties;
+import com.android.internal.telephony.TelephonyProperties;
+import java.io.FileNotFoundException;
+
 /**
  * RingtoneManager provides access to ringtones, notification, and other types
  * of sounds. It manages querying the different media providers and combines the
@@ -52,6 +58,21 @@ import java.util.List;
 public class RingtoneManager {
 
     private static final String TAG = "RingtoneManager";
+
+    /**
+    * @hide
+    * SPRD: add for double-T
+    *
+    * @{
+    */
+    public static final String EXTRA_RINGTONE_INCLUDE_EXTERNAL =
+            "android.intent.extra.ringtone.INCLUDE_EXTERNAL";
+    private Cursor mCustomCursor;
+    private boolean mIncludeDrm;
+    private boolean mIncludeExternal;
+    /**
+    * @}
+    */
 
     // Make sure these are in sync with attrs.xml:
     // <attr name="ringtoneType">
@@ -657,6 +678,8 @@ public class RingtoneManager {
     }
     
     private static String getSettingForType(int type) {
+         /** SPRD: change get settingtype for phoneId @{ */
+            /*
         if ((type & TYPE_RINGTONE) != 0) {
             return Settings.System.RINGTONE;
         } else if ((type & TYPE_NOTIFICATION) != 0) {
@@ -666,6 +689,9 @@ public class RingtoneManager {
         } else {
             return null;
         }
+         */
+        return getSettingForType(type, 0);
+        /** @} */
     }
     
     /**
@@ -722,4 +748,296 @@ public class RingtoneManager {
         }
     }
     
+    /** SPRD: bug, Add Some method @{ */
+
+    /**
+    * @param type The ringtone type whose default should be returned.
+    * @param phoneid phoneid
+    * @return The {@link Uri} of the default ringtone for the given type.
+    * @hide
+    */
+    public static Uri getActualDefaultRingtoneUri(Context context, int type, int phoneId) {
+        String setting = getSettingForType(type, phoneId);
+        if (setting == null) return null;
+        final String uriString = Settings.System.getString(context.getContentResolver(), setting);
+        Uri uri = (uriString != null ? Uri.parse(uriString) : null);
+        Cursor cursor = null;
+        try {
+            ParcelFileDescriptor pfd = null;
+            pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+            if (pfd != null) {
+                pfd.close();
+            }
+        } catch (FileNotFoundException ex) {
+            uri = getProfileDefaultUri(context, type);
+        } catch (Exception sqle) {
+            Log.d(TAG, sqle.toString());
+        }
+        return uri;
+    }
+
+    private static String getSettingForType(int type, int phoneId) {
+        if ((type & TYPE_RINGTONE) != 0) {
+            return getSetting(Settings.System.RINGTONE,phoneId);
+        } else if ((type & TYPE_NOTIFICATION) != 0) {
+            return Settings.System.NOTIFICATION_SOUND;
+        } else if ((type & TYPE_ALARM) != 0) {
+            return Settings.System.ALARM_ALERT;
+        } else {
+            return null;
+        }
+    }
+
+    public static String getSetting(String defaultSetting, int phoneId) {
+        if (isMultiSimEnabledEx()) {
+            return defaultSetting + phoneId;
+        } else {
+            return defaultSetting;
+        }
+    }
+
+    public static String getSetting(String defaultSetting, long subId) {
+        if (isMultiSimEnabledEx()) {
+            return defaultSetting + subId;
+        } else {
+            return defaultSetting;
+        }
+    }
+
+    private static boolean isMultiSimEnabledEx() {
+        String multiSimConfig =
+                SystemProperties.get(TelephonyProperties.PROPERTY_MULTI_SIM_CONFIG);
+        return (multiSimConfig.equals("dsds") || multiSimConfig.equals("dsda") ||
+                multiSimConfig.equals("tsts"));
+    }
+
+    /**
+    * @param type The ringtone type whose default should be returned.
+    * @param uri ringtone uri
+    * @param phoneid phoneid
+    * @return void
+    * @hide
+    */
+    public static void setActualDefaultRingtoneUri(Context context, int type, Uri ringtoneUri, int phoneId) {
+        String setting = getSettingForType(type, phoneId);
+        if (setting == null) return;
+        Settings.System.putString(context.getContentResolver(), setting,
+                                    ringtoneUri != null ? ringtoneUri.toString() : null);
+    }
+
+    /**
+    * @hide
+    */
+    public static int getRingtonePhoneId(Uri uri) {
+       if(uri == null){
+           return TelephonyManager.getDefault().getDefaultSim();
+       }
+       String uriStr = uri.toString();
+       String ringtoneUriStr = Settings.System.DEFAULT_RINGTONE_URI.toString();
+       if(uriStr.startsWith((ringtoneUriStr))
+             && uriStr.length() !=  ringtoneUriStr.length()){
+           return Integer.parseInt(uriStr.substring(ringtoneUriStr.length(), ringtoneUriStr.length()+1));
+       }
+       return TelephonyManager.getDefault().getDefaultSim();
+    }
+
+    /**
+     * Gets the current default sound's {@link Uri}. This will give the actual
+     * sound {@link Uri}, instead of using this, most clients can use
+     * {@link System#DEFAULT_RINGTONE_URI}.
+     *
+     * @param context A context used for querying.
+     * @param type The type whose default sound should be returned. One of
+     *            {@link #TYPE_RINGTONE}, {@link #TYPE_NOTIFICATION}, or
+     *            {@link #TYPE_ALARM}.
+     * @return A {@link Uri} pointing to the default sound for the sound type.
+     * @see #setActualDefaultRingtoneUri(Context, int, Uri)
+     * @hide
+     */
+    public static Uri getProfileDefaultUri(Context context, int type) {
+
+        String ringerUriString = Settings.System.getString(context.getContentResolver(),
+                Settings.System.DEFAULT_RINGTONE);
+        Uri defaultRingtoneUri = (ringerUriString != null ? Uri.parse(ringerUriString) : null);
+        String notificationUriString = Settings.System.getString(context.getContentResolver(),
+                Settings.System.DEFAULT_NOTIFICATION);
+        Uri defaultNotificationUri = (notificationUriString != null ? Uri.parse(notificationUriString) : null);
+        String alarmUriString = Settings.System.getString(context.getContentResolver(),
+                Settings.System.DEFAULT_ALARM);
+        Uri defaultAlarmUri = (alarmUriString != null ? Uri.parse(alarmUriString) : null);
+        if ((type & TYPE_RINGTONE) != 0) {
+            return defaultRingtoneUri;
+        } else if ((type & TYPE_NOTIFICATION) != 0) {
+            return defaultNotificationUri;
+        } else if ((type & TYPE_ALARM) != 0) {
+            return defaultAlarmUri;
+        } else {
+            return null;
+        }
+
+    }
+
+    /**
+     * SPRD: check defaultSettingUri for bug399985 @{
+     * @hide
+     * @param context
+     * @param type
+     * @return
+     */
+    public static boolean isSettingUriRight(Context context, int type) {
+        String setting = getSettingForType(type);
+        if (setting == null) {
+            return false;
+        }
+        final String uriString = Settings.System.getString(
+                context.getContentResolver(), setting);
+        if (uriString == null) {
+            return false;
+        }
+        return true;
+    }
+     /** @} */
+
+
+    /**
+    * @hide
+    */
+    public void setIncludeExternal(boolean includeExternal) {
+        mIncludeExternal = includeExternal;
+    }
+
+    /**
+    * @hide
+    */
+    public Cursor getExternalMusics() {
+        // Get the external media cursor. First check to see if it is mounted.
+        //final String status = Environment.getExternalStorageState();
+        //if(!status.equals(Environment.MEDIA_MOUNTED) && !status.equals(Environment.MEDIA_MOUNTED_READ_ONLY)){
+         //   return null;
+        //}
+
+        /*SPRD: when unmount sd card, scan customize ringtones @{*/
+        final String external_status = Environment.getExternalStoragePathState();
+        final String internal_status = Environment.getInternalStoragePathState();
+        if(!external_status.equals(Environment.MEDIA_MOUNTED) && !internal_status.equals(Environment.MEDIA_MOUNTED)
+                && !external_status.equals(Environment.MEDIA_MOUNTED_READ_ONLY) && !internal_status.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
+              return null;
+        }
+        /*}@*/
+
+        try {
+            if (mCustomCursor != null && !mCustomCursor.isClosed() && mCustomCursor.requery()) {
+                return mCustomCursor;
+            }
+        } catch (android.database.StaleDataException e) {
+            Log.e(TAG, "requery error: cursor is closed" + e);
+        }
+
+        // filter
+        StringBuilder where = new StringBuilder();
+        where.append(MediaStore.Audio.Media.TITLE + " != ''");
+        where.append(" AND " + MediaStore.Audio.Media.IS_MUSIC + "=1");
+        /*SPRD:Bug506079 DRM music should not be set as rings.Bug510488 @{*/
+        where.append(" AND (" + MediaStore.Audio.Media.IS_DRM + "!=1");
+        where.append(" OR " + MediaStore.Audio.Media.IS_DRM + " is NULL )");
+        /*}@*/
+
+        /* sprd: we need all music */
+        /*
+        boolean hasExternalRingtone = false;
+        for (int i = mFilterColumns.size() - 1; i >= 0; i--) {
+            if(mFilterColumns.get(i).equals(
+                MediaStore.Audio.AudioColumns.IS_RINGTONE)) {
+                hasExternalRingtone = true;
+                break;
+            }
+        }
+        if (hasExternalRingtone) {
+            where.append(" AND (" + MediaStore.Audio.Media.IS_RINGTONE + "=0 or "
+                    + MediaStore.Audio.Media.IS_RINGTONE +" is null)");
+        }
+        */
+        //SPRD: when unmount sd card, scan customize ringtones
+        return mCustomCursor = ((external_status.equals(Environment.MEDIA_MOUNTED) || internal_status
+                .equals(Environment.MEDIA_MOUNTED) || external_status.equals(Environment.MEDIA_MOUNTED_READ_ONLY) || internal_status
+                .equals(Environment.MEDIA_MOUNTED_READ_ONLY)) ? query(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MEDIA_COLUMNS,
+                where.toString(), null,
+                MediaStore.Audio.Media.DEFAULT_SORT_ORDER) : null);
+    }
+
+    /**
+    * @hide
+    */
+    public int getCunstomRingtonePosition(Uri ringtoneUri) {
+
+        if (ringtoneUri == null) return -1;
+
+        final Cursor cursor = getExternalMusics();
+
+        if (cursor == null) {
+            return -1;
+        }
+
+        //final int cursorCount = cursor.getCount();
+
+        if (!cursor.moveToFirst()) {
+            return -1;
+        }
+
+        // Only create Uri objects when the actual URI changes
+        Uri currentUri = null;
+        String previousUriString = null;
+        //for (int i = 0; i < cursorCount; i++) {
+        while(!cursor.isAfterLast()) {
+            String uriString = cursor.getString(URI_COLUMN_INDEX);
+            if (currentUri == null || !uriString.equals(previousUriString)) {
+                currentUri = Uri.parse(uriString);
+            }
+
+            if (ringtoneUri.equals(ContentUris.withAppendedId(currentUri, cursor
+                    .getLong(ID_COLUMN_INDEX)))) {
+                return cursor.getPosition();
+            }
+
+            // SPRD: if cursor has moved to end, we'll cancel the next move which is needless.
+            // This special handling is mainly for avoiding exception from AbstractCursor.checkPosition
+            //if (cursor.getPosition() < cursorCount - 1) {
+            cursor.moveToNext();
+            //}
+
+            previousUriString = uriString;
+        }
+
+        return -1;
+    }
+
+    /**
+    * @hide
+    */
+    public Uri getCustomRingtoneUri(int position) {
+        final Cursor cursor = getExternalMusics();
+        if(cursor == null){
+            return null;
+        }
+
+        if (!cursor.moveToPosition(position)) {
+            return null;
+        }
+
+        return getUriFromCursor(cursor);
+    }
+
+    /**
+    * @hide
+    */
+    public Ringtone getCustomRingtone(int position) {
+        if (mStopPreviousRingtone && mPreviousRingtone != null) {
+            mPreviousRingtone.stop();
+        }
+
+        mPreviousRingtone = getRingtone(mContext, getCustomRingtoneUri(position), inferStreamType());
+        return mPreviousRingtone;
+    }
+    /** @} */
 }

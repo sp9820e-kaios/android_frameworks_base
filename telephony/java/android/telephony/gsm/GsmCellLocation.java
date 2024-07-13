@@ -34,6 +34,9 @@ public class GsmCellLocation extends CellLocation {
         mLac = -1;
         mCid = -1;
         mPsc = -1;
+        /* SPRD: add AGPS feature for bug 474224 @{ */
+        mPci = -1;
+        /*@}*/
     }
 
     /**
@@ -43,6 +46,9 @@ public class GsmCellLocation extends CellLocation {
         mLac = bundle.getInt("lac", -1);
         mCid = bundle.getInt("cid", -1);
         mPsc = bundle.getInt("psc", -1);
+        /* SPRD: add AGPS feature for bug 474224 @{ */
+        mPci = bundle.getInt("pci", -1);
+        /*@}*/
     }
 
     /**
@@ -142,6 +148,9 @@ public class GsmCellLocation extends CellLocation {
         m.putInt("lac", mLac);
         m.putInt("cid", mCid);
         m.putInt("psc", mPsc);
+        /* SPRD: add AGPS feature for bug 474224 @{ */
+        m.putInt("pci",mPci);
+        /* @} */
     }
 
     /**
@@ -150,4 +159,29 @@ public class GsmCellLocation extends CellLocation {
     public boolean isEmpty() {
         return (mLac == -1 && mCid == -1 && mPsc == -1);
     }
+
+    /**
+     * SPRD: add AGPS feature for bug 474224 PhsyCellId obtained only in LTE
+     * network,set -1 if not *@{
+     */
+    private int mPci;
+    /* @} */
+
+    /**
+     * SPRD: add for bug 474224 @{
+     *
+     * @return Physical Cell Id 0..503, -1 if unknown
+     * @hide
+     */
+    public int getPci() {
+        return mPci;
+    }
+
+    /**
+     * @hide
+     */
+    public void setPci(int pci) {
+        mPci = pci;
+    }
+    /** @} */
 }

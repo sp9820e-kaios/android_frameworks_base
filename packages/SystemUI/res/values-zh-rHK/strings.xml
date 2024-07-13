@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"恭喜您！系統使用者介面調諧器已新增至「設定」中"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"從「設定」移除"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"要從「設定」移除系統使用者介面調諧器，並停止其所有功能嗎？"</string>
+    <string name="quick_settings_volume_label">"情景模式"</string>
+     <string name="assistant_key_home">"主頁"</string>
+     <string name="assistant_key_search">"搜尋"</string>
+     <string name="assistant_key_menu">"選單"</string>
+     <string name="assistant_key_back">"上一頁"</string>
+     <string name="vibrate_hint">"向左滑動可打開震動模式"</string>
+     <string name="battery_overtage_title">"安全性警告"</string>
+     <string name="battery_overtage_content">"充電電壓過高！"</string>
+     <string name="battery_overtage_back">"上一頁"</string>
+
 </resources>

@@ -23,6 +23,8 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
 import android.util.ArraySet;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -33,6 +35,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.android.ims.ImsManager;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 import com.android.systemui.statusbar.policy.NetworkController.IconState;
@@ -40,7 +43,8 @@ import com.android.systemui.statusbar.policy.NetworkControllerImpl;
 import com.android.systemui.statusbar.policy.SecurityController;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.tuner.TunerService.Tunable;
-
+import com.android.systemui.statusbar.policy.SystemUIPluginsHelper;
+import com.android.systemui.SystemUiConfig;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,19 +73,38 @@ public class SignalClusterView
     private boolean mWifiVisible = false;
     private int mWifiStrengthId = 0;
     private int mLastWifiStrengthId = -1;
+    /* SPRD: Add VoLte icon for bug 509601. @{ */
+    private final boolean mIsSupportVolte = ImsManager.isVolteEnabledByPlatform(mContext);
+    private boolean mVolteVisible = false;
+    private int mVolteIconId = 0;
+    private int mLastVolteIconId = -1;
+    private int mImsRegisterPhoneId = -1;
+    /* @} */
+    /* SPRD: Add HD audio icon in cucc for bug 536924. @{ */
+    private Drawable mHdVoiceDraw;
+    private boolean mHdVoiceVisible = false;
+    /* @} */
+    // SPRD: Reliance UI spec 1.7. See bug #522899.
+    private boolean isRelianceBoard = SystemUIPluginsHelper.getInstance().isReliance();
     private boolean mIsAirplaneMode = false;
     private int mAirplaneIconId = 0;
     private int mLastAirplaneIconId = -1;
     private String mAirplaneContentDescription;
     private String mWifiDescription;
     private String mEthernetDescription;
+
     private ArrayList<PhoneState> mPhoneStates = new ArrayList<PhoneState>();
     private int mIconTint = Color.WHITE;
     private float mDarkIntensity;
 
     ViewGroup mEthernetGroup, mWifiGroup;
     View mNoSimsCombo;
-    ImageView mVpn, mEthernet, mWifi, mAirplane, mNoSims, mEthernetDark, mWifiDark, mNoSimsDark;
+    // SPRD: Add VoLte icon for bug 509601.
+    // SPRD: Add HD audio icon in cucc for bug 536924.
+    ImageView mVpn, mEthernet, mWifi, mVolte, mHdVoice, mAirplane, mNoSims, mEthernetDark,
+            mWifiDark, mNoSimsDark;
+    // SPRD: add for bug 523383
+    View mEthernetSpacer;
     View mWifiAirplaneSpacer;
     View mWifiSignalSpacer;
     LinearLayout mMobileSignalGroup;
@@ -95,6 +118,9 @@ public class SignalClusterView
     private boolean mBlockMobile;
     private boolean mBlockWifi;
     private boolean mBlockEthernet;
+
+    ImageView mWifiOut, mWifiIn;
+    private boolean isWifiIn, isWifiOut;
 
     public SignalClusterView(Context context) {
         this(context, null);
@@ -167,13 +193,21 @@ public class SignalClusterView
         mWifiGroup      = (ViewGroup) findViewById(R.id.wifi_combo);
         mWifi           = (ImageView) findViewById(R.id.wifi_signal);
         mWifiDark       = (ImageView) findViewById(R.id.wifi_signal_dark);
+        mWifiIn = (ImageView) findViewById(R.id.wifi_in);
+        mWifiOut = (ImageView) findViewById(R.id.wifi_out);
         mAirplane       = (ImageView) findViewById(R.id.airplane);
         mNoSims         = (ImageView) findViewById(R.id.no_sims);
         mNoSimsDark     = (ImageView) findViewById(R.id.no_sims_dark);
         mNoSimsCombo    =             findViewById(R.id.no_sims_combo);
+        // SPRD: add for bug 523383
+        mEthernetSpacer =             findViewById(R.id.ethernet_spacer);
         mWifiAirplaneSpacer =         findViewById(R.id.wifi_airplane_spacer);
         mWifiSignalSpacer =           findViewById(R.id.wifi_signal_spacer);
-        mMobileSignalGroup = (LinearLayout) findViewById(R.id.mobile_signal_group);
+        // SPRD: Add VoLte icon for bug 509601.
+        mVolte          = (ImageView) findViewById(R.id.volte);
+        // SPRD: Add HD audio icon in cucc for bug 536924.
+        mHdVoice        = (ImageView) findViewById(R.id.hd_voice);
+        mMobileSignalGroup = (LinearLayout) findViewById(R.id.mobile_signal_group_ex);
         for (PhoneState state : mPhoneStates) {
             mMobileSignalGroup.addView(state.mMobileGroup);
         }
@@ -190,7 +224,13 @@ public class SignalClusterView
         mEthernet       = null;
         mWifiGroup      = null;
         mWifi           = null;
+        mWifiOut = null;
+        mWifiIn = null;
         mAirplane       = null;
+        // SPRD: Add VoLte icon for bug 509601.
+        mVolte          = null;
+        // SPRD: Add HD audio icon in cucc for bug 536924.
+        mHdVoice        = null;
         mMobileSignalGroup.removeAllViews();
         mMobileSignalGroup = null;
         TunerService.get(mContext).removeTunable(this);
@@ -216,9 +256,29 @@ public class SignalClusterView
         mWifiVisible = statusIcon.visible && !mBlockWifi;
         mWifiStrengthId = statusIcon.icon;
         mWifiDescription = statusIcon.contentDescription;
+        isWifiIn = activityIn;
+        isWifiOut = activityOut;
 
         apply();
     }
+
+    /* SPRD: Add VoLte icon for bug 509601. @{ */
+    public void setVoLteIndicators(boolean enabled) {
+        // SPRD: Reliance UI spec 1.7. See bug #522899.
+        mVolteIconId = enabled ? SystemUIPluginsHelper.getInstance().getVoLTEIcon() : 0;
+        mImsRegisterPhoneId = TelephonyManager.from(mContext).getPrimaryCard();
+        apply();
+    }
+    /* @} */
+
+    /* SPRD: Add HD audio icon in cucc for bug 536924. @{ */
+    public void setHdVoiceIndicators(boolean enabled) {
+        mHdVoiceDraw = enabled ? SystemUIPluginsHelper.getInstance().getHdVoiceDraw() : null;
+        mHdVoiceVisible = enabled;
+        mImsRegisterPhoneId = TelephonyManager.from(mContext).getPrimaryCard();
+        apply();
+    }
+    /* @} */
 
     @Override
     public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
@@ -234,9 +294,62 @@ public class SignalClusterView
         state.mMobileDescription = statusIcon.contentDescription;
         state.mMobileTypeDescription = typeContentDescription;
         state.mIsMobileTypeIconWide = statusType != 0 && isWide;
-
+        state.mActivityIn = activityIn;
+        state.mActivityOut = activityOut;
         apply();
     }
+
+    /* SPRD: modify by BUG 491086 ; modify by BUG 517092, add roamIcon @{ */
+    @Override
+    public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+            int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
+            String description, boolean isWide, int subId, boolean dataConnect, int colorScheme,
+            int roamIcon) {
+        PhoneState state = getState(subId);
+        if (state == null) {
+            return;
+        }
+        state.mMobileVisible = statusIcon.visible && !mBlockMobile;
+        state.mMobileStrengthId = statusIcon.icon;
+        state.mMobileTypeId = statusType;
+        state.mMobileRoamId = roamIcon;
+        state.mMobileDescription = statusIcon.contentDescription;
+        state.mMobileTypeDescription = typeContentDescription;
+        state.mIsMobileTypeIconWide = statusType != 0 && isWide;
+        state.mActivityIn = activityIn;
+        state.mActivityOut = activityOut;
+        state.mDataConnect = dataConnect;
+        state.mSignalColor = colorScheme;
+        apply();
+    }
+    /* @} */
+
+    /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+    @Override
+    public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+            int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
+            String description, boolean isWide, int subId, boolean dataConnect, int colorScheme,
+            int roamIcon, int imsregIcon, boolean isFourG) {
+        PhoneState state = getState(subId);
+        if (state == null) {
+            return;
+        }
+        state.mMobileVisible = statusIcon.visible && !mBlockMobile;
+        state.mMobileStrengthId = statusIcon.icon;
+        state.mMobileTypeId = statusType;
+        state.mMobileRoamId = roamIcon;
+        state.mMobileImsregId = imsregIcon;
+        state.isFourGLTE = isFourG;
+        state.mMobileDescription = statusIcon.contentDescription;
+        state.mMobileTypeDescription = typeContentDescription;
+        state.mIsMobileTypeIconWide = statusType != 0 && isWide;
+        state.mActivityIn = activityIn;
+        state.mActivityOut = activityOut;
+        state.mDataConnect = dataConnect;
+        state.mSignalColor = colorScheme;
+        apply();
+    }
+    /* @} */
 
     @Override
     public void setEthernetIndicators(IconState state) {
@@ -254,22 +367,84 @@ public class SignalClusterView
 
     @Override
     public void setSubs(List<SubscriptionInfo> subs) {
-        if (hasCorrectSubs(subs)) {
+        // SPRD : Modify for bug 516021
+        if (hasCorrectSubs(subs) && subs.size() != 0) {
             return;
         }
+        /* SPRD: Bug 474688 Add for SIM hot plug feature @{ */
+        int validSimCount = 0;
+        int activeSubSize = subs.size();
+        boolean isHotSwapSupported = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_hotswapCapable);
+        ArrayList<PhoneState> phoneStates = new ArrayList<PhoneState>(mPhoneStates);
+        for(PhoneState state : mPhoneStates) {
+            if(SubscriptionManager.isValidSubscriptionId(state.mSubId)) {
+                validSimCount ++;
+            }
+        }
+        Log.d(TAG,"validSimCount = " + validSimCount + ", subs.size = " + activeSubSize);
+        if(isHotSwapSupported && validSimCount > 1 && activeSubSize == 0){
+            Log.e(TAG,"invalid state, do nothing and return");
+            return;
+        }
+        boolean simCountChange = !(validSimCount == activeSubSize);
+        /* @} */
         // Clear out all old subIds.
         mPhoneStates.clear();
         if (mMobileSignalGroup != null) {
             mMobileSignalGroup.removeAllViews();
         }
-        final int n = subs.size();
+        /* SPRD: modify by bug474984 @{ */
+        final int n = TelephonyManager.from(mContext).getPhoneCount();
         for (int i = 0; i < n; i++) {
-            inflatePhoneState(subs.get(i).getSubscriptionId());
+            SubscriptionInfo subInfo = findRecordByPhoneId(subs, i);
+            int subId = subInfo != null ? subInfo.getSubscriptionId()
+                    : SubscriptionManager.INVALID_SUBSCRIPTION_ID - i;
+            /* SPRD: Bug 474688 Add for SIM hot plug feature @{ */
+            PhoneState lastState = null ;
+            if(SubscriptionManager.isValidSubscriptionId(subId)) {
+                for(PhoneState state : phoneStates) {
+                    if(SubscriptionManager.isValidSubscriptionId(state.mSubId) && state.mSubId == subId) {
+                        lastState = state;
+                        break;
+                    }
+                }
+            }
+            if(isHotSwapSupported && simCountChange && lastState != null) {
+                if (mMobileSignalGroup != null) {
+                    mMobileSignalGroup.addView(lastState.mMobileGroup);
+                }
+                mPhoneStates.add(lastState);
+            } else {
+                lastState = inflatePhoneState(subId);
+                /* SPRD: display systemui with sim color. {@ */
+                if (lastState.mColorSimEnabled && subInfo != null) {
+                    lastState.mSignalColor = subInfo.getIconTint();
+                }
+                /* @} */
+            }
+            /* @} */
         }
+        /* @} */
         if (isAttachedToWindow()) {
             applyIconTint();
         }
     }
+
+    /* SPRD: modify by bug474984 @{ */
+    private SubscriptionInfo findRecordByPhoneId(List<SubscriptionInfo> subs, int phoneId) {
+        if (subs != null) {
+            final int length = subs.size();
+            for (int i=0 ;i <length ; i++ ) {
+                final SubscriptionInfo sir = subs.get(i);
+                if (sir.getSimSlotIndex() == phoneId) {
+                    return sir;
+                }
+            }
+        }
+        return null;
+    }
+    /* @} */
 
     private boolean hasCorrectSubs(List<SubscriptionInfo> subs) {
         final int N = subs.size();
@@ -348,6 +523,19 @@ public class SignalClusterView
             mLastWifiStrengthId = -1;
         }
 
+        /* SPRD: Add VoLte icon for bug 509601. @{ */
+        if (mVolte != null) {
+            mVolte.setImageDrawable(null);
+            mLastVolteIconId = -1;
+        }
+        /* @} */
+
+        /* SPRD: Add HD audio icon in cucc for bug 536924. @{ */
+        if (mHdVoice != null) {
+            mHdVoice.setImageDrawable(null);
+        }
+        /* @} */
+
         for (PhoneState state : mPhoneStates) {
             if (state.mMobile != null) {
                 state.mMobile.setImageDrawable(null);
@@ -355,6 +543,16 @@ public class SignalClusterView
             if (state.mMobileType != null) {
                 state.mMobileType.setImageDrawable(null);
             }
+            /* SPRD: add for bug 517092 @{ */
+            if (state.mMobileRoam != null) {
+                state.mMobileRoam.setImageDrawable(null);
+            }
+            /* @} */
+            /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+            if (state.mMobileImsreg != null) {
+                state.mMobileImsreg.setImageDrawable(null);
+            }
+            /* @} */
         }
 
         if (mAirplane != null) {
@@ -385,8 +583,12 @@ public class SignalClusterView
             }
             mEthernetGroup.setContentDescription(mEthernetDescription);
             mEthernetGroup.setVisibility(View.VISIBLE);
+            // SPRD: add for bug 523383
+            mEthernetSpacer.setVisibility(View.VISIBLE);
         } else {
             mEthernetGroup.setVisibility(View.GONE);
+            // SPRD: add for bug 523383
+            mEthernetSpacer.setVisibility(View.GONE);
         }
 
         if (DEBUG) Log.d(TAG,
@@ -395,6 +597,9 @@ public class SignalClusterView
 
 
         if (mWifiVisible) {
+            mWifiIn.setVisibility(isWifiIn ? View.VISIBLE : View.INVISIBLE);
+            mWifiOut.setVisibility(isWifiOut ? View.VISIBLE
+                    : View.INVISIBLE);
             if (mWifiStrengthId != mLastWifiStrengthId) {
                 mWifi.setImageResource(mWifiStrengthId);
                 mWifiDark.setImageResource(mWifiStrengthId);
@@ -422,6 +627,28 @@ public class SignalClusterView
             }
         }
 
+        /* SPRD: Add VoLte icon for bug 509601. @{ */
+        mVolteVisible = mIsSupportVolte;
+        if (mVolteVisible && !mIsAirplaneMode && mVolteIconId != 0) {
+            if (mLastVolteIconId != mVolteIconId) {
+                mVolte.setImageResource(mVolteIconId);
+                mLastVolteIconId = mVolteIconId;
+            }
+            mVolte.setVisibility(View.VISIBLE);
+        } else {
+            mVolte.setVisibility(View.GONE);
+        }
+        /* @} */
+
+        /* SPRD: Add HD audio icon in cucc for bug 536924. @{ */
+        if (mHdVoiceVisible && !mIsAirplaneMode && mHdVoiceDraw != null) {
+            mHdVoice.setImageDrawable(mHdVoiceDraw);
+            mHdVoice.setVisibility(View.VISIBLE);
+        } else {
+            mHdVoice.setVisibility(View.GONE);
+        }
+        /* @} */
+
         if (mIsAirplaneMode) {
             if (mLastAirplaneIconId != mAirplaneIconId) {
                 mAirplane.setImageResource(mAirplaneIconId);
@@ -445,7 +672,7 @@ public class SignalClusterView
             mWifiSignalSpacer.setVisibility(View.GONE);
         }
 
-        mNoSimsCombo.setVisibility(mNoSimsVisible ? View.VISIBLE : View.GONE);
+        mNoSimsCombo.setVisibility(View.GONE);
 
         boolean anythingVisible = mNoSimsVisible || mWifiVisible || mIsAirplaneMode
                 || anyMobileVisible || mVpnVisible || mEthernetVisible;
@@ -481,33 +708,99 @@ public class SignalClusterView
         v.setImageTintList(ColorStateList.valueOf(tint));
     }
 
+    /* SPRD: modify for bug495410 @{ */
+    @Override
+    public void setDeactiveIcon(int subId) {
+        for (PhoneState state: mPhoneStates) {
+            if (state.mSubId == subId) {
+                state.setDeactiveIcon();
+                break;
+            }
+        }
+    }
+    /* @} */
+
+    /* SPRD: modify by bug474984 @{ */
     private class PhoneState {
         private final int mSubId;
-        private boolean mMobileVisible = false;
-        private int mMobileStrengthId = 0, mMobileTypeId = 0;
+        private boolean mMobileVisible = true;
+        private int mMobileStrengthId = SystemUIPluginsHelper.getInstance().getNoSimIconId();
+        // SPRD: Reliance UI spec 1.7. See bug #522899.
+        private int mViewGroupLayout = SystemUIPluginsHelper.getInstance().getMobileGroupLayout();
+        // SPRD: modify for bug 517092
+        // SPRD: Reliance UI spec 1.7. See bug #522899.
+        private int mMobileTypeId = 0, mMobileDataInOutId = 0, mMobileCardId = 0,
+                mMobileRoamId = 0, mMobileImsregId = 0;
         private boolean mIsMobileTypeIconWide;
+        // SPRD: Reliance UI spec 1.7. See bug #522899.
+        private boolean isFourGLTE;
         private String mMobileDescription, mMobileTypeDescription;
+        private boolean mDataConnect;
+        // SPRD: modify for bug495410
+        private TelephonyManager mTelephonyManager;
 
         private ViewGroup mMobileGroup;
-        private ImageView mMobile, mMobileDark, mMobileType;
+        // SPRD: modify for bug 517092
+        // SPRD: Reliance UI spec 1.7. See bug #522899.
+        private ImageView mMobile, mMobileDark, mMobileDataInOut, mMobileType,
+                mMobileCard, mMobileRoam, mMobileImsreg;
+        private boolean mColorfulMobileSignal, mActivityIn, mActivityOut;
+        // SPRD: modify by BUG 494698
+        private int mSignalColor, mPreSignalColor = SystemUIPluginsHelper.ABSENT_SIM_COLOR;
+        private boolean mColorSimEnabled;
+        private SystemUiConfig mSystemUiConfig;
 
         public PhoneState(int subId, Context context) {
+            Log.d(TAG, "Create PhoneState subId = " + subId);
+            // SPRD: Reliance UI spec 1.7. See bug #522899.
             ViewGroup root = (ViewGroup) LayoutInflater.from(context)
-                    .inflate(R.layout.mobile_signal_group, null);
+                    .inflate(mViewGroupLayout, null);
             setViews(root);
             mSubId = subId;
+            mMobileCardId = SystemUIPluginsHelper.getInstance().getSimCardIconId(subId);
+            mColorfulMobileSignal = getResources().getBoolean(R.bool.enable_signal_strenth_color);
+            // SPRD: modify for bug495410
+            mTelephonyManager = TelephonyManager.from(context);
+            /* SPRD: display systemui with sim color {@ */
+            mSystemUiConfig = SystemUiConfig.getInstance(context);
+            mColorSimEnabled = mSystemUiConfig.shouldShowColorfulSystemUI();
+            /* @} */
         }
 
         public void setViews(ViewGroup root) {
             mMobileGroup    = root;
             mMobile         = (ImageView) root.findViewById(R.id.mobile_signal);
+            mMobileDataInOut = (ImageView) root.findViewById(R.id.mobile_data_in_out);
             mMobileDark     = (ImageView) root.findViewById(R.id.mobile_signal_dark);
             mMobileType     = (ImageView) root.findViewById(R.id.mobile_type);
+            mMobileCard     = (ImageView) root.findViewById(R.id.mobile_card);
+            // SPRD: modify for bug 517092
+            mMobileRoam     = (ImageView) root.findViewById(R.id.mobile_roam_type);
+            // SPRD: Reliance UI spec 1.7. See bug #522899.
+            mMobileImsreg   = (ImageView) root.findViewById(R.id.mobile_imsreg);
         }
 
         public boolean apply(boolean isSecondaryIcon) {
             if (mMobileVisible && !mIsAirplaneMode) {
+                // SPRD: modify for bug495410
+                updateStandbyIcon();
                 mMobile.setImageResource(mMobileStrengthId);
+                if (mColorfulMobileSignal) {
+                    /* SPRD: Add for SimSignal color change follow sim color @{ */
+                    if (mColorSimEnabled &&
+                            mPreSignalColor != mSignalColor) {
+                        Log.d(TAG, String.format("apply color for sub%d, 0x%08x -> 0x%08x",
+                                    mSubId, mPreSignalColor, mSignalColor));
+                        mPreSignalColor = mSignalColor;
+                        mMobile.setColorFilter(mPreSignalColor);
+                        /* SPRD: modify by BUG 474976 @{ */
+                        mMobileCard.setColorFilter(mSignalColor);
+                        mMobileType.setColorFilter(mSignalColor);
+                        mMobileDataInOut.setColorFilter(mSignalColor);
+                        /* @} */
+                    }
+                    /* @} */
+                }
                 Drawable mobileDrawable = mMobile.getDrawable();
                 if (mobileDrawable instanceof Animatable) {
                     Animatable ad = (Animatable) mobileDrawable;
@@ -525,7 +818,43 @@ public class SignalClusterView
                     }
                 }
 
+                // SPRD: modify by BUG 474976
+                mMobileCard.setImageResource(mMobileCardId);
                 mMobileType.setImageResource(mMobileTypeId);
+                /* SPRD: modify by BUG 491086 @{ */
+                /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+                if (mDataConnect) {
+                    if (mActivityIn && mActivityOut) {
+                        mMobileDataInOutId = SystemUIPluginsHelper.getInstance().getDataInOutIcon();
+                    } else if (mActivityIn) {
+                        mMobileDataInOutId = SystemUIPluginsHelper.getInstance().getDataInIcon();
+                    } else if (mActivityOut) {
+                        mMobileDataInOutId = SystemUIPluginsHelper.getInstance().getDataOutIcon();
+                    } else {
+                        mMobileDataInOutId = SystemUIPluginsHelper.getInstance()
+                                .getDataDefaultIcon();
+                    }
+                } else {
+                    mMobileDataInOutId = 0;
+                }
+                /* @} */
+                /* @} */
+
+                // SPRD: modify for bug 517092
+                /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+                if (isRelianceBoard && mMobileImsregId != 0 && mMobileRoamId == 0) {
+                    mMobileRoam.setImageResource(mMobileImsregId);
+                } else if (isRelianceBoard && mMobileRoamId == 0 && !isFourGLTE
+                        && mMobileTypeId != 0
+                        && mMobileDataInOutId == 0) {
+                    mMobileRoam.setImageResource(mMobileTypeId);
+                } else {
+                    mMobileRoam.setImageResource(mMobileRoamId);
+                }
+                /* @} */
+
+                mMobileDataInOut.setImageResource(mMobileDataInOutId);
+
                 mMobileGroup.setContentDescription(mMobileTypeDescription
                         + " " + mMobileDescription);
                 mMobileGroup.setVisibility(View.VISIBLE);
@@ -538,14 +867,29 @@ public class SignalClusterView
                     0, 0, 0);
             mMobile.setPaddingRelative(mIsMobileTypeIconWide ? mWideTypeIconStartPadding : 0,
                     0, 0, 0);
-            mMobileDark.setPaddingRelative(mIsMobileTypeIconWide ? mWideTypeIconStartPadding : 0,
-                    0, 0, 0);
 
             if (DEBUG) Log.d(TAG, String.format("mobile: %s sig=%d typ=%d",
                         (mMobileVisible ? "VISIBLE" : "GONE"), mMobileStrengthId, mMobileTypeId));
 
-            mMobileType.setVisibility(mMobileTypeId != 0 ? View.VISIBLE : View.GONE);
-
+            /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+            if (isRelianceBoard && mMobileRoamId == 0 && mMobileImsregId != 0) {
+                mMobileType.setVisibility(mMobileTypeId != 0 ? View.VISIBLE : View.GONE);
+                mMobileRoam.setVisibility(View.VISIBLE);
+            } else if (isRelianceBoard && mMobileRoamId == 0 && !isFourGLTE && mMobileTypeId != 0
+                    && mMobileDataInOutId == 0) {
+                mMobileType.setVisibility(View.GONE);
+                mMobileRoam.setVisibility(View.VISIBLE);
+            } else {
+                mMobileType.setVisibility(mMobileTypeId != 0 ? View.VISIBLE : View.GONE);
+                // SPRD: add for bug 517092
+                mMobileRoam.setVisibility(mMobileRoamId != 0 ? View.VISIBLE : View.GONE);
+            }
+            /* @} */
+            mMobileCard.setVisibility(mMobileCardId != 0 ? View.VISIBLE : View.GONE);
+            mMobileDark.setPaddingRelative(mIsMobileTypeIconWide ? mWideTypeIconStartPadding : 0,
+                    0, 0, 0);
+            mMobileDark.setVisibility(View.GONE);
+            mMobileDataInOut.setVisibility(mMobileTypeId != 0 ? View.VISIBLE : View.GONE);
             return mMobileVisible;
         }
 
@@ -556,10 +900,68 @@ public class SignalClusterView
             }
         }
 
+        /* SPRD: modify for bug495410 @{ */
+        public void setDeactiveIcon() {
+            int phoneId = SubscriptionManager.getPhoneId(mSubId);
+            if (!mTelephonyManager.isSimStandby(phoneId)) {
+                mMobileStrengthId = SystemUIPluginsHelper.getInstance().getSimStandbyIconId();
+                mMobile.setColorFilter(null);
+                /* SPRD: modify for bug474987 @{ */
+                mPreSignalColor = -1;
+                mSignalColor = -1;
+                /* @} */
+                apply(false);
+            }
+        }
+
+        private void updateStandbyIcon() {
+            int phoneId = SubscriptionManager.getPhoneId(mSubId);
+            if (mTelephonyManager.isSimStandby(phoneId)
+                    && mMobileStrengthId == SystemUIPluginsHelper
+                    .getInstance().getSimStandbyIconId()) {
+                mMobileStrengthId = SystemUIPluginsHelper.getInstance().getNoServiceIconId();
+                apply(false);
+            }
+        }
+        /* @} */
+
         public void setIconTint(int tint, float darkIntensity) {
-            applyDarkIntensity(darkIntensity, mMobile, mMobileDark);
+            /* SPRD: Add for bug 560985. @{ */
+            // applyDarkIntensity(darkIntensity, mMobile, mMobileDark);
             setTint(mMobileType, tint);
+            setTint(mMobile, tint);
+            setTint(mMobileDataInOut, tint);
+            setTint(mMobileCard, tint);
+            setTint(mMobileRoam, tint);
+            /* @} */
         }
     }
-}
+    /* @} */
 
+    /* SPRD: Add for SimSignal color change follow sim color @{ */
+    @Override
+    public void setSimSignalColor(int subId, int simColor) {
+        PhoneState state = getState(subId);
+        if (state != null) {
+            state.mSignalColor = simColor;
+            state.mMobile.setColorFilter(simColor);
+        }
+    }
+    /* @} */
+
+    /* SPRD: modify by BUG 549167 @{ */
+    @Override
+    public void refreshIconsIfSimAbsent(int phoneId) {
+        int primaryCard = TelephonyManager.from(mContext).getPrimaryCard();
+        Log.d(TAG, "refreshIconsIfSimAbsent phoneId : " + phoneId + "; mImsRegisterPhoneId : "
+                + mImsRegisterPhoneId);
+        if (phoneId == mImsRegisterPhoneId) {
+            mHdVoiceDraw = null;
+            mHdVoiceVisible = false;
+            mVolteIconId = 0;
+            mHdVoice.setVisibility(View.GONE);
+            mVolte.setVisibility(View.GONE);
+        }
+    }
+    /* @} */
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="action_use_network">"ଯେଉଁ ଭଳି ଅଛି ସେହି ଭଳି ଏହି ନେଟୱର୍କକୁ ବ୍ୟବହାର କରନ୍ତୁ"</string>
+<string name="action_do_not_use_network">"ଏହି ନେଟୱର୍କକୁ ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ"</string>
+<string name="action_bar_label">"ନେଟୱର୍କରେ ସାଇନିନ କରନ୍ତୁ"</string>
+<string name="ssl_error_warning">"ଆପଣ ଯୋଗ ଦେବାକୁ ଚେଷ୍ଟା କରୁଥିବା ନେଟୱର୍କରେ ନିରାପତ୍ତା ମାମଲା ରହିଛି ।"</string>
+<string name="ssl_error_example">"ଉଦାହରଣ ସ୍ୱରୂପ, ଲଗଇନ ପୃଷ୍ଠା ଦେଖାଉଥିବା ସଂଗଠିତ ସଂସ୍ଥାର ନହୋଇ ଥାଇପାରେ ।"</string>
+<string name="ssl_error_continue">"ବ୍ରାଉଜର ଜରିଆରେ ଯେକୌଣସି ମତେ ଚାଲୁ ରଖନ୍ତୁ"</string>
+</resources>

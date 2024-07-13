@@ -158,8 +158,8 @@ public abstract class ActivatableNotificationView extends ExpandableOutlineView 
         super.onFinishInflate();
         mBackgroundNormal = (NotificationBackgroundView) findViewById(R.id.backgroundNormal);
         mBackgroundDimmed = (NotificationBackgroundView) findViewById(R.id.backgroundDimmed);
-        mBackgroundNormal.setCustomBackground(R.drawable.notification_material_bg);
-        mBackgroundDimmed.setCustomBackground(R.drawable.notification_material_bg_dim);
+        mBackgroundNormal.setCustomBackground(R.drawable.notification_material_bg_btn);
+        mBackgroundDimmed.setCustomBackground(R.drawable.notification_material_bg_dim_btn);
         updateBackground();
         updateBackgroundTint();
     }

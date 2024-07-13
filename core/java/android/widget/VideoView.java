@@ -116,6 +116,9 @@ public class VideoView extends SurfaceView
     /** Listener for changes to subtitle data, used to redraw when needed. */
     private RenderingWidget.OnChangedListener mSubtitlesChangedListener;
 
+    //SPRD:bug 506989 Add Drm feature
+    private boolean mNeedConsumeDrmRight = true;
+
     public VideoView(Context context) {
         super(context);
         initVideoView();
@@ -348,7 +351,12 @@ public class VideoView extends SurfaceView
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
             mMediaPlayer.prepareAsync();
-
+            /* SPRD:bug 506989 Add Drm feature
+             * we can not consume when video trun to background.
+             @{ */
+            Log.d(TAG,"if need consume " + mNeedConsumeDrmRight);
+            mMediaPlayer.setNeedToConsume(mNeedConsumeDrmRight);
+            /** @} */
             for (Pair<InputStream, MediaFormat> pending: mPendingSubtitleTracks) {
                 try {
                     mMediaPlayer.addSubtitleSource(pending.first, pending.second);
@@ -374,6 +382,14 @@ public class VideoView extends SurfaceView
             mTargetState = STATE_ERROR;
             mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
             return;
+         // SPRD:modify for bug534484:play videos in message attachment and kill the message process,the gallery3d crashes @{
+        } catch (Exception ex) {
+            Log.w(TAG, "Unknow exception" + mUri, ex);
+            mCurrentState = STATE_ERROR;
+            mTargetState = STATE_ERROR;
+            mErrorListener.onError(mMediaPlayer, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            return;
+          //@}
         } finally {
             mPendingSubtitleTracks.clear();
         }
@@ -737,6 +753,14 @@ public class VideoView extends SurfaceView
 
     public void suspend() {
         release(false);
+    }
+   /**SPRD:bug Add 506989 Drm feature
+     *When press home key in video when playing a drm file,
+     *right should not be consumed. So a new release method is
+     *added with a parameter to indicate consume or not.
+     */
+    public void setNeedToConsume(boolean needConsume) {
+        mNeedConsumeDrmRight = needConsume;
     }
 
     public void resume() {

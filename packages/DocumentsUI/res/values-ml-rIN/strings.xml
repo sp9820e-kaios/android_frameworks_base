@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"വിശദാംശങ്ങൾ കാണാൻ സ്‌പർശിക്കുക"</string>
     <string name="retry" msgid="7564024179122207376">"വീണ്ടും ശ്രമിക്കുക"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"ഈ ഫയലുകൾ പകർത്താനായില്ല: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ഫയല്‍ ഷെയര്‍ ചെയ്യാനാവില്ല"</string>
+     <string name="documents_deleting">"ഡോക്കുമെന്‍റുകള്‍ ഡീലീറ്റ് ചെയ്യുന്നു"</string>
+     <string name="cannot_copyfolder_itself">"നിങ്ങളള്‍ക്ക് ഫോള്‍ഡര്‍ അതിലേക്ക് തന്നെ പകര്‍ത്താനാവില്ല"</string>
+     <string name="menu_deselect_all">"എല്ലാ തെരഞ്ഞെടുപ്പും ഒഴിവാക്കുക"</string>
+    <string name="error_permissions">"പ്രവർത്തിക്കുന്നതിന് ആവശ്യമായ സുപ്രധാന അനുമതികൾ ആപ്പിനില്ല. നിങ്ങളുടെ അനുമതി ക്രമീകരണം പരിശോധിക്കുക."</string>
+     <string name="cannot_copy_drm">"DRM ഫയലുകൾ പകര്‍ത്താനാവില്ല"</string>
+     <string name="cannot_copy_downloading">"ഡൌൺലോഡിങ്ങ് ഫയലുകൾ പകര്‍ത്താനാവില്ല"</string>
 </resources>

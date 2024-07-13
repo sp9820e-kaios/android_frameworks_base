@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"" Wi-Fi ຮອ໊ດ​ພອ໊ດ​ຕ້ອງ​ເປີດ​ໂມ​ບາຍ​ດາ​ຕາ​ເຊື່ອມ​ຕໍ່ ອາດ​ເຮັດ​ໃຫ້​ມີ​ຄ່າ​ໃຊ້​ຈ່າຍ​ເພີ່ມ" "</string>
+<string name="softap_bt_cannot_coexist">"" ເມື່ອ​ເປີດບ​ລູ​ທູດWi-Fi ຮອ໊ດ​ພອ໊ດ​ຈະ​ບໍ່​ສາ​ມາດ​ໃຊ້​ງານ​ໄດ້ ຫາກ​ທ່ານ​ຕ້ອງ​ການ​ໃຊ້​ງານWi-Fi ຮອ໊ດ​ພອ໊ດ​ ກະ​ລຸ​ນາ​ປິດບ​ລູ​ທູດ​ກ່ອນ" "</string>
+<string name="bt_softap_cannot_coexist">" ເມື່ອ​ເປີດWi-Fi ຮອ໊ດ​ພອ໊ດ​ ບ​ລູ​ທູດ​ຈະ​ບໍ່​ສາ​ມາດ​ໃຊ້​ງານ​ໄດ້ ຫາກ​ຕ້ອງ​ການ​ໃຊ້​ບ​ລູ​ທູດ ກະ​ລຸ​ນາ​ປິດWi-Fi ຮອ໊ດ​ພອ໊ດກ່ອນ"</string>
+<string name="lte_service_error_airplane">"ມື​ຖື​ຂອງ​ທ່ານ​ຢູ່​ໃນ​ສະ​ຖາ​ນະ​ໂໝດ​ເຮືອ​ບິນ ທ່ານບໍ່​ສາ​ມາດ​ໃຊ້​ບໍ​ລິ​ການ 4G"</string>
+<string name="lte_service_error_incall">"ມື​ຖື​ຂອງ​ທ່ານ​ຢູ່​ໃນ​ສະ​ຖາ​ນະການ​ໂທ ທ່ານບໍ່​ສາ​ມາດ​ໃຊ້​ບໍ​ລິ​ການ 4G"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ເປີດ​ໃຊ້​ງານ​ແລ້ວ"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ປິດ​ໃຊ້​ງານ​ແລ້ວ"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ເປີດ​"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ປິດ​"</string>
+<string name="toggle_data_error_airplane">"ມື​ຖື​ຂອງ​ທ່ານ​ຢູ່​ໃນ​ສະ​ຖາ​ນະ​ໂໝດ​ເຮືອ​ບິນ ທ່ານບໍ່​ສາ​ມາດ​ໃຊ້​ບໍ​ລິ​ການໂມ​ບາຍ​ດາ​ຕາ"</string>
+<string name="quick_settings_data_connection_label">"ຂໍ້ມູນ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ດາ​ຕາ​ເປີດ​ແລ້ວ"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ດາ​ຕາ​ປິດ​ແລ້ວ"</string>
+<string name="accessibility_quick_settings_data_on">"ດາ​ຕາ​ເປີດ​"</string>
+<string name="accessibility_quick_settings_data_off">"ດາ​ຕາ​ປິດ"</string>
+<string name="missing_sim_message">"ບໍ່​ມີ​ຊິມ"</string>
+</resources>

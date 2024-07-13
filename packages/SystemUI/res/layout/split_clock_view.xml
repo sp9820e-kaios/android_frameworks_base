@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.StatusBar.Expanded.Clock"
-        android:textSize="@dimen/qs_time_collapsed_size"
+        android:textSize="25px"
         android:importantForAccessibility="no"
         />
 

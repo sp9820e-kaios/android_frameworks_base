@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Přenosný bod hotspot Wi-Fi potrebuje pripojiť mobilné dáta, môžu sa produkovať dodatočné náklady."</string>
+<string name="softap_bt_cannot_coexist">"Keď je aktivovaný alebo keď sa zapína bluetooth, softap nemôže pracovať, pokiaľ chcete použiť softap, prosím, zabezpečte, aby bol bluetooth deaktivovaný."</string>
+<string name="bt_softap_cannot_coexist">"Keď je aktivovaný alebo keď sa zapína softap, bluetooth nemôže pracovať, pokiaľ chcete použiť bluetooth, prosím, zabezpečte, aby bol softap deaktivovaný."</string>
+<string name="lte_service_error_airplane">"Neôžete používať LTE, keď je telefón v lietadlovom režime."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G zapnuté"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G vypnuté"</string>
+<string name="accessibility_quick_settings_lte_on">"4G zapnúť"</string>
+<string name="accessibility_quick_settings_lte_off">"4G vypnúť"</string>
+<string name="toggle_data_error_airplane">"Nemôžete použiť Mobilné dáta, keď je telefón v režime lietadlo."</string>
+<string name="quick_settings_data_connection_label">"Údaje"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Dáta zapnuté"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Dáta vypnuté"</string>
+<string name="accessibility_quick_settings_data_on">"Zapnúť dáta"</string>
+<string name="accessibility_quick_settings_data_off">"Vypnúť dáta"</string>
+<string name="missing_sim_message">"ŽIADNA SIM"</string>
+    <string name="lte_service_error_incall">"Počas hovoru nemôžete zapnúť LTE službu."</string>
+
+</resources>

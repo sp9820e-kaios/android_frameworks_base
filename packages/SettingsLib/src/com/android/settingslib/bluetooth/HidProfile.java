@@ -114,9 +114,20 @@ public final class HidProfile implements LocalBluetoothProfile {
         }
         List<BluetoothDevice> deviceList = mService.getConnectedDevices();
 
-        return !deviceList.isEmpty() && deviceList.get(0).equals(device)
-                ? mService.getConnectionState(device)
-                : BluetoothProfile.STATE_DISCONNECTED;
+        /* SPRD:For bug 386863.Get the connection status of the devices .@{ */
+        if (!deviceList.isEmpty()) {
+            for (int i = 0; i < deviceList.size(); i++) {
+                if (deviceList.get(i).equals(device))
+                    return mService.getConnectionState(device);
+            }
+        }
+
+        return BluetoothProfile.STATE_DISCONNECTED;
+
+        //return !deviceList.isEmpty() && deviceList.get(0).equals(device) ? mService
+        //        .getConnectionState(device)
+        //        : BluetoothProfile.STATE_DISCONNECTED;
+        /* @} */
     }
 
     public boolean isPreferred(BluetoothDevice device) {

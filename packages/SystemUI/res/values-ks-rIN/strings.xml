@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"सिस्टम यूएल"</string>
+<string name="status_bar_clear_all_button">"साफ़"</string>
+<string name="status_bar_recent_remove_item_title">"मोक्लायिव लिस्ट मंज़"</string>
+<string name="status_bar_recent_inspect_item_title">"एप्प ज़ानकारी"</string>
+<string name="status_bar_no_recent_apps">"तुहुन्ज़ ताजः स्क्रीन्स छे येतन यिवान"</string>
+<string name="status_bar_accessibility_dismiss_recents">"मंसूख ताजः एप्पस"</string>
+<plurals name="status_bar_accessibility_recent_apps">
+<item quantity="one">"1 स्क्रीम ओवरव्यू मंज़"</item>
+<item quantity="other">"%d स्क्रीन ओवरव्यू मंज़"</item>
+</plurals>
+<string name="status_bar_no_notifications_title">"कः इत्लात छेनः"</string>
+<string name="status_bar_ongoing_events_title">"चलान"</string>
+<string name="status_bar_latest_events_title">"इत्लात"</string>
+<string name="battery_low_title">"बैटरी छे कम"</string>
+<string name="battery_low_percent_format">"<xliff:g id="percentage">%s</xliff:g> पथ रोज्मुत"</string>
+<string name="battery_low_percent_format_saver_started">""<xliff:g id="percentage">%s</xliff:g> पथ रोर्मुत"</string>
+<string name="invalid_charger">"USB चार्ज गसून छुनः मददकरान. इस्तेमाल कर्यिव खाली सपलायड चार्जर."</string>
+<string name="invalid_charger_title">""USB चार्ज गसून छुनः मददकरान."</string>
+<string name="invalid_charger_text">"इस्तेमाल कर्यिव खाली सपलायड चार्जर.""</string>
+<string name="battery_low_why">"सेटिंग्स"</string>
+<string name="battery_saver_confirmation_title">""येल त्रायिव बैटरी सवेर?" "</string>
+<string name="battery_saver_confirmation_ok">"त्रायिव येल"</string>
+<string name="battery_saver_start_action">"त्रायिव येल बैटरी सवेर"</string>
+<string name="status_bar_settings_settings_button">"सेटिंग्स"</string>
+<string name="status_bar_settings_wifi_button">"Wi-Fi"</string>
+<string name="status_bar_settings_auto_rotation">"ऑटो-रोटेट स्क्रीन""</string>
+<string name="status_bar_settings_mute_label">"म्यूट"</string>
+<string name="status_bar_settings_auto_brightness_label">"ऑटो"</string>
+<string name="status_bar_settings_notifications">"इत्लात"</string>
+<string name="bluetooth_tethered">"ब्लूटूथ तेठेरेड"</string>
+<string name="status_bar_input_method_settings_configure_input_methods">"सेट अप इनपुट तरीकः"</string>
+<string name="status_bar_use_physical_keyboard">"सोबुत कीबोर्ड"</string>
+<string name="usb_device_permission_prompt">"इजाज़त दियिव एप्प <xliff:g id="application">%1$s</xliff:g> USB आलः रसाई खात्र?"</string>
+<string name="usb_accessory_permission_prompt">"इजाज़त दियिव एप्प <xliff:g id="application">%1$s</xliff:g> USB सामान रसाई खात्र?"</string>
+<string name="usb_device_confirm_prompt">"खुलायिव <xliff:g id="activity">%1$s</xliff:g>  येम्सात येह USB आलः आसि जोडिथ?"</string>
+<string name="usb_accessory_confirm_prompt">"खुलायिथ <xliff:g id="activity">%1$s</xliff:g> येम्सात येह USB सामान आसि जोडिथ?"</string>
+<string name="usb_accessory_uri_prompt">"कः एप्प काम छेनः इनस्टॉल करिथ येथ USB सामानस सीत. हेछिव बाकी येथ समानस मुतलिक <xliff:g id="url">%1$s</xliff:g>"</string>
+<string name="title_usb_accessory">"USB सामान"</string>
+<string name="label_view">"विछेव"</string>
+<string name="always_use_device">"इस्तेमाल कर्यिव सियोदय येमी USB आलः खात्र"</string>
+<string name="always_use_accessory">"इस्तेमाल कर्यिव सियोदय येमी USB एक्सेसरी खात्र"</string>
+<string name="usb_debugging_title">"इजाज़त दियेव USB डेबुग्गिंग खात्र?"</string>
+<string name="usb_debugging_message">"कंप्यूटररुक RSA की अँगूठ निशान छु :\n<xliff:g id="fingerprint">%1$s</xliff:g>"</string>
+<string name="usb_debugging_always">"हमेश दियिव इजाज़त येमी कंप्यूटर पेठ"</string>
+<string name="usb_debugging_secondary_user_title">"USB डेबुग्गिंग छेनः इजाज़त"</string>
+<string name="usb_debugging_secondary_user_message">"सारिफ येम विन्केन सिग्न आसि कोर्मुत येथ आलःस मंज़ हकिनः येल करविथ USB डेबुग्गिंग. येह खसूसियत इस्तेमाल करनाः खात्र, स्विच त्रविएर गोद्निकिस यूजरस \u201C<xliff:g id="name" example="John Doe">%s</xliff:g>\u201D."</string>
+<string name="compat_mode_on">"ज़ूम कर्यिव स्क्रीन बरनह खात्र"</string>
+<string name="compat_mode_off">"खलरायिव स्क्रीन बरनह खात्र"</string>
+<string name="screenshot_saving_ticker">"मह्फोज़ करान स्क्रीनशॉट..."</string>
+<string name="screenshot_saving_title">"मह्फोज़ करान स्क्रीनशॉट..."</string>
+<string name="screenshot_saving_text">"स्क्रीनशॉट आव महफूज़ करनाः."</string>
+<string name="screenshot_saved_title">"स्क्रीनशॉट आव तुल्नः"</string>
+<string name="screenshot_saved_text">""पन्नुन स्क्रीनशॉट विछनः खात्र कर्यिव जीर." "</string>
+<string name="screenshot_failed_title">"हकि नः तुलिथ स्क्रीन शॉट."</string>
+<string name="screenshot_failed_text">"हकि नः तुलिथ स्क्रीन शॉट कुशादगी काम आसनः केन, या येह छुनः इजाज़त एप्पह या तुहुन्ज़ी तन्ज़ेमी."</string>
+<string name="usb_preference_title">"USB फाइल तब्दील मुत्बादिल"</string>
+<string name="use_mtp_button_title">"लगायेव मीडिया प्लेयर हियुव (MTP)"</string>
+<string name="use_ptp_button_title">"लगायेव कैमरा हियुव (PTP)"</string>
+<string name="installer_cd_button_title">"इनस्टॉल कर्येव एंड्राइड फाइल ट्रान्सफर एप्प मैक खात्र"</string>
+<string name="accessibility_back">"पथ"</string>
+<string name="accessibility_home">"गर्रह"</string>
+<string name="accessibility_menu">"मेनू"</string>
+<string name="accessibility_recent">"ओवर व्यू"</string>
+<string name="accessibility_search_light">"छाडिव"</string>
+<string name="accessibility_camera_button">"कैमरा"</string>
+<string name="accessibility_phone_button">"फ़ोन"</string>
+<string name="accessibility_voice_assist_button">"आवाज़ मदद"</string>
+<string name="accessibility_unlock_button">"येल्लह"</string>
+<string name="accessibility_unlock_button_fingerprint">"अनलॉक बटन, अँगूठ निशानस करान इन्तिज़ार"</string>
+<string name="accessibility_unlock_without_fingerprint">"अनलॉक कर्येव पन्नेन अँगूठ निशान इस्तेमाल करनः ब्रोंठ"</string>
+<string name="unlock_label">"येल्लह"</string>
+<string name="phone_label">"खुलायेव फ़ोन"</string>
+<string name="voice_assist_label">"खुलायेव आवाज़ मदद"</string>
+<string name="camera_label">"खालायेव कैमरा"</string>
+<string name="recents_caption_resize">"चुनिव नव कअम लेआउट"</string>
+<string name="cancel">"ख़ारिज"</string>
+<string name="accessibility_compatibility_zoom_button">"अमि मुताबिक ज़ूम बटन."</string>
+<string name="accessibility_compatibility_zoom_example">"ज़ूम कर्येव कम बजह स्क्रीन खात्र."</string>
+<string name="accessibility_bluetooth_connected">"ब्लूटूथ आव जोड़नः."</string>
+<string name="accessibility_bluetooth_disconnected">"ब्लूटूथ आव मुन्कतः करनः."</string>
+<string name="accessibility_no_battery">"बैटरी छेनः."</string>
+<string name="accessibility_battery_one_bar">"बैटरी अख बार."</string>
+<string name="accessibility_battery_two_bars">"बैटरी ज़ह बार्स."</string>
+<string name="accessibility_battery_three_bars">"बैटरी तरे बार्स."</string>
+<string name="accessibility_battery_full">"बैटरी फुल."</string>
+<string name="accessibility_no_phone">"फ़ोन छुनः."</string>
+<string name="accessibility_phone_one_bar">"फ़ोन अख बार."</string>
+<string name="accessibility_phone_two_bars">"फ़ोन ज़ह बार्स."</string>
+<string name="accessibility_phone_three_bars">"फ़ोन तरे बार्स."</string>
+<string name="accessibility_phone_signal_full">"फ़ोन सिग्नल फुल."</string>
+<string name="accessibility_no_data">"डाटा छनः."</string>
+<string name="accessibility_data_one_bar">"डाटा अख बार."</string>
+<string name="accessibility_data_two_bars">"डाटा ज़ह बार्स."</string>
+<string name="accessibility_data_three_bars">"डाटा तरे बार्स."</string>
+<string name="accessibility_data_signal_full">"डाटा सिग्नल फुल."</string>
+<string name="accessibility_wifi_name">"जोडिथ छु <xliff:g id="wifi" example="Home Network">%s</xliff:g>."</string>
+<string name="accessibility_bluetooth_name">"जोडिथ छु <xliff:g id="bluetooth" example="Car Audio">%s</xliff:g>."</string>
+<string name="accessibility_no_wimax">"WiMAX छुनः."</string>
+<string name="accessibility_wimax_one_bar">"WiMAX अख बार."</string>
+<string name="accessibility_wimax_two_bars">"WiMAX ज़ह बार्स."</string>
+<string name="accessibility_wimax_three_bars">"WiMAX तरे बार्स."</string>
+<string name="accessibility_wimax_signal_full">"WiMAX सिग्नल फुल."</string>
+<string name="accessibility_ethernet_disconnected">"ईथरनेट मुन्कतः."</string>
+<string name="accessibility_ethernet_connected">"ईथरनेट जोडिथ."</string>
+<string name="accessibility_no_signal">"सिग्नल छेनः."</string>
+<string name="accessibility_not_connected">"छुनः जोडिथ."</string>
+<string name="accessibility_zero_bars">"सिफर बार्स."</string>
+<string name="accessibility_one_bar">"अख बार."</string>
+<string name="accessibility_two_bars">"ज़ह बार्स."</string>
+<string name="accessibility_three_bars">"तरे बार्स."</string>
+<string name="accessibility_signal_full">"सिग्नल फुल."</string>
+<string name="accessibility_desc_on">"येल."</string>
+<string name="accessibility_desc_off">"बंद."</string>
+<string name="accessibility_desc_connected">"जोडिथ."</string>
+<string name="accessibility_desc_connecting">"जुड़ान."</string>
+<string name="accessibility_data_connection_roaming">"रोमिंग"</string>
+<string name="accessibility_data_connection_wifi">"Wi-Fi"</string>
+<string name="accessibility_no_sim">"SIM छेनः."</string>
+<string name="accessibility_bluetooth_tether">"ब्लूटूथ तेठेरिंग."</string>
+<string name="accessibility_airplane_mode">"एयरप्लेन मोड."</string>
+<string name="accessibility_no_sims">"SIM कार्ड छुनः."</string>
+<string name="accessibility_carrier_network_change_mode">"काररीएर नेटवर्क बदलाव."</string>
+<string name="accessibility_settings_button">"सिस्टम सेटिंग्स."</string>
+<string name="accessibility_notifications_button">"इत्लातः."</string>
+<string name="accessibility_remove_notification">"साफ कर्येव इत्लात."</string>
+<string name="accessibility_gps_enabled">"GPS कारगर."</string>
+<string name="accessibility_gps_acquiring">"GPS रटान."</string>
+<string name="accessibility_tty_enabled">"टेली टाइप राइटर कारगर."</string>
+<string name="accessibility_ringer_vibrate">"रिंगर वैब्रट."</string>
+<string name="accessibility_ringer_silent">"रिंगर खामोश."</string>
+<string name="accessibility_recents_item_will_be_dismissed">"मुल्तवी <xliff:g id="app" example="Calendar">%s</xliff:g>."</string>
+<string name="accessibility_recents_item_dismissed">"<xliff:g id="app" example="Calendar">%s</xliff:g> मुल्तवी गोमुत."</string>
+<string name="accessibility_recents_all_items_dismissed">"सारे ताजः अप्प्लीकेशन आय मुल्तवी करनः."</string>
+<string name="accessibility_recents_item_launched">"शरु गसान <xliff:g id="app" example="Calendar">%s</xliff:g>."</string>
+<string name="accessibility_recents_task_header">"<xliff:g id="app" example="Chrome">%1$s</xliff:g> <xliff:g id="activity_label" example="www.google.com">%2$s</xliff:g>"</string>
+<string name="accessibility_notification_dismissed">"इत्लात मुल्तवी गोमुत."</string>
+<string name="accessibility_desc_notification_shade">"इत्लात शेड."</string>
+<string name="accessibility_desc_quick_settings">"क्विक सेटिंग्स."</string>
+<string name="accessibility_desc_lock_screen">"लॉक स्क्रीन."</string>
+<string name="accessibility_desc_settings">"सेटिंग्स"</string>
+<string name="accessibility_desc_recent_apps">"ओवरव्यू."</string>
+<string name="accessibility_desc_close">"बंद"</string>
+<string name="accessibility_quick_settings_user">"सारिफ <xliff:g id="user" example="John Doe">%s</xliff:g>."</string>
+<string name="accessibility_quick_settings_wifi">"<xliff:g id="signal" example="Three bars">%1$s</xliff:g>."</string>
+<string name="accessibility_quick_settings_wifi_changed_off">"वाईफाई आव बंद करनः."</string>
+<string name="accessibility_quick_settings_wifi_changed_on">"वाईफाई आव येल  तरावनः."</string>
+<string name="accessibility_quick_settings_mobile">"मोबाइल <xliff:g id="signal" example="Three bars">%1$s</xliff:g>. <xliff:g id="type" example="4G">%2$s</xliff:g>. <xliff:g id="network" example="T-Mobile">%3$s</xliff:g>."</string>
+<string name="accessibility_quick_settings_battery">"बैटरी <xliff:g id="state" example="50% charging">%s</xliff:g>."</string>
+<string name="accessibility_quick_settings_airplane_off">"एयरप्लेन मोड बंद."</string>
+<string name="accessibility_quick_settings_airplane_on">"एयरप्लेन मोड येल."</string>
+<string name="accessibility_quick_settings_airplane_changed_off">"एयरप्लेन मोड आव बंद.करनः"</string>
+<string name="accessibility_quick_settings_airplane_changed_on">"एयरप्लेन मोड आव येल तरावनः."</string>
+<string name="accessibility_quick_settings_dnd_priority_on">"मः कर्येव थोथ येल, खासुसी खाली."</string>
+<string name="accessibility_quick_settings_dnd_none_on">"मः कर्येव थोथ येल, पूरह ख़ामोशी."</string>
+<string name="accessibility_quick_settings_dnd_alarms_on">"मः कर्येव थोथ येल, अलाराम्स खाली."</string>
+<string name="accessibility_quick_settings_dnd_off">"मः कर्येव थोथ बंद."</string>
+<string name="accessibility_quick_settings_dnd_changed_off">"मः कर्येव थोथ आव बंद करनः ."</string>
+<string name="accessibility_quick_settings_dnd_changed_on">"मः कर्येव थोथ आव येल तरावनः."</string>
+<string name="accessibility_quick_settings_bluetooth_off">"ब्लूटूथ बंद."</string>
+<string name="accessibility_quick_settings_bluetooth_on">"ब्लूटूथ येल."</string>
+<string name="accessibility_quick_settings_bluetooth_connecting">"ब्लूटूथ छु जुड़ान."</string>
+<string name="accessibility_quick_settings_bluetooth_connected">"ब्लूटूथ आव जोड़नः."</string>
+<string name="accessibility_quick_settings_bluetooth_changed_off">"ब्लूटूथ आव बंद करनः."</string>
+<string name="accessibility_quick_settings_bluetooth_changed_on">"ब्लूटूथ आव येल तरावनः."</string>
+<string name="accessibility_quick_settings_location_off">"जाय तफसील बंद."</string>
+<string name="accessibility_quick_settings_location_on">"जाय तफसील येल."</string>
+<string name="accessibility_quick_settings_location_changed_off">"जाय तफसील आय बंद करनः."</string>
+<string name="accessibility_quick_settings_location_changed_on">"जाय तफसील आव येल तरावनः."</string>
+<string name="accessibility_quick_settings_alarm">"अलार्म सेट खात्र <xliff:g id="time" example="Wed 3:30 PM">%s</xliff:g>."</string>
+<string name="accessibility_quick_settings_close">"बंद पैनल."</string>
+<string name="accessibility_quick_settings_more_time">"वार्यह वक़्त."</string>
+<string name="accessibility_quick_settings_less_time">"कम वक़्त."</string>
+<string name="accessibility_quick_settings_flashlight_off">"फ़्लैशलाइट बंद."</string>
+<string name="accessibility_quick_settings_flashlight_on">"फ़्लैशलाइट येल."</string>
+<string name="accessibility_quick_settings_flashlight_changed_off">"फ़्लैशलाइट आय बंद करनः."</string>
+<string name="accessibility_quick_settings_flashlight_changed_on">"फ़्लैशलाइट आय येल तरावनः."</string>
+<string name="accessibility_quick_settings_color_inversion_changed_off">"रंग फिरून आव बंद करनः."</string>
+<string name="accessibility_quick_settings_color_inversion_changed_on">"रंग फिरून आव येल तरावनः."</string>
+<string name="accessibility_quick_settings_hotspot_changed_off">"मोबाइल हॉट स्पॉट आव बंद करनः."</string>
+<string name="accessibility_quick_settings_hotspot_changed_on">"मोबाइल हॉट स्पॉट आव येल तरावनः."</string>
+<string name="accessibility_casting_turned_off">"स्क्रीन शरुवात गई बंद."</string>
+<string name="accessibility_brightness">"डिस्पले चमकून"</string>
+<string name="data_usage_disabled_dialog_3g_title">"2G-3G डाटा आव रुकावनः"</string>
+<string name="data_usage_disabled_dialog_4g_title">"4G डाटा आव रुकावनः"</string>
+<string name="data_usage_disabled_dialog_mobile_title">"सेलुलर डाटा आव रुकावनः"</string>
+<string name="data_usage_disabled_dialog_title">"डाटा आव रुकावनः"</string>
+<string name="data_usage_disabled_dialog">"तिक्याज़ी तुहुंद सेट कोर्मुत डाटा हद वोत, आलःन रुकाव डाटा खर्चह येमी साइकिलकि याद करनः बापत.\n\n वापस चलून मः खालि कीमत तुहुंदी कॉमि हियेंद."</string>
+<string name="data_usage_disabled_dialog_enable">"बे चलून"</string>
+<string name="status_bar_settings_signal_meter_disconnected">"इन्टरनेट कनेक्शन छुनः"</string>
+<string name="status_bar_settings_signal_meter_wifi_nossid">"Wi-Fi जोडिथ"</string>
+<string name="gps_notification_searching_text">"GPS खात्र छाडान"</string>
+<string name="gps_notification_found_text">"GPS खात्र छे जाय सेट"</string>
+<string name="accessibility_location_active">"जाय आरजी चालू"</string>
+<string name="accessibility_clear_all">"साफ़ कर्येव सारे इत्लातह."</string>
+<string name="status_bar_notification_inspect_item_title">"इत्लातह सेटिंग्स"</string>
+<string name="status_bar_notification_app_settings_title">"<xliff:g id="app_name" example="Calendar">%s</xliff:g> सेटिंग्स"</string>
+<string name="accessibility_rotation_lock_off">"स्क्रीन फैरिः पाने."</string>
+<string name="accessibility_rotation_lock_on_landscape">"स्क्रीन छे लॉक करिथ लैंडस्केप ओरिएंटेशन मंज़."</string>
+<string name="accessibility_rotation_lock_on_portrait">"स्क्रीन छे लॉक करिथ पोर्ट्रेट ओरिएंटेशन मंज़."</string>
+<string name="accessibility_rotation_lock_off_changed">"स्क्रीन फैरिः वोयन पाने."</string>
+<string name="accessibility_rotation_lock_on_landscape_changed">"स्क्रीन छे विन्केन लॉक करिथ लैंडस्केप ओरिएंटेशन मंज़."</string>
+<string name="accessibility_rotation_lock_on_portrait_changed">"स्क्रीन छे विन्केन लॉक करिथ पोर्ट्रेट ओरिएंटेशन मंज़."</string>
+<string name="dessert_case">"रगिस्तान मामलह"</string>
+<string name="start_dreams">"दोहली ख्वाब"</string>
+<string name="ethernet_label">"एर्ठेर्नेट"</string>
+<string name="quick_settings_dnd_label">"मः कर्येव थोथ"</string>
+<string name="quick_settings_dnd_priority_label">"खासुसी खाली"</string>
+<string name="quick_settings_dnd_alarms_label">"अलार्म्स खाली"</string>
+<string name="quick_settings_dnd_none_label">"पूरह ख़ामोशी"</string>
+<string name="quick_settings_bluetooth_label">"ब्लूटूथ"</string>
+<string name="quick_settings_bluetooth_multiple_devices_label">"ब्लूटूथ (<xliff:g id="number">%d</xliff:g> आलः)"</string>
+<string name="quick_settings_bluetooth_off_label">"ब्लूटूथ बंद"</string>
+<string name="quick_settings_bluetooth_detail_empty_text">"पैरेड आलः छि नः दस्तियाब"</string>
+<string name="quick_settings_brightness_label">"चमकून"</string>
+<string name="quick_settings_rotation_unlocked_label">"ऑटो-रोटेट"</string>
+<string name="quick_settings_rotation_locked_label">"फिरोन आव लॉक करनः"</string>
+<string name="quick_settings_rotation_locked_portrait_label">"शक्ल"</string>
+<string name="quick_settings_rotation_locked_landscape_label">"अन्द्रिम नज़ार"</string>
+<string name="quick_settings_ime_label">"इनपुट तरीकः"</string>
+<string name="quick_settings_location_label">"जाय"</string>
+<string name="quick_settings_location_off_label">"जाय बंद"</string>
+<string name="quick_settings_media_device_label">"मीडिया आलः"</string>
+<string name="quick_settings_rssi_emergency_only">"मजबूरी कॉल्स खाली"</string>
+<string name="quick_settings_settings_label">"सेटिंग्स"</string>
+<string name="quick_settings_time_label">"वक़्त"</string>
+<string name="quick_settings_user_label">"मेह"</string>
+<string name="quick_settings_user_title">"सारिफ"</string>
+<string name="quick_settings_user_new_user">"नोव सारिफ"</string>
+<string name="quick_settings_wifi_label">"Wi-Fi"</string>
+<string name="quick_settings_wifi_not_connected">"जोडिथ छुनः"</string>
+<string name="quick_settings_wifi_no_network">"नेटवर्क छुनः"</string>
+<string name="quick_settings_wifi_off_label">"Wi-Fi बंद"</string>
+<string name="quick_settings_wifi_detail_empty_text">"Wi-Fi नेटवर्क छुनः दस्तियाब"</string>
+<string name="quick_settings_cast_title">"कास्ट"</string>
+<string name="quick_settings_casting">"शरुवात"</string>
+<string name="quick_settings_cast_device_default_name">"नाव रोस्तुय आलः"</string>
+<string name="quick_settings_cast_device_default_description">"शुरू गस्नः खात्र तयार"</string>
+<string name="quick_settings_cast_detail_empty_text">"आलः छु नः दिस्तियाब"</string>
+<string name="quick_settings_brightness_dialog_title">"चमकून"</string>
+<string name="quick_settings_brightness_dialog_auto_brightness_label">"ऑटो"</string>
+<string name="quick_settings_inversion_label">"बरिव रंग"</string>
+<string name="quick_settings_color_space_label">"रंग सही करुन मोड"</string>
+<string name="quick_settings_more_settings">""बाकी सेटिंग्स" "</string>
+<string name="quick_settings_done">"पूरह"</string>
+<string name="quick_settings_connected">"जुड़नः आमुत"</string>
+<string name="quick_settings_connecting">"कनेक्ट गछान..."</string>
+<string name="quick_settings_tethering_label">"तेठेरिंग"</string>
+<string name="quick_settings_hotspot_label">"हॉटस्पॉट"</string>
+<string name="quick_settings_notifications_label">"इत्लात"</string>
+<string name="quick_settings_flashlight_label">"फ़्लैशलाइट"</string>
+<string name="quick_settings_cellular_detail_title">"सेलुलर डाटा"</string>
+<string name="quick_settings_cellular_detail_data_usage">"डाटा यूसेज"</string>
+<string name="quick_settings_cellular_detail_remaining_data">"बाकी डाटा"</string>
+<string name="quick_settings_cellular_detail_over_limit">"हद ज़्यादः"</string>
+<string name="quick_settings_cellular_detail_data_used">"<xliff:g id="data_used" example="2.0 GB">%s</xliff:g> इस्तेमाल सप्दियोमुत"</string>
+<string name="quick_settings_cellular_detail_data_limit">"<xliff:g id="data_limit" example="2.0 GB">%s</xliff:g> हद"</string>
+<string name="quick_settings_cellular_detail_data_warning">"<xliff:g id="data_limit" example="2.0 GB">%s</xliff:g> खबरदारी"</string>
+<string name="recents_empty_message">"तुहुन्ज़ ताजः स्क्रीन्स छे येतन यिवान"</string>
+<string name="recents_app_info_button_label">"एप्लीकेशन ज़ानकारी"</string>
+<string name="recents_lock_to_app_button_label">"स्क्रीन पिन्निंग"</string>
+<string name="recents_search_bar_label">"छाडिव"</string>
+<string name="recents_launch_error_message">"हकि नः शुरू सप्दिथ <xliff:g id="app" example="Calendar">%s</xliff:g>."</string>
+<string name="recents_dismiss_all_message">"मुल्तवी कर्येव सारे एप्लीकेशनस"</string>
+<string name="recents_multistack_add_stack_dialog_split_horizontal">"कर्यिव खड़ा"</string>
+<string name="recents_multistack_add_stack_dialog_split_vertical">"कर्येव दोललह"</string>
+<string name="recents_multistack_add_stack_dialog_split_custom">"कर्यिव कस्टम"</string>
+<string name="expanded_header_battery_charged">"चार्ज गमुत"</string>
+<string name="expanded_header_battery_charging">"चार्ज गस्सन"</string>
+<string name="expanded_header_battery_charging_with_time">"<xliff:g id="charging_time" example="2 hrs 25 min">%s</xliff:g> येतिसकालस फुल गासि"</string>
+<string name="expanded_header_battery_not_charging">"चार्ज छुनः गसान"</string>
+<string name="ssl_ca_cert_warning">"नेटवर्क हकि\n मः निगरानी पेठ आसीत"</string>
+<string name="description_target_search">"छाडिव"</string>
+<string name="description_direction_up">"पक्नायिव हियोरकुन खात्र <xliff:g id="target_description" example="Unlock">%s</xliff:g>."</string>
+<string name="description_direction_left">""पक्नायिव खोवुरकुन खात्र <xliff:g id="target_description" example="Unlock">%s</xliff:g>."</string>
+<string name="zen_priority_introduction">"तुहुय हकिवह नः थोथ गसिथ आवाज़ तः वाइब्रेशन, अलाराम्स ,रेमैन्ड़ेर्स, अमलः, तः कॉलर्स यिम तुहुय चुनिमित छिव बगैर."</string>
+<string name="zen_priority_customize_button">"कस्टमाइज"</string>
+<string name="zen_silence_introduction_voice">"येह करि ब्लाक सारे आवाज़ तः वाइब्रेशनस, येथ मंज़ अलार्म्स,मोसिकी, वीडियोस, तः गेम्स छे.तुहुय हकिव तलीति फ़ोन कॉल करित."</string>
+<string name="zen_silence_introduction">"येह करि ब्लाक सारे आवाज़ तः वाइब्रेशनस, येथ मंज़ अलार्म्स,मोसिकी, वीडियोस, तः गेम्स छे."</string>
+<string name="keyguard_more_overflow_text">"+<xliff:g id="number_of_notifications" example="5">%d</xliff:g>"</string>
+<string name="speed_bump_explanation">"कम ज़रूरी इत्लात बोंकेन"</string>
+<string name="notification_tap_again">"ज़ीर कर्यिव दुबारह खुलावनः खात्र"</string>
+<string name="keyguard_unlock">"पक्नायिव हियोरकुन अनलॉक खात्र"</string>
+<string name="phone_hint">"आइकॉन पेठ पक्नायिव फ़ोन खात्र"</string>
+<string name="voice_hint">"आइकॉन पेठ पक्नायिव आवाज़ मदद खात्र"</string>
+<string name="camera_hint">"आइकॉन पेठ पक्नायिव कैमरा खात्र"</string>
+<string name="interruption_level_none_with_warning">"पूरह खामोशी. यह करि बेय पररन वअल ति खामोश."</string>
+<string name="interruption_level_none">"पूरह ख़ामोशी"</string>
+<string name="interruption_level_priority">"खासुसी खाली"</string>
+<string name="interruption_level_alarms">"अलार्म्स खाली"</string>
+<string name="interruption_level_none_twoline">"पूरह\n ख़ामोशी"</string>
+<string name="interruption_level_priority_twoline">"खासुसी\n खाली"</string>
+<string name="interruption_level_alarms_twoline">"अलार्म्स\n खाली"</string>
+<string name="keyguard_indication_charging_time">"चार्ज करान (<xliff:g id="charging_time_left" example="4 hours and 2 minutes">%s</xliff:g> येतिसकालस फुल गासि)"</string>
+<string name="accessibility_multi_user_switch_switcher">"स्विच सारिफ"</string>
+<string name="accessibility_multi_user_switch_switcher_with_current">"स्विच सारिफ, मौजोद सारिफ <xliff:g id="current_user_name" example="John Doe">%s</xliff:g>"</string>
+<string name="accessibility_multi_user_switch_inactive">"मौजोद सारिफ <xliff:g id="current_user_name" example="John Doe">%s</xliff:g>"</string>
+<string name="accessibility_multi_user_switch_quick_contact">"हायिव प्रोफाइल"</string>
+<string name="user_add_user">"जोडिव सारिफ"</string>
+<string name="user_new_user_name">"नोव सारिफ"</string>
+<string name="guest_nickname">"पोछ"</string>
+<string name="guest_new_guest">"जोडिव पोछ"</string>
+<string name="guest_exit_guest">"मोक्लायिव पोछ"</string>
+<string name="guest_exit_guest_dialog_title">"मोक्लायिव पोछ?"</string>
+<string name="guest_exit_guest_dialog_message">"सारे एप्पस तः डाटा येथ सेशनस मंज़ गासि ख़ारिज."</string>
+<string name="guest_exit_guest_dialog_remove">"नेबर कडीव"</string>
+<string name="guest_wipe_session_title">"खुशामद दुबारह, पोछ!"</string>
+<string name="guest_wipe_session_message">"क्या तुहुय छिवा यछान जारी थावुन पपुन सेशन?"</string>
+<string name="guest_wipe_session_wipe">"बे कर्यिव शुरू"</string>
+<string name="guest_wipe_session_dontwipe">"आ, जारी"</string>
+<string name="guest_notification_title">"पोछ सारिफ"</string>
+<string name="guest_notification_text">"एप्पस तः डाटा ख़ारिज करनः खात्र, नेबर कड़ीव पोछ सारिफ"</string>
+<string name="guest_notification_remove_action">"मोक्लायिव पोछ"</string>
+<string name="user_add_user_title">"जोडिव नोव सारिफ?"</string>
+<string name="user_add_user_message_short">"येम्सात तुहुय जोडिव अख नोव सारिफ, तमिस नफरस छे पन्नेन जाय सेट करेन. \n\n कःति सारिफ हकि अपडेट करिथ एप्पस बाकी तमाम सारिफन खात्र ति."</string>
+<string name="battery_saver_notification_title">"बैटरी सवेर छु येल"</string>
+<string name="battery_saver_notification_text">"कम करान काम तः बैकग्राउंड डाटा"</string>
+<string name="battery_saver_notification_action_text">"बंद कर्येव बैटरी सवेर"</string>
+<string name="notification_hidden_text">"मवाद आव छुपावनः"</string>
+<string name="media_projection_dialog_text">"<xliff:g id="app_seeking_permission" example="Hangouts">%s</xliff:g> करि शुरू तुलुन प्रेथकेह युस हावनः येयः तुहुंदिस स्क्रीनस पेठ."</string>
+<string name="media_projection_remember_text">"मः हाविएव दुबारह"</string>
+<string name="clear_all_notifications_text">"साफ़ कर्यिव सोरूय"</string>
+<string name="media_projection_action_text">"शरु विन्केन"</string>
+<string name="empty_shade_text">"कः इत्लात छेनः"</string>
+<string name="device_owned_footer">"आलः हकि आसीथ निगरानी मंज़."</string>
+<string name="profile_owned_footer">"प्रोफाइल हकि आसीत निगरानी मंज़"</string>
+<string name="vpn_footer">"नेटवर्क मः हकि निगरानी मंज़ आसीत."</string>
+<string name="monitoring_title_device_owned">"आलः निगरानी"</string>
+<string name="monitoring_title_profile_owned">"प्रोफाइल निगरानी"</string>
+<string name="monitoring_title">"नेटवर्क निगरानी"</string>
+<string name="disable_vpn">"नाकार VPN"</string>
+<string name="disconnect_vpn">"मुन्कतः VPN"</string>
+<string name="monitoring_description_device_owned">"तुहुंद आलः छु मैनेज करनः यिवान <xliff:g id="organization">%1$s</xliff:g>.\n\nतुहुंद नाजिम करि निगरानी तः मैनेज सेटिंग्स, कॉर्पोरेट रसाई, एप्पस,डाटा मुंसलिक तुहुंदिस आलःस, तः तुहुन्ज़ी आलःच जाय हिन्ज़ ज़ानकारी. बाकी ज़ानकारी खात्र, राबितः कर्यिव पन्निस नाज़िमस सीत."</string>
+<string name="monitoring_description_vpn">"तुहुय दित्वुह अकि एप्प इज़ाज़त VPN कनेक्शन सेट करनः खात्र.\n\n येह एप्प करि निगरानी तुहुंदिस आलःस तः नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि."</string>
+<string name="monitoring_description_vpn_device_owned">"तुहुंद आलः छु मैनेज करनः यिवान <xliff:g id="organization">%1$s</xliff:g>.\n\nतुहुंद नाजिम करि निगरानी तः मैनेज सेटिंग्स, कॉर्पोरेट रसाई, एप्पस,डाटा मुंसलिक तुहुंदिस आलःस, तः तुहुन्ज़ी आलःच जाय हिन्ज़ ज़ानकारी.\n\n तुहुय छिव जोडिथ VPN सीत, युस निगरानी करि नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि.\n\n बाकी ज़ानकारी खात्र, राबितः कर्यिव पन्निस नाज़िमस सीत."</string>
+<string name="monitoring_description_vpn_profile_owned">"तुहुंद आलः छु मैनेज करनः यिवान <xliff:g id="organization">%1$s</xliff:g>.\n\n तुहुंद नाजिम छे सलाहियत सु करि निगरानी नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि.\n\n बाकी ज़ानकारी खात्र, राबितः कर्यिव पन्निस नाज़िमस सीत.\n\n तुहुय छिव जोडिथ VPN सीत, युस निगरानी करि तुहुन्ज़ी नेटवर्क हरकत."</string>
+<string name="monitoring_description_app">"तुहुय छिव जोडिथ <xliff:g id="application">%1$s</xliff:g>, युस करि निगरानी नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि."</string>
+<string name="monitoring_description_app_personal">"तुहुय छिव जोडिथ <xliff:g id="application">%1$s</xliff:g>,युस करि निगरानी तुहुन्ज़ी निजी नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि."</string>
+<string name="monitoring_description_app_work">"तुहुन्ज़ वर्क प्रोफाइल छि मैनेज करनः यिवान <xliff:g id="organization">%1$s</xliff:g>.येह छि जोडिथ येथ <xliff:g id="application">%2$s</xliff:g>,युस करि निगरानी नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि. \n\n बाकी ज़ानकारी खात्र, राबितः कर्यिव पन्निस नाज़िमस सीत."</string>
+<string name="monitoring_description_app_personal_work">"तुहुन्ज़ वर्क प्रोफाइल छि मैनेज करनः यिवान <xliff:g id="organization">%1$s</xliff:g>.येह छि जोडिथ येथ <xliff:g id="application_work">%2$s</xliff:g>,युस करि निगरानी नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि. \n\n तुहुय छिव बे जोडिथ <xliff:g id="application_personal">%3$s</xliff:g>,युस करि निगरानी तुहुन्ज़ी निजी नेटवर्क हरकत."</string>
+<string name="monitoring_description_vpn_app_device_owned">"तुहुंद आलः छु मैनेज करनः यिवान <xliff:g id="organization">%1$s</xliff:g>.\n\nतुहुंद नाजिम करि निगरानी तः मैनेज सेटिंग्स, कॉर्पोरेट रसाई, एप्पस,डाटा मुंसलिक तुहुंदिस आलःस, तः तुहुन्ज़ी आलःच जाय हिन्ज़ ज़ानकारी.\n\nतुहुय छिव जोडिथ <xliff:g id="application">%2$s</xliff:g>,युस निगरानी करि नेटवर्क हरकत, येथ मंज़ ईमेल, एप्पस तः वेबसाइटस ति छि.\n\nबाकी ज़ानकारी खात्र, राबितः कर्यिव पन्निस नाज़िमस सीत."</string>
+<string name="keyguard_indication_trust_disabled">"आलः रोजि लॉक करिथय येतिस कालस नः तुहुय पाने अनलॉक कर्यिव."</string>
+<string name="hidden_notifications_title">"रटिव इत्लातह जल्दी"</string>
+<string name="hidden_notifications_text">"विछेव तिम अनलॉक करनः ब्रोंठ"</string>
+<string name="hidden_notifications_cancel">"न शुक्रिया"</string>
+<string name="hidden_notifications_setup">"थाविव"</string>
+<string name="notification_expand_button_text">"विछेव सोर्रय"</string>
+<string name="notification_collapse_button_text">"छुपायिव सारी"</string>
+<string name="zen_mode_and_condition">"<xliff:g id="zen_mode" example="Priority interruptions only">%1$s</xliff:g>. <xliff:g id="exit_condition" example="For one hour">%2$s</xliff:g>"</string>
+<string name="volume_zen_end_now">"ख़त्म वोयन"</string>
+<string name="accessibility_volume_expand">"बडायिव"</string>
+<string name="accessibility_volume_collapse">"टक्कर"</string>
+<string name="screen_pinning_title">"स्क्रीन छे पिन्नेड"</string>
+<string name="screen_pinning_description">"अमि सीत छु रोज़ान यह विछवुन यीतिस कालस नः अनPIN कर्यिव. जीर तः रोजिव रटीथ्य पथ तः विछेव अकि वक़्तह अनPIN खात्र."</string>
+<string name="screen_pinning_description_accessible">"अमि सीत छु रोज़ान यह विछवुन यीतिस कालस नः अनPIN कर्यिव. जीर तः रोजिव रटीथ्य तः विछेव अनPIN खात्र."</string>
+<string name="screen_pinning_positive">"नियिव यि"</string>
+<string name="screen_pinning_negative">"न शुक्रिया"</string>
+<string name="quick_settings_reset_confirmation_title">"छुपायिव <xliff:g id="tile_label" example="Hotspot">%1$s</xliff:g>?"</string>
+<string name="quick_settings_reset_confirmation_message">"येह येयः दुबारह बेविज़ह युथय तुहुय येह येल त्रायेव सेटिंग्स मंज़."</string>
+<string name="quick_settings_reset_confirmation_button">"छुपायिव"</string>
+<string name="volumeui_prompt_message">"<xliff:g id="app_name" example="Volume Prototype 1">%1$s</xliff:g> यछान आवाज़ डायलॉग."</string>
+<string name="volumeui_prompt_allow">"इजाज़त"</string>
+<string name="volumeui_prompt_deny">"इनकार"</string>
+<string name="volumeui_notification_title">"<xliff:g id="app_name" example="Volume Prototype 1">%1$s</xliff:g> छु आवाज़ डायलॉग"</string>
+<string name="volumeui_notification_text">"असली बे जमा करनः खात्र कर्यिव जीर."</string>
+<string name="managed_profile_foreground_toast">"तुहुय छिव इस्तेमाल करान पन्नेन वर्क प्रोफाइल"</string>
+<string name="system_ui_tuner">"सिस्टम UI टुनर"</string>
+<string name="show_battery_percentage">"हायिव बीठमच बैटरी शरह"</string>
+<string name="show_battery_percentage_summary">"हायिव बीठमच बैटरी शरह स्टेटस बार आइकॉन अंदरह येम्सात नः चार्ज आसि गसान"</string>
+<string name="quick_settings">"क्विक सेटिंग्स"</string>
+<string name="status_bar">"स्टेटस बार"</string>
+<string name="demo_mode">"डेमो मोड"</string>
+<string name="enable_demo_mode">"कारगर डेमो मोड"</string>
+<string name="show_demo_mode">"हायिव डेमो मोड"</string>
+<string name="status_bar_ethernet">"एर्ठेर्नेट"</string>
+<string name="status_bar_alarm">"अलार्म"</string>
+<string name="status_bar_work">"कामि हुन्द तरीक"</string>
+<string name="status_bar_airplane">"एयरप्लेन मोड"</string>
+<string name="add_tile">"जोडिव मोज़ुह"</string>
+<string name="broadcast_tile">"नशर टाइल"</string>
+<string name="zen_alarm_warning_indef">"तुहुय हकिव नः बोज़िथ पन्नुन बियाख अलार्म <xliff:g id="when" example="at 7:00 AM">%1$s</xliff:g> यीतिस कालस नः तुहुय येह बंद कर्यिव तेमि पत."</string>
+<string name="zen_alarm_warning">"तुहुय हकिव नः बोज़िथ पन्नुन बियाख अलार्म <xliff:g id="when" example="at 7:00 AM">%1$s</xliff:g>"</string>
+<string name="alarm_template">"पेठ <xliff:g id="when" example="7:00 AM">%1$s</xliff:g>""</string>
+<string name="alarm_template_far">"मंज़ <xliff:g id="when" example="Fri 7:00 AM">%1$s</xliff:g>"</string>
+<string name="accessibility_quick_settings_detail">"क्विक सेटिंग्स, <xliff:g id="title" example="Wi-Fi">%s</xliff:g>."</string>
+<string name="accessibility_status_bar_hotspot">"हॉटस्पॉट"</string>
+<string name="accessibility_managed_profile">"कामि हुन्द तरीक"</string>
+<string name="tuner_warning_title">"केहन खात्र मस्ती मगर सारनी खात्र न केंह"</string>
+<string name="tuner_warning">"सिस्टम UI टुनर छु दिवान अलावः तरीकः ट्वीक तः कस्टमाइज एंड्राइड सारिफ इंटरफ़ेस करनः खात्र.यिम तजरुबाती खसुसियात हकेन बदलिथ, फिटिथ, या गअब सब्दिथ मुस्तकबिलकेन रिलीज़ मंज़.अहतियात सान पकिव ब्रोंठ."</string>
+<string name="tuner_persistent_warning">"यिम तजरुबाती खसुसियात हकेन बदलिथ, फिटिथ, या गअब सब्दिथ मुस्तकबिलकेन रिलीज़ मंज़.अहतियात सान पकिव ब्रोंठ."</string>
+<string name="got_it">"नियिव यि"</string>
+<string name="tuner_toast">"मुबारक! सिस्टम UI तूनर आव सेटिंग्स मंज़ जोड़नः"</string>
+<string name="remove_from_settings">"सेटिंग्स मंज़ नेबर"</string>
+<string name="remove_from_settings_prompt">"नेबर कड़ीव सेटिंग्स UI तूनर सेटिंग्स नेबर तः बंद कर्यिव अमिक खसूसियत इस्तेमाल करीन?"</string>
+<string name="quick_settings_volume_label">"आवाज़ प्रोफाइल"</string>
+<string name="assistant_key_home">"गर्रह"</string>
+<string name="assistant_key_search">"छाडिव"</string>
+<string name="assistant_key_menu">"मेनू"</string>
+<string name="assistant_key_back">"पथ"</string>
+<string name="vibrate_hint">"पक्नायिव खावुर विब्रट खात्र"</string>
+<string name="battery_overtage_title">"हिफ़ाज़ती खबरदारी"</string>
+<string name="battery_overtage_content">"चार्ज गसन वाजेन वोल्टेज छे वार्यह ज्याद!"</string>
+<string name="battery_overtage_back">"पथ"</string>
+<string name="recent_app_clean_finished_toast">"रिलीज़ <xliff:g id="count">%1$s</xliff:g> मेमोरी,<xliff:g id="count">%2$s</xliff:g> छु वोयन दस्तियाब."</string>
+<string name="label_tab_notifications">"इत्लाह करेन"</string>
+<string name="label_tab_qs">"स्विच"</string>
+<string name="label_screen_brightness">"डिस्पले चमकून"</string>
+<string name="label_star_unlock">"ज़ियोठ दबाव * अनलॉक"</string>
+<string name="speak_spec">"H m"</string>
+</resources>

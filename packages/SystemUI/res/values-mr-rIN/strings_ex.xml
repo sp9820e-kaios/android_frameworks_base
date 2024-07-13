@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"पोर्टेबल Wi-Fi हॉटस्पॉटला मोबाईल डेटा कनेक्ट आवश्यक आहे, अतिरिक्त शुल्क लागू शकते."</string>
+<string name="softap_bt_cannot_coexist">"जेव्हा ब्लुटूथ सक्षम केलेला असतो किंवा चालू केलेला असतो तेव्हा सॉफ्टकॅप काम करू शकत नाही, आपल्याला सॉफ्टकॅप वापरायचे असल्यास, कृपया ब्लुटूथ अक्षम केला असल्याची खात्री करा."</string>
+<string name="bt_softap_cannot_coexist">"जेव्हा सॉफ्टकॅप सक्षम केलेला असतो किंवा चालू केलेला असतो तेव्हा ब्लुटूथ काम करू शकत नाही, आपल्याला ब्लुटूथ वापरायचे असल्यास, कृपया सॉफ्टकॅप अक्षम केला असल्याची खात्री करा."</string>
+<string name="lte_service_error_airplane">"जेव्हा फोन एअरप्लेन मोडमध्ये असेल, तेव्हा आपण LTE वापरू शकत नाहीत."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G चालू केले"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G बंद केले"</string>
+<string name="accessibility_quick_settings_lte_on">"4G चालू"</string>
+<string name="accessibility_quick_settings_lte_off">"4G बंद"</string>
+<string name="toggle_data_error_airplane">"जेव्हा फोन एअरप्लेन मोडमध्ये असतो तेव्हा आपण मोबाईल डेटा वापरू शकत नाही."</string>
+<string name="quick_settings_data_connection_label">"डेटा"</string>
+<string name="accessibility_quick_settings_data_changed_on">"डेटा ऑन केला"</string>
+<string name="accessibility_quick_settings_data_changed_off">"डेटा टर्न ऑफ केला"</string>
+<string name="accessibility_quick_settings_data_on">"डेटा चालू"</string>
+<string name="accessibility_quick_settings_data_off">"डेटा बंद"</string>
+<string name="missing_sim_message">"SIM नाही"</string>
+    <string name="lte_service_error_incall">"कॉलच्या दरम्यान तुम्ही एलटीई सेवा बंद करू शकत नाही."</string>
+
+</resources>

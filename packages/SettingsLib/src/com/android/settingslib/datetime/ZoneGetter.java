@@ -50,6 +50,7 @@ public class ZoneGetter {
     public static final String KEY_DISPLAYNAME = "name";  // value: String
     public static final String KEY_GMT = "gmt";  // value: String
     public static final String KEY_OFFSET = "offset";  // value: int (Integer)
+    public static final String KEY_DISPLAYNAME_PINGYIN = "name_pingying";//SPRD 492237
 
     private ZoneGetter() {}
 
@@ -133,6 +134,8 @@ public class ZoneGetter {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put(KEY_ID, tz.getID());
         map.put(KEY_DISPLAYNAME, displayName);
+         //SPRD 492237
+        map.put(KEY_DISPLAYNAME_PINGYIN, HanziToPinyin.getPingYinFormString(displayName));
         map.put(KEY_GMT, gmtOffsetString);
         map.put(KEY_OFFSET, offsetMillis);
         return map;

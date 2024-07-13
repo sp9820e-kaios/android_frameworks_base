@@ -985,6 +985,9 @@ interface ITelephony {
 
     void factoryReset(int subId);
 
+     //SPRD: Add for Bug511233
+     Bundle getCellLocationForPhone(int phoneId);
+
     /**
      * An estimate of the users's current locale based on the default SIM.
      *
@@ -998,4 +1001,85 @@ interface ITelephony {
      *@hide
      */
     ModemActivityInfo getModemActivityInfo();
+
+    /**
+     * SPRD::add invokeOemRilRequestRaw by phoneId.
+     *Returns the result and response from RIL for oem request
+     * @param phoneId user preferred phoneId.
+     * @param oemReq the data is sent to ril.
+     * @param oemResp the respose data from RIL.
+     * @return negative value request was not handled or get error
+     *         0 request was handled succesfully, but no response data
+     *         positive value success, data length of response
+     */
+    int invokeOemRilRequestRawByPhoneId(int phoneId, in byte[] oemReq, out byte[] oemResp);
+
+     /**
+     * SPRD::add invokeOemRilRequestStrings by phoneId.
+     *Returns the result and response from RIL for oem request
+     * @param phoneId user preferred phoneId.
+     * @param oemReq the data is sent to ril.
+     * @param oemResp the respose data from RIL.
+     * @return negative value request was not handled or get error
+     *         0 request was handled succesfully, but no response data
+     *         positive value success, data length of response
+     */
+    int invokeOemRilRequestStrings(int phoneId, in String[] oemReq, out String[] oemResp);
+
+     /**
+     * @return true if a IccFdn enabled
+     */
+    boolean getIccFdnEnabled();
+    boolean getIccFdnEnabledForSubscriber(int subId);
+
+    /**
+     * SPRD: Add interfaces for VT.
+     */
+    boolean isVTCall();
+    boolean isVTCallForSubscriber(int subId);
+
+    /* sprd: add by EXT @{ */
+    void setSimStandby(int phoneId, boolean enabled);
+    void setPrimaryCard(int phoneId);
+    void setLteEnabled(boolean enabled);
+    boolean getLteEnabled();
+    boolean isUsimCard(int phoneId);
+    /* @} */
+
+    /**
+     * SPRD: add for set line 1 number without permission
+     * Return the result of set line 1 number.
+     *
+     */
+    boolean setLine1NumberForDisplayForSubscriberEx(int subId, String alphaTag, String number);
+
+    /**
+     * SPRD: Add for getting pin/puk/pin2/puk2 remain times.
+     */
+    int getRemainTimes(int type);
+    int getRemainTimesForSubscriber(int type, int subId);
+
+    /**
+     * SPRD: Bug #474686 Porting Uplmn feature. @{
+     */
+    byte[] iccExchangeSimIOwithSubId(int fileID, int command, int p1, int p2, int p3,
+           String filePath, int subId);
+    byte[] iccExchangeSimIOUpdate(int fileID, int command, int p1, int p2, int p3, String data,
+            String filePath, int subId);
+
+    boolean getSimLockStatus(int type);
+
+    /*SPRD for smsc @{ */
+    String getSmsc();
+    String getSmscForSubscriber(int subId);
+    boolean setSmsc(String smscAddr);
+    boolean setSmscForSubscriber(String smscAddr, int subId);
+    /*@}*/
+
+    String getPnnHomeName(int subId, String callingPackage);
+
+    /* SPRD: [Bug543427] Add interfaces for setting or getting internal preferred network type. @{ */
+    void setInternalPreferredNetworkTypeForPhone(int phoneId, int networkType);
+    int getInternalPreferredNetworkTypeForPhone(int phoneId, String callingPackage);
+    /* @} */
 }

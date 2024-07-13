@@ -25,6 +25,7 @@ import android.content.Context;
 import android.os.PersistableBundle;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemProperties;
 
 /**
  * Provides access to telephony configuration values that are carrier-specific.
@@ -341,6 +342,31 @@ public class CarrierConfigManager {
      */
     public static final String KEY_CSP_ENABLED_BOOL = "csp_enabled_bool";
 
+    /* SPRD: bug#474283, add for IP-DIAL FEATURE @{ */
+    public static final String KEY_FEATURE_IP_DIAL_ENABLED_BOOL = "ip_dial_enabled_bool";
+    /* @{ */
+
+    /* SPRD: modify by BUG 494075 @{ */
+    public static final String KEY_HSPADATADISTINGUISHABLE_BOOL = "hspaDataDistinguishable";
+    /* @} */
+
+    /* SPRD: modify by BUG 494075 @{ */
+    public static final String KEY_SYSTEMUI_CARRIER_LABEL_WITH_SIMCOLOR_BOOL =
+            "systemui_carrier_label_with_simcolor_bool";
+    /* @} */
+
+    /* SPRD: modify by BUG 494075 @{ */
+    public static final String KEY_SHOW_ECCBUTTON_LOCKSCREEN_BOOL =
+            "show_eccbutton_lockscreen_bool";
+    /* @} */
+
+    // SPRD: screen off 5s after call connection. See bug #503700
+    public static final String KEY_SCREEN_OFF_IN_ACTIVE_CALL_STATE_BOOL =
+            "screen_off_in_active_call_state_bool";
+
+    // SPRD: modify for bug 494056
+    public static final String KEY_OPERATOR_SEPARATOR_LABEL = "operator_separator_label";
+
     // These variables are used by the MMS service and exposed through another API, {@link
     // SmsManager}. The variable names and string values are copied from there.
     public static final String KEY_MMS_ALIAS_ENABLED_BOOL = "aliasEnabled";
@@ -374,6 +400,114 @@ public class CarrierConfigManager {
     public static final String KEY_MMS_UA_PROF_TAG_NAME_STRING = "uaProfTagName";
     public static final String KEY_MMS_UA_PROF_URL_STRING = "uaProfUrl";
     public static final String KEY_MMS_USER_AGENT_STRING = "userAgent";
+
+    /* SPRD: [bug475223] Add global config variables. @{ */
+    public static final String KEY_GLO_CONF_VOICEMAIL_NUMBER = "vmnumber";
+    public static final String KEY_GLO_CONF_VOICEMAIL_TAG = "vmtag";
+    public static final String KEY_GLO_CONF_ROAMING_VOICEMAIL_NUMBER = "roamingvm";
+    public static final String KEY_GLO_CONF_ECC_LIST_NO_CARD = "ecclist_nocard";
+    public static final String KEY_GLO_CONF_ECC_LIST_WITH_CARD = "ecclist_withcard";
+    public static final String KEY_GLO_CONF_FAKE_ECC_LIST_WITH_CARD = "fake_ecclist_withcard";
+    public static final String KEY_GLO_CONF_NUM_MATCH = "num_match";
+    public static final String KEY_GLO_CONF_NUM_MATCH_RULE = "num_match_rule";
+    public static final String KEY_GLO_CONF_NUM_MATCH_SHORT = "num_match_short";
+    public static final String KEY_GLO_CONF_SPN = "spn";
+    public static final String KEY_GLO_CONF_SMS_7BIT_ENABLED = "sms_7bit_enabled";
+    public static final String KEY_GLO_CONF_SMS_CODING_NATIONAL = "sms_coding_national";
+    public static final String KEY_GLO_CONF_MVNO = "mvno";
+    /* @} */
+
+    /**
+     *Add for setting homepage via MCC\MNC
+     *@ {
+     */
+    public static final String KEY_GLO_CONF_HOMEPAGE_URL = "homepage_url";
+    /*@}*/
+
+    /* SPRD: Add for STK feature. @{ */
+    public static final String KEY_FEATURE_STK_SETUPCALL_NOCNF_BOOL = "stk_setupcall_nocnf_bool";
+    public static final String KEY_FEATURE_STK_REFRESH_NOTOAST_BOOL = "stk_refresh_notoast_bool";
+    public static final String KEY_FEATURE_STK_SENDSMS_NOTOAST_BOOL = "stk_sendsms_notoast_bool";
+    public static final String KEY_FEATURE_STK_CALLCONTROL_SHOWID_BOOL = "stk_callcontrol_showid_bool";
+    public static final String KEY_FEATURE_STK_ENDSESSION_TOMAINMENU_BOOL = "stk_endsession_tomainmenu_bool";
+    public static final String KEY_FEATURE_STK_NAME_FROMSETUPMENU_BOOL = "stk_name_fromsetupmenu_bool";
+    public static final String KEY_FEATURE_STK_NAMEANDICON_CONFIG_BOOL = "stk_nameandicon_config_bool";
+    /* @} */
+
+    /* SPRD: Flag specifying whether network mode setting is available for WCDMA only. @{ */
+    public static final String KEY_NETWORK_SUPPORT_WCDMA_ONLY = "mobile_network_support_wcdma_only";
+    /* @{ */
+
+    /* SPRD: Flag specifying whether network mode setting is available for 3g only and 2g only. @{ */
+    public static final String KEY_NETWORK_SUPPORT_3G_ONLY_AND_2G_ONLY_BOOL = "mobile_network_support_3g_only_2g_only";
+    /* @{ */
+
+    // SPRD: Flip to silence from incoming calls. See bug473877
+    public static final String KEY_FEATURE_FLIP_SILENT_INCOMING_CALL_ENABLED_BOOL = "flip_to_silent_incoming_call_enabled_bool";
+
+    /* SPRD: Add for mobile always online feature @{ */
+    /**
+     * Duration to keep data alive.
+     * @hide
+     */
+    public static final String KEY_DCT_DATA_KEEP_ALIVE_DURATION_INT
+            = "dct_data_keep_alive_duration_int";
+    /* SPRD: Add for feature of APN and DATA Pop up.BugId: 509845. @{ */
+    public static final String KEY_FEATURE_DATA_AND_APN_POP_BOOL =
+            "feature_data_and_apn_pop_bool";
+    public static final String KEY_FEATURE_DATA_AND_APN_POP_OPERATOR_STRING =
+            "feature_data_and_apn_pop_operator_string";
+    /* @} */
+
+    // SPRD: modify for bug513637
+    public static final String KEY_FEATURE_STE_DATA_AND_STE_PRIMARYCARD_MERGE_BOOL = "set_data_and_set_primarycard_merge_bool";
+    /* @} */
+
+    /* SPRD: National Data Roaming. @{ */
+    public static final String KEY_NATIONAL_DATA_ROAMING_BOOL = "national_data_roaming_bool";
+    /* @} */
+
+    /* SPRD: Vibrate when call connected or disconnected feature. @{ */
+    /**
+     * Flag specifying whether Vibrate when call connected or disconnected feature is supported.
+     */
+    public static final String KEY_FEATURE_VIBRATE_FOR_CALL_CONNECTION_BOOL =
+            "vibrate_for_call_connection_bool";
+    /* SPRD: Add for double press on the headset key feature. @{ */
+    /**
+     * Flag specifying whether Double press on the headset key feature is supported.
+     */
+    public static final String KEY_FEATURE_DOUBLE_PRESS_ON_HEADSET_KEY_BOOL =
+            "double_press_on_headset_key_bool";
+    /* @} */
+
+    /* SPRD: Add switch for automatic call record feature. @{ */
+    /**
+     * Flag specifying whether automatic call record feature is supported.
+     */
+    public static final  String KEY_FEATURE_AUTOMATIC_CALL_RECORD_ENABLED_BOOL =
+            "automatic_call_record_enabled_bool";
+    /* @} */
+
+    /* SPRD: Add for fade-in feature */
+    /**
+     * Flag specifying fade-in feature s supported.
+     */
+    public static final String KEY_FEATURE_FADE_IN_ENABLED_BOOL = "fade_in_enabled_bool";
+    /* @} */
+
+    /**
+     * SPRD: [Bug475782] Flag for fixed primary slot. -1 means not support fixed primary slot.
+     */
+    /** {@hide} */
+    public static final String KEY_FIXED_PRIMARY_SLOT_INT = "fixed_primary_slot_int";
+
+    // SPRD Add for Bug 570658: Heartbeat interval operator network adaptation.
+    public static final String KEY_NETWORK_NAT_OVERTIME_2G = "network_nat_overtime_2g";
+    public static final String KEY_NETWORK_NAT_OVERTIME_3G = "network_nat_overtime_3g";
+    public static final String KEY_NETWORK_NAT_OVERTIME_4G = "network_nat_overtime_4g";
+    //SPRD: bug576180 check whether is reliance sim card when sim records loaded by plugin
+    public static final String KEY_PDP_ACTIVE_PLMN_MATCH = "pdp_active_plmn_match";
 
     /** The default value for every variable. */
     private final static PersistableBundle sDefaults;
@@ -424,6 +558,28 @@ public class CarrierConfigManager {
         sDefaults.putString(KEY_CI_ACTION_ON_SYS_UPDATE_EXTRA_STRING, "");
         sDefaults.putString(KEY_CI_ACTION_ON_SYS_UPDATE_EXTRA_VAL_STRING, "");
         sDefaults.putBoolean(KEY_CSP_ENABLED_BOOL, false);
+        /* SPRD: bug#474283, add for IP-DIAL FEATURE @{ */
+        sDefaults.putBoolean(KEY_FEATURE_IP_DIAL_ENABLED_BOOL, true);
+        /* @} */
+
+        /* SPRD: modify by BUG 494075 @{ */
+        sDefaults.putBoolean(KEY_HSPADATADISTINGUISHABLE_BOOL, false);
+        /* @} */
+
+        /* SPRD: modify by BUG 494075 @{ */
+        sDefaults.putBoolean(KEY_SYSTEMUI_CARRIER_LABEL_WITH_SIMCOLOR_BOOL, false);
+        /* @} */
+
+        /* SPRD: modify by BUG 494075 @{ */
+        sDefaults.putBoolean(KEY_SHOW_ECCBUTTON_LOCKSCREEN_BOOL, true);
+        /* @} */
+
+        // SPRD: screen off 5s after call connection. See bug #503700
+        // SPRD: modify for Bug595127
+        sDefaults.putBoolean(KEY_SCREEN_OFF_IN_ACTIVE_CALL_STATE_BOOL, true);
+
+        // SPRD: modify for bug 494056
+        sDefaults.putString(KEY_OPERATOR_SEPARATOR_LABEL, "|");
 
         sDefaults.putStringArray(KEY_GSM_ROAMING_NETWORKS_STRING_ARRAY, null);
         sDefaults.putStringArray(KEY_GSM_NONROAMING_NETWORKS_STRING_ARRAY, null);
@@ -455,7 +611,7 @@ public class CarrierConfigManager {
         sDefaults.putInt(KEY_MMS_MESSAGE_TEXT_MAX_SIZE_INT, -1);
         sDefaults.putInt(KEY_MMS_RECIPIENT_LIMIT_INT, Integer.MAX_VALUE);
         sDefaults.putInt(KEY_MMS_SMS_TO_MMS_TEXT_LENGTH_THRESHOLD_INT, -1);
-        sDefaults.putInt(KEY_MMS_SMS_TO_MMS_TEXT_THRESHOLD_INT, -1);
+        sDefaults.putInt(KEY_MMS_SMS_TO_MMS_TEXT_THRESHOLD_INT, 10);
         sDefaults.putInt(KEY_MMS_SUBJECT_MAX_LENGTH_INT, 40);
         sDefaults.putString(KEY_MMS_EMAIL_GATEWAY_NUMBER_STRING, "");
         sDefaults.putString(KEY_MMS_HTTP_PARAMS_STRING, "");
@@ -463,6 +619,89 @@ public class CarrierConfigManager {
         sDefaults.putString(KEY_MMS_UA_PROF_TAG_NAME_STRING, "x-wap-profile");
         sDefaults.putString(KEY_MMS_UA_PROF_URL_STRING, "");
         sDefaults.putString(KEY_MMS_USER_AGENT_STRING, "");
+
+        /* SPRD: [bug475223] Add global config defaults. @{ */
+        sDefaults.putString(KEY_GLO_CONF_VOICEMAIL_NUMBER, "");
+        sDefaults.putString(KEY_GLO_CONF_VOICEMAIL_TAG, "");
+        sDefaults.putString(KEY_GLO_CONF_ROAMING_VOICEMAIL_NUMBER, "");
+        sDefaults.putString(KEY_GLO_CONF_ECC_LIST_NO_CARD, "");
+        sDefaults.putString(KEY_GLO_CONF_ECC_LIST_WITH_CARD, "");
+        sDefaults.putString(KEY_GLO_CONF_FAKE_ECC_LIST_WITH_CARD, "");
+        sDefaults.putInt(KEY_GLO_CONF_NUM_MATCH, 7);
+        sDefaults.putInt(KEY_GLO_CONF_NUM_MATCH_RULE, -1);
+        sDefaults.putInt(KEY_GLO_CONF_NUM_MATCH_SHORT, -1);
+        sDefaults.putString(KEY_GLO_CONF_SPN, "");
+        sDefaults.putBoolean(KEY_GLO_CONF_SMS_7BIT_ENABLED, false);
+        sDefaults.putString(KEY_GLO_CONF_SMS_CODING_NATIONAL, "");
+        sDefaults.putBoolean(KEY_GLO_CONF_MVNO, false);
+        /* @} */
+        /**
+         *Add for setting homepage via MCC\MNC
+         *@{
+         */
+        sDefaults.putString(KEY_GLO_CONF_HOMEPAGE_URL, "");
+        /*@}*/
+
+        /* SPRD: Add STK feature config defaults. @{ */
+        sDefaults.putBoolean(KEY_FEATURE_STK_SETUPCALL_NOCNF_BOOL, false);
+        sDefaults.putBoolean(KEY_FEATURE_STK_REFRESH_NOTOAST_BOOL, false);
+        sDefaults.putBoolean(KEY_FEATURE_STK_SENDSMS_NOTOAST_BOOL, false);
+        sDefaults.putBoolean(KEY_FEATURE_STK_CALLCONTROL_SHOWID_BOOL, false);
+        sDefaults.putBoolean(KEY_FEATURE_STK_ENDSESSION_TOMAINMENU_BOOL, false);
+        sDefaults.putBoolean(KEY_FEATURE_STK_NAME_FROMSETUPMENU_BOOL, false);
+        sDefaults.putBoolean(KEY_FEATURE_STK_NAMEANDICON_CONFIG_BOOL, false);
+        /* @} */
+
+        /* SPRD:Flag specifying whether network mode setting is available for WCDMA only. @{ */
+        sDefaults.putBoolean(KEY_NETWORK_SUPPORT_WCDMA_ONLY, false);
+        /* @} */
+        /* SPRD: Flag specifying whether network mode setting is available for 3g only and 2g only. @{ */
+        sDefaults.putBoolean(KEY_NETWORK_SUPPORT_3G_ONLY_AND_2G_ONLY_BOOL, false);
+        /* @} */
+        // SPRD: Flip to silence from incoming calls. See bug473877
+        sDefaults.putBoolean(KEY_FEATURE_FLIP_SILENT_INCOMING_CALL_ENABLED_BOOL, true);
+        /* SPRD: Add for VoLTE. @{ */
+        sDefaults.putBoolean(KEY_CARRIER_VOLTE_PROVISIONING_REQUIRED_BOOL, true);
+        if(SystemProperties.getBoolean("persist.sys.volte.enable", false)){
+            sDefaults.putBoolean(KEY_CARRIER_VOLTE_AVAILABLE_BOOL, true);
+            sDefaults.putBoolean(KEY_CARRIER_VT_AVAILABLE_BOOL, true);
+            sDefaults.putBoolean(KEY_CARRIER_WFC_IMS_AVAILABLE_BOOL, true);
+            sDefaults.putBoolean(KEY_CARRIER_VOLTE_TTY_SUPPORTED_BOOL, false);
+        }
+        /* SPRD: National Data Roaming. @{ */
+        sDefaults.putBoolean(KEY_NATIONAL_DATA_ROAMING_BOOL, false);
+        /* @} */
+
+        /* SPRD: Add for mobile always online feature @{ */
+        sDefaults.putInt(KEY_DCT_DATA_KEEP_ALIVE_DURATION_INT, 30 * 60 * 1000);
+        /* SPRD: Add for feature of APN and DATA Pop up.BugId: 509845. @{ */
+        sDefaults.putBoolean(KEY_FEATURE_DATA_AND_APN_POP_BOOL, false);
+        sDefaults.putString(KEY_FEATURE_DATA_AND_APN_POP_OPERATOR_STRING, "");
+        /* @} */
+
+        // SPRD: modify for bug513637
+        sDefaults.putBoolean(KEY_FEATURE_STE_DATA_AND_STE_PRIMARYCARD_MERGE_BOOL, false);
+
+        // SPRD: Vibrate when call connected or disconnected feature.
+        sDefaults.putBoolean(KEY_FEATURE_VIBRATE_FOR_CALL_CONNECTION_BOOL, true);
+
+        // SPRD: Add for double press on the headset key feature.
+        sDefaults.putBoolean(KEY_FEATURE_DOUBLE_PRESS_ON_HEADSET_KEY_BOOL, true);
+
+        // SPRD: Add switch for automatic call record feature.
+        sDefaults.putBoolean(KEY_FEATURE_AUTOMATIC_CALL_RECORD_ENABLED_BOOL, true);
+        // SPRD: Add for fade-in feature
+        sDefaults.putBoolean(KEY_FEATURE_FADE_IN_ENABLED_BOOL, true);
+
+        // SPRD: [Bug475782] Add for fixed primary slot feature.
+        sDefaults.putInt(KEY_FIXED_PRIMARY_SLOT_INT, SubscriptionManager.INVALID_PHONE_INDEX);
+
+        // SPRD Add for Bug 570658: Heartbeat interval operator network adaptation.
+        sDefaults.putInt(KEY_NETWORK_NAT_OVERTIME_2G, 5);
+        sDefaults.putInt(KEY_NETWORK_NAT_OVERTIME_3G, 15);
+        sDefaults.putInt(KEY_NETWORK_NAT_OVERTIME_4G, 30);
+        //SPRD: bug576180 check whether is reliance sim card when sim records loaded by plugin
+        sDefaults.putString(KEY_PDP_ACTIVE_PLMN_MATCH, "");
     }
 
     /**
@@ -486,6 +725,60 @@ public class CarrierConfigManager {
                     + ex.toString());
         } catch (NullPointerException ex) {
             Rlog.e(TAG, "Error getting config for subId " + Integer.toString(subId) + ": "
+                    + ex.toString());
+        }
+        return null;
+    }
+
+    /**
+     * SPRD: [bug475223] Gets the configuration values for a particular phoneId.
+     * The biggest difference with "getConfigForSubId(int subId)" is that network preferred
+     * config will still be returned as long as register any network no matter whether sim
+     * card inserted or not.If an invalid phoneId is used, the returned config will contain
+     * default values.
+     *
+     * <p>Requires Permission:
+     * {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
+     *
+     * @return A {@link PersistableBundle} containing the config for the given phoneId, or default
+     *         values for an invalid phoneId.
+     */
+    @Nullable
+    public PersistableBundle getConfigForPhoneId(int phoneId) {
+        try {
+            return getICarrierConfigLoader().getConfigForPhoneId(phoneId);
+        } catch (RemoteException ex) {
+            Rlog.e(TAG, "Error getting config for phoneId " + Integer.toString(phoneId) + ": "
+                    + ex.toString());
+        } catch (NullPointerException ex) {
+            Rlog.e(TAG, "Error getting config for phoneId " + Integer.toString(phoneId) + ": "
+                    + ex.toString());
+        }
+        return null;
+    }
+
+    /**
+     * SPRD: [bug475223] Gets the configuration values for the default phoneId which will be phone 0 if no sim exit.
+     * It is especially used for getting feature config which has nothing to do with a particular phoneId or subId.
+     *
+     * <p>Requires Permission:
+     * {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
+     *
+     * @return A {@link PersistableBundle} containing the config for the default phoneId.
+     */
+    @Nullable
+    public PersistableBundle getConfigForDefaultPhone() {
+        int defaultPhoneId = SubscriptionManager.getPhoneId(SubscriptionManager.getDefaultSubId());
+        if (!SubscriptionManager.isValidPhoneId(defaultPhoneId)) {
+            defaultPhoneId = 0;
+        }
+        try {
+            return getICarrierConfigLoader().getConfigForPhoneId(defaultPhoneId);
+        } catch (RemoteException ex) {
+            Rlog.e(TAG, "Error getting config for default phone " + Integer.toString(defaultPhoneId) + ": "
+                    + ex.toString());
+        } catch (NullPointerException ex) {
+            Rlog.e(TAG, "Error getting config for default phone " + Integer.toString(defaultPhoneId) + ": "
                     + ex.toString());
         }
         return null;

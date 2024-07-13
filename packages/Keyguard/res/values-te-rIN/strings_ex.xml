@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="kg_no_sim_message">"సిమ్ కార్డు లేదు"</string>
+<string name="kg_emergency_call_no_service">నెట్వర్క్ అందుబాటులో లేదు </string>
+<string name="kg_sim_pin_verify_success">"PIN వెరిఫై విజయవంతము అయింది"</string>
+    <string name="kg_sim_pin_delete">డిలీట్</string>
+     <string name="kg_sim_pin_ok">సరి</string>
+
+</resources>

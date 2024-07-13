@@ -25,7 +25,9 @@ import android.util.IntProperty;
 import android.util.Slog;
 import android.view.Choreographer;
 import android.view.Display;
-
+import com.android.server.lights.Light;
+import com.android.server.lights.LightsManager;
+import com.android.server.LocalServices;
 import java.io.PrintWriter;
 
 /**
@@ -67,7 +69,14 @@ final class DisplayPowerState {
     private boolean mColorFadeDrawPending;
 
     private Runnable mCleanListener;
-
+    /* SPRD: definitions variables. @{ */
+    private final Light mButtonlight;
+    private long buttontimeout;
+    private int INITIAL_BUTTON_BRIGHTNESS = 0;
+    private int INITIAL_BUTTON_MAX_BRIGHTNESS = 255;
+    //SPRD： Add for bug599681, reduce LED power
+    private int INITAL_BUTTON_DEFAULT_BRIGHTNESS = 251;
+    /* @} */
     public DisplayPowerState(DisplayBlanker blanker, ColorFade colorFade) {
         mHandler = new Handler(true /*async*/);
         mChoreographer = Choreographer.getInstance();
@@ -75,6 +84,8 @@ final class DisplayPowerState {
         mColorFade = colorFade;
         mPhotonicModulator = new PhotonicModulator();
         mPhotonicModulator.start();
+	mButtonlight = LocalServices.getService(LightsManager.class)
+           .getLight(LightsManager.LIGHT_ID_BUTTONS);
 
         // At boot time, we know that the screen is on and the electron beam
         // animation is not playing.  We don't know the screen's brightness though,
@@ -164,6 +175,48 @@ final class DisplayPowerState {
     public int getScreenBrightness() {
         return mScreenBrightness;
     }
+
+    /* SPRD: Button lights off timeout. @{ */
+    public void scheduleButtonTimeout(long now) {
+        mHandler.removeCallbacks(mButtonTimeoutTask);
+        Slog.d(TAG,"scheduleButtonTimeout buttontimeout == " +buttontimeout);
+        //SPRD: if the mButtonOffTimeoutSetting is greater than zero setting key lights timeout.
+        if(buttontimeout > 0){
+            setButtonOn(true);
+            long when = now + buttontimeout;
+            mHandler.postAtTime(mButtonTimeoutTask, when);
+        } else {
+            /*SPRD: if the mButtonOffTimeoutSetting equal -1,set key light always on.
+             *if the mButtonOffTimeoutSetting equal -2,set key light always off.
+             *@{
+             */
+            if(buttontimeout == -1){
+                setButtonOn(true);
+            } else if(buttontimeout == -2){
+                setButtonOn(false);
+            }
+            /*@}*/
+        }
+    }
+    private Runnable mButtonTimeoutTask = new Runnable() {
+        public void run() {
+           setButtonOn(false);
+        }
+    };
+    public void updateButtonTimeout(int timeout){
+        buttontimeout = timeout;
+    }
+    /* @} */
+
+    /* SPRD :Sets whether the button is on or off. @{ */
+    public void setButtonOn(boolean on) {
+        if(on) {
+            mButtonlight.setBrightness(INITAL_BUTTON_DEFAULT_BRIGHTNESS);
+        } else {
+            mButtonlight.setBrightness(INITIAL_BUTTON_BRIGHTNESS);
+        }
+    }
+    /* @} */
 
     /**
      * Prepares the electron beam to turn on or off.

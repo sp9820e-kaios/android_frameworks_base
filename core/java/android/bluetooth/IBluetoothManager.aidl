@@ -48,4 +48,9 @@ interface IBluetoothManager
     boolean isBleScanAlwaysAvailable();
     int updateBleAppCount(IBinder b, boolean enable);
     boolean isBleAppPresent();
+    
+    boolean isRadioEnabled();
+    boolean enableRadio();
+    boolean disableRadio();
+    boolean doUnBindFromFMRadio();
 }

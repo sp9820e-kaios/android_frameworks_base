@@ -285,4 +285,12 @@ public class CameraConstrainedHighSpeedCaptureSessionImpl
 
 
     }
+
+    /**
+     * SPRD:fix bug 473462 add for burst capture
+     */
+    @Override
+    public int cancelPicture() throws CameraAccessException {
+        return -1;
+    }
 }

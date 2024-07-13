@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Madaidaiciyar tashar aiki ta Wi-Fi tana bukatar jonin datar tafi-da-gidanka, zai haifar da karin cajin kudi."</string>
+<string name="softap_bt_cannot_coexist">"Yayin da aka bude damar bluetooth ko yake yunkurin budewa, softap ba zai yi aiki ba, idan kana son amfani da softap, tabbatar an kashe bluetooth."</string>
+<string name="bt_softap_cannot_coexist">"Yayin da aka bude damar sftap ko yake yunkurin budewa, bluetooth ba zai yi aiki ba, idan kana son amfani da bluetooth, tabbatar an kashe softap."</string>
+<string name="lte_service_error_airplane">"Ba za ka iya amfani da LTE idan wayar na yanayin amfani da a jirgin sama."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G an kunna"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G an kashe"</string>
+<string name="accessibility_quick_settings_lte_on">"4G kunne"</string>
+<string name="accessibility_quick_settings_lte_off">"4G kashe"</string>
+<string name="toggle_data_error_airplane">"Ba za ka iya amfani da bayanan mobayil ba idan wayar tana yanayin tafiya a jirgin sama."</string>
+<string name="quick_settings_data_connection_label">"BAYANAI"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Samun bayanai a kunne"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Samun bayanai a kashe"</string>
+<string name="accessibility_quick_settings_data_on">"Bayanai kunne"</string>
+<string name="accessibility_quick_settings_data_off">"Bayanai kashe"</string>
+<string name="missing_sim_message">"Ba SIM"</string>
+    <string name="lte_service_error_incall">"Ba za a iya kunna aikin LTI ba yayin kira"</string>
+
+</resources>

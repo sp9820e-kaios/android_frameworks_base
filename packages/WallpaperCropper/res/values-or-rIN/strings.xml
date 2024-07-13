@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="crop_wallpaper">"ୱାଲପେପର ଛୋଟ କରନ୍ତୁ"</string>
+<string name="wallpaper_instructions">"ୱାଲପେପର ସ୍ଥାପନା କରନ୍ତୁ"</string>
+<string name="wallpaper_load_fail">"ୱାଲପେପର ଭାବେ ପ୍ରତିରୂପଟିକୁ ପ୍ରେରଣ କରାଯାଇପାରିବ ନାହିଁ"</string>
+</resources>

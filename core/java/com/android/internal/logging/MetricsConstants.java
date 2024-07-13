@@ -262,6 +262,17 @@ public interface MetricsConstants {
     public static final int TUNER_DEMO_MODE_ON = 236;
     public static final int TUNER_BATTERY_PERCENTAGE = 237;
     public static final int FUELGAUGE_INACTIVE_APPS = 238;
+    /* SPRD: add for 4G and data connection quick setting @{ */
+    public static final int QS_DATACONNECTION = 239;
+    public static final int QS_DATACONNECTION_DETAILS = 240;
+    public static final int QS_LTESERVICE = 241;
+    /* @} */
+
+    /* SPRD: Bug 511228 Smart Controls in Settings @{ */
+    public static final int SMART_CONTROLS =242;
+    public static final int SMART_MOTION = 243;
+    public static final int POCKET_MODE = 244;
+    /* @} */
 
     // These constants must match those in the analytic pipeline, do not edit.
     // Add temporary values to the top of MetricsLogger instead.

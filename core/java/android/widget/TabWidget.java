@@ -516,7 +516,12 @@ public class TabWidget extends LinearLayout implements OnFocusChangeListener {
     /** {@inheritDoc} */
     public void onFocusChange(View v, boolean hasFocus) {
         if (v == this && hasFocus && getTabCount() > 0) {
-            getChildTabViewAt(mSelectedTab).requestFocus();
+            /*Modify by SPRD for Bug:524465  2016.02.01 Start */
+            View childTabView = getChildTabViewAt(mSelectedTab);
+            if(childTabView != null){
+                childTabView.requestFocus();
+            }
+            /*Modify by SPRD for Bug:524465  2016.02.01 End */
             return;
         }
 

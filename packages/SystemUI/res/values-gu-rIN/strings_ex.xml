@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"પૉર્ટેબલ Wi-Fi હોટ-સ્પૉટને મોબાઇલ ડેટા કનેક્ટની જરૂર પડશે, જે અતિરિક્ત ખર્ચ ઉત્પાદિત કરી શકે છે."</string>
+<string name="softap_bt_cannot_coexist">"જ્યારે બ્લ્યુટૂથ સક્ષમ કરવામાં આવ્યું હોય અથવા ચાલુ કરવામાં આવે, ત્યારે સૉફ્ટેપ કામ નહીં કરી શકે, જો તમે આ સૉફ્ટેપનો ઉપયોગ કરવા માંગતા હો તો, કૃપા કરી ખાતરી કરો કે બ્લ્યુટૂથને અસક્ષમ કરવામાં આવ્યું હોય."</string>
+<string name="bt_softap_cannot_coexist">"જ્યારે સૉફ્ટેપ સક્ષમ કરવામાં આવ્યું હોય અથવા ચાલુ કરવામાં આવે, ત્યારે બ્લ્યુટૂથ કામ નહીં કરી શકે, જો તમે આ બ્લ્યુટૂથનો ઉપયોગ કરવા માંગતા હો તો, કૃપા કરી ખાતરી કરો કે સૉફ્ટેપને અસક્ષમ કરવામાં આવ્યું હોય."</string>
+<string name="lte_service_error_airplane">"જ્યારે ફોન એરપ્લેન મોડમાં હોય ત્યારે LTEનો ઉપયોગ કરી શકો નહી."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ચાલુ થયો"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G બંધ થયો "</string>
+<string name="accessibility_quick_settings_lte_on">"4G ચાલુ"</string>
+<string name="accessibility_quick_settings_lte_off">"4G બંધ"</string>
+<string name="toggle_data_error_airplane">"જ્યારે ફોન એરપ્લેન મોડમાં હોય ત્યારે તમે મોબાઇલ ડેટાનો ઉપયોગ કરી શકો નહી."</string>
+<string name="quick_settings_data_connection_label">"ડેટા"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ડેટા ચાલુ થયો છે "</string>
+<string name="accessibility_quick_settings_data_changed_off">"ડેટા બંધ થયો છે "</string>
+<string name="accessibility_quick_settings_data_on">"ડેટા ચાલુ"</string>
+<string name="accessibility_quick_settings_data_off">"ડેટા બંધ"</string>
+<string name="missing_sim_message">"SIM નથી"</string>
+    <string name="lte_service_error_incall">"કોલ દરમ્યાન તમે એલટીઈ સેવા પસંદ નહિ કરી શકો"</string>
+
+</resources>

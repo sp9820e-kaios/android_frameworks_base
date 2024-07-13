@@ -17,7 +17,6 @@
 package android.os.storage;
 
 import static android.net.TrafficStats.MB_IN_BYTES;
-
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.app.ActivityThread;
@@ -77,6 +76,12 @@ public class StorageManager {
     public static final String PROP_HAS_ADOPTABLE = "vold.has_adoptable";
     /** {@hide} */
     public static final String PROP_FORCE_ADOPTABLE = "persist.fw.force_adoptable";
+    /* SPRD: add for storage manage @{ */
+    /** {@hide} */
+    public static final String PROP_INTERNAL_EMULATED = "sys.internal.emulated";
+    /** {@hide} */
+    public static final String PROP_PRIMARY_TYPE = "persist.storage.type";
+    /* @} */
 
     /** {@hide} */
     public static final String UUID_PRIVATE_INTERNAL = null;
@@ -106,6 +111,8 @@ public class StorageManager {
         private static final int MSG_VOLUME_FORGOTTEN = 4;
         private static final int MSG_DISK_SCANNED = 5;
         private static final int MSG_DISK_DESTROYED = 6;
+        /* @SPRD: add for UMS */
+        private static final int MSG_UMS_CONNECTION_CHANGED = 7;
 
         final StorageEventListener mCallback;
         final Handler mHandler;
@@ -144,6 +151,12 @@ public class StorageManager {
                     mCallback.onDiskDestroyed((DiskInfo) args.arg1);
                     args.recycle();
                     return true;
+                /* @SPRD: add for UMS @{ */
+                case MSG_UMS_CONNECTION_CHANGED: {
+                    mCallback.onUsbMassStorageConnectionChanged(args.argi1 == 1);
+                    break;
+                }
+                /* @} */
             }
             args.recycle();
             return false;
@@ -152,6 +165,11 @@ public class StorageManager {
         @Override
         public void onUsbMassStorageConnectionChanged(boolean connected) throws RemoteException {
             // Ignored
+            /* SPRD: add for UMS @{ */
+            final SomeArgs args = SomeArgs.obtain();
+            args.argi1 = (connected ? 1 : 0);
+            mHandler.obtainMessage(MSG_UMS_CONNECTION_CHANGED, args).sendToTarget();
+            /* @} */
         }
 
         @Override
@@ -356,6 +374,13 @@ public class StorageManager {
      */
     @Deprecated
     public void enableUsbMassStorage() {
+        /* SPRD: add for UMS @{ */
+        try {
+            mMountService.setUsbMassStorageEnabled(true);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to enable UMS", e);
+        }
+        /* @} */
     }
 
     /**
@@ -365,6 +390,13 @@ public class StorageManager {
      */
     @Deprecated
     public void disableUsbMassStorage() {
+        /* SPRD: add for UMS @{ */
+        try {
+            mMountService.setUsbMassStorageEnabled(false);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to disable UMS", e);
+        }
+        /* @} */
     }
 
     /**
@@ -375,6 +407,13 @@ public class StorageManager {
      */
     @Deprecated
     public boolean isUsbMassStorageConnected() {
+        /* SPRD: add for UMS @{ */
+        try {
+            return mMountService.isUsbMassStorageConnected();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to get UMS connection state", e);
+        }
+        /* @} */
         return false;
     }
 
@@ -386,6 +425,13 @@ public class StorageManager {
      */
     @Deprecated
     public boolean isUsbMassStorageEnabled() {
+        /* SPRD: add for UMS @{ */
+        try {
+            return mMountService.isUsbMassStorageEnabled();
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to get UMS enable state", e);
+        }
+        /* @} */
         return false;
     }
 
@@ -807,6 +853,26 @@ public class StorageManager {
             throw e.rethrowAsRuntimeException();
         }
     }
+
+    /* SPRD: add for emulated storage @{ */
+    /** {@hide} */
+    public String getPrimaryEmulatedStorageUuid() {
+        try {
+            return mMountService.getPrimaryEmulatedStorageUuid();
+        } catch (RemoteException e) {
+            throw e.rethrowAsRuntimeException();
+        }
+    }
+
+    /** {@hide} */
+    public void setPrimaryEmulatedStorageUuid(String volumeUuid, IPackageMoveObserver callback) {
+        try {
+            mMountService.setPrimaryEmulatedStorageUuid(volumeUuid, callback);
+        } catch (RemoteException e) {
+            throw e.rethrowAsRuntimeException();
+        }
+    }
+    /* @} */
 
     /** {@hide} */
     public @Nullable StorageVolume getStorageVolume(File file) {

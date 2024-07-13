@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"पोर्टेबल Wi-Fi हॉट स्पॉट छु ज़रूरत मोबाइल डाटा जुड़ोन, मः खाड़ी अलावः खर्चः."</string>
+<string name="softap_bt_cannot_coexist">"येम्सात ब्लूटूथ आसि कारगर या येल त्राविथ, सोफ्टेप करि नः काम, अगर तुहुय यछान छिव सोफ्टेप इस्तेमाल करुन, महरबानी करिथ बनायिव यकीनी ज़ि ब्लूटूथ छु नाकार सप्दियोमुत.""</string>
+<string name="bt_softap_cannot_coexist">"येम्सात सोफ्टेप आसि कारगर या येल त्राविथ, ब्लूटूथ करि नः काम, अगर तुहुय यछान छिव ब्लूटूथ इस्तेमाल करुन, महरबानी करिथ बनायिव यकीनी ज़ि सोफ्टेप छु नाकार सप्दियोमुत.""</string>
+<string name="lte_service_error_airplane">"तुहुय हकिव नः बंद करिथ LTE सर्विस एयरप्लेन दोरान."</string>
+<string name="lte_service_error_incall">"तुहुय हकिव नः बंद करिथ LTE सर्विस कॉल करनस दोरान."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G त्रायिव येल"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G कर्यिव बंद"</string>
+<string name="accessibility_quick_settings_lte_on">"4G येल"</string>
+<string name="accessibility_quick_settings_lte_off">"4G बंद"</string>
+<string name="toggle_data_error_airplane">"तुहुय हकिव नः मोबाइल डाटा इस्तेमाल करिथ येम्सात फ़ोन आसि एयरप्लेन मोड्स मंज़."</string>
+<string name="quick_settings_data_connection_label">"डाटा"</string>
+<string name="accessibility_quick_settings_data_changed_on">"डाटा आव तरावनः येल"</string>
+<string name="accessibility_quick_settings_data_changed_off">"डाटा आव करनः बंद"</string>
+<string name="accessibility_quick_settings_data_on">"डाटा येल"</string>
+<string name="accessibility_quick_settings_data_off">"डाटा बंद"</string>
+<string name="missing_sim_message">"SIM छेनः"</string>
+</resources>

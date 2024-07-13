@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Честито! Го додадовте Адаптерот на УИ на системот на Поставки"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Отстрани од поставки"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Да се отстрани Адаптерот на УИ на системот од Поставки и да престанат да се користат сите негови функции?"</string>
+    <string name="quick_settings_volume_label">АУДИО ПРОФИЛ</string>
+     <string name="assistant_key_home">Почетен екран</string>
+     <string name="assistant_key_search">Пребарај</string>
+     <string name="assistant_key_menu">Мени</string>
+     <string name="assistant_key_back">Назад</string>
+
+    <string name="vibrate_hint">"Лизгај налево за вибрирање"</string>
+     <string name="battery_overtage_title">Предупредување за безбедност</string>
+     <string name="battery_overtage_content">"Напонот на полнење е премногу висок!"</string>
+     <string name="battery_overtage_back">Назад</string>
 </resources>

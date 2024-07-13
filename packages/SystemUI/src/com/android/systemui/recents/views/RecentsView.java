@@ -110,6 +110,12 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mDebugOverlay = overlay;
     }
 
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    public ArrayList<TaskStack> getTaskStacks() {
+        return mStacks;
+    }
+    /* @} */
+
     /** Set/get the bsp root node */
     public void setTaskStacks(ArrayList<TaskStack> stacks) {
         int numStacks = stacks.size();

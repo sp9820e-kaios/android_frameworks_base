@@ -474,4 +474,48 @@ public final class Installer extends SystemService {
 
         return false;
     }
+
+    /**
+     * SPRD: add for backup app {@
+     */
+    public int backupApp(String pkgName, String destPath, int callUid,
+            int callGid) {
+        if (pkgName == null || destPath == null) {
+            Slog.d(TAG, "in backupApp, pkgName: " + pkgName + " destPath: "
+                    + destPath + " have null value");
+            return -1;
+        }
+
+        StringBuilder builder = new StringBuilder("backupapp ");
+        builder.append(pkgName);
+        builder.append(' ');
+        builder.append(destPath);
+        builder.append(' ');
+        builder.append(callUid);
+        builder.append(' ');
+        builder.append(callGid);
+        Slog.d(TAG, "backupApp: " + builder);
+        return mInstaller.execute(builder.toString());
+    }
+
+    public int restoreApp(String sourcePath, String pkgName, int uid, int gid) {
+        if (sourcePath == null || pkgName == null) {
+            Slog.d(TAG, "in restoreApp, sourcePath: " + sourcePath
+                    + " pkgName: " + pkgName + " have null value");
+            return -1;
+        }
+        StringBuilder builder = new StringBuilder("restoreapp ");
+        builder.append(sourcePath);
+        builder.append(' ');
+        builder.append(pkgName);
+        builder.append(' ');
+        builder.append(uid);
+        builder.append(' ');
+        builder.append(gid);
+        Slog.d(TAG, "restoreApp: " + builder);
+        return mInstaller.execute(builder.toString());
+    }
+    /**
+     * @}
+     */
 }

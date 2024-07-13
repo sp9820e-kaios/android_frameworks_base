@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="wifi_fail_to_scan">"নেটৱৰ্ক স্কেন কৰিব নোৱাৰি"</string>
+<string name="wifi_security_none">"নাই"</string>
+<string name="wifi_remembered">"সংৰক্ষিত"</string>
+<string name="wifi_disabled_generic">"অদৃশ্য"</string>
+<string name="wifi_disabled_network_failure">"IP কনফিগাৰেচন ব্যৰ্থ হ\'ল"</string>
+<string name="wifi_disabled_wifi_failure">"WiFi সংযোগৰ ব্যৰ্থতা"</string>
+<string name="wifi_disabled_password_failure">"প্ৰমাণিকীকৰণত সমস্যা"</string>
+<string name="wifi_not_in_range">"পৰিসৰত নাই"</string>
+<string name="wifi_no_internet">"কোনো ইণ্টাৰনেট প্ৰৱেশ চিনাক্ত কৰা নাই, স্বয়ংক্ৰিয়ভাবে পুনৰ সংযোগ নকৰে।"</string>
+<string name="saved_network">"<xliff:g id="name">%1$s</xliff:g> ৰ দ্বাৰা সংৰক্ষণ কৰা হৈছে"</string>
+<string name="connected_via_wfa">"Wi\u2011Fi এছিষ্টেণ্টৰ মাধ্যমত সংযোগ কৰা হৈছে।"</string>
+<string name="connected_via_passpoint">"%1$s ৰ দ্বাৰা সংযোগ হৈছে"</string>
+<string name="available_via_passpoint">"%1$s ৰ দ্বাৰা উপলব্ধ"</string>
+<string name="wifi_connected_no_internet">"সংযোগিত, কোনো ইণ্টাৰনেট নাই"</string>
+<string name="bluetooth_disconnected">"সংযোগ বিচ্ছিন্ন হৈছে"</string>
+<string name="bluetooth_disconnecting">"সংযোগ বিচ্ছিন্ন হৈ আছে\u2026"</string>
+<string name="bluetooth_connecting">"সংযোগ স্থাপন হৈ আছে\u2026"</string>
+<string name="bluetooth_connected">"সংযোগ স্থাপন হৈছে"</string>
+<string name="bluetooth_pairing">"পেইৰিং\u2026"</string>
+<string name="bluetooth_connected_no_headset">"সংযোগ স্থাপন হৈছে (কোনো ফোন নাই)"</string>
+<string name="bluetooth_connected_no_a2dp">"সংযোগ স্থাপন হৈছে (কোনো মিডিয়া নাই)"</string>
+<string name="bluetooth_connected_no_map">"সংযোগ স্থাপন হৈছে (কোনো মেছেজ আহৰণ হোৱা নাই)"</string>
+<string name="bluetooth_connected_no_headset_no_a2dp">"সংযোগ স্থাপন হৈছে (কোনো ফোন বা মিডিয়া নাই)"</string>
+<string name="bluetooth_profile_a2dp">"মিডিয়া অডিঅ’"</string>
+<string name="bluetooth_profile_headset">"ফোন অ’ডিঅ’"</string>
+<string name="bluetooth_profile_opp">"ফাইল স্থানান্তৰ কৰক"</string>
+<string name="bluetooth_profile_hid">"ইনপুট ডিভাইচ"</string>
+<string name="bluetooth_profile_pan">"ইণ্টাৰনেট আহৰণ"</string>
+<string name="bluetooth_profile_pbap">"সম্পৰ্ক ভাগ-বতৰা"</string>
+<string name="bluetooth_profile_pbap_summary">"সম্পৰ্ক ভাগ-বতৰা কৰিবলৈ ব্যৱহাৰ কৰক"</string>
+<string name="bluetooth_profile_pan_nap">"ইণ্টাৰনেটৰ সংযোগ শ্বেয়াৰ কৰা হৈ আছে৷"</string>
+<string name="bluetooth_profile_map">"মেছেজ আহৰণ"</string>
+<string name="bluetooth_profile_sap">"SIM প্ৰৱেশ"</string>
+<string name="bluetooth_a2dp_profile_summary_connected">"মিডিয়া অডিঅ’ সংযোগ কৰা হৈছে"</string>
+<string name="bluetooth_headset_profile_summary_connected">"ফোন অডিঅ’ সংযোগ কৰা হৈছে"</string>
+<string name="bluetooth_opp_profile_summary_connected">"ফাইল স্থানান্তৰণ চাৰ্ভাৰ সংযোগ কৰা হৈছে"</string>
+<string name="bluetooth_map_profile_summary_connected">"মানচিত্ৰৰ সৈতে সংযোগ কৰা হৈছে"</string>
+<string name="bluetooth_sap_profile_summary_connected">"SAPলৈ সংযোগিত হৈছে"</string>
+<string name="bluetooth_opp_profile_summary_not_connected">"ফাইল স্থানান্তৰণ চাৰ্ভাৰৰ সৈতে সংযোগ নাই হোৱা"</string>
+<string name="bluetooth_hid_profile_summary_connected">"ইনপুট ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে"</string>
+<string name="bluetooth_pan_user_profile_summary_connected">"ইণ্টাৰনেট আহৰণৰ বাবে ডিভাইচৰ সৈতে সংযোগ কৰা "হৈছে</string>
+<string name="bluetooth_pan_nap_profile_summary_connected">"ডিভাইচৰ সৈতে স্থানীয় ইণ্টাৰনেট সংযোগ শ্বেয়াৰ কৰক"</string>
+<string name="bluetooth_pan_profile_summary_use_for">"ইণ্টাৰনেট আহৰণৰ বাবে ব্যৱহাৰ"</string>
+<string name="bluetooth_map_profile_summary_use_for">"মেপৰ বাবে ব্যৱহাৰ"</string>
+<string name="bluetooth_sap_profile_summary_use_for">"SIM প্ৰৱেশৰ বাবে ব্যৱহাৰ কৰক"</string>
+<string name="bluetooth_a2dp_profile_summary_use_for">"মিনিয়া অডিঅ’ৰ বাবে ব্যৱহাৰ"</string>
+<string name="bluetooth_headset_profile_summary_use_for">"ফোন অডিঅ’ৰ বাবে ব্যৱহাৰ"</string>
+<string name="bluetooth_opp_profile_summary_use_for">"ফাইল স্থানান্তৰকৰণৰ বাবে ব্যৱহাৰ"</string>
+<string name="bluetooth_hid_profile_summary_use_for">"ইনপুটৰ বাবে ব্যৱহাৰ"</string>
+<string name="bluetooth_pairing_accept">"পেইৰ"</string>
+<string name="bluetooth_pairing_accept_all_caps">"পেইৰ"</string>
+<string name="bluetooth_pairing_decline">"নাকচ"</string>
+<string name="bluetooth_pairing_will_share_phonebook">"যোৰা হ\'লে সংযোগ হোৱাৰ পাছত আপোনাৰ সম্পৰ্কবোৰৰ সৈতে আৰু কল ইতিহাসত প্ৰৱেশাধিকাৰ প্ৰদান কৰে।" </string>
+<string name="bluetooth_pairing_error_message">"<xliff:g id="device_name">%1$s</xliff:g>ৰ সৈতে পেইৰ কৰিব পৰা নগ’ল৷"</string>
+<string name="bluetooth_pairing_pin_error_message">"ভুল PIN বা পাছৱৰ্ডৰ বাবে <xliff:g id="device_name">%1$s</xliff:g> ৰ সৈতে পেইৰ কৰিব পৰা নগ’ল৷"</string>
+<string name="bluetooth_pairing_device_down_error_message">"<xliff:g id="device_name">%1$s</xliff:g>ৰ সৈতে যোগাযোগ স্থাপন কৰিব পৰা নগ’ল"</string>
+<string name="bluetooth_pairing_rejected_error_message">"ৰ দ্বাৰা পেইৰিং অগ্ৰাহ্য কৰা হৈছে <xliff:g id="device_name">%1$s</xliff:g>."</string>
+    <string name="wifi_secured_first_item">"<xliff:g>%1$s</xliff:g> ৰে সুৰক্ষিত কৰা"</string>
+     <string name="wifi_secured_second_item">",  <xliff:g>%1$s</xliff:g> ৰে সুৰক্ষিত কৰা"</string>
+     <string name="wifi_wps_available_first_item">"WPS উপলব্ধ"</string>
+     <string name="wifi_wps_available_second_item">"\u0020(WPS available)"</string>
+
+</resources>

@@ -307,6 +307,10 @@ public final class LocalBluetoothProfileManager {
         return mMapProfile;
     }
 
+    PanProfile getPanProfile() {
+        return mPanProfile;
+    }
+
     /**
      * Fill in a list of LocalBluetoothProfile objects that are supported by
      * the local device and the remote device.

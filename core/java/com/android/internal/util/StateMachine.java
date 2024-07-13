@@ -1967,7 +1967,7 @@ public class StateMachine {
         pw.println("curState=" + getCurrentState().getName());
     }
 
-    @Override
+/*    @Override
     public String toString() {
         StringWriter sr = new StringWriter();
         PrintWriter pr = new PrintWriter(sr);
@@ -1975,7 +1975,7 @@ public class StateMachine {
         pr.flush();
         pr.close();
         return sr.toString();
-    }
+    }*/
 
     /**
      * Log with debug and add to the LogRecords.

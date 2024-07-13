@@ -503,7 +503,11 @@ public class WindowDecorActionBar extends ActionBar implements
         mContextView.killMode();
         ActionModeImpl mode = new ActionModeImpl(mContextView.getContext(), callback);
         if (mode.dispatchOnCreate()) {
-            mode.invalidate();
+            /* SPRD: modify 20150421 Spreadtrum of 423894
+             * This is native Bug , Invoke invalidate() mActionMode is null in create process @{ */
+            // mode.invalidate();
+            mode.invalidateForCreateProcess();
+            /* @} */
             mContextView.initForMode(mode);
             animateToMode(true);
             if (mSplitView != null && mContextDisplayMode == CONTEXT_DISPLAY_SPLIT) {
@@ -788,7 +792,8 @@ public class WindowDecorActionBar extends ActionBar implements
             }
             anim.setInterpolator(AnimationUtils.loadInterpolator(mContext,
                     com.android.internal.R.interpolator.decelerate_cubic));
-            anim.setDuration(250);
+            //anim.setDuration(250);
+            anim.setDuration(mDisableAnimation ? 0 : 250);
             // If this is being shown from the system, add a small delay.
             // This is because we will also be animating in the status bar,
             // and these two elements can't be done in lock-step.  So we give
@@ -847,7 +852,8 @@ public class WindowDecorActionBar extends ActionBar implements
             }
             anim.setInterpolator(AnimationUtils.loadInterpolator(mContext,
                     com.android.internal.R.interpolator.accelerate_cubic));
-            anim.setDuration(250);
+            //anim.setDuration(250);
+            anim.setDuration(mDisableAnimation ? 0 : 250);
             anim.addListener(mHideListener);
             mCurrentShowAnim = anim;
             anim.start();
@@ -1026,6 +1032,18 @@ public class WindowDecorActionBar extends ActionBar implements
                 mMenu.startDispatchingItemsChanged();
             }
         }
+
+        /* SPRD: modify 20150421 Spreadtrum of 423894
+         * Invoke invalidate() mActionMode is null in create process @{ */
+        private void invalidateForCreateProcess() {
+            mMenu.stopDispatchingItemsChanged();
+            try {
+                mCallback.onPrepareActionMode(this, mMenu);
+            } finally {
+                mMenu.startDispatchingItemsChanged();
+            }
+        }
+        /* @} */
 
         public boolean dispatchOnCreate() {
             mMenu.stopDispatchingItemsChanged();
@@ -1364,4 +1382,14 @@ public class WindowDecorActionBar extends ActionBar implements
         }
     }
 
+    /* SPRD: Bug 509222 - Used to disable animation. @{ */
+    private boolean mDisableAnimation = false;
+
+    /*
+     * {@hide}
+     */
+    public void disableAnimation(boolean flag) {
+        mDisableAnimation = flag;
+    }
+    /* @} */
 }

@@ -16,6 +16,7 @@
 
 package android.widget;
 
+import android.app.ActivityManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -1782,7 +1783,23 @@ public class ListPopupWindow {
         public void onChanged() {
             if (isShowing()) {
                 // Resize the popup to fit new content
-                show();
+                /* SPRD: modify 20151116 Spreadtrum of 498805*/
+                if (ActivityManager.isUserAMonkey()) {
+                    try {
+                        show();
+                    } catch( WindowManager.BadTokenException e) {
+                        Throwable tr = new Throwable();
+                        tr.fillInStackTrace();
+                        android.util.Log.d(TAG,"Monkey Test Promblem show trace",tr);
+                    } catch (RuntimeException e) {
+                        Throwable tr = new Throwable();
+                        tr.fillInStackTrace();
+                        android.util.Log.d(TAG,"Monkey Test Promblem show trace",tr);
+                    }
+                } else {
+                    show();
+                }
+                /* @} */
             }
         }
         

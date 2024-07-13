@@ -184,6 +184,8 @@ public class ScrollingTabContainerView extends HorizontalScrollView
         if (mTabSpinner != null && position >= 0) {
             mTabSpinner.setSelection(position);
         }
+        // SPRD: update the selected tab and refresh layout.
+        updateTab(position);
     }
 
     public void setContentHeight(int contentHeight) {
@@ -325,7 +327,14 @@ public class ScrollingTabContainerView extends HorizontalScrollView
     }
 
     public void updateTab(int position) {
-        ((TabView) mTabLayout.getChildAt(position)).update();
+        //SPRD: add NPE check, tabView's tabView maybe null! @{
+        if(mTabLayout!=null){
+            TabView tabView=(TabView) mTabLayout.getChildAt(position);
+            if(tabView!=null){
+            tabView.update();
+            }
+        }
+        // @}
         if (mTabSpinner != null) {
             ((TabAdapter) mTabSpinner.getAdapter()).notifyDataSetChanged();
         }

@@ -108,6 +108,7 @@ final class ActivityRecord {
     final boolean noDisplay;  // activity is not displayed?
     final boolean componentSpecified;  // did caller specifiy an explicit component?
     final boolean rootVoiceInteraction;  // was this the root activity of a voice interaction?
+    int callerPid;          //SPRD:add callerPid for Ex
 
     static final int APPLICATION_ACTIVITY_TYPE = 0;
     static final int HOME_ACTIVITY_TYPE = 1;
@@ -471,6 +472,7 @@ final class ActivityRecord {
         hasBeenLaunched = false;
         mStackSupervisor = supervisor;
         mInitialActivityContainer = container;
+        callerPid = _caller != null ? _caller.pid : -1;//SPRD: add callerPid for Ex
         if (options != null) {
             pendingOptions = new ActivityOptions(options);
             mLaunchTaskBehind = pendingOptions.getLaunchTaskBehind();

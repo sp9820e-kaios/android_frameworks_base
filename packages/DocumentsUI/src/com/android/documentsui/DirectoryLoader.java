@@ -125,7 +125,8 @@ public class DirectoryLoader extends AsyncTaskLoader<DirectoryResult> {
             final Uri stateUri = RecentsProvider.buildState(
                     mRoot.authority, mRoot.rootId, mDoc.documentId);
             cursor = resolver.query(stateUri, null, null, null, null);
-            if (cursor.moveToFirst()) {
+            /* Fix Bug:522251 When the memory is too high, some of the applications are crash 2016.01.15 */
+            if (cursor != null && cursor.moveToFirst()) {
                 userMode = getCursorInt(cursor, StateColumns.MODE);
             }
         } finally {

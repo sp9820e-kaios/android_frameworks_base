@@ -78,6 +78,14 @@ public final class PanProfile implements LocalBluetoothProfile {
         return true;
     }
 
+    public boolean isTetheringOn() {
+        if (mService != null) {
+            return mService.isTetheringOn();
+        } else {
+            return false;
+        }
+    }
+
     public boolean isAutoConnectable() {
         return false;
     }

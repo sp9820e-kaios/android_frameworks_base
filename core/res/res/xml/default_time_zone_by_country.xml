@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPRD: Bug#474251 Get capital time zone -->
+<timezones>
+    <!-- CHINA, 8:00 -->
+    <timezone code="cn">Asia/Shanghai</timezone>
+    <!-- FRANCE, 1:00 -->
+    <timezone code="fr">Europe/Paris</timezone>
+    <!-- UNITED STATES, -5:00 -->
+    <timezone code="us">America/New_York</timezone>
+    <!-- RUSSIAN FEDERATION, 3:00 -->
+    <timezone code="ru">Europe/Moscow</timezone>
+    <!-- UNITED KINGDOM, 0:00 -->
+    <timezone code="gb">Europe/London</timezone>
+    <!-- AUSTRALIA, 10:00 -->
+    <timezone code="au">Australia/Sydney</timezone>
+    <!-- CANADA, -5:00 -->
+    <timezone code="ca">America/Toronto</timezone>
+    <!-- NEW ZEALAND, 12:00 -->
+    <timezone code="nz">Pacific/Auckland</timezone>
+    <!-- BRAZIL, -3:00 -->
+    <timezone code="br">America/Sao_Paulo</timezone>
+    <!-- MEXICO, -6:00 -->
+    <timezone code="mx">America/Mexico_City</timezone>
+    <!-- INDONESIA, 7:00 -->
+    <timezone code="id">Asia/Jakarta</timezone>
+    <!-- KIRIBATI, 12:00 -->
+    <timezone code="ki">Pacific/Tarawa</timezone>
+    <!-- CHILE, -4:00 -->
+    <timezone code="cl">America/Santiago</timezone>
+    <!-- CONGO, THE DEMOCRATIC REPUBLIC OF THE, 1:00 -->
+    <timezone code="cd">Africa/Kinshasa</timezone>
+    <!-- ECUADOR, -5:00 -->
+    <timezone code="ec">America/Guayaquil</timezone>
+    <!-- MICRONESIA, FEDERATED STATES OF, 11:00 -->
+    <timezone code="fm">Pacific/Ponape</timezone>
+    <!-- KAZAKHSTAN, 6:00 -->
+    <timezone code="kz">Asia/Almaty</timezone>
+    <!-- MONGOLIA, 8:00 -->
+    <timezone code="mn">Asia/Choibalsan</timezone>
+    <!-- PORTUGAL, 0:00 -->
+    <timezone code="pt">Europe/Lisbon</timezone>
+    <!-- SPAIN, 1:00 -->
+    <timezone code="es">Europe/Madrid</timezone>
+</timezones>

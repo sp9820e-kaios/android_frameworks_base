@@ -16,6 +16,7 @@
 package com.android.internal.os;
 
 import android.os.BatteryStats;
+import android.os.SystemProperties;
 import android.util.Log;
 
 public class BluetoothPowerCalculator extends PowerCalculator {
@@ -56,7 +57,7 @@ public class BluetoothPowerCalculator extends PowerCalculator {
                     / (1000*60*60);
         }
 
-        if (DEBUG && powerMah != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog()  && powerMah != 0) {
             Log.d(TAG, "Bluetooth active: time=" + (totalTimeMs)
                     + " power=" + BatteryStatsHelper.makemAh(powerMah));
         }

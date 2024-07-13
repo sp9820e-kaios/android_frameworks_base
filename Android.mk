@@ -38,7 +38,7 @@ ifneq ($(ANDROID_BUILD_EMBEDDED),true)
 include $(CLEAR_VARS)
 
 # FRAMEWORKS_BASE_SUBDIRS comes from build/core/pathmap.mk
-LOCAL_SRC_FILES := $(call find-other-java-files,$(FRAMEWORKS_BASE_SUBDIRS))
+LOCAL_SRC_FILES :=
 
 # EventLogTags files.
 LOCAL_SRC_FILES += \
@@ -309,6 +309,7 @@ LOCAL_SRC_FILES += \
 	core/java/com/android/internal/widget/ILockSettings.aidl \
 	core/java/com/android/internal/widget/IRemoteViewsFactory.aidl \
 	core/java/com/android/internal/widget/IRemoteViewsAdapterConnection.aidl \
+	core/java/android/os/ISecurityService.aidl \
 	keystore/java/android/security/IKeyChainAliasCallback.aidl \
 	keystore/java/android/security/IKeyChainService.aidl \
 	location/java/android/location/ICountryDetector.aidl \
@@ -386,6 +387,7 @@ LOCAL_SRC_FILES += \
 	telephony/java/com/android/ims/internal/IImsService.aidl \
 	telephony/java/com/android/ims/internal/IImsStreamMediaSession.aidl \
 	telephony/java/com/android/ims/internal/IImsUt.aidl \
+	telephony/java/com/android/ims/internal/IImsUtEx.aidl \
 	telephony/java/com/android/ims/internal/IImsUtListener.aidl \
 	telephony/java/com/android/ims/internal/IImsVideoCallCallback.aidl \
 	telephony/java/com/android/ims/internal/IImsVideoCallProvider.aidl \
@@ -400,6 +402,9 @@ LOCAL_SRC_FILES += \
 	telephony/java/com/android/internal/telephony/ITelephony.aidl \
 	telephony/java/com/android/internal/telephony/ITelephonyRegistry.aidl \
 	telephony/java/com/android/internal/telephony/IWapPushManager.aidl \
+	telephony/java/com/android/internal/telephony/IRingerService.aidl \
+	telephony/java/com/android/internal/telephony/IFdnService.aidl \
+	telephony/java/com/android/internal/telephony/IGeneralSecureManager.aidl \
 	wifi/java/android/net/wifi/IWifiManager.aidl \
 	wifi/java/android/net/wifi/passpoint/IWifiPasspointManager.aidl \
 	wifi/java/android/net/wifi/p2p/IWifiP2pManager.aidl \
@@ -408,6 +413,17 @@ LOCAL_SRC_FILES += \
 	packages/services/PacProcessor/com/android/net/IProxyService.aidl \
 	packages/services/Proxy/com/android/net/IProxyCallback.aidl \
 	packages/services/Proxy/com/android/net/IProxyPortListener.aidl \
+	core/java/android/hardware/boardScore/IBoardScoreService.aidl \
+
+#add for heartbeat powerguru
+	LOCAL_SRC_FILES += core/java/android/app/IPowerGuru.aidl \
+
+# SPRD: secure start
+# compile source
+$(warning  "################-- NOT IN OEM_INTEGRATION --######################")
+LOCAL_SRC_FILES += $(call find-other-java-files, secure/core) \
+              secure/core/secapi/com/thundersoft/secure/ITsIpTableManager.aidl
+# SPRD: secure end
 
 # FRAMEWORKS_BASE_JAVA_SRC_DIRS comes from build/core/pathmap.mk
 LOCAL_AIDL_INCLUDES += $(FRAMEWORKS_BASE_JAVA_SRC_DIRS)
@@ -652,13 +668,6 @@ include libcore/Docs.mk
 # include definition of junit_to_document
 include external/junit/Common.mk
 
-non_base_dirs := \
-	../opt/telephony/src/java/android/provider \
-	../opt/telephony/src/java/android/telephony \
-	../opt/telephony/src/java/android/telephony/gsm \
-	../opt/net/voip/src/java/android/net/rtp \
-	../opt/net/voip/src/java/android/net/sip
-
 # These are relative to frameworks/base
 dirs_to_check_apis := \
   $(fwbase_dirs_to_document) \
@@ -668,12 +677,9 @@ dirs_to_check_apis := \
 # FRAMEWORKS_BASE_SUBDIRS comes from build/core/pathmap.mk
 dirs_to_document := \
 	$(dirs_to_check_apis) \
-  $(addprefix ../../, $(FRAMEWORKS_DATA_BINDING_JAVA_SRC_DIRS)) \
-  $(addprefix ../../, $(FRAMEWORKS_SUPPORT_JAVA_SRC_DIRS)) \
 
 # These are relative to frameworks/base
 html_dirs := \
-	$(FRAMEWORKS_BASE_SUBDIRS) \
 	$(non_base_dirs)
 
 # Common sources for doc check and api check
@@ -1078,7 +1084,7 @@ ext_dirs := \
 	../../external/nist-sip/java \
 	../../external/tagsoup/src \
 
-ext_src_files := $(call all-java-files-under,$(ext_dirs))
+ext_src_files :=
 
 # ====  the library  =========================================
 include $(CLEAR_VARS)
@@ -1095,6 +1101,8 @@ LOCAL_DX_FLAGS := --core-library
 
 include $(BUILD_JAVA_LIBRARY)
 
+# SPRD : Build sprd depart codes
+include $(wildcard $(LOCAL_PATH)/sprd.mk)
 
 # Include subdirectory makefiles
 # ============================================================

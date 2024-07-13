@@ -41,7 +41,7 @@ import java.io.DataOutputStream;
 import java.io.ByteArrayOutputStream;
 
 import android.util.Log;
-
+import android.os.SystemProperties;
 /**
  * This class implements the Operation interface for server side connections.
  * <P>
@@ -111,6 +111,14 @@ public final class ServerOperation implements Operation, BaseStream {
     private boolean mSrmWaitingForRemote = true;
     // Why should we wait? - currently not exposed to apps.
     private boolean mSrmLocalWait = false;
+    private int speed = 0;
+
+    private int mRecvFileTime;
+    private long m_cur_time_begin = 0;
+    private long m_cur_time_old = 0;
+    private long mSleepTimer = 0;
+    private long time_used_total = 0;
+    private long mPacketCount = 0;
 
     /**
      * Creates new ServerOperation
@@ -216,6 +224,17 @@ public final class ServerOperation implements Operation, BaseStream {
         while (mGetOperation && !mRequestFinished) {
             sendReply(ResponseCodes.OBEX_HTTP_CONTINUE);
         }
+
+        /* need to get the properties here instead of header of the file */
+        speed = SystemProperties.getInt("debug.bt.lowspeed", 110);
+
+        if (speed <= 0) {
+            speed = 0;
+        } else {
+            mRecvFileTime = (mMaxPacketLength / speed);
+        }
+
+        Log.d(TAG, "Obex recv process size: " + mMaxPacketLength + " time: " + mRecvFileTime + " speed: " + speed);
     }
 
     /**
@@ -517,7 +536,32 @@ public final class ServerOperation implements Operation, BaseStream {
         }
 
         if (type == ResponseCodes.OBEX_HTTP_CONTINUE) {
+            // SPRD: Bluetooth Opp transfer speed limited at obex server side
+            if (speed > 0) {
+                mPacketCount++;
+                Log.d(TAG, "send continue..., mPacketCount="+ mPacketCount);
+                if (mPacketCount ==1) {
+                  m_cur_time_begin = System.currentTimeMillis();
+                  m_cur_time_old = m_cur_time_begin;
+                    Log.d(TAG, "has received first packet ...., m_cur_time_old=" + m_cur_time_old);
+                } else {
+                    long cur_time_new = System.currentTimeMillis();
 
+                    time_used_total = cur_time_new - m_cur_time_begin;  // total time for sending file
+                    m_cur_time_old = cur_time_new;
+
+                    Log.d(TAG, "cur_time_new ="+cur_time_new+"time_used_total "+time_used_total);
+                    if (time_used_total < (mPacketCount-1)*mRecvFileTime) {
+                        mSleepTimer = ((mPacketCount-1)*mRecvFileTime)-time_used_total;  // sleep time for each trunk
+                        Log.d(TAG, "sleep time: "+mSleepTimer+"ms");
+                        try {
+                            Thread.sleep(mSleepTimer);
+                        } catch (Exception e) {
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                }
+            }
             if(mGetOperation && skipReceive) {
                 // Here we need to check for and handle abort (throw an exception).
                 // Any other signal received should be discarded silently (only on server side)

@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
@@ -27,17 +28,20 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.util.MathUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
+import com.android.systemui.qs.QSTile.ResourceIcon;
 import com.android.systemui.qs.QSTile.AnimationIcon;
 import com.android.systemui.qs.QSTile.State;
 
@@ -51,6 +55,10 @@ public class QSTileView extends ViewGroup {
     protected final Context mContext;
     private final View mIcon;
     private final View mDivider;
+    /* SPRD: Bug 585904 Switch panel component adjust {@ */
+    private final View mDividerRight;
+    private final View mDividerBottom;
+    /* @} */
     private final H mHandler = new H();
     private final int mIconSizePx;
     private final int mTileSpacingPx;
@@ -67,6 +75,7 @@ public class QSTileView extends ViewGroup {
     private OnLongClickListener mLongClick;
     private Drawable mTileBackground;
     private RippleDrawable mRipple;
+    private final int mDualTileHorizontalPaddingPx;
 
     public QSTileView(Context context) {
         super(context);
@@ -78,7 +87,10 @@ public class QSTileView extends ViewGroup {
         mTilePaddingBelowIconPx =  res.getDimensionPixelSize(R.dimen.qs_tile_padding_below_icon);
         mDualTileVerticalPaddingPx =
                 res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding_vertical);
-        mTileBackground = newTileBackground();
+        // SPRD: 527554 Set the String displays complete.
+        mDualTileHorizontalPaddingPx =
+                res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding);
+        mTileBackground = /*newTileBackground()*/res.getDrawable(R.drawable.bg_qstile);//F3060718
         recreateLabel();
         setClipChildren(false);
 
@@ -94,7 +106,17 @@ public class QSTileView extends ViewGroup {
         final int dh = res.getDimensionPixelSize(R.dimen.qs_tile_divider_height);
         mDivider.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, dh));
         addView(mDivider);
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        mDividerRight = new View(mContext);
+        mDividerRight.setBackgroundColor(Color.DKGRAY);
+        mDividerRight.setLayoutParams(new LayoutParams(dh, LayoutParams.MATCH_PARENT));
+        addView(mDividerRight);
 
+        mDividerBottom = new View(mContext);
+        mDividerBottom.setBackgroundColor(Color.DKGRAY);
+        mDividerBottom.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, dh));
+        addView(mDividerBottom);
+        /* @} */
         setClickable(true);
         updateTopPadding();
         setId(View.generateViewId());
@@ -142,6 +164,7 @@ public class QSTileView extends ViewGroup {
             mDualLabel.setBackgroundResource(R.drawable.btn_borderless_rect);
             mDualLabel.setFirstLineCaret(mContext.getDrawable(R.drawable.qs_dual_tile_caret));
             mDualLabel.setTextColor(mContext.getColor(R.color.qs_tile_text));
+            // SPRD: 561352 Set the String displays complete.
             mDualLabel.setPadding(0, mDualTileVerticalPaddingPx, 0, mDualTileVerticalPaddingPx);
             mDualLabel.setTypeface(CONDENSED);
             mDualLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
@@ -162,7 +185,8 @@ public class QSTileView extends ViewGroup {
             mLabel.setTextColor(mContext.getColor(R.color.qs_tile_text));
             mLabel.setGravity(Gravity.CENTER_HORIZONTAL);
             mLabel.setMinLines(2);
-            mLabel.setPadding(0, 0, 0, 0);
+            // SPRD: 527554 Set the String displays complete.
+            mLabel.setPadding(mDualTileHorizontalPaddingPx, 0, mDualTileHorizontalPaddingPx, 0);
             mLabel.setTypeface(CONDENSED);
             mLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                     res.getDimensionPixelSize(R.dimen.qs_tile_text_size));
@@ -247,6 +271,10 @@ public class QSTileView extends ViewGroup {
         if (mDual) {
             mDivider.measure(widthMeasureSpec, exactly(mDivider.getLayoutParams().height));
         }
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        mDividerRight.measure(exactly(mDividerRight.getLayoutParams().width), heightMeasureSpec);
+        mDividerBottom.measure(widthMeasureSpec, exactly(mDividerBottom.getLayoutParams().height));
+        /* @} */
         int heightSpec = exactly(
                 mIconSizePx + mTilePaddingBelowIconPx + mTilePaddingTopPx);
         mTopBackgroundView.measure(widthMeasureSpec, heightSpec);
@@ -267,6 +295,9 @@ public class QSTileView extends ViewGroup {
         int top = 0;
         top += mTileSpacingPx;
         top += mTilePaddingTopPx;
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        top += getResources().getDimensionPixelSize(R.dimen.qs_tile_top_offset);
+        /* @} */
         final int iconLeft = (w - mIcon.getMeasuredWidth()) / 2;
         layout(mIcon, iconLeft, top);
         if (mRipple != null) {
@@ -279,6 +310,10 @@ public class QSTileView extends ViewGroup {
             layout(mDivider, 0, top);
             top = mDivider.getBottom();
         }
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        mDividerRight.layout(w - mDividerRight.getMeasuredWidth(), 0, w, h);
+        mDividerBottom.layout(0, h - mDividerBottom.getMeasuredHeight(), w, h);
+        /* @} */
         layout(labelView(), 0, top);
     }
 
@@ -312,7 +347,14 @@ public class QSTileView extends ViewGroup {
         if (!Objects.equals(state.icon, iv.getTag(R.id.qs_icon_tag))) {
             Drawable d = state.icon != null ? state.icon.getDrawable(mContext) : null;
             if (d != null && state.autoMirrorDrawable) {
-                d.setAutoMirrored(true);
+                /* SPRD: add for 4G and data connection quick setting @{ */
+                if(state.icon == ResourceIcon.get(R.drawable.ic_qs_4g_on_ex)
+                        || state.icon == ResourceIcon.get(R.drawable.ic_qs_4g_off_ex)) {
+                    d.setAutoMirrored(false);
+                } else {
+                    d.setAutoMirrored(true);
+                }
+                /* @} */
             }
             iv.setImageDrawable(d);
             iv.setTag(R.id.qs_icon_tag, state.icon);

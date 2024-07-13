@@ -264,6 +264,11 @@ public final class BluetoothEventManager {
             }
             int bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,
                                                BluetoothDevice.ERROR);
+            // SPRD: when passive bonding, cancel discover operation
+            if (bondState == BluetoothDevice.BOND_BONDING && mLocalAdapter != null && mLocalAdapter.isDiscovering()) {
+                Log.i(TAG, "In Bonding state, cancel discovery operation");
+                mLocalAdapter.cancelDiscovery();
+            }
             CachedBluetoothDevice cachedDevice = mDeviceManager.findDevice(device);
             if (cachedDevice == null) {
                 Log.w(TAG, "CachedBluetoothDevice for device " + device +

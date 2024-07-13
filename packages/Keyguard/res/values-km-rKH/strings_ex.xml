@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="kg_no_sim_message">"គ្មាន​ស៊ី​ម​កាត"</string>
+<string name="kg_emergency_call_no_service">"មិនមានបណ្តាញដែលអាចប្រើប្រាស់បានទេ"</string>
+<string name="kg_sim_pin_verify_success">ការផ្ទៀតផ្ទាត់កូដPINបានជោគជ័យ</string>
+</resources>

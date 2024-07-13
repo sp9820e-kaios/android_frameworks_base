@@ -29,6 +29,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.MathUtils;
+import android.telephony.CarrierConfigManager;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -39,7 +40,10 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.ScrollView;
+import android.view.LayoutInflater;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.keyguard.KeyguardStatusView;
@@ -60,6 +64,10 @@ import com.android.systemui.statusbar.policy.HeadsUpManager;
 import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout;
 import com.android.systemui.statusbar.stack.StackStateAnimator;
+import com.sprd.keyguard.KeyguardPluginsHelper;
+
+import android.widget.Button;
+
 
 public class NotificationPanelView extends PanelView implements
         ExpandableView.OnHeightChangedListener, ObservableScrollView.Listener,
@@ -96,6 +104,7 @@ public class NotificationPanelView extends PanelView implements
     private TextView mClockView;
     private View mReserveNotificationSpace;
     private View mQsNavbarScrim;
+    private Button mEmergencyButton;
     private NotificationsQuickSettingsContainer mNotificationContainerParent;
     private NotificationStackScrollLayout mNotificationStackScroller;
     private int mNotificationTopPadding;
@@ -104,6 +113,14 @@ public class NotificationPanelView extends PanelView implements
     private int mTrackingPointer;
     private VelocityTracker mVelocityTracker;
     private boolean mQsTracking;
+
+    /* SPRD: Bug 583693 PikeL Feature {@ */
+    private LinearLayout mQsPanelContainer;
+    private ScrollView mNotificationScrollView;
+    private Button mBtnNotification;
+    private Button mBtnQSPanel;
+    private LinearLayout mTabSwitchContainer;
+    /* @} */
 
     /**
      * Handles launching the secure camera properly even when other applications may be using the
@@ -204,6 +221,10 @@ public class NotificationPanelView extends PanelView implements
     private boolean mClosingWithAlphaFadeOut;
     private boolean mHeadsUpAnimatingAway;
 
+    /* SPRD: modify for bug 494056 @{ */
+    private CarrierConfigManager mConfigManager;
+    /* @} */
+
     private Runnable mHeadsUpExistenceChangedRunnable = new Runnable() {
         @Override
         public void run() {
@@ -228,6 +249,10 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        /* SPRD: modify by BUG 496764 @{ */
+        mConfigManager =(CarrierConfigManager)mContext.
+                getSystemService(Context.CARRIER_CONFIG_SERVICE);
+        /* @} */
         mHeader = (StatusBarHeaderView) findViewById(R.id.header);
         mHeader.setOnClickListener(this);
         mKeyguardStatusBar = (KeyguardStatusBarView) findViewById(R.id.keyguard_header);
@@ -272,6 +297,68 @@ public class NotificationPanelView extends PanelView implements
                 }
             }
         });
+        // SPRD: Feature 478270 Add EmergencyButton on the Lockscreen
+        mEmergencyButton = (Button)findViewById(R.id.emergency_call_button_slide);
+
+        /* SPRD: Bug 583693 PikeL Feature {@ */
+        mQsPanelContainer = (LinearLayout)findViewById(R.id.qs_panel_container);
+        mNotificationScrollView = (ScrollView) findViewById(R.id.notification_views);
+        mBtnNotification = (Button)findViewById(R.id.notification_btn);
+        mBtnQSPanel  = (Button)findViewById(R.id.qs_btn);
+        /*SPRD bug 629098 :Switch button clickable{@*/
+        mBtnNotification.setClickable(true);
+        mBtnQSPanel.setClickable(true);
+        /* SPRD: Bug 593967 New feature: Notification and Switch container is shown when focused {@ */
+        mBtnNotification.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.isFocused() && hasFocus) {
+                    mQsContainer.setVisibility(View.GONE);
+                    mNotificationStackScroller.setVisibility(View.VISIBLE);
+                    mNotificationScrollView.setVisibility(View.VISIBLE);
+                }
+            }
+            });
+        mBtnNotification.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                  mQsContainer.setVisibility(View.GONE);
+                  mNotificationStackScroller.setVisibility(View.VISIBLE);
+                  mNotificationScrollView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        mBtnQSPanel.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (v.isFocused() && hasFocus) {
+                    mQsContainer.setVisibility(View.VISIBLE);
+                    mNotificationStackScroller.setVisibility(View.GONE);
+                    mNotificationScrollView.setVisibility(View.GONE);
+                    if (!mQsExpanded && mQsExpansionEnabled) {
+                        flingSettings(0 /* vel */, true /* expand */, null, true /* isClick */);
+                    }
+                }
+            }
+            });
+        mBtnQSPanel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                mQsContainer.setVisibility(View.VISIBLE);
+                mNotificationStackScroller.setVisibility(View.GONE);
+                mNotificationScrollView.setVisibility(View.GONE);
+                if (!mQsExpanded && mQsExpansionEnabled) {
+                    flingSettings(0 /* vel */, true /* expand */, null, true /* isClick */);
+                }
+            }
+        });
+        /* @} */
+        mTabSwitchContainer = (LinearLayout)findViewById(R.id.tab_switch_container);
+//        mBtnNotification.setOnClickListener(this);
+//        mBtnQSPanel.setOnClickListener(this);
+        /* @} */
     }
 
     @Override
@@ -303,7 +390,9 @@ public class NotificationPanelView extends PanelView implements
             lp.width = panelWidth;
             lp.gravity = panelGravity;
             mHeader.setLayoutParams(lp);
-            mHeader.post(mUpdateHeader);
+            /* SPRD: Bug 583693 PikeL mHeader don't need this function {@ */
+            //mHeader.post(mUpdateHeader);
+            /* @} */
         }
 
         lp = (FrameLayout.LayoutParams) mNotificationStackScroller.getLayoutParams();
@@ -421,11 +510,13 @@ public class NotificationPanelView extends PanelView implements
                     mKeyguardStatusView.getHeight(),
                     mEmptyDragAmount);
             mClockPositionAlgorithm.run(mClockPositionResult);
-            if (animate || mClockAnimator != null) {
-                startClockAnimation(mClockPositionResult.clockY);
-            } else {
-                mKeyguardStatusView.setY(mClockPositionResult.clockY);
-            }
+            /* SPRD: Bug 591431 SIM information overlap in keyguard @{ */
+            //if (animate || mClockAnimator != null) {
+            //    startClockAnimation(mClockPositionResult.clockY);
+            //} else {
+            //    mKeyguardStatusView.setY(mClockPositionResult.clockY);
+            //}
+            /* @} */
             updateClock(mClockPositionResult.clockAlpha, mClockPositionResult.clockScale);
             stackScrollerPadding = mClockPositionResult.stackScrollerPadding;
             mTopPaddingAdjustment = mClockPositionResult.stackScrollerPaddingAdjustment;
@@ -526,6 +617,15 @@ public class NotificationPanelView extends PanelView implements
         }
         expand();
     }
+
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    public void expandWithQsQuickly() {
+        if (mQsExpansionEnabled) {
+            mQsExpandImmediate = true;
+        }
+        expandQuickly();
+    }
+    /* @} */
 
     @Override
     public void fling(float vel, boolean expand) {
@@ -1255,9 +1355,11 @@ public class NotificationPanelView extends PanelView implements
 
     private void updateQsState() {
         boolean expandVisually = mQsExpanded || mStackScrollerOverscrolling || mHeaderAnimating;
-        mHeader.setVisibility((mQsExpanded || !mKeyguardShowing || mHeaderAnimating)
+        /* SPRD: Bug 583693 PikeL Feature {@ */
+        /*mHeader.setVisibility((mQsExpanded || !mKeyguardShowing || mHeaderAnimating)
                 ? View.VISIBLE
-                : View.INVISIBLE);
+                : View.INVISIBLE);*/
+        /* @} */
         mHeader.setExpanded((mKeyguardShowing && !mHeaderAnimating)
                 || (mQsExpanded && !mStackScrollerOverscrolling));
         mNotificationStackScroller.setScrollingEnabled(
@@ -1268,10 +1370,12 @@ public class NotificationPanelView extends PanelView implements
                 mKeyguardShowing && !expandVisually ? View.INVISIBLE : View.VISIBLE);
         mScrollView.setTouchEnabled(mQsExpanded);
         updateEmptyShadeView();
-        mQsNavbarScrim.setVisibility(mStatusBarState == StatusBarState.SHADE && mQsExpanded
-                && !mStackScrollerOverscrolling && mQsScrimEnabled
-                        ? View.VISIBLE
-                        : View.INVISIBLE);
+        /* SPRD: Bug 583693 hide navbar scrim {@ */
+        //mQsNavbarScrim.setVisibility(mStatusBarState == StatusBarState.SHADE && mQsExpanded
+        //        && !mStackScrollerOverscrolling && mQsScrimEnabled
+        //                ? View.VISIBLE
+        //                : View.INVISIBLE);
+        /* @} */
         if (mKeyguardUserSwitcher != null && mQsExpanded && !mStackScrollerOverscrolling) {
             mKeyguardUserSwitcher.hideIfNotSimple(true /* animate */);
         }
@@ -1301,10 +1405,12 @@ public class NotificationPanelView extends PanelView implements
                 || mStatusBarState == StatusBarState.KEYGUARD) {
             updateKeyguardBottomAreaAlpha();
         }
-        if (mStatusBarState == StatusBarState.SHADE && mQsExpanded
-                && !mStackScrollerOverscrolling && mQsScrimEnabled) {
-            mQsNavbarScrim.setAlpha(getQsExpansionFraction());
-        }
+        /* SPRD: Bug 583693 hide navbar scrim {@ */
+        //if (mStatusBarState == StatusBarState.SHADE && mQsExpanded
+        //        && !mStackScrollerOverscrolling && mQsScrimEnabled) {
+        //    mQsNavbarScrim.setAlpha(getQsExpansionFraction());
+        //}
+        /* @} */
 
         // Upon initialisation when we are not layouted yet we don't want to announce that we are
         // fully expanded, hence the != 0.0f check.
@@ -1385,7 +1491,10 @@ public class NotificationPanelView extends PanelView implements
                 mScrollView.getScrollY(),
                 mAnimateNextTopPaddingChange || animate,
                 mKeyguardShowing
-                        && (mQsExpandImmediate || mIsExpanding && mQsExpandedWhenExpandingStarted));
+                       /* SPRD: Bug 583693 hide notifications in keyguard {@ */
+                       /* && (mQsExpandImmediate || mIsExpanding && mQsExpandedWhenExpandingStarted)*/);
+                       /* @} */
+
         mAnimateNextTopPaddingChange = false;
     }
 
@@ -1445,6 +1554,9 @@ public class NotificationPanelView extends PanelView implements
         if (belowFalsingThreshold) {
             animator.setDuration(350);
         }
+        /* SPRD: Bug 583693 ensure show panel immediately {@ */
+        animator.setDuration(0);
+        /* @} */
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -1487,9 +1599,17 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected boolean isScrolledToBottom() {
         if (!isInSettings()) {
+            /* SPRD: Fix bug 511732 @{ */
+            if(!mEmergencyButton.isClickable()){
+                mEmergencyButton.setClickable(true);
+            }
+            /* @} */
             return mStatusBar.getBarState() == StatusBarState.KEYGUARD
                     || mNotificationStackScroller.isScrolledToBottom();
         } else {
+            /* SPRD: Fix bug 511732 @{ */
+            mEmergencyButton.setClickable(false);
+            /* @} */
             return mScrollView.isScrolledToBottom();
         }
     }
@@ -1771,6 +1891,8 @@ public class NotificationPanelView extends PanelView implements
         if (mQsExpanded) {
             onQsExpansionStarted();
         }
+        // SPRD: modify by BUG 504023
+        mStatusBar.updateCarrierLabelVisibility(true);
     }
 
     @Override
@@ -1848,6 +1970,8 @@ public class NotificationPanelView extends PanelView implements
                 || mStatusBar.getBarState() == StatusBarState.SHADE_LOCKED) {
             mAfforanceHelper.animateHideLeftRightIcon();
         }
+        // SPRD: Feature 478270 Add EmergencyButton on the Lockscreen
+        mEmergencyButton.setVisibility(View.INVISIBLE);
         mNotificationStackScroller.onPanelTrackingStarted();
     }
 
@@ -1871,6 +1995,11 @@ public class NotificationPanelView extends PanelView implements
             lockIcon.setImageAlpha(0.0f, true, 100, mFastOutLinearInterpolator, null);
             lockIcon.setImageScale(2.0f, true, 100, mFastOutLinearInterpolator);
         }
+        // SPRD: Feature 478270 Add EmergencyButton on the Lockscreen
+        /* SPRD: modify by BUG 529668 @{ */
+        boolean keyShowEccButton = KeyguardPluginsHelper.getInstance().makeEmergencyVisible();
+        mEmergencyButton.setVisibility(keyShowEccButton ? View.VISIBLE : View.INVISIBLE);
+        /* @} */
     }
 
     @Override
@@ -1900,6 +2029,10 @@ public class NotificationPanelView extends PanelView implements
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mAfforanceHelper.onConfigurationChanged();
+        /*SPRD:bugfix 596961 @{*/
+        mBtnNotification.setText(R.string.label_tab_notifications);
+        mBtnQSPanel.setText(R.string.label_tab_qs);
+        /*SPRD:bugfix 596961 @{*/
         if (newConfig.orientation != mLastOrientation) {
             resetVerticalPanelPosition();
         }
@@ -1937,7 +2070,20 @@ public class NotificationPanelView extends PanelView implements
                         0, 0);
                 flingSettings(0 /* vel */, true /* expand */, null, true /* isClick */);
             }
+        /* SPRD: Bug 583693/593967 Notification and Switch container is shown when focused {@ */
+        //} else if (v == mBtnNotification) {
+            //mQsContainer.setVisibility(View.GONE);
+            //mNotificationStackScroller.setVisibility(View.VISIBLE);
+            //mNotificationScrollView.setVisibility(View.VISIBLE);
+        //} else if (v == mBtnQSPanel) {
+            //mQsContainer.setVisibility(View.VISIBLE);
+            //mNotificationStackScroller.setVisibility(View.GONE);
+            //mNotificationScrollView.setVisibility(View.GONE);
+            //if (!mQsExpanded && mQsExpansionEnabled) {
+            //    flingSettings(0 /* vel */, true /* expand */, null, true /* isClick */);
+            //}
         }
+        /* @} */
     }
 
     @Override
@@ -1955,7 +2101,11 @@ public class NotificationPanelView extends PanelView implements
         } else {
             EventLogTags.writeSysuiLockscreenGesture(
                     EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_SWIPE_CAMERA, lengthDp, velocityDp);
-            mSecureCameraLaunchManager.startSecureCameraLaunch();
+            /* SPRD: use addon to support the function of changing RINGER_MODE @{ */
+            if (!mKeyguardBottomArea.launchAudioProfile()) {
+                mSecureCameraLaunchManager.startSecureCameraLaunch();
+            }
+            /* @} */
         }
         mStatusBar.startLaunchTransitionTimeout();
         mBlockTouches = true;
@@ -2219,12 +2369,14 @@ public class NotificationPanelView extends PanelView implements
         mKeyguardUserSwitcher = keyguardUserSwitcher;
     }
 
-    private final Runnable mUpdateHeader = new Runnable() {
-        @Override
-        public void run() {
-            mHeader.updateEverything();
-        }
-    };
+    /* SPRD: Bug 583693 PikeL don't need the logic of updateEverything{@ */
+//    private final Runnable mUpdateHeader = new Runnable() {
+//        @Override
+//        public void run() {
+//            mHeader.updateEverything();
+//        }
+//    };
+      /* @} */
 
     public void onScreenTurningOn() {
         mKeyguardStatusView.refreshTime();
@@ -2388,4 +2540,30 @@ public class NotificationPanelView extends PanelView implements
     protected boolean isPanelVisibleBecauseOfHeadsUp() {
         return mHeadsUpManager.hasPinnedHeadsUp() || mHeadsUpAnimatingAway;
     }
+
+    /* SPRD: Bug 583693 PikeL Feature {@ */
+    public Button getNotificationPanelButton() {
+        return mBtnNotification;
+    }
+
+    public QSContainer getQsContainer() {
+        return mQsContainer;
+    }
+
+    public NotificationStackScrollLayout getNotificationStackScroller() {
+        return mNotificationStackScroller;
+    }
+
+    public ScrollView getNotificationScrollView() {
+        return mNotificationScrollView;
+    }
+
+    public LinearLayout getTabSwitchContainer() {
+        return mTabSwitchContainer;
+    }
+
+    public LinearLayout getQsPanelContainer() {
+        return mQsPanelContainer;
+    }
+    /* @} */
 }

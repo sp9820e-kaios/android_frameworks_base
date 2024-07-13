@@ -474,31 +474,37 @@ public class ActivityChooserModel extends DataSetObservable {
             }
 
             ensureConsistentState();
+            /* SPRD: modify 20150923 Spreadtrum of 478056 @{ */
+            //ActivityResolveInfo chosenActivity = mActivities.get(index);
+            if (index >= mActivities.size() && ActivityManager.isUserAMonkey()) {
+                Log.d("ActivityChooseModel","Index out of Exception! index: "+index+", mActivities.size: "+mActivities.size());
+                return null;
+            } else {
+                ActivityResolveInfo chosenActivity = mActivities.get(index);
+                ComponentName chosenName = new ComponentName(
+                        chosenActivity.resolveInfo.activityInfo.packageName,
+                        chosenActivity.resolveInfo.activityInfo.name);
 
-            ActivityResolveInfo chosenActivity = mActivities.get(index);
+                Intent choiceIntent = new Intent(mIntent);
+                choiceIntent.setComponent(chosenName);
 
-            ComponentName chosenName = new ComponentName(
-                    chosenActivity.resolveInfo.activityInfo.packageName,
-                    chosenActivity.resolveInfo.activityInfo.name);
-
-            Intent choiceIntent = new Intent(mIntent);
-            choiceIntent.setComponent(chosenName);
-
-            if (mActivityChoserModelPolicy != null) {
-                // Do not allow the policy to change the intent.
-                Intent choiceIntentCopy = new Intent(choiceIntent);
-                final boolean handled = mActivityChoserModelPolicy.onChooseActivity(this,
-                        choiceIntentCopy);
-                if (handled) {
-                    return null;
+                if (mActivityChoserModelPolicy != null) {
+                    // Do not allow the policy to change the intent.
+                    Intent choiceIntentCopy = new Intent(choiceIntent);
+                    final boolean handled = mActivityChoserModelPolicy.onChooseActivity(this,
+                            choiceIntentCopy);
+                    if (handled) {
+                        return null;
+                    }
                 }
+
+                HistoricalRecord historicalRecord = new HistoricalRecord(chosenName,
+                        System.currentTimeMillis(), DEFAULT_HISTORICAL_RECORD_WEIGHT);
+                addHisoricalRecord(historicalRecord);
+
+                return choiceIntent;
             }
-
-            HistoricalRecord historicalRecord = new HistoricalRecord(chosenName,
-                    System.currentTimeMillis(), DEFAULT_HISTORICAL_RECORD_WEIGHT);
-            addHisoricalRecord(historicalRecord);
-
-            return choiceIntent;
+        /* @} */
         }
     }
 

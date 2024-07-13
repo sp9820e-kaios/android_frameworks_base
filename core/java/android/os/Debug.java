@@ -20,12 +20,15 @@ import com.android.internal.util.FastPrintWriter;
 import com.android.internal.util.TypedProperties;
 
 import android.util.Log;
+import android.app.ActivityManager;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.lang.reflect.Field;
@@ -36,6 +39,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
+
 
 import org.apache.harmony.dalvik.ddmc.Chunk;
 import org.apache.harmony.dalvik.ddmc.ChunkHandler;
@@ -59,6 +64,15 @@ href="{@docRoot}guide/developing/tools/traceview.html">Traceview: A Graphical Lo
 public final class Debug
 {
     private static final String TAG = "Debug";
+
+
+    //SPRD: The product whether is debug version @{
+    private static Boolean IS_DEBUG_BUILD = null;
+    //SPRD: Should dump hprofile in debug version @}
+
+    private static final boolean DO_SET_DUMP_HPROF = SystemProperties.getBoolean(
+            "persist.sys.sprd.monkey", false);
+
 
     /**
      * Flags for startMethodTracing().  These can be ORed together.
@@ -2175,4 +2189,103 @@ href="{@docRoot}guide/developing/tools/traceview.html">Traceview: A Graphical Lo
     public static String getCaller() {
         return getCaller(Thread.currentThread().getStackTrace(), 0);
     }
+
+    /**
+     * @SPRD: Detect whether we are in monkey mode. @{
+     *
+     * I think the best usage is in "catch" block, like this:
+     *     try {
+     *         ... ...
+     *     } catch (XxxException e) {
+     *         if (android.os.Debug.isMonkey()) {
+     *             ... ...
+     *         } else {
+     *             throw e;
+     *         }
+     *     }
+     * Because it needs some time to get the system property, pls don't use it
+     * too frequently.
+     *
+     * @return Whether in monkey mode
+     * {@hide}
+     */
+    public static boolean isMonkey() {
+       return ActivityManager.isUserAMonkey();
+	}
+	/* @} */
+
+    /**
+     * @SPRD: Should dump hprofile. @{
+     * {@hide}
+     */
+    public static boolean shouldDumpHProfile() {
+        return (DO_SET_DUMP_HPROF || isDebug() || isMonkey());
+    }
+    /* @} */
+
+    /**
+     * @SPRD: Dump the hprof file of the current process. @{
+     *
+     * Don not use this in non-debug mode, because the hprof file will be dump
+     * to the /data block, and these files may be large.
+     *
+     * @param pname The current process name.
+     * {@hide}
+     */
+    public static void dumpHprof(String pname) {
+        final String HPROFILE_PATH = Environment.getDataDirectory() + "/misc/hprofs/";
+        File dir = new File(HPROFILE_PATH);
+
+        if (dir.exists() && dir.isDirectory() && dir.canWrite()) {
+            File[] files = dir.listFiles();
+            for (File f : files) {
+                String p = f.getPath();
+                if (f.isFile() && p.contains(pname) && p.endsWith("hprof")) {
+                    Log.w(TAG, "Delete old hprofile: " + p);
+                    f.delete();
+                }
+            }
+            int pid = Process.myPid();
+            java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+            String filename = HPROFILE_PATH + pname + "_" + pid + "_" + df.format(new Date()) + ".hprof";
+
+            try {
+                Log.w(TAG, "Dump hprofile: " + filename);
+                dumpHprofData(filename);
+            } catch (IOException e) {
+//                e.printStackTrace();
+                Log.w(TAG, "Fail to dump hprofile - " + filename, e);
+            }
+        } else {
+            Log.w(TAG, "Fail to dump hprofile " + pname + ": " + " - " + dir.exists() + ", " + dir.canWrite());
+        }
+    }
+	/* @} */
+
+    /**
+     * @SPRD: Detect whether we are in debug mode. @{
+     *
+     * I think the best usage is in "catch" block, like this:
+     *     try {
+     *         ... ...
+     *     } catch (XxxException e) {
+     *         if (android.os.Debug.isDebug()) {
+     *             ... ...
+     *         } else {
+     *             throw e;
+     *         }
+     *     }
+     * Because it needs some time to get the system property, pls don't use it
+     * too frequently.
+     *
+     * @return Whether in debug mode
+     * {@hide}
+     */
+    public static boolean isDebug() {
+        if (IS_DEBUG_BUILD == null) {
+            IS_DEBUG_BUILD = Build.TYPE.equals("eng") || Build.TYPE.equals("userdebug");
+        }
+        return IS_DEBUG_BUILD;
+    }
+    /* @} */
 }

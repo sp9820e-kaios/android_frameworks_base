@@ -28,4 +28,7 @@ interface ICarrierConfigLoader {
     void notifyConfigChangedForSubId(int subId);
 
     void updateConfigForPhoneId(int phoneId, String simState);
+
+    // SPRD: [bug475223] Add interface for getting carrier config by phoneId
+    PersistableBundle getConfigForPhoneId(int phoneId);
 }

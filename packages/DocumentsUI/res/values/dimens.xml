@@ -39,4 +39,7 @@
 
     <dimen name="dir_elevation">8dp</dimen>
 
+    <dimen name="overflow_pos_x">430px</dimen>
+    <dimen name="overflow_pos_y">50px</dimen>
+
 </resources>

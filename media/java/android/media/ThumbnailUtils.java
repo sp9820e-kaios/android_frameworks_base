@@ -33,6 +33,9 @@ import java.io.FileInputStream;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
+import android.drm.DecryptHandle;
+import android.drm.DrmManagerClient;
+
 /**
  * Thumbnail generation routines for media provider.
  */
@@ -49,6 +52,7 @@ public class ThumbnailUtils {
     private static final int OPTIONS_NONE = 0x0;
     private static final int OPTIONS_SCALE_UP = 0x1;
 
+	private static DrmManagerClient mDrmClient = null;
     /**
      * Constant used to indicate we should recycle the input in
      * {@link #extractThumbnail(Bitmap, int, int, int)} unless the output is the input.
@@ -67,6 +71,14 @@ public class ThumbnailUtils {
      */
     public static final int TARGET_SIZE_MICRO_THUMBNAIL = 96;
 
+	private static DrmManagerClient getDrmClient() {
+		synchronized (ThumbnailUtils.class) {
+			if (null == mDrmClient) 
+				mDrmClient = new DrmManagerClient(null);
+		}
+		return mDrmClient;
+	}
+	
     /**
      * This method first examines if the thumbnail embedded in EXIF is bigger than our target
      * size. If not, then it'll create a thumbnail from original image. Due to efficiency
@@ -98,6 +110,22 @@ public class ThumbnailUtils {
         }
 
         if (bitmap == null) {
+		boolean isDrm = false;
+		try {
+			isDrm = MediaFile.isDrmFileType(MediaFile.getFileType(filePath).fileType);
+		} catch (NullPointerException e) { isDrm = false; }
+	    
+	    DrmManagerClient client = null;
+	    DecryptHandle handle = null;
+
+	    if (isDrm) {
+		client = getDrmClient();
+		handle = client.openDecryptSession(filePath);
+		if (handle == null) {
+		    return null;
+		}
+	    }
+
             FileInputStream stream = null;
             try {
                 stream = new FileInputStream(filePath);
@@ -105,7 +133,11 @@ public class ThumbnailUtils {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 1;
                 options.inJustDecodeBounds = true;
+		if (isDrm) {
+		    BitmapFactory.decodeDrmStream(client, handle, options);
+		} else {
                 BitmapFactory.decodeFileDescriptor(fd, null, options);
+		}
                 if (options.mCancel || options.outWidth == -1
                         || options.outHeight == -1) {
                     return null;
@@ -116,7 +148,12 @@ public class ThumbnailUtils {
 
                 options.inDither = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                bitmap = BitmapFactory.decodeFileDescriptor(fd, null, options);
+		
+		if (isDrm) {
+		    bitmap = BitmapFactory.decodeDrmStream(client, handle, options);
+		} else {
+		    bitmap = BitmapFactory.decodeFileDescriptor(fd, null, options);
+		}
             } catch (IOException ex) {
                 Log.e(TAG, "", ex);
             } catch (OutOfMemoryError oom) {
@@ -126,6 +163,9 @@ public class ThumbnailUtils {
                     if (stream != null) {
                         stream.close();
                     }
+		    if (handle != null) {
+			client.closeDecryptSession(handle);
+		    }
                 } catch (IOException ex) {
                     Log.e(TAG, "", ex);
                 }

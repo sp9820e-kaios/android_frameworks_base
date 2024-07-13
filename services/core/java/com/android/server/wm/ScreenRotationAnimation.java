@@ -242,7 +242,9 @@ class ScreenRotationAnimation {
 
         try {
             try {
-                int flags = SurfaceControl.HIDDEN;
+                /*SPRD: Add for Surface creation flag {@ */
+                int flags = SurfaceControl.HIDDEN | SurfaceControl.HARDWARE_ACCE;
+                /* @} */
                 if (isSecure) {
                     flags |= SurfaceControl.SECURE;
                 }

@@ -430,4 +430,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"تهانينا! تمت إضافة أداة ضبط واجهة مستخدم النظام إلى الإعدادات"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"إزالة من الإعدادات"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"هل تريد إزالة أداة ضبط واجهة مستخدم النظام من الإعدادات وإيقاف استخدام كل ميزاتها؟"</string>
+    <string name="quick_settings_volume_label">"بروفايل الصوت"</string>
+     <string name="assistant_key_home">"الرئيسية"</string>
+     <string name="assistant_key_search">"بحث"</string>
+     <string name="assistant_key_menu">"القائمة"</string>
+     <string name="assistant_key_back">"رجوع"</string>
+
+    <string name="vibrate_hint">"مرر لليسار للاهتزاز"</string>
+     <string name="battery_overtage_title">"تحذير أمان"</string>
+     <string name="battery_overtage_content">"الجهد الكهربي للشحن مرتفع للغاية"</string>
+     <string name="battery_overtage_back">"رجوع"</string>
 </resources>

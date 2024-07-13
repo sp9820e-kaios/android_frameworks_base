@@ -26,6 +26,7 @@ import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.qs.UsageTracker;
 import com.android.systemui.statusbar.policy.HotspotController;
+import android.provider.Settings;
 
 /** Quick settings tile: Hotspot **/
 public class HotspotTile extends QSTile<QSTile.BooleanState> {
@@ -66,11 +67,19 @@ public class HotspotTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     protected void handleClick() {
-        final boolean isEnabled = (Boolean) mState.value;
-        MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
-        mController.setHotspotEnabled(!isEnabled);
-        mEnable.setAllowAnimation(true);
-        mDisable.setAllowAnimation(true);
+        /*
+         * SPRD: fixbug522192 In airplane mode, sets the status bar of the WLAN
+         * hotspots cannot be opened.@{
+         */
+        boolean isAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        if (!isAirplaneMode) {
+            final boolean isEnabled = (Boolean) mState.value;
+            MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
+            mController.setHotspotEnabled(!isEnabled);
+            mEnable.setAllowAnimation(true);
+            mDisable.setAllowAnimation(true);
+        }
     }
 
     @Override

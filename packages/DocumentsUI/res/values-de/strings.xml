@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Zum Einblenden von Details tippen"</string>
     <string name="retry" msgid="7564024179122207376">"Erneut versuchen"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Diese Dateien wurden nicht kopiert: <xliff:g id="LIST">%1$s</xliff:g>."</string>
+    <string name="shared_error">"Datei kann nicht geteilt werden"</string>
+     <string name="documents_deleting">"Löschen der Dokumente"</string>
+     <string name="cannot_copyfolder_itself">"Sie können keinen Ordner in sich selbst kopieren"</string>
+
+    <string name="error_permissions">"Dieser App fehlen wichtige Berechtigungen, ohne die sie nicht ausgeführt werden kann. Bitte überprüfen Sie Ihre Einstellungen für Berechtigungen."</string>
+     <string name="cannot_copy_drm">"DRM-Dateien können nicht kopiert werden"</string>
+     <string name="cannot_copy_downloading">"Dateien, die heruntergeladen werden, können nicht kopiert werden"</string>
 </resources>

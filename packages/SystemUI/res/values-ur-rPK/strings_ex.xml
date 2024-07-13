@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"قابل منتقلی Wi-Fi ہاٹ سپاٹ کو موبائل ڈیٹا سے رابطہ قائم کرنے کی ضرورت ہے، جس کے اضافی اخراجات ہو سکتے ہیں۔"</string>
+<string name="softap_bt_cannot_coexist">"جب بلوٹوتھ کو اہل بنایا یا آن کیا گیا ہے، سافٹ ایپ کام نہیں کر سکتی ہے، اگر آپ سافٹ ایپ استعمال کرنا چاہتے ہیں، تو براہ مہربانی یقینی بنائیں کہ بلوٹوتھ غیراہل کردہ ہے۔"</string>
+<string name="bt_softap_cannot_coexist">"جب سافٹ ایپ کو اہل بنایا یا آن کیا گیا ہے، تو بلوٹوتھ کام نہیں کر سکتا ہے، اگر آپ بلوٹوتھ استعمال کرنا چاہتے ہیں، تو براہ مہربانی یقینی بنائیں کہ سافٹ ایپ غیراہل کردہ ہے۔"</string>
+<string name="lte_service_error_airplane">آپ ایل ٹی ای کا استعمال نہیں کر سکتے ہیں جب فون ہوائی جہاز موڈ میں ہو</string>
+<string name="accessibility_quick_settings_lte_changed_on">کھول دیا گیا 4G</string>
+<string name="accessibility_quick_settings_lte_changed_off">4 G آف کر دیا گیا\'</string>
+<string name="accessibility_quick_settings_lte_on">کھلا 4G</string>
+<string name="accessibility_quick_settings_lte_off">4G بند\'</string>
+<string name="toggle_data_error_airplane">آپ موبائل ڈیٹا کا استعمال نہیں کر سکتے ہیں جب فون ہوائی جہاز موڈ میں ہو</string>
+<string name="quick_settings_data_connection_label">"ڈیٹا"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ڈیٹا کو آن کیا"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ڈیٹا کو آف کیا"</string>
+<string name="accessibility_quick_settings_data_on">"ڈیٹا آن"</string>
+<string name="accessibility_quick_settings_data_off">"ڈیٹا آف"</string>
+<string name="missing_sim_message">کوئی سم نہیں</string>
+    <string name="lte_service_error_incall">"آپ کال کے دوران LTE سروس کو تبدیل نہیں کر سکتے ہیں۔"</string>
+
+</resources>

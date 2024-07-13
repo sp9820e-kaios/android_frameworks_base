@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Draagbare Wi-Fi horspot moet verbinden met mobiele data, dit kan extra kosten veroorzaken"</string>
+<string name="softap_bt_cannot_coexist">"Als de bluetooth aan staat of aangezet wordt kan de softap niet werken, als u de softap wilt gebruiken moet u zich ervan verzekeren dat de bluetooth uitgeschakelt is"</string>
+<string name="bt_softap_cannot_coexist">"Als de softap aan staat of aangezet wordt, kan de bluetooth niet werken, als u bluetooth wilt gebruiken, verzeker u er dan van dat de softap uitgeschakelt is"</string>
+<string name="lte_service_error_airplane">"U kan LTE niet gebruiken als de telefoon in vliegtuig modus staat."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ingeschakeld"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G uitgeschakeld"</string>
+<string name="accessibility_quick_settings_lte_on">"4G aan"</string>
+<string name="accessibility_quick_settings_lte_off">"4G uit"</string>
+<string name="toggle_data_error_airplane">"U kunt geen mobiele gegevens gebruiken wanneer de telefoon in vliegtuigmode is."</string>
+<string name="quick_settings_data_connection_label">"GEGEVENS"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Data aangezet"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Data uitgezet"</string>
+<string name="accessibility_quick_settings_data_on">"Data aan"</string>
+<string name="accessibility_quick_settings_data_off">"Data uit"</string>
+<string name="missing_sim_message">"Geen SIM"</string>
+    <string name="lte_service_error_incall">"Je kan niet wisselen van LTE service tijdens het bellen."</string>
+
+</resources>

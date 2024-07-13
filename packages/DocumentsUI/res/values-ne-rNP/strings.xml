@@ -71,4 +71,10 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"विवरणहरू हेर्न छुनुहोस्"</string>
     <string name="retry" msgid="7564024179122207376">"पुनःप्रयास गर्नुहोस्"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"यी फाइलहरू प्रतिलिपि गरिएको थिएनः <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"फाइल साझा गर्न सकिँदैन"</string>
+    <string name="documents_deleting">"कागजातहरूलाई मेट्दै"</string>
+    <string name="error_permissions">"सञ्चालन गर्नका लागि अनुप्रयोगसँग अति आवश्यकता अनुमति छैन। कृपया तपाईँको अनुमति सेटिङहरू जाँच गर्नुहोस्।"</string>
+    <string name="cannot_copyfolder_itself">"तपाईं त्यही फोल्डर भित्र त्यसैलाई कपी गर्न सक्नुहुन्न"</string>
+    <string name="cannot_copy_drm">"तपाईं DRM फाइलहरूलाई कपी गर्न सक्नुहुन्न"</string>
+    <string name="cannot_copy_downloading">"तपाईं डाउनलोड भइरहेका फाइलहरूलाई कपी गर्न सक्नुहुन्न"</string>
 </resources>

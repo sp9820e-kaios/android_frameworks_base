@@ -17,6 +17,7 @@
 package com.android.systemui.recents;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.appwidget.AppWidgetManager;
@@ -25,18 +26,27 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.os.UserHandle;
+import android.text.format.Formatter;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewStub;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.android.internal.logging.MetricsConstants;
 import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.Prefs;
 import com.android.systemui.R;
+import com.android.systemui.SystemUIApplication;
 import com.android.systemui.recents.misc.Console;
 import com.android.systemui.recents.misc.DebugTrigger;
 import com.android.systemui.recents.misc.ReferenceCountedTrigger;
@@ -48,10 +58,15 @@ import com.android.systemui.recents.model.TaskStack;
 import com.android.systemui.recents.views.DebugOverlayView;
 import com.android.systemui.recents.views.RecentsView;
 import com.android.systemui.recents.views.SystemBarScrimViews;
+import com.android.systemui.recents.views.TaskStackView;
+import com.android.systemui.recents.views.TaskView;
 import com.android.systemui.recents.views.ViewAnimation;
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
+import com.sprd.systemui.SystemUILockAppUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The main Recents activity that is started from AlternateRecentsComponent.
@@ -59,6 +74,8 @@ import java.util.ArrayList;
 public class RecentsActivity extends Activity implements RecentsView.RecentsViewCallbacks,
         RecentsAppWidgetHost.RecentsAppWidgetHostCallbacks,
         DebugOverlayView.DebugOverlayViewCallbacks {
+
+    private final static String TAG = "RecentsActivity";
 
     RecentsConfiguration mConfig;
     long mLastTabKeyEventTime;
@@ -81,6 +98,12 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
 
     // Runnables to finish the Recents activity
     FinishRecentsRunnable mFinishLaunchHomeRunnable;
+
+    /* SPRD: Bug 475644 New feature of quick cleaning. @{ */
+    private PhoneStatusBar mStatusBar;
+    private ActivityManager am;
+    private PackageManager pm;
+    /**/
 
     // Runnable to be executed after we paused ourselves
     Runnable mAfterPauseRunnable;
@@ -185,6 +208,7 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
             onDebugModeTriggered();
         }
     });
+
 
     /** Updates the set of recent tasks */
     void updateRecentsTasks() {
@@ -362,6 +386,9 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
         mEmptyViewStub = (ViewStub) findViewById(R.id.empty_view_stub);
         mDebugOverlayStub = (ViewStub) findViewById(R.id.debug_overlay_stub);
         mScrimViews = new SystemBarScrimViews(this, mConfig);
+        // SPRD: Bug 475644 New feature of quick cleaning.
+        mStatusBar = ((SystemUIApplication) getApplication())
+                .getComponent(PhoneStatusBar.class);
         inflateDebugOverlay();
 
         // Bind the search app widget when we first start up
@@ -372,7 +399,159 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(SearchManager.INTENT_GLOBAL_SEARCH_ACTIVITY_CHANGED);
         registerReceiver(mSystemBroadcastReceiver, filter);
+
+        /* SPRD: Bug 475644 new feature of quick cleaning. @{ */
+        ImageButton clearButton = (ImageButton) findViewById(R.id.clear_button);
+        clearButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+                        if(PhoneStatusBar.mSupportLockApp) {
+                            removeAllTasksWithLockApp();
+                        } else {
+                            removeAllTasks();
+                        }
+                        /* @} */
+                    }
+                }).start();
+            }
+        });
+
+        am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        pm = getPackageManager();
     }
+
+    Handler mHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            int childCount = mRecentsView.getChildCount();
+            if (childCount == 0)
+                if (mStatusBar != null) {
+                    mStatusBar.toggleRecent();
+                } else {
+                    RecentsActivity.this.finish();
+                }
+            for (int i = 0; i < childCount; i++) {
+                View tsv = mRecentsView.getChildAt(i);
+                if (!(tsv instanceof TaskStackView))
+                    continue;
+                int count = ((TaskStackView) tsv).getChildCount();
+                if (count == 0)
+                    continue;
+                for (int j = 0; j < count; j++) {
+                    View tv = ((TaskStackView) tsv).getChildAt(j);
+                    if (!(tv instanceof TaskView))
+                        continue;
+                    ((TaskView) tv).dismissAllTask();
+                }
+            }
+
+            if (mStatusBar != null) {
+                mStatusBar.toggleRecent();
+            } else {
+                RecentsActivity.this.finish();
+            }
+            // SPRD 507526
+            dismissRecentsToHome(false);
+        }
+    };
+
+    private static final int MAX_TASKS = 100;
+
+    private void removeAllTasks() {
+        final List<ActivityManager.RecentTaskInfo> recentTasks = am.getRecentTasks(MAX_TASKS,
+                ActivityManager.RECENT_IGNORE_HOME_STACK_TASKS);
+        for (int i = 0; i < recentTasks.size(); ++i) {
+            final ActivityManager.RecentTaskInfo recentInfo = recentTasks.get(i);
+            android.util.Log.w(TAG, "recentInfo:"
+                    + recentInfo.baseIntent.getComponent().getPackageName());
+            am.removeTask(recentInfo.persistentId);
+        }
+        mHandler.sendEmptyMessage(0);
+    }
+
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    Handler mHandlerLockApp = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            int childCount = mRecentsView.getChildCount();
+            if (childCount == 0)
+                dismissRecentsToHomeRaw(true);
+            for (int i = 0; i < childCount; i++) {
+                View tsv = mRecentsView.getChildAt(i);
+                if (!(tsv instanceof TaskStackView))
+                    continue;
+                int count = ((TaskStackView) tsv).getChildCount();
+                if (count == 0)
+                    continue;
+                for (int j = 0; j < count; j++) {
+                    View tv = ((TaskStackView) tsv).getChildAt(j);
+                    if (!(tv instanceof TaskView))
+                        continue;
+                    ((TaskView) tv).dismissAllTask();
+                }
+            }
+            dismissRecentsToHomeRaw(false);
+            if(msg.arg1 == 0) {
+                return;
+            }
+            double before = (double) msg.obj;
+            ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+            activityManager.getMemoryInfo(memoryInfo);
+            double leftAfter = memoryInfo.availMem;
+            double totalAfter = memoryInfo.totalMem;
+
+            String left11 = Formatter.formatFileSize(RecentsActivity.this, (long) (leftAfter - before) );
+            String total1 = Formatter.formatFileSize(RecentsActivity.this, (long) totalAfter);
+            Toast toast = Toast.makeText(RecentsActivity.this,
+                    RecentsActivity.this.getString(R.string.recent_app_clean_finished_toast, left11, total1),
+                    Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    };
+
+    private void removeAllTasksWithLockApp() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        double leftBefore = memoryInfo.availMem;
+        double totalBefore = memoryInfo.totalMem;
+        ArrayList<TaskStack> stacks = mRecentsView.getTaskStacks();
+        Message msg = Message.obtain();
+        msg.what = 0;
+        msg.arg1 = 0;
+        if(stacks != null && stacks.size() > 0) {
+            for (int i = 0; i < stacks.size(); i++) {
+                TaskStack stack = stacks.get(i);
+                ArrayList<Task> tasks = stack.getTasks();
+                for (int j = 0; j < tasks.size(); j++) {
+                    Task task = tasks.get(j);
+                    if (task.isLocked) {
+                        continue;
+                    }
+                    activityManager.removeTask(task.key.id);
+                    msg.arg1 = 1;
+//                    RecentsTaskLoader loader = RecentsTaskLoader.getInstance();
+//                    loader.getSystemServicesProxy().removeTask(task.key.id);
+                }
+            }
+            msg.obj = (double) leftBefore;
+        }
+
+        mHandlerLockApp.sendMessage(msg);
+    }
+    /* @} */
+
+    /* @} */
 
     /** Inflates the debug overlay if debug mode is enabled. */
     void inflateDebugOverlay() {
@@ -675,4 +854,12 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
     public void onSecondarySeekBarChanged(float progress) {
         // Do nothing
     }
+
+    /*SPRD: Bug 501153 The recent tasks show wrong when rotating in RecentsActivity@{*/
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        updateRecentsTasks();
+        super.onConfigurationChanged(newConfig);
+    }
+    /*}@*/
 }

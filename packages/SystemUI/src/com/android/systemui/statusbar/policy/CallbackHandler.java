@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.systemui.statusbar.policy.NetworkController.IconState;
@@ -42,6 +43,8 @@ public class CallbackHandler extends Handler implements EmergencyListener, Signa
     private static final int MSG_MOBILE_DATA_ENABLED_CHANGED = 5;
     private static final int MSG_ADD_REMOVE_EMERGENCY        = 6;
     private static final int MSG_ADD_REMOVE_SIGNAL           = 7;
+    // SPRD: Add for SimSignal color change follow sim color.
+    private static final int MSG_SET_SIM_SIGNAL_COLOR = 8;
 
     // All the callbacks.
     private final ArrayList<EmergencyListener> mEmergencyListeners = new ArrayList<>();
@@ -104,6 +107,15 @@ public class CallbackHandler extends Handler implements EmergencyListener, Signa
                     mSignalCallbacks.remove((SignalCallback) msg.obj);
                 }
                 break;
+            /* SPRD: Add for SimSignal color change follow sim color @{ */
+            case MSG_SET_SIM_SIGNAL_COLOR:
+                if (msg.arg1 != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+                    for (SignalCallback signalCluster : mSignalCallbacks) {
+                        signalCluster.setSimSignalColor(msg.arg1, msg.arg2);
+                    }
+                }
+                /* @} */
+                break;
         }
     }
 
@@ -122,6 +134,33 @@ public class CallbackHandler extends Handler implements EmergencyListener, Signa
         });
     }
 
+    /* SPRD: Add VoLte icon for bug 509601. @{ */
+    @Override
+    public void setVoLteIndicators(final boolean enabled) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                for (SignalCallback signalCluster : mSignalCallbacks) {
+                    signalCluster.setVoLteIndicators(enabled);
+                }
+            }
+        });
+    }
+    /* @} */
+
+    /* SPRD: Add HD audio icon for bug 536924. @{ */
+    public void setHdVoiceIndicators(final boolean enabled) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                for (SignalCallback signalCluster : mSignalCallbacks) {
+                    signalCluster.setHdVoiceIndicators(enabled);
+                }
+            }
+        });
+    }
+    /* @} */
+
     @Override
     public void setMobileDataIndicators(final IconState statusIcon, final IconState qsIcon,
             final int statusType, final int qsType,final boolean activityIn,
@@ -134,10 +173,64 @@ public class CallbackHandler extends Handler implements EmergencyListener, Signa
                     signalCluster.setMobileDataIndicators(statusIcon, qsIcon, statusType, qsType,
                             activityIn, activityOut, typeContentDescription, description, isWide,
                             subId);
+                    // SPRD: modify for bug495410
+                    signalCluster.setDeactiveIcon(subId);
                 }
             }
         });
     }
+
+    /* SPRD: modify by BUG 517092, add roamIcon @{ */
+    @Override
+    public void setMobileDataIndicators(final IconState statusIcon, final IconState qsIcon,
+            final int statusType, final int qsType,final boolean activityIn,
+            final boolean activityOut, final String typeContentDescription,
+            final String description, final boolean isWide, final int subId,
+            final boolean dataConnect, final int colorScheme, final int roamIcon) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                for (SignalCallback signalCluster : mSignalCallbacks) {
+                    signalCluster.setMobileDataIndicators(statusIcon, qsIcon, statusType, qsType,
+                            activityIn, activityOut, typeContentDescription, description, isWide,
+                            subId, dataConnect, colorScheme, roamIcon);
+                    // SPRD: modify for bug495410
+                    signalCluster.setDeactiveIcon(subId);
+                }
+            }
+        });
+    }
+    /* @} */
+
+    /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+    @Override
+    public void setMobileDataIndicators(final IconState statusIcon, final IconState qsIcon,
+            final int statusType, final int qsType,final boolean activityIn,
+            final boolean activityOut, final String typeContentDescription,
+            final String description, final boolean isWide, final int subId,
+            final boolean dataConnect, final int colorScheme,
+            final int roamIcon, final int imsregIcon,
+            final boolean isFourG) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                for (SignalCallback signalCluster : mSignalCallbacks) {
+                    signalCluster.setMobileDataIndicators(statusIcon, qsIcon, statusType, qsType,
+                            activityIn, activityOut, typeContentDescription, description, isWide,
+                            subId, dataConnect, colorScheme, roamIcon, imsregIcon, isFourG);
+                    // SPRD: modify for bug495410
+                    signalCluster.setDeactiveIcon(subId);
+                }
+            }
+        });
+    }
+    /* @} */
+
+    /* SPRD: modify for bug495410 @{ */
+    @Override
+    public void setDeactiveIcon(int subId) {
+    }
+    /* @} */
 
     @Override
     public void setSubs(List<SubscriptionInfo> subs) {
@@ -177,4 +270,24 @@ public class CallbackHandler extends Handler implements EmergencyListener, Signa
         obtainMessage(MSG_ADD_REMOVE_SIGNAL, listening ? 1 : 0, 0, listener).sendToTarget();
     }
 
+    /* SPRD: Add for SimSignal color change follow sim color @{ */
+    @Override
+    public void setSimSignalColor(int subId, int simColor) {
+        obtainMessage(MSG_SET_SIM_SIGNAL_COLOR, subId, simColor).sendToTarget();
+    }
+    /* @} */
+
+    /* SPRD: modify by BUG 549167 @{ */
+    @Override
+    public void refreshIconsIfSimAbsent(final int phoneId) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                for (SignalCallback signalCluster : mSignalCallbacks) {
+                    signalCluster.refreshIconsIfSimAbsent(phoneId);
+                }
+            }
+        });
+    }
+    /* @} */
 }

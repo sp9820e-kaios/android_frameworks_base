@@ -95,6 +95,10 @@ public interface WebViewProvider {
 
     public String[] getHttpAuthUsernamePassword(String host, String realm);
 
+    public boolean isPasswordSavedForUrl (String url, final Message message);
+
+    public boolean doAutoAuthentication (String url);
+
     /**
      * See {@link WebView#destroy()}.
      * As well as releasing the internal state and resources held by the implementation,

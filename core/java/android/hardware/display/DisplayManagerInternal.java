@@ -58,6 +58,9 @@ public abstract class DisplayManagerInternal {
      */
     public abstract boolean isProximitySensorAvailable();
 
+    public abstract void updateButtonTimeout(int timeout);
+    public abstract void scheduleButtonTimeout(long now);
+
     /**
      * Returns information about the specified logical display.
      *

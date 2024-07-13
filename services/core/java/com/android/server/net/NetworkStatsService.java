@@ -729,7 +729,9 @@ public class NetworkStatsService extends INetworkStatsService.Stub {
 
         final long token = Binder.clearCallingIdentity();
         try {
-            performPoll(FLAG_PERSIST_ALL);
+            //performPoll(FLAG_PERSIST_ALL);
+            //asynchronous operation
+            mHandler.obtainMessage(MSG_PERFORM_POLL, FLAG_PERSIST_ALL, 0).sendToTarget();
         } finally {
             Binder.restoreCallingIdentity(token);
         }

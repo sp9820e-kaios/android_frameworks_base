@@ -487,6 +487,19 @@ public final class PageContentRepository {
                     synchronized (mLock) {
                         try {
                             if (mRenderer != null) {
+                                /* SPRD: Fix bug 512710 Prevent mRenderer has been finalized @{ */
+                                boolean isFinalized = false;
+                                try {
+                                    isFinalized = mRenderer.isAlive();
+                                } catch (Exception ex){
+                                    isFinalized = false;
+                                }
+                                /* @} */
+                                /* SPRD: Fix bug 508729 @{ */
+                                if(!isFinalized){
+                                    return null;
+                                }
+                                /* @} */
                                 mRenderer.closeDocument();
                             }
                         } catch (RemoteException re) {
@@ -509,7 +522,15 @@ public final class PageContentRepository {
         public void destroy() {
             if (mBoundToService) {
                 mBoundToService = false;
-                mContext.unbindService(AsyncRenderer.this);
+                /* SPRD 506546 @{ */
+                try {
+                    mContext.unbindService(AsyncRenderer.this);
+                } catch (Exception e) {
+                    if (DEBUG) {
+                        Log.i(LOG_TAG,"catch Exception");
+                    }
+                }
+                /* @} */
             }
 
             mPageContentCache.invalidate();

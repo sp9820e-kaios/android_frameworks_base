@@ -53,7 +53,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
+/*SPRD:modify preload class and preload resource in parallel mode @{*/
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+/* @} */
 /**
  * Startup class for the zygote process.
  *
@@ -85,6 +88,9 @@ public class ZygoteInit {
 
     private static LocalServerSocket sServerSocket;
 
+    /* SPRD:modify preload class and preload resource in parallel mode @{ */
+    private static final CountDownLatch mConnectedSignal = new CountDownLatch(2);
+    /* @} */
     /**
      * Used to pre-load resources.  We hold a global reference on it so it
      * never gets destroyed.
@@ -177,10 +183,40 @@ public class ZygoteInit {
     private static final int ROOT_UID = 0;
     private static final int ROOT_GID = 0;
 
+    /* SPRD:modify preload class and preload resource in parallel mode @{ */
+    private static void waitForLatch(CountDownLatch latch) {
+        for (;;) {
+           try {
+                  if (latch.await(5000, TimeUnit.MILLISECONDS)) {
+                      return;
+                  } else {
+                      Log.e(TAG, "Thread " + Thread.currentThread().getName()
+                           + " still waiting for Preload class ready...");
+                    }
+           } catch (InterruptedException e) {
+                 Log.e(TAG, "Interrupt while waiting for preload class to be ready.");
+            }
+        }
+    }
+    /* @} */
     static void preload() {
         Log.d(TAG, "begin preload");
-        preloadClasses();
-        preloadResources();
+        /* SPRD:modify preload class and preload resource in parallel mode @{ */
+        new Thread("preloadClsses"){
+           @Override
+           public void run() {
+              preloadClasses();
+              mConnectedSignal.countDown();
+            }
+        }.start();
+        new Thread("preloadResources"){
+          public void run() {
+              preloadResources();
+              mConnectedSignal.countDown();
+           }
+        }.start();
+        waitForLatch(mConnectedSignal);
+        /* @} */
         preloadOpenGL();
         preloadSharedLibraries();
         preloadTextResources();

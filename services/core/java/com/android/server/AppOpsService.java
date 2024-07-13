@@ -270,6 +270,7 @@ public class AppOpsService extends IAppOpsService.Stub {
                     } catch (NameNotFoundException e) {
                         curUid = -1;
                     }
+                    curUid = AppOpsServiceUtils.changeCurUidOrNot(ops.uidState.uid, ops.packageName, curUid, mContext);
                     if (curUid != ops.uidState.uid) {
                         Slog.i(TAG, "Pruning old package " + ops.packageName
                                 + "/" + ops.uidState + ": new uid=" + curUid);

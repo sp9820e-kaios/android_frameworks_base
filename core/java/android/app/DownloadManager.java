@@ -374,6 +374,12 @@ public class DownloadManager {
         private boolean mIsVisibleInDownloadsUi = true;
         private boolean mScannable = false;
         private boolean mUseSystemCache = false;
+        /**
+         * Add for oma download
+         *@{
+         */
+        private String mNotificationClass;
+        /*@}*/
         /** if a file is designated as a MediaScanner scannable file, the following value is
          * stored in the database column {@link Downloads.Impl#COLUMN_MEDIA_SCANNED}.
          */
@@ -702,6 +708,15 @@ public class DownloadManager {
         }
 
         /**
+         * Add for oma download
+         * @hide
+         */
+        public Request setNotificationClass(String notificationClassName) {
+            mNotificationClass = notificationClassName;
+            return this;
+        }
+
+        /**
          * @return ContentValues to be passed to DownloadProvider.insert()
          */
         ContentValues toContentValues(String packageName) {
@@ -710,7 +725,12 @@ public class DownloadManager {
             values.put(Downloads.Impl.COLUMN_URI, mUri.toString());
             values.put(Downloads.Impl.COLUMN_IS_PUBLIC_API, true);
             values.put(Downloads.Impl.COLUMN_NOTIFICATION_PACKAGE, packageName);
-
+            /**
+             * Add for oma download
+             *@{
+             */
+            values.put(Downloads.Impl.COLUMN_NOTIFICATION_CLASS, mNotificationClass);
+            /*@}*/
             if (mDestinationUri != null) {
                 values.put(Downloads.Impl.COLUMN_DESTINATION, Downloads.Impl.DESTINATION_FILE_URI);
                 values.put(Downloads.Impl.COLUMN_FILE_NAME_HINT, mDestinationUri.toString());

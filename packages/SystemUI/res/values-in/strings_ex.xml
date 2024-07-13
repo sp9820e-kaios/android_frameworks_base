@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Wi-Fi portable hotspot memerlukan data telepon terhubung,"</string>
+<string name="softap_bt_cannot_coexist">"Ketika bluetooth diaktifkan atau menyala,Sooftap tidak dapat bekerja,jika Anda ingin menggunakan Softap, pastikan bahwa bluetooth dinonaktifkan."</string>
+<string name="bt_softap_cannot_coexist">"Ketika softab diaktifkan atau dinyalakan, bluetooth tidak dapat bekerja, jika anda ingin menggunakan bluetooth, silahkan membuat yakin bahwa softab dinonaktifkan."</string>
+<string name="lte_service_error_airplane">"Anda tidak dapat menggunakan LTE ketika telepon dalam mode pesawat."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"Aktifkan 4G" </string>
+<string name="accessibility_quick_settings_lte_changed_off">"Matikan 4G"</string>
+<string name="accessibility_quick_settings_lte_on">"4G aktif"</string>
+<string name="accessibility_quick_settings_lte_off">"4G mati"</string>
+<string name="toggle_data_error_airplane">Anda tidak dapat menggunakan data Ponsel ketika telepon dalam mode pesawat terbang.</string>
+<string name="quick_settings_data_connection_label">"DATA"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Data telah diaktifkan"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Data telah dinonaktifkan"</string>
+<string name="accessibility_quick_settings_data_on">"Data aktif"</string>
+<string name="accessibility_quick_settings_data_off">"Data nonaktif"</string>
+<string name="missing_sim_message">"TIDAK ADA SIM"</string>
+    <string name="lte_service_error_incall">"Anda tidak dapat mengganti servis LTE selama menelpon"</string>
+
+</resources>

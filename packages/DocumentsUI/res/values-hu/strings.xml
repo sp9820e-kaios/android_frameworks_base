@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Érintse meg a részletek megtekintéséhez"</string>
     <string name="retry" msgid="7564024179122207376">"Újra"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"A következő fájlokat nem sikerült átmásolni: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Fájl megosztása sikertelen"</string>
+     <string name="documents_deleting">"Dokumentumok törlése"</string>
+     <string name="cannot_copyfolder_itself">"A mappát nem lehet saját magába másolni"</string>
+
+    <string name="error_permissions">"Az alkalmazás nem rendelkezik a futtatáshoz szükséges alapvető engedélyekkel. Ellenőrizze az engedélybeállításokat."</string>
+     <string name="cannot_copy_drm">"A DRM fájlok nem másolhatók"</string>
+     <string name="cannot_copy_downloading">"A letöltés alatt lévő fájlok nem másolhatók"</string>
 </resources>

@@ -84,7 +84,7 @@ public class MobileRadioPowerCalculator extends PowerCalculator {
             app.mobileRadioPowerMah = (app.mobileRxPackets + app.mobileTxPackets)
                     * getMobilePowerPerPacket(rawRealtimeUs, statsType);
         }
-        if (DEBUG && app.mobileRadioPowerMah != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && app.mobileRadioPowerMah != 0) {
             Log.d(TAG, "UID " + u.getUid() + ": mobile packets "
                     + (app.mobileRxPackets + app.mobileTxPackets)
                     + " active time " + app.mobileActive
@@ -102,7 +102,7 @@ public class MobileRadioPowerCalculator extends PowerCalculator {
             long strengthTimeMs = stats.getPhoneSignalStrengthTime(i, rawRealtimeUs, statsType)
                     / 1000;
             final double p = (strengthTimeMs * mPowerBins[i]) / (60*60*1000);
-            if (DEBUG && p != 0) {
+            if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && p != 0) {
                 Log.d(TAG, "Cell strength #" + i + ": time=" + strengthTimeMs + " power="
                         + BatteryStatsHelper.makemAh(p));
             }
@@ -116,7 +116,7 @@ public class MobileRadioPowerCalculator extends PowerCalculator {
         final long scanningTimeMs = stats.getPhoneSignalScanningTime(rawRealtimeUs, statsType)
                 / 1000;
         final double p = (scanningTimeMs * mPowerScan) / (60*60*1000);
-        if (DEBUG && p != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog()  && p != 0) {
             Log.d(TAG, "Cell radio scanning: time=" + scanningTimeMs
                     + " power=" + BatteryStatsHelper.makemAh(p));
         }

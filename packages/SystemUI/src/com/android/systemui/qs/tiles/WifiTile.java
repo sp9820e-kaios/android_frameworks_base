@@ -59,7 +59,9 @@ public class WifiTile extends QSTile<QSTile.SignalState> {
 
     @Override
     public boolean supportsDualTargets() {
-        return true;
+        /* SPRD: Bug 583693 PikeL Feature {@ */
+        return /*true*/false;
+        /* @} */
     }
 
     @Override

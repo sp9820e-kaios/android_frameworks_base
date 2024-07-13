@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Gratulálunk! A Kezelőfelület-hangolót hozzáadtuk a Beállításokhoz"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Eltávolítás a Beállítások közül"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Eltávolítja a Kezelőfelület-hangolót a Beállításokból, és nem használja tovább egyik funkcióját sem?"</string>
+    <string name="quick_settings_volume_label">AudioProfil"</string>
+     <string name="assistant_key_home">"Főoldal"</string>
+     <string name="assistant_key_search">"keresés"</string>
+     <string name="assistant_key_menu">"Menü"</string>
+     <string name="assistant_key_back">"Vissza"</string>
+
+    <string name="vibrate_hint">"Vibráláshoz legyintsen balra"</string>
+     <string name="battery_overtage_title">"Biztonsági figyelmeztetés"</string>
+     <string name="battery_overtage_content">"A töltési feszültség túl nagy!"</string>
+     <string name="battery_overtage_back">"Vissza"</string>
 </resources>

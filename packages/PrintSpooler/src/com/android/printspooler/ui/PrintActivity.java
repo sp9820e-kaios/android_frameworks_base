@@ -271,6 +271,11 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
         // Now that we are bound to the local print spooler service
         // and the printer registry loaded the historical printers
         // we can show the UI without flickering.
+        /*SPRD bug fix 492954 PrintSplooer FC sometimes when orientation change @{ */
+        if (isFinishing()) {
+            return;
+        }
+        /* @} */
         setTitle(R.string.print_dialog);
         setContentView(R.layout.print_activity);
 
@@ -313,6 +318,12 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
         // Now show the updated UI to avoid flicker.
         mOptionsContent.setVisibility(View.VISIBLE);
         mSelectedPages = computeSelectedPages();
+        /*SPRD bug fix 492954 PrintSplooer FC sometimes when orientation change @{ */
+        if (mPrintedDocument.hasUpdateError() || mPrintedDocument.isDestroyed()) {
+            doFinish();
+            return;
+        }
+        /* @} */
         mPrintedDocument.start();
 
         ensurePreviewUiShown();
@@ -334,7 +345,9 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
         PrintSpoolerService spooler = mSpoolerProvider.getSpooler();
 
         if (mState == STATE_INITIALIZING) {
-            if (isFinishing()) {
+            /*SPRD: This object is assignment in onServiceConnected function and mState is in initializing now
+            ,so the service is not connected cause this object is null*/
+            if (isFinishing() && spooler != null) {
                 spooler.setPrintJobState(mPrintJob.getId(), PrintJobInfo.STATE_CANCELED, null);
             }
             super.onPause();
@@ -579,7 +592,9 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case ACTIVITY_REQUEST_CREATE_FILE: {
-                onStartCreateDocumentActivityResult(resultCode, data);
+                // SPRD 510455
+                if(mPrintedDocument != null)
+                    onStartCreateDocumentActivityResult(resultCode, data);
             } break;
 
             case ACTIVITY_REQUEST_SELECT_PRINTER: {
@@ -655,9 +670,13 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
             }
         }
 
-        PrinterId printerId = mCurrentPrinter.getId();
-        final int index = mDestinationSpinnerAdapter.getPrinterIndex(printerId);
-        mDestinationSpinner.setSelection(index);
+        /* SPRD: 514026 screen pinning will cause this object empty @{*/
+        if(mCurrentPrinter != null){
+            PrinterId printerId = mCurrentPrinter.getId();
+            final int index = mDestinationSpinnerAdapter.getPrinterIndex(printerId);
+            mDestinationSpinner.setSelection(index);
+        }
+        /* @} */
     }
 
     private void startAdvancedPrintOptionsActivity(PrinterInfo printer) {
@@ -913,7 +932,8 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
     }
 
     private void ensureProgressUiShown() {
-        if (isFinishing()) {
+        //SPRD:499872
+        if (isFinishing() || !isResumed()) {
             return;
         }
         if (mUiState != UI_STATE_PROGRESS) {
@@ -925,7 +945,8 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
     }
 
     private void ensurePreviewUiShown() {
-        if (isFinishing()) {
+        //SPRD:499872
+        if (isFinishing() || !isResumed()) {
             return;
         }
         if (mUiState != UI_STATE_PREVIEW) {
@@ -936,7 +957,8 @@ public class PrintActivity extends Activity implements RemotePrintDocument.Updat
     }
 
     private void ensureErrorUiShown(CharSequence message, int action) {
-        if (isFinishing()) {
+        //SPRD:499872
+        if (isFinishing() || !isResumed()) {
             return;
         }
         if (mUiState != UI_STATE_ERROR) {

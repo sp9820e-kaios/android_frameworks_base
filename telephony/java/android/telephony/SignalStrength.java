@@ -21,6 +21,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.telephony.Rlog;
 import android.content.res.Resources;
+import com.android.telephony.SignalStrengthUtils;
 
 /**
  * Contains phone signal strength related information.
@@ -799,7 +800,9 @@ public class SignalStrength implements Parcelable {
 
         if (snrIconLevel != -1) return snrIconLevel;
 
-        if (rsrpIconLevel != -1) return rsrpIconLevel;
+        /** SPRD Modify: Bug#474988 plugin for operator spec **/
+        SignalStrengthUtils ssUtils = SignalStrengthUtils.getInstance();
+        if (rsrpIconLevel != -1) return ssUtils.processLteLevel(rsrpIconLevel, mLteRsrp);
 
         /* Valid values are (0-63, 99) as defined in TS 36.331 */
         if (mLteSignalStrength > 63) rssiIconLevel = SIGNAL_STRENGTH_NONE_OR_UNKNOWN;

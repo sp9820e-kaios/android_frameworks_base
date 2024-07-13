@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ILauncherApps;
 import android.content.pm.IOnAppsChangedListener;
+import android.content.pm.LauncherActivityInfoEx;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -162,7 +163,7 @@ public class LauncherApps {
             } catch (NameNotFoundException nnfe) {
                 // Sorry, can't find package
             }
-            LauncherActivityInfo lai = new LauncherActivityInfo(mContext, ri, user,
+            LauncherActivityInfo lai = new LauncherActivityInfoEx(mContext, ri, user,
                     firstInstallTime);
             if (DEBUG) {
                 Log.v(TAG, "Returning activity for profile " + user + " : "
@@ -196,7 +197,7 @@ public class LauncherApps {
                 } catch (NameNotFoundException nnfe) {
                     // Sorry, can't find package
                 }
-                LauncherActivityInfo info = new LauncherActivityInfo(mContext, ri, user,
+                LauncherActivityInfo info = new LauncherActivityInfoEx(mContext, ri, user,
                         firstInstallTime);
                 return info;
             }

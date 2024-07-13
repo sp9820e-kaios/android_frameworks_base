@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Gratulujemy, Kalibrator System UI został dodany do Ustawień"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Usuń z Ustawień"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Usunąć Kalibrator System UI z Ustawień i przestać używać wszystkich jego funkcji?"</string>
+    <string name="quick_settings_volume_label">"Profil Audio"</string>
+     <string name="assistant_key_home">"Ekran główny"</string>
+     <string name="assistant_key_search">"Szukaj"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Wstecz"</string>
+
+    <string name="vibrate_hint">"Przesuń w lewo dla wibracji"</string>
+     <string name="battery_overtage_title">"Ostrzeżenie zabezpieczeń"</string>
+     <string name="battery_overtage_content">"Napięcie ładowania jest za wysokie!"</string>
+     <string name="battery_overtage_back">"Wstecz"</string>
 </resources>

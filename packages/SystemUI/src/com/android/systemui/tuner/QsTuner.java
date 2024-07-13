@@ -200,6 +200,11 @@ public class QsTuner extends Fragment implements Callback {
         else if (spec.equals("location")) return R.string.quick_settings_location_label;
         else if (spec.equals("cast")) return R.string.quick_settings_cast_title;
         else if (spec.equals("hotspot")) return R.string.quick_settings_hotspot_label;
+        /*SPRD : fixbug 497122 @{*/
+        else if (spec.equals("audioprofile")) return R.string.quick_settings_volume_label;
+        else if (spec.equals("data")) return R.string.quick_settings_data_connection_label;
+        else if (spec.equals("lte")) return R.string.quick_settings_lte_service_label;
+        /*@}*/
         return 0;
     }
 
@@ -443,6 +448,11 @@ public class QsTuner extends Fragment implements Callback {
             else if (mSpec.equals("location")) return R.drawable.ic_signal_location_enable;
             else if (mSpec.equals("cast")) return R.drawable.ic_qs_cast_on;
             else if (mSpec.equals("hotspot")) return R.drawable.ic_hotspot_enable;
+            /*SPRD : fixbug 497122 @{*/
+            else if (mSpec.equals("audioprofile")) return R.drawable.ic_qs_general_on_sprd;
+            else if (mSpec.equals("data")) return R.drawable.ic_qs_mobile_data_on_ex;
+            else if (mSpec.equals("lte")) return R.drawable.ic_qs_4g_on_ex;
+            /*@}*/
             return R.drawable.android;
         }
 

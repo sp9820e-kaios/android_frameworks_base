@@ -127,4 +127,7 @@
       <item quantity="other">උපාංගය පැය <xliff:g id="NUMBER_1">%d</xliff:g>කට අගුලු හැර නැත. මුරපදය තහවුරු කරන්න.</item>
     </plurals>
     <string name="fingerprint_not_recognized" msgid="2690661881608146617">"අඳුනාගත නොහැක"</string>
+    <string name="kg_no_sim_message">"SIM පත නොමැත"</string>
+    <string name="kg_emergency_call_no_service">"ලබා ගත හැකි ජාලයක් නැත"</string>
+    <string name="kg_sim_pin_verify_success">"PIN තහවුරු කිරීම සාර්ථකයි"</string>
 </resources>

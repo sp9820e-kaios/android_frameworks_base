@@ -52,7 +52,7 @@ public class CpuPowerCalculator extends PowerCalculator {
         totalTimeAtSpeeds = Math.max(totalTimeAtSpeeds, 1);
 
         app.cpuTimeMs = (u.getUserCpuTimeUs(statsType) + u.getSystemCpuTimeUs(statsType)) / 1000;
-        if (DEBUG && app.cpuTimeMs != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && app.cpuTimeMs != 0) {
             Log.d(TAG, "UID " + u.getUid() + ": CPU time " + app.cpuTimeMs + " ms");
         }
 
@@ -60,7 +60,7 @@ public class CpuPowerCalculator extends PowerCalculator {
         for (int step = 0; step < speedSteps; step++) {
             final double ratio = (double) mSpeedStepTimes[step] / totalTimeAtSpeeds;
             final double cpuSpeedStepPower = ratio * app.cpuTimeMs * mPowerCpuNormal[step];
-            if (DEBUG && ratio != 0) {
+            if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && ratio != 0) {
                 Log.d(TAG, "UID " + u.getUid() + ": CPU step #"
                         + step + " ratio=" + BatteryStatsHelper.makemAh(ratio) + " power="
                         + BatteryStatsHelper.makemAh(cpuSpeedStepPower / (60 * 60 * 1000)));
@@ -68,7 +68,7 @@ public class CpuPowerCalculator extends PowerCalculator {
             cpuPowerMaMs += cpuSpeedStepPower;
         }
 
-        if (DEBUG && cpuPowerMaMs != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && cpuPowerMaMs != 0) {
             Log.d(TAG, "UID " + u.getUid() + ": cpu total power="
                     + BatteryStatsHelper.makemAh(cpuPowerMaMs / (60 * 60 * 1000)));
         }
@@ -101,7 +101,7 @@ public class CpuPowerCalculator extends PowerCalculator {
 
         // Ensure that the CPU times make sense.
         if (app.cpuFgTimeMs > app.cpuTimeMs) {
-            if (DEBUG && app.cpuFgTimeMs > app.cpuTimeMs + 10000) {
+            if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && app.cpuFgTimeMs > app.cpuTimeMs + 10000) {
                 Log.d(TAG, "WARNING! Cputime is more than 10 seconds behind Foreground time");
             }
 

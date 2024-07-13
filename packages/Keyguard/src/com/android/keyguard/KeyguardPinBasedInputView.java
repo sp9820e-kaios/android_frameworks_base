@@ -77,12 +77,34 @@ public abstract class KeyguardPinBasedInputView extends KeyguardAbsKeyInputView
     }
 
     @Override
+    public boolean dispatchKeyEventPreIme(KeyEvent event) {
+        if (event.isLongPress()) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                resetPasswordText(true);
+                return true;
+            }
+            return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK
+                && event.getAction() == KeyEvent.ACTION_UP
+                && event.getRepeatCount() == 0) {
+            performClick(mDeleteButton);
+            return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU
+                && event.getAction() == KeyEvent.ACTION_UP
+                && event.getRepeatCount() == 0) {
+            EmergencyButton button = (EmergencyButton) findViewById(R.id.emergency_call_button);
+            button.takeEmergencyCallAction();
+            return true;
+        }
+        return super.dispatchKeyEventPreIme(event);
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (KeyEvent.isConfirmKey(keyCode)) {
             performClick(mOkButton);
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_DEL) {
-            performClick(mDeleteButton);
             return true;
         }
         if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) {

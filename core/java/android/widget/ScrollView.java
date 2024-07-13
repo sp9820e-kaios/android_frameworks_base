@@ -16,6 +16,7 @@
 
 package android.widget;
 
+import android.app.ActivityManager;
 import android.annotation.NonNull;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -741,6 +742,12 @@ public class ScrollView extends FrameLayout {
             }
             case MotionEvent.ACTION_POINTER_UP:
                 onSecondaryPointerUp(ev);
+                /* 2015.12.31 SPRD: Bug 519392 - For monkey test pointerIndex out of range. @{ */
+                if (ActivityManager.isUserAMonkey() && ev.findPointerIndex(mActivePointerId) == -1) {
+                    Log.e(TAG, "Invalid pointerId=" + mActivePointerId + " in onTouchEvent POINTER_UP");
+                    break;
+                }
+                /* @} */
                 mLastMotionY = (int) ev.getY(ev.findPointerIndex(mActivePointerId));
                 break;
         }

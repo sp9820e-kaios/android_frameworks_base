@@ -449,9 +449,7 @@ final class WifiDisplayController implements DumpUtils.Dump {
                     }
                 }
 
-                if (mDiscoverPeersInProgress) {
-                    handleScanResults();
-                }
+                handleScanResults();
             }
         });
     }

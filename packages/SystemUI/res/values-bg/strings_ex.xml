@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Подвижната WLAN  гореща точка се нуждае от връзка с мобилни данни, това може да начисли допълнителни такси."</string>
+<string name="softap_bt_cannot_coexist">"Когато Bluetooth е активиран или се включва, точката за достъп не може да работи, ако желаете да я използвате, моля уверете се че Bluetooth е изключен."</string>
+<string name="bt_softap_cannot_coexist">"Когато точката за достъп е активирана или се включва, Bluetooth не може да работи, ако желаете да я ползвате, уверете се че точката за достъп е изключена."</string>
+<string name="lte_service_error_airplane">Не може да използвате 4G докато устройството е в самолетен режим.</string>
+<string name="accessibility_quick_settings_lte_changed_on">4G е включен</string>
+<string name="accessibility_quick_settings_lte_changed_off">4G е изключен</string>
+<string name="accessibility_quick_settings_lte_on">4G включен</string>
+<string name="accessibility_quick_settings_lte_off">4G изключен</string>
+<string name="toggle_data_error_airplane">Не може да използвате мобилни данни когато телефона е в самолетен режим.</string>
+<string name="quick_settings_data_connection_label">"Данни"</string>
+<string name="accessibility_quick_settings_data_changed_on">Данните са включени</string>
+<string name="accessibility_quick_settings_data_changed_off">Данните са изключени</string>
+<string name="accessibility_quick_settings_data_on">Включване на данни</string>
+<string name="accessibility_quick_settings_data_off">Изключване на данни</string>
+<string name="missing_sim_message">Няма поставена SIM карта</string>
+    <string name="lte_service_error_incall">"Не може да превключвате LTE услугите по време на обаждане."</string>
+
+</resources>

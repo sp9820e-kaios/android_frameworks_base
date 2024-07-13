@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Toca para ver detalles"</string>
     <string name="retry" msgid="7564024179122207376">"Tentar de novo"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Non se copiaron estes ficheiros: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">Non pode compartir o arquivo</string>
+     <string name="documents_deleting">"Borrando documentos"</string>
+     <string name="cannot_copyfolder_itself">"Non pode copiar a carpeta dentro en sí mesma"</string>
+
+    <string name="error_permissions">"A aplicación non ten permisos esenciais que se necesitan para a súa execución. Comproba a configuración dos permisos."</string>
+     <string name="cannot_copy_drm">"Non pode copiar os arquivos DRM"</string>
+     <string name="cannot_copy_downloading">"Non pode copiar a descarga de arquivos"</string>
 </resources>

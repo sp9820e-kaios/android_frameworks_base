@@ -1339,7 +1339,9 @@ public class MediaRouter {
                     updateWifiDisplayRoute(route, d, status, disconnected);
                 }
                 if (d.equals(activeDisplay)) {
-                    selectRouteStatic(route.getSupportedTypes(), route, false);
+                    //Special handle for wifidisplay, need to check the current activeDisplay. Bug#369785
+                    //selectRouteStatic(route.getSupportedTypes(), route, false);
+                    selectRouteStaticFromWifiDisplay(route.getSupportedTypes(), route, false, activeDisplay);
                 }
             }
         }
@@ -1350,7 +1352,9 @@ public class MediaRouter {
             if (route.mDeviceAddress != null) {
                 WifiDisplay d = findWifiDisplay(displays, route.mDeviceAddress);
                 if (d == null || !shouldShowWifiDisplay(d, activeDisplay)) {
-                    removeRouteStatic(route);
+                    //Special handle for wifidisplay, need to check the current activeDisplay. Bug#369785
+                    //removeRouteStatic(route);
+                    removeRouteStaticFromWifiDisplay(route, activeDisplay);
                 }
             }
         }
@@ -2879,4 +2883,109 @@ public class MediaRouter {
             }
         }
     }
+
+
+    //Bug#369785: for Wifi Display, there is a async in activeDislay, so when calling selectRouteStatic from
+    //WifiDisplayStatusChangedReceiver need to ref the activeDisplay from broadcast.
+    static void selectRouteStaticFromWifiDisplay(int types, RouteInfo route, boolean explicit, WifiDisplay activeDisplay) {
+        final RouteInfo oldRoute = sStatic.mSelectedRoute;
+        if (oldRoute == route) return;
+        if (!route.matchesTypes(types)) {
+            Log.w(TAG, "selectRoute ignored; cannot select route with supported types " +
+                    typesToString(route.getSupportedTypes()) + " into route types " +
+                    typesToString(types));
+            return;
+        }
+
+        final RouteInfo btRoute = sStatic.mBluetoothA2dpRoute;
+        if (btRoute != null && (types & ROUTE_TYPE_LIVE_AUDIO) != 0 &&
+                (route == btRoute || route == sStatic.mDefaultAudioVideo)) {
+            try {
+                sStatic.mAudioService.setBluetoothA2dpOn(route == btRoute);
+            } catch (RemoteException e) {
+                Log.e(TAG, "Error changing Bluetooth A2DP state", e);
+            }
+        }
+
+        final WifiDisplay curActiveDisplay =
+                sStatic.mDisplayService.getWifiDisplayStatus().getActiveDisplay();
+        final boolean oldRouteHasAddress = (oldRoute != null && oldRoute.mDeviceAddress != null);
+        final boolean newRouteHasAddress = (route != null && route.mDeviceAddress != null);
+
+        //Log.e(TAG, "selectRouteStatic oldRoute: " + oldRoute + "   newRoute:" + newRouteHasAddress + "  activeDisplay:" + activeDisplay);
+
+        if(activeDisplay != null) activeDisplay = curActiveDisplay;
+
+        if (activeDisplay != null || oldRouteHasAddress || newRouteHasAddress) {
+            if (newRouteHasAddress && !matchesDeviceAddress(activeDisplay, route)) {
+                if (sStatic.mCanConfigureWifiDisplays) {
+                    Log.e(TAG, "selectRouteStatic connect to wifi displays because this process ");
+                    sStatic.mDisplayService.connectWifiDisplay(route.mDeviceAddress);
+                } else {
+                    Log.e(TAG, "Cannot connect to wifi displays because this process "
+                            + "is not allowed to do so.");
+                }
+            } else if (activeDisplay != null && !newRouteHasAddress) {
+                Log.e(TAG, "selectRouteStatic Disconnect to wifi displays because this process ");
+
+                sStatic.mDisplayService.disconnectWifiDisplay();
+            }
+        }
+
+        sStatic.setSelectedRoute(route, explicit);
+
+        if (oldRoute != null) {
+            dispatchRouteUnselected(types & oldRoute.getSupportedTypes(), oldRoute);
+            if (oldRoute.resolveStatusCode()) {
+                dispatchRouteChanged(oldRoute);
+            }
+        }
+        if (route != null) {
+            if (route.resolveStatusCode()) {
+                dispatchRouteChanged(route);
+            }
+            dispatchRouteSelected(types & route.getSupportedTypes(), route);
+        }
+
+        // The behavior of active scans may depend on the currently selected route.
+        sStatic.updateDiscoveryRequest();
+    }
+
+    //Bug#369785: for Wifi Display, there is a async in activeDislay, so when calling selectRouteStatic from
+    //WifiDisplayStatusChangedReceiver need to ref the activeDisplay from broadcast.
+    static void selectDefaultRouteStaticFromWifiDisplay(WifiDisplay activeDisplay) {
+        // TODO: Be smarter about the route types here; this selects for all valid.
+        if (sStatic.mSelectedRoute != sStatic.mBluetoothA2dpRoute
+                && sStatic.mBluetoothA2dpRoute != null  && sStatic.isBluetoothA2dpOn()) {
+            selectRouteStaticFromWifiDisplay(ROUTE_TYPE_ANY, sStatic.mBluetoothA2dpRoute, false, activeDisplay);
+        } else {
+            selectRouteStaticFromWifiDisplay(ROUTE_TYPE_ANY, sStatic.mDefaultAudioVideo, false, activeDisplay);
+        }
+    }
+
+    //Bug#369785: for Wifi Display, there is a async in activeDislay, so when calling selectRouteStatic from
+    //WifiDisplayStatusChangedReceiver need to ref the activeDisplay from broadcast.
+    static void removeRouteStaticFromWifiDisplay(RouteInfo info, WifiDisplay activeDisplay) {
+        if (sStatic.mRoutes.remove(info)) {
+            final RouteCategory removingCat = info.getCategory();
+            final int count = sStatic.mRoutes.size();
+            boolean found = false;
+            for (int i = 0; i < count; i++) {
+                final RouteCategory cat = sStatic.mRoutes.get(i).getCategory();
+                if (removingCat == cat) {
+                    found = true;
+                    break;
+                }
+            }
+            if (info.isSelected()) {
+                // Removing the currently selected route? Select the default before we remove it.
+                selectDefaultRouteStaticFromWifiDisplay(activeDisplay);
+            }
+            if (!found) {
+                sStatic.mCategories.remove(removingCat);
+            }
+            dispatchRouteRemoved(info);
+        }
+    }
+
 }

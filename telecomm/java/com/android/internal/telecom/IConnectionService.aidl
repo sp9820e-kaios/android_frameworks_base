@@ -71,4 +71,13 @@ oneway interface IConnectionService {
     void swapConference(String conferenceCallId);
 
     void onPostDialContinue(String callId, boolean proceed);
+
+    /* SPRD Add for multi-part-call mode */
+    void answerMPCVideo(String callId, int videoState, int mpcMode);
+
+    /* SPRD Add for multi-part-call mode */
+    void answerMPC(String callId, int mpcMode);
+
+    /* SPRD: Porting Explicit Transfer Call */
+    void explicitCallTransfer(String callId);
 }

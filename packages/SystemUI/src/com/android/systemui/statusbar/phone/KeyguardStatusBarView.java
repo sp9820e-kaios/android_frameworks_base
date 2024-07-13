@@ -96,6 +96,7 @@ public class KeyguardStatusBarView extends RelativeLayout
     }
 
     private void updateVisibilities() {
+        /* SPRD: Feature 475356 Support multi-card carrier info display @{
         if (mMultiUserSwitch.getParent() != this && !mKeyguardUserSwitcherShowing) {
             if (mMultiUserSwitch.getParent() != null) {
                 getOverlay().remove(mMultiUserSwitch);
@@ -103,7 +104,16 @@ public class KeyguardStatusBarView extends RelativeLayout
             addView(mMultiUserSwitch, 0);
         } else if (mMultiUserSwitch.getParent() == this && mKeyguardUserSwitcherShowing) {
             removeView(mMultiUserSwitch);
+        }*/
+        if (mMultiUserSwitch.getParent().getParent() != this && !mKeyguardUserSwitcherShowing) {
+            if (mMultiUserSwitch.getParent().getParent() != null) {
+                getOverlay().remove(mMultiUserSwitch);
+            }
+            addView(mMultiUserSwitch, 0);
+        } else if (mMultiUserSwitch.getParent().getParent() == this && mKeyguardUserSwitcherShowing) {
+            removeView(mMultiUserSwitch);
         }
+        /* @} */
         mBatteryLevel.setVisibility(mBatteryCharging ? View.VISIBLE : View.GONE);
     }
 
@@ -187,13 +197,17 @@ public class KeyguardStatusBarView extends RelativeLayout
 
     private void animateNextLayoutChange() {
         final int systemIconsCurrentX = mSystemIconsSuperContainer.getLeft();
-        final boolean userSwitcherVisible = mMultiUserSwitch.getParent() == this;
+        /* SPRD: Feature 475356 Support multi-card carrier info display @{
+        final boolean userSwitcherVisible = mMultiUserSwitch.getParent() == this;*/
+        final boolean userSwitcherVisible = mMultiUserSwitch.getParent().getParent() == this;
         getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
             public boolean onPreDraw() {
                 getViewTreeObserver().removeOnPreDrawListener(this);
                 boolean userSwitcherHiding = userSwitcherVisible
-                        && mMultiUserSwitch.getParent() != KeyguardStatusBarView.this;
+                        /* SPRD: Feature 475356 Support multi-card carrier info display @{
+                        && mMultiUserSwitch.getParent() != KeyguardStatusBarView.this;*/
+                        && mMultiUserSwitch.getParent().getParent() != KeyguardStatusBarView.this;
                 mSystemIconsSuperContainer.setX(systemIconsCurrentX);
                 mSystemIconsSuperContainer.animate()
                         .translationX(0)

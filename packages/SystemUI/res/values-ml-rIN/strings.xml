@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"അഭിനന്ദനങ്ങൾ! ക്രമീകരണത്തിലേക്ക് സിസ്റ്റം UI ട്യൂണർ ചേർത്തിരിക്കുന്നു"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"ക്രമീകരണത്തിൽ നിന്ന് നീക്കംചെയ്യുക"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"ക്രമീകരണത്തിൽ നിന്ന് സിസ്റ്റം UI ട്യൂണർ നീക്കംചെയ്യുകയും അതിന്റെ ഫീച്ചറുകളെല്ലാം ഉപയോഗിക്കുന്നത് നിർത്തുകയും ചെയ്യണോ?"</string>
+    <string name="quick_settings_volume_label">"ശബ്‌ദപ്രൊഫൈൽ "</string>
+     <string name="assistant_key_home">"ഹോം"</string>
+     <string name="assistant_key_search">"തെരയുക"</string>
+     <string name="assistant_key_menu">"മെനു"</string>
+     <string name="assistant_key_back">"പുറകോട്ട്"</string>
+
+    <string name="vibrate_hint">"വൈബ്രേറ്റ് ചെയ്യുന്നതിന് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക"</string>
+     <string name="battery_overtage_title">"സുരക്ഷാപരമായ മുന്നറിയിപ്പ്"</string>
+     <string name="battery_overtage_content">"ചാർജ്ജിങ്ങ് വോൾട്ടേജ് വളരെ കൂടുതലാണ്!"</string>
+     <string name="battery_overtage_back">"പുറകോട്ട്"</string>
+    <string name="recent_app_clean_finished_toast">"റിലീസ്  <xliff:g id="count">%1$s</xliff:g> മെമ്മറി ,<xliff:g id="count">%2$s</xliff:g> ഇപ്പോൾ ലഭ്യമാണ്."</string>
+     <string name="label_tab_notifications">"അറിയിക്കുക"</string>
+     <string name="label_tab_qs">"സ്വിച്ച്"</string>
+     <string name="label_screen_brightness">"ഡിസ്പ്ലേ തെളിച്ചം"</string>
+     <string name="label_star_unlock">"അൺലോക്ക് ചെയ്യാൻ ദീർഘമായി * അമർത്തുക"</string>
+     <string name="speak_spec">"H m"</string>
 </resources>

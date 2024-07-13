@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Điểm phát Wi-Fi di động cần kết nối dữ liệu di động, có thể làm phát sinh thêm chi phí."</string>
+<string name="softap_bt_cannot_coexist">"Khi bluetooth được kích hoạt hoặc bật, các ứng dụng phần mềm không thể làm việc, nếu bạn muốn sử dụng các ứng dụng phần mềm, xin vui lòng chắc chắn rằng bluetooth đã được vô hiệu hóa."</string>
+<string name="bt_softap_cannot_coexist">"Khi ứng dụng phần mềm được kích hoạt hoặc bật, bluetooth không thể làm việc, nếu bạn muốn sử dụng bluetooth, xin vui lòng chắc chắn rằng ứng dụng phần mềm đã được vô hiệu hóa."</string>
+<string name="lte_service_error_airplane">"Quý vị không thể sử dụng LTE khi điện thoại đang ở chế độ trên máy bay."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G đã được bật"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G đã được tắt"</string>
+<string name="accessibility_quick_settings_lte_on">"Bật 4G"</string>
+<string name="accessibility_quick_settings_lte_off">"Tắt 4G"</string>
+<string name="toggle_data_error_airplane">Bạn không thể sử dụng dữ liệu Di động khi điện thoại đang trong chế độ máy bay.</string>
+<string name="quick_settings_data_connection_label">"DỮ LIỆU"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Đã bật dữ liệu"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Đã tắt dữ liệu"</string>
+<string name="accessibility_quick_settings_data_on">"Dữ liệu bật"</string>
+<string name="accessibility_quick_settings_data_off">"Dữ liệu tắt"</string>
+<string name="missing_sim_message">"Không có SIM"</string>
+    <string name="lte_service_error_incall">"Bạn không thể chuyển đổi dịch vụ LTE trong suốt cuộc gọi."</string>
+
+</resources>

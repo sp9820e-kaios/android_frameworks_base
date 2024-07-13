@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Hotspot Wi-Fi portativ ka nevojë për internetin celular, mund të sjellë kosto të tjera."</string>
+<string name="softap_bt_cannot_coexist">"Kur Bluetooth është i aktivizuar ose është i ndezur, softap nuk mund të punojë, nëse doni të përdorni softap, ju lutem sigurohuni që Bluetooth është i çaktivizuar."</string>
+<string name="bt_softap_cannot_coexist">"Kur softap është i aktivizuar ose i ndezur, Bluetooth nuk mund të punojë, nëse doni të përdorni Bluetooth, ju lutem sigurohuni që softap është i çaktivizuar."</string>
+<string name="lte_service_error_airplane">"Nuk mund të përdorni LTE kur telefoni është në metodën e aeroplanit."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G i ndezur"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G i fikur"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ndezur"</string>
+<string name="accessibility_quick_settings_lte_off">"4G fikur"</string>
+<string name="toggle_data_error_airplane">Nuk mund të përdorni internetin celular kur telefoni është në metodën e aeroplanit.</string>
+<string name="quick_settings_data_connection_label">Të dhëna</string>
+<string name="accessibility_quick_settings_data_changed_on">"Interneti celular u aktivizua"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Interneti celular u çaktivizua"</string>
+<string name="accessibility_quick_settings_data_on">"Interneti celular aktiv"</string>
+<string name="accessibility_quick_settings_data_off">"Interneti celular joaktiv"</string>
+<string name="missing_sim_message">PA SIM</string>
+    <string name="lte_service_error_incall">"Nuk mund ta ndryshoni shërbimin LTE gjatë telefonatës."</string>
+
+</resources>

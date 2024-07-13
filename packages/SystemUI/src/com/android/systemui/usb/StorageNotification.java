@@ -57,6 +57,9 @@ public class StorageNotification extends SystemUI {
 
     // TODO: delay some notifications to avoid bumpy fast operations
 
+    /*SPRD bug 622774:Don't display sdcard mounted notification*/
+    private static final boolean DISABLE_NOTIFICATION = true;
+
     private NotificationManager mNotificationManager;
     private StorageManager mStorageManager;
 
@@ -142,6 +145,12 @@ public class StorageNotification extends SystemUI {
             if (PackageManager.isMoveStatusFinished(status)) {
                 onMoveFinished(move, status);
             } else {
+                /* SPRD: add for primary storage @{ */
+                final VolumeInfo vol = mStorageManager.findVolumeByQualifiedUuid(move.volumeUuid);
+                if (vol == null) {
+                    return;
+                }
+                /* @} */
                 onMoveProgress(move, status, estMillis);
             }
         }
@@ -317,6 +326,11 @@ public class StorageNotification extends SystemUI {
     }
 
     private Notification onVolumeMounted(VolumeInfo vol) {
+        /*SPRD bug 622774:Don't display sdcard mounted notification{@*/
+        if(DISABLE_NOTIFICATION){
+            return null;
+        }
+        /*@}*/
         final VolumeRecord rec = mStorageManager.findRecordByUuid(vol.getFsUuid());
         final DiskInfo disk = vol.getDisk();
 
@@ -333,11 +347,12 @@ public class StorageNotification extends SystemUI {
 
             final PendingIntent initIntent = buildInitPendingIntent(vol);
             return buildNotificationBuilder(vol, title, text)
-                    .addAction(new Action(R.drawable.ic_settings_24dp,
-                            mContext.getString(R.string.ext_media_init_action), initIntent))
-                    .addAction(new Action(R.drawable.ic_eject_24dp,
-                            mContext.getString(R.string.ext_media_unmount_action),
-                            buildUnmountPendingIntent(vol)))
+                    //SPRD bug 611884:StorageNotification can't focus setting & eject button.{@
+//                    .addAction(new Action(R.drawable.ic_settings_24dp,
+//                            mContext.getString(R.string.ext_media_init_action), initIntent))
+//                    .addAction(new Action(R.drawable.ic_eject_24dp,
+//                            mContext.getString(R.string.ext_media_unmount_action),
+//                            buildUnmountPendingIntent(vol)))//@}
                     .setContentIntent(initIntent)
                     .setDeleteIntent(buildSnoozeIntent(vol.getFsUuid()))
                     .setCategory(Notification.CATEGORY_SYSTEM)
@@ -350,14 +365,19 @@ public class StorageNotification extends SystemUI {
 
             final PendingIntent browseIntent = buildBrowsePendingIntent(vol);
             final Notification.Builder builder = buildNotificationBuilder(vol, title, text)
-                    .addAction(new Action(R.drawable.ic_folder_24dp,
-                            mContext.getString(R.string.ext_media_browse_action),
-                            browseIntent))
-                    .addAction(new Action(R.drawable.ic_eject_24dp,
-                            mContext.getString(R.string.ext_media_unmount_action),
-                            buildUnmountPendingIntent(vol)))
+                    //SPRD bug 611884:StorageNotification can't focus setting & eject button.{@
+//                    .addAction(new Action(R.drawable.ic_folder_24dp,
+//                            mContext.getString(R.string.ext_media_browse_action),
+//                            browseIntent))
+//                    .addAction(new Action(R.drawable.ic_eject_24dp,
+//                            mContext.getString(R.string.ext_media_unmount_action),
+//                            buildUnmountPendingIntent(vol)))
+                    //@}
                     .setContentIntent(browseIntent)
                     .setCategory(Notification.CATEGORY_SYSTEM)
+                    /* SPRD: Bug 604142 Icon disappear when click notification to browser content {@ */
+                    .setAutoCancel(true)
+                    /* @} */
                     .setPriority(Notification.PRIORITY_LOW);
             // Non-adoptable disks can't be snoozed.
             if (disk.isAdoptable()) {
@@ -584,8 +604,14 @@ public class StorageNotification extends SystemUI {
     }
 
     private PendingIntent buildBrowsePendingIntent(VolumeInfo vol) {
-        final Intent intent = vol.buildBrowseIntent();
-
+        /* Add for Bug:510077 exist many instance of documentsactivity start*/
+        Intent intent = vol.buildBrowseIntent();
+        /* SPRD: Add for bug 518820 @{ */
+        if(intent != null){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
+        /* @} */
+        /* Add for Bug:510077 exist many instance of documentsactivity end*/
         final int requestKey = vol.getId().hashCode();
         return PendingIntent.getActivityAsUser(mContext, requestKey, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT, null, UserHandle.CURRENT);
@@ -626,7 +652,9 @@ public class StorageNotification extends SystemUI {
         intent.setClassName("com.android.settings",
                 "com.android.settings.Settings$PrivateVolumeForgetActivity");
         intent.putExtra(VolumeRecord.EXTRA_FS_UUID, rec.getFsUuid());
-
+        /* SPRD: fixbug494589 It happens framework crash  in page switching after formating San Disk@{ */
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        /* @} */
         final int requestKey = rec.getFsUuid().hashCode();
         return PendingIntent.getActivityAsUser(mContext, requestKey, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT, null, UserHandle.CURRENT);

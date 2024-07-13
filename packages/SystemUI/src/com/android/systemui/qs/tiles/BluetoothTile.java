@@ -51,7 +51,9 @@ public class BluetoothTile extends QSTile<QSTile.BooleanState>  {
 
     @Override
     public boolean supportsDualTargets() {
-        return true;
+        /* SPRD: Bug 583693 PikeL Feature {@ */
+        return /*true*/false;
+        /* @} */
     }
 
     @Override

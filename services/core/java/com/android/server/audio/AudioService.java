@@ -20,6 +20,7 @@ import static android.Manifest.permission.REMOTE_AUDIO_PLAYBACK;
 import static android.media.AudioManager.RINGER_MODE_NORMAL;
 import static android.media.AudioManager.RINGER_MODE_SILENT;
 import static android.media.AudioManager.RINGER_MODE_VIBRATE;
+import static android.media.AudioManager.RINGER_MODE_OUTDOOR; //SPRD add OUTDOOR MODE
 import static android.os.Process.FIRST_APPLICATION_UID;
 
 import android.Manifest;
@@ -170,6 +171,9 @@ public class AudioService extends IAudioService.Stub {
 
     // the platform type affects volume and silent mode behavior
     private final int mPlatformType;
+    // SPRD bug 500092 when alarm ring, press volume button, alarm will not off or pause
+    private static final String ALARM_VOLUME_BEHAVIOR = "com.sprd.deskclock.volume_behavior";
+    private boolean mIsAlarmFired = false;
 
     private boolean isPlatformVoice() {
         return mPlatformType == AudioSystem.PLATFORM_VOICE;
@@ -269,7 +273,10 @@ public class AudioService extends IAudioService.Stub {
         15, // STREAM_BLUETOOTH_SCO
         7,  // STREAM_SYSTEM_ENFORCED
         15, // STREAM_DTMF
-        15  // STREAM_TTS
+        15, // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        15  // STREAM_FM
+        /** @} */
     };
 
     /** Minimum volume index values for audio streams */
@@ -283,7 +290,10 @@ public class AudioService extends IAudioService.Stub {
         1,  // STREAM_BLUETOOTH_SCO
         0,  // STREAM_SYSTEM_ENFORCED
         0,  // STREAM_DTMF
-        0   // STREAM_TTS
+        0,  // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        0   // STREAM_FM
+        /** @} */
     };
 
     /* mStreamVolumeAlias[] indicates for each stream if it uses the volume settings
@@ -301,11 +311,16 @@ public class AudioService extends IAudioService.Stub {
         AudioSystem.STREAM_RING,            // STREAM_RING
         AudioSystem.STREAM_MUSIC,           // STREAM_MUSIC
         AudioSystem.STREAM_ALARM,           // STREAM_ALARM
-        AudioSystem.STREAM_RING,            // STREAM_NOTIFICATION
+        /** SPRD: split notification and ring alias @{ */
+        AudioSystem.STREAM_NOTIFICATION,    // STREAM_NOTIFICATION
+        /** @} */
         AudioSystem.STREAM_BLUETOOTH_SCO,   // STREAM_BLUETOOTH_SCO
         AudioSystem.STREAM_RING,            // STREAM_SYSTEM_ENFORCED
         AudioSystem.STREAM_RING,            // STREAM_DTMF
-        AudioSystem.STREAM_MUSIC            // STREAM_TTS
+        AudioSystem.STREAM_MUSIC,           // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        AudioSystem.STREAM_FM               // STREAM_FM
+        /** @} */
     };
     private final int[] STREAM_VOLUME_ALIAS_TELEVISION = new int[] {
         AudioSystem.STREAM_MUSIC,       // STREAM_VOICE_CALL
@@ -313,11 +328,16 @@ public class AudioService extends IAudioService.Stub {
         AudioSystem.STREAM_MUSIC,       // STREAM_RING
         AudioSystem.STREAM_MUSIC,       // STREAM_MUSIC
         AudioSystem.STREAM_MUSIC,       // STREAM_ALARM
-        AudioSystem.STREAM_MUSIC,       // STREAM_NOTIFICATION
+        /** SPRD: split notification and ring alias @{ */
+        AudioSystem.STREAM_NOTIFICATION,// STREAM_NOTIFICATION
+        /** @} */
         AudioSystem.STREAM_MUSIC,       // STREAM_BLUETOOTH_SCO
         AudioSystem.STREAM_MUSIC,       // STREAM_SYSTEM_ENFORCED
         AudioSystem.STREAM_MUSIC,       // STREAM_DTMF
-        AudioSystem.STREAM_MUSIC        // STREAM_TTS
+        AudioSystem.STREAM_MUSIC,       // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        AudioSystem.STREAM_FM           // STREAM_FM
+        /** @} */
     };
     private final int[] STREAM_VOLUME_ALIAS_DEFAULT = new int[] {
         AudioSystem.STREAM_VOICE_CALL,      // STREAM_VOICE_CALL
@@ -325,11 +345,16 @@ public class AudioService extends IAudioService.Stub {
         AudioSystem.STREAM_RING,            // STREAM_RING
         AudioSystem.STREAM_MUSIC,           // STREAM_MUSIC
         AudioSystem.STREAM_ALARM,           // STREAM_ALARM
-        AudioSystem.STREAM_RING,            // STREAM_NOTIFICATION
+        /** SPRD: split notification and ring alias @{ */
+        AudioSystem.STREAM_NOTIFICATION,    // STREAM_NOTIFICATION
+        /** @} */
         AudioSystem.STREAM_BLUETOOTH_SCO,   // STREAM_BLUETOOTH_SCO
         AudioSystem.STREAM_RING,            // STREAM_SYSTEM_ENFORCED
         AudioSystem.STREAM_RING,            // STREAM_DTMF
-        AudioSystem.STREAM_MUSIC            // STREAM_TTS
+        AudioSystem.STREAM_MUSIC,           // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        AudioSystem.STREAM_FM               // STREAM_FM
+        /** @} */
     };
     private int[] mStreamVolumeAlias;
 
@@ -348,6 +373,9 @@ public class AudioService extends IAudioService.Stub {
         AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_SYSTEM_ENFORCED
         AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_DTMF
         AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        AppOpsManager.OP_AUDIO_MEDIA_VOLUME,            // STREAM_FM
+        /** @} */
     };
 
     private final boolean mUseFixedVolume;
@@ -661,6 +689,10 @@ public class AudioService extends IAudioService.Stub {
         intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
 
         intentFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        /* SPRD bug 500092 when alarm ring, press volume button, alarm will not off or pause @{ */
+        intentFilter.addAction("com.android.deskclock.ALARM_ALERT");
+        intentFilter.addAction("com.android.deskclock.ALARM_DONE");
+        /* @} */
         // TODO merge orientation and rotation
         mMonitorOrientation = SystemProperties.getBoolean("ro.audio.monitorOrientation", false);
         if (mMonitorOrientation) {
@@ -993,7 +1025,14 @@ public class AudioService extends IAudioService.Stub {
         // sanity check in case the settings are restored from a device with incompatible
         // ringer modes
         if (!isValidRingerMode(ringerMode)) {
-            ringerMode = AudioManager.RINGER_MODE_NORMAL;
+            //ringerMode = AudioManager.RINGER_MODE_NORMAL;
+            /** SPRD: add outdoorMode @{ */
+            if (ringerModeFromSettings == AudioManager.RINGER_MODE_OUTDOOR) {
+                ringerMode = AudioManager.RINGER_MODE_OUTDOOR;
+            } else {
+                ringerMode = AudioManager.RINGER_MODE_NORMAL;
+            }
+        /** @} */
         }
         if ((ringerMode == AudioManager.RINGER_MODE_VIBRATE) && !mHasVibrator) {
             ringerMode = AudioManager.RINGER_MODE_SILENT;
@@ -1086,8 +1125,25 @@ public class AudioService extends IAudioService.Stub {
     /** @see AudioManager#adjustVolume(int, int) */
     public void adjustSuggestedStreamVolume(int direction, int suggestedStreamType, int flags,
             String callingPackage, String caller) {
-        adjustSuggestedStreamVolume(direction, suggestedStreamType, flags, callingPackage,
+        /* SPRD bug 500092 when alarm ring, press volume button, alarm will not off or pause @{
+         * @orig
+         * adjustSuggestedStreamVolume(direction, suggestedStreamType, flags, callingPackage,
                 caller, Binder.getCallingUid());
+         */
+        if (mIsAlarmFired) {
+            if (direction == AudioManager.ADJUST_RAISE
+                    || direction == AudioManager.ADJUST_LOWER) {
+                Log.d(TAG, "ALARM_VOLUME_BEHAVIOR");
+                Intent i = new Intent(ALARM_VOLUME_BEHAVIOR);
+                i.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+                mContext.sendBroadcast(i);
+                mIsAlarmFired = false;
+            }
+        } else {
+            adjustSuggestedStreamVolume(direction, suggestedStreamType, flags, callingPackage,
+                    caller, Binder.getCallingUid());
+        }
+        /* @} */
     }
 
     private void adjustSuggestedStreamVolume(int direction, int suggestedStreamType, int flags,
@@ -1382,17 +1438,28 @@ public class AudioService extends IAudioService.Stub {
         // setting volume on ui sounds stream type also controls silent mode
         if (((flags & AudioManager.FLAG_ALLOW_RINGER_MODES) != 0) ||
                 (stream == getUiSoundsStreamType())) {
+            //SPRD:add for outdoor mode
             int newRingerMode;
             if (index == 0) {
                 newRingerMode = mHasVibrator ? AudioManager.RINGER_MODE_VIBRATE
                         : mVolumePolicy.volumeDownToEnterSilent ? AudioManager.RINGER_MODE_SILENT
                         : AudioManager.RINGER_MODE_NORMAL;
             } else {
-                newRingerMode = AudioManager.RINGER_MODE_NORMAL;
+                //newRingerMode = AudioManager.RINGER_MODE_NORMAL;
+                /** SPRD: add outdoorMode @{ */
+                if (getRingerModeInternal() == AudioManager.RINGER_MODE_OUTDOOR) {
+                    newRingerMode = AudioManager.RINGER_MODE_OUTDOOR;
+                } else {
+                    newRingerMode = AudioManager.RINGER_MODE_NORMAL;
+                }
+                /** @} */
             }
             setRingerMode(newRingerMode, TAG + ".onSetStreamVolume", false /*external*/);
         }
         // setting non-zero volume for a muted stream unmutes the stream and vice versa
+        /* SPRD: bug564235, recording new index value to set mute or unmute @{ */
+        index = mStreamStates[streamType].getIndex(device);
+        /** @} */
         mStreamStates[stream].mute(index == 0);
     }
 
@@ -1923,6 +1990,15 @@ public class AudioService extends IAudioService.Stub {
         if (caller == null || caller.length() == 0) {
             throw new IllegalArgumentException("Bad caller: " + caller);
         }
+        /* SPRD: bug496363, judge ringerMode to set mIsCtsMode @{ */
+        if (AudioManager.CTSMODE_IN == ringerMode) {
+            mIsCtsMode = true;
+            return;
+        } else if(AudioManager.CTSMODE_OUT == ringerMode){
+            mIsCtsMode = false;
+            return;
+        }
+        /* @} */
         ensureValidRingerMode(ringerMode);
         if ((ringerMode == AudioManager.RINGER_MODE_VIBRATE) && !mHasVibrator) {
             ringerMode = AudioManager.RINGER_MODE_SILENT;
@@ -1935,8 +2011,11 @@ public class AudioService extends IAudioService.Stub {
                 if (external) {
                     setRingerModeExt(ringerMode);
                     if (mRingerModeDelegate != null) {
+                      Log.d(TAG, "setRingerMode() onSetRingerModeExternal mIsCtsMode=" + mIsCtsMode);
+                      if (!mIsCtsMode){
                         ringerMode = mRingerModeDelegate.onSetRingerModeExternal(ringerModeExternal,
                                 ringerMode, caller, ringerModeInternal, mVolumePolicy);
+                      }
                     }
                     if (ringerMode != ringerModeInternal) {
                         setRingerModeInt(ringerMode, true /*persist*/);
@@ -1946,8 +2025,11 @@ public class AudioService extends IAudioService.Stub {
                         setRingerModeInt(ringerMode, true /*persist*/);
                     }
                     if (mRingerModeDelegate != null) {
+                      Log.d(TAG, "setRingerMode() onSetRingerModeInternal mIsCtsMode=" + mIsCtsMode);
+                      if (!mIsCtsMode){
                         ringerMode = mRingerModeDelegate.onSetRingerModeInternal(ringerModeInternal,
                                 ringerMode, caller, ringerModeExternal, mVolumePolicy);
+                      }
                     }
                     setRingerModeExt(ringerMode);
                 }
@@ -3212,6 +3294,14 @@ public class AudioService extends IAudioService.Stub {
         int ringerMode = getRingerModeInternal();
 
         switch (ringerMode) {
+        /** SPRD: add outdoorMode @{ */
+        case RINGER_MODE_OUTDOOR:
+        if (direction == AudioManager.ADJUST_LOWER) {
+            ringerMode = RINGER_MODE_NORMAL;
+        }
+        result &= ~FLAG_ADJUST_VOLUME;
+        break;
+        /** @} */
         case RINGER_MODE_NORMAL:
             if (direction == AudioManager.ADJUST_LOWER) {
                 if (mHasVibrator) {
@@ -3415,10 +3505,16 @@ public class AudioService extends IAudioService.Stub {
                     return AudioSystem.STREAM_VOICE_CALL;
                 }
             } else if (suggestedStreamType == AudioManager.USE_DEFAULT_STREAM_TYPE) {
-                if (isAfMusicActiveRecently(StreamOverride.sDelayMs)) {
+                /** SPRD: bug492835, FM audio route change @{ */
+                if (!AudioSystem.isStreamActive(AudioSystem.STREAM_FM, 0) && isAfMusicActiveRecently(StreamOverride.sDelayMs)) {
                     if (DEBUG_VOL)
                         Log.v(TAG, "getActiveStreamType: Forcing STREAM_MUSIC stream active");
                     return AudioSystem.STREAM_MUSIC;
+                } else if (AudioSystem.isStreamActive(AudioSystem.STREAM_FM, 0)) {
+                    if (DEBUG_VOL)
+                        Log.v(TAG, "getActiveStreamType: Forcing STREAM_FM stream active");
+                    return AudioSystem.STREAM_FM;
+                /** @} */
                     } else {
                         if (DEBUG_VOL)
                             Log.v(TAG, "getActiveStreamType: Forcing STREAM_RING b/c default");
@@ -3427,7 +3523,18 @@ public class AudioService extends IAudioService.Stub {
             } else if (isAfMusicActiveRecently(0)) {
                 if (DEBUG_VOL)
                     Log.v(TAG, "getActiveStreamType: Forcing STREAM_MUSIC stream active");
+                /** SPRD: bug492835, FM audio route change @{ */
+                if(AudioSystem.isStreamActive(AudioSystem.STREAM_FM, 0) && suggestedStreamType == AudioSystem.STREAM_FM){
+                    return AudioSystem.STREAM_FM;
+                }
+                /** @} */
                 return AudioSystem.STREAM_MUSIC;
+            /** SPRD: bug492835, FM audio route change @{ */
+            } else if (AudioSystem.isStreamActive(AudioSystem.STREAM_FM, 0)) {
+                if (DEBUG_VOL)
+                    Log.v(TAG, "getActiveStreamType: Forcing STREAM_FM stream active");
+                return AudioSystem.STREAM_FM;
+            /** @} */
             }
             break;
         case AudioSystem.PLATFORM_TELEVISION:
@@ -3475,6 +3582,11 @@ public class AudioService extends IAudioService.Stub {
         broadcast.putExtra(AudioManager.EXTRA_RINGER_MODE, ringerMode);
         broadcast.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT
                 | Intent.FLAG_RECEIVER_REPLACE_PENDING);
+        /* SPRD: bug496363, add cts test information to broadcast messages @{ */
+        if (mIsCtsMode) {
+            broadcast.putExtra("CTSMODE", "cts");
+        }
+        /* @} */
         sendStickyBroadcastToAll(broadcast);
     }
 
@@ -3555,6 +3667,11 @@ public class AudioService extends IAudioService.Stub {
                 device &= AudioSystem.DEVICE_OUT_ALL_A2DP;
             }
         }
+        /* SPRD: bug492835, getStreamVolume(int) isn't useful for STREAM_FM @{ */
+        if (stream == AudioSystem.STREAM_FM && device == 0) {
+            return AudioSystem.DEVICE_OUT_FM_HEADSET;
+        }
+        /* @} */
         return device;
     }
 
@@ -3751,7 +3868,6 @@ public class AudioService extends IAudioService.Stub {
                     if (index == -1) {
                         continue;
                     }
-
                     mIndexMap.put(device, getValidIndex(10 * index));
                 }
             }
@@ -5112,7 +5228,13 @@ public class AudioService extends IAudioService.Stub {
                 int userId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
                 UserManagerService.getInstance().setSystemControlledUserRestriction(
                         UserManager.DISALLOW_RECORD_AUDIO, false, userId);
+            /* SPRD bug 500092 when alarm ring, press volume button, alarm will not off or pause @{ */
+            } else if (action.equals("com.android.deskclock.ALARM_ALERT")) {
+                mIsAlarmFired = true;
+            } else if (action.equals("com.android.deskclock.ALARM_DONE")) {
+                mIsAlarmFired = false;
             }
+            /* @} */
         }
     } // end class AudioServiceBroadcastReceiver
 
@@ -5478,6 +5600,7 @@ public class AudioService extends IAudioService.Stub {
         int devices = mSafeMediaVolumeDevices;
         int i = 0;
 
+        VolumeStreamState streamStateFM = mStreamStates[AudioSystem.STREAM_FM];
         while (devices != 0) {
             int device = 1 << i++;
             if ((device & devices) == 0) {
@@ -5494,6 +5617,22 @@ public class AudioService extends IAudioService.Stub {
                         streamState,
                         0);
             }
+
+            /** SPRD:
+             * After changing config_safe_media_volume_index to 3, we shoule set FM index as safe volume too.
+             * bug500151 mofify safe media volume for FM @{ */
+            int indexFM = streamStateFM.getIndex(device);
+            if (index > mSafeMediaVolumeIndex) {
+                streamStateFM.setIndex(mSafeMediaVolumeIndex, device, caller);
+                sendMsg(mAudioHandler,
+                        MSG_SET_DEVICE_VOLUME,
+                        SENDMSG_QUEUE,
+                        device,
+                        0,
+                        streamStateFM,
+                        0);
+            }
+            /** @} */
             devices &= ~device;
         }
     }
@@ -5501,7 +5640,12 @@ public class AudioService extends IAudioService.Stub {
     private boolean checkSafeMediaVolume(int streamType, int index, int device) {
         synchronized (mSafeMediaVolumeState) {
             if ((mSafeMediaVolumeState == SAFE_MEDIA_VOLUME_ACTIVE) &&
+                    /**
+                     * SPRD: bug500151 mofify safe media volume for FM
+                     * @{
                     (mStreamVolumeAlias[streamType] == AudioSystem.STREAM_MUSIC) &&
+                     */
+                    ((mStreamVolumeAlias[streamType] == AudioSystem.STREAM_MUSIC) || (mStreamVolumeAlias[streamType] == AudioSystem.STREAM_FM)) &&
                     ((device & mSafeMediaVolumeDevices) != 0) &&
                     (index > mSafeMediaVolumeIndex)) {
                 return false;
@@ -6205,4 +6349,21 @@ public class AudioService extends IAudioService.Stub {
             if (DEBUG_VOL) Log.d(TAG, "Reloaded controller service: " + this);
         }
     }
+    /**
+    * SPRD:add interface for speaker switch function on videoplayer is invalid. @{
+    * @param routing device is speaker or headset
+    */
+    public void setSpeakerMediaOn(boolean on) {
+        if (on) {
+            AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_SPEAKER);
+        } else {
+        AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
+        }
+    }
+
+    /**
+     * SPRD: bug496363, define a variable to indicate whether cts test mode
+     * @{
+     */
+    private static boolean mIsCtsMode = false;
 }

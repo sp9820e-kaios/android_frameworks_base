@@ -334,6 +334,12 @@ public class KeyguardSecurityContainer extends FrameLayout implements KeyguardSe
                             || !mLockPatternUtils.isLockScreenDisabled(
                             KeyguardUpdateMonitor.getCurrentUser())) {
                         showSecurityScreen(securityMode);
+                        /* SPRD:add PIN verify success prompt @{ */
+                        KeyguardSecurityView oldView = getSecurityView(mCurrentSecuritySelection);
+                        if (oldView != null) {
+                            oldView.onPause();
+                        }
+                        /* @} */
                     } else {
                         finish = true;
                     }

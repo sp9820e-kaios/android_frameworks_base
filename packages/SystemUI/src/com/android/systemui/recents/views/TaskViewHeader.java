@@ -49,6 +49,7 @@ import com.android.systemui.recents.misc.SystemServicesProxy;
 import com.android.systemui.recents.misc.Utilities;
 import com.android.systemui.recents.model.RecentsTaskLoader;
 import com.android.systemui.recents.model.Task;
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
 
 /* The task bar view */
@@ -274,7 +275,15 @@ public class TaskViewHeader extends FrameLayout {
 
     /** Animates this task bar if the user does not interact with the stack after a certain time. */
     void startNoUserInteractionAnimation() {
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
         if (mDismissButton.getVisibility() != View.VISIBLE) {
+            if(PhoneStatusBar.mSupportLockApp) {
+                TaskView tv = (TaskView)mDismissButton.getParent().getParent().getParent();
+                if(tv.getTask().isLocked) {
+                    return;
+                }
+            }
+            /* @} */
             mDismissButton.setVisibility(View.VISIBLE);
             mDismissButton.setAlpha(0f);
             mDismissButton.animate()
@@ -290,6 +299,14 @@ public class TaskViewHeader extends FrameLayout {
     void setNoUserInteractionState() {
         if (mDismissButton.getVisibility() != View.VISIBLE) {
             mDismissButton.animate().cancel();
+            /* SPRD: Bug 558006 fix the UI issue of dismiss button and lock icon overlap @{ */
+            if(PhoneStatusBar.mSupportLockApp) {
+                TaskView tv = (TaskView)mDismissButton.getParent().getParent().getParent();
+                if(tv.getTask().isLocked) {
+                    return;
+                }
+            }
+            /* @} */
             mDismissButton.setVisibility(View.VISIBLE);
             mDismissButton.setAlpha(1f);
         }

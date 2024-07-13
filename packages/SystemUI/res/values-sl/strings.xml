@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Čestitke! Uglaševalnik uporabniškega vmesnika sistema je bil dodan v nastavitve."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Odstrani iz nastavitev"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Ali želite odstraniti Uglaševalnik uporabniškega vmesnika sistema iz nastavitev in prenehati uporabljati vse njegove funkcije?"</string>
+    <string name="quick_settings_volume_label">"AVDIO PROFIL"</string>
+     <string name="assistant_key_home">"Začetni zaslon"</string>
+     <string name="assistant_key_search">"Iskanje"</string>
+     <string name="assistant_key_menu">"Meni"</string>
+     <string name="assistant_key_back">"Nazaj"</string>
+
+    <string name="vibrate_hint">"Za vibriranje potegnite v levo"</string>
+     <string name="battery_overtage_title">"Varnostno opozorilo"</string>
+     <string name="battery_overtage_content">"Napetost polnjenja je previsoka!"</string>
+     <string name="battery_overtage_back">"Nazaj"</string>
 </resources>

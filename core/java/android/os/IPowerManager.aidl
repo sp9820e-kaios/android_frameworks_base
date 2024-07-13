@@ -45,8 +45,11 @@ interface IPowerManager
     boolean setPowerSaveMode(boolean mode);
     boolean isDeviceIdleMode();
 
+    void scheduleButtonLightTimeout(long now);
     void reboot(boolean confirm, String reason, boolean wait);
     void shutdown(boolean confirm, boolean wait);
+    void shutdownForAlarm(boolean confirm, boolean isPowerOffAlarm);
+    void rebootAnimation();
     void crash(String message);
 
     void setStayOnSetting(int val);
@@ -60,4 +63,5 @@ interface IPowerManager
 
     // sets the attention light (used by phone app only)
     void setAttentionLight(boolean on, int color);
+    void setTimeoutLocked(int time,boolean flag);
 }

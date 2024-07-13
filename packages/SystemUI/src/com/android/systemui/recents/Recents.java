@@ -35,7 +35,9 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.MutableBoolean;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,6 +91,9 @@ public class Recents extends SystemUI
     final public static String ACTION_START_ENTER_ANIMATION = "action_start_enter_animation";
     final public static String ACTION_TOGGLE_RECENTS_ACTIVITY = "action_toggle_recents_activity";
     final public static String ACTION_HIDE_RECENTS_ACTIVITY = "action_hide_recents_activity";
+    // SPRD: Add for bug554295
+    private static final String TAG = "SystemUiRecents";
+    private boolean mReloadHeaderBarLayout = false;
 
     final static int sMinToggleDelay = 350;
 
@@ -274,6 +279,19 @@ public class Recents extends SystemUI
 
     @Override
     public void onBootCompleted() {
+        // SPRD: Add for bug554295
+        Log.d(TAG,"onBootCompleted mReloadHeaderBarLayout:"+ mReloadHeaderBarLayout);
+        if(mReloadHeaderBarLayout == true) {
+            Rect searchBarBounds = new Rect();
+            if (mSystemServicesProxy.getOrBindSearchAppWidget(mContext, mAppWidgetHost) != null) {
+                mConfig.getSearchBarBounds(mWindowRect.width(), mWindowRect.height(),
+                        mStatusBarHeight, searchBarBounds);
+            }
+            mConfig.getAvailableTaskStackBounds(mWindowRect.width(), mWindowRect.height(),
+                    mStatusBarHeight, (mConfig.hasTransposedNavBar ? mNavBarWidth : 0), searchBarBounds,
+                    mTaskStackBounds);
+            mReloadHeaderBarLayout = false;
+        }
         mBootCompleted = true;
     }
 
@@ -281,6 +299,12 @@ public class Recents extends SystemUI
     @ProxyFromPrimaryToCurrentUser
     @Override
     public void showRecents(boolean triggeredFromAltTab, View statusBarView) {
+        // Ensure the device has been provisioned before allowing the user to interact with
+        // recents
+        if (!isDeviceProvisioned()) {
+            return;
+        }
+
         if (mSystemServicesProxy.isForegroundUserOwner()) {
             showRecentsInternal(triggeredFromAltTab);
         } else {
@@ -305,6 +329,12 @@ public class Recents extends SystemUI
     @ProxyFromPrimaryToCurrentUser
     @Override
     public void hideRecents(boolean triggeredFromAltTab, boolean triggeredFromHomeKey) {
+        // Ensure the device has been provisioned before allowing the user to interact with
+        // recents
+        if (!isDeviceProvisioned()) {
+            return;
+        }
+
         if (mSystemServicesProxy.isForegroundUserOwner()) {
             hideRecentsInternal(triggeredFromAltTab, triggeredFromHomeKey);
         } else {
@@ -331,6 +361,12 @@ public class Recents extends SystemUI
     @ProxyFromPrimaryToCurrentUser
     @Override
     public void toggleRecents(Display display, int layoutDirection, View statusBarView) {
+        // Ensure the device has been provisioned before allowing the user to interact with
+        // recents
+        if (!isDeviceProvisioned()) {
+            return;
+        }
+
         if (mSystemServicesProxy.isForegroundUserOwner()) {
             toggleRecentsInternal();
         } else {
@@ -354,6 +390,12 @@ public class Recents extends SystemUI
     @ProxyFromPrimaryToCurrentUser
     @Override
     public void preloadRecents() {
+        // Ensure the device has been provisioned before allowing the user to interact with
+        // recents
+        if (!isDeviceProvisioned()) {
+            return;
+        }
+
         if (mSystemServicesProxy.isForegroundUserOwner()) {
             preloadRecentsInternal();
         } else {
@@ -470,6 +512,12 @@ public class Recents extends SystemUI
 
     @Override
     public void showNextAffiliatedTask() {
+        // Ensure the device has been provisioned before allowing the user to interact with
+        // recents
+        if (!isDeviceProvisioned()) {
+            return;
+        }
+
         // Keep track of when the affiliated task is triggered
         MetricsLogger.count(mContext, "overview_affiliated_task_next", 1);
         showRelativeAffiliatedTask(true);
@@ -477,6 +525,12 @@ public class Recents extends SystemUI
 
     @Override
     public void showPrevAffiliatedTask() {
+        // Ensure the device has been provisioned before allowing the user to interact with
+        // recents
+        if (!isDeviceProvisioned()) {
+            return;
+        }
+
         // Keep track of when the affiliated task is triggered
         MetricsLogger.count(mContext, "overview_affiliated_task_prev", 1);
         showRelativeAffiliatedTask(false);
@@ -497,11 +551,13 @@ public class Recents extends SystemUI
         // Don't reuse task stack views if the configuration changes
         mCanReuseTaskStackViews = false;
         // Reload the header bar layout
+        Log.d(TAG, "configurationChanged mReloadHeaderBarLayout:" + mReloadHeaderBarLayout + " mBootCompleted:" + mBootCompleted);
         reloadHeaderBarLayout();
     }
 
     /** Prepares the header bar layout. */
     void reloadHeaderBarLayout() {
+        Log.d(TAG,"reloadHeaderBarLayout mBootCompleted:" + mBootCompleted, new RuntimeException("here").fillInStackTrace());
         Resources res = mContext.getResources();
         mWindowRect = mSystemServicesProxy.getWindowRect();
         mStatusBarHeight = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
@@ -513,9 +569,13 @@ public class Recents extends SystemUI
         // Try and pre-emptively bind the search widget on startup to ensure that we
         // have the right thumbnail bounds to animate to.
         // Note: We have to reload the widget id before we get the task stack bounds below
-        if (mSystemServicesProxy.getOrBindSearchAppWidget(mContext, mAppWidgetHost) != null) {
-            mConfig.getSearchBarBounds(mWindowRect.width(), mWindowRect.height(),
-                    mStatusBarHeight, searchBarBounds);
+        if (mBootCompleted) {
+            if (mSystemServicesProxy.getOrBindSearchAppWidget(mContext, mAppWidgetHost) != null) {
+                mConfig.getSearchBarBounds(mWindowRect.width(), mWindowRect.height(),
+                        mStatusBarHeight, searchBarBounds);
+            }
+        } else {
+            mReloadHeaderBarLayout = true;
         }
         mConfig.getAvailableTaskStackBounds(mWindowRect.width(), mWindowRect.height(),
                 mStatusBarHeight, (mConfig.hasTransposedNavBar ? mNavBarWidth : 0), searchBarBounds,
@@ -889,6 +949,14 @@ public class Recents extends SystemUI
     }
 
     /**
+     * @return whether this device is provisioned.
+     */
+    private boolean isDeviceProvisioned() {
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.DEVICE_PROVISIONED, 0) != 0;
+    }
+
+    /**
      * Returns the preloaded load plan and invalidates it.
      */
     public static RecentsTaskLoadPlan consumeInstanceLoadPlan() {
@@ -899,8 +967,16 @@ public class Recents extends SystemUI
 
     /**** OnAnimationStartedListener Implementation ****/
 
+    //SPRD bug 613505:Monkey test may case ANR here.{
+    private static final boolean DISABLE_START_ENTER_ANIMATION = true;
+    //}
     @Override
     public void onAnimationStarted() {
+        //SPRD bug 613505:Monkey test may case ANR here.{
+        if(DISABLE_START_ENTER_ANIMATION){
+            return;
+            }
+        //}
         // Notify recents to start the enter animation
         if (!mStartAnimationTriggered) {
             // There can be a race condition between the start animation callback and

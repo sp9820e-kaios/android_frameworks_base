@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Palieskite, kad peržiūr. išsamią informaciją"</string>
     <string name="retry" msgid="7564024179122207376">"Bandyti dar kartą"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Šie failai nenukopijuoti: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Negalima dalintis failu"</string>
+     <string name="documents_deleting">"Dokumentų trynimas"</string>
+     <string name="cannot_copyfolder_itself">"Negalite kopijuoti katalogo į patį save"</string>
+
+    <string name="error_permissions">"Programa neturi kritinių leidimų, kurių reikia paleidžiant. Patikrinkite leidimų nustatymus."</string>
+     <string name="cannot_copy_drm">"Negali nukopijuoti DRM  failų"</string>
+     <string name="cannot_copy_downloading">"Negali nukopijuoti siunčiamų failų"</string>
 </resources>

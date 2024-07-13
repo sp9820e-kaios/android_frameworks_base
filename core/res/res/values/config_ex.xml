@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- SPRD: Bug#474988 ADD for operator lte level plugin @{ -->
+    <string name="feature_signalstrength" translatable="false">plugin.sprd.signalstrengthforoperator.SignalStrengthUtilsForOperator</string>
+    <!-- @} -->
+    <string name="feature_plugin_for_telephony" translatable="false">plugin.sprd.updateAdnUidSupportCMCC.UpdateAdnUidSupportCMCC</string>
+
+    <!-- SPRD: Bug#522864&522865 ADD for reliance plugin @{ -->
+     <string name="feature_AddonEmergencyAndLowBattaryCallUtils" translatable="false">plugin.sprd.CallUtilsPlugin.AddonEmergencyAndLowBattaryCallUtils</string>
+    <!-- @} -->
+
+    <!-- SPRD: Add trafficClass when activate pdp @{ -->
+    <string name="feature_add_trafficClass" translatable="false">plugin.sprd.SupportTrafficClass.SupportTrafficClassPlugin</string>
+    <!-- SPRD: add USSD dialog for bug 490252 @{ -->
+    <string name="ussd_feature_for_orange" translatable="false">plugin.sprd.ussdsupportorange.USSDSupportOrange</string>
+    <!-- @} -->
+    <!-- SPRD: telephony for orange @{ -->
+    <string name="feature_for_orange" translatable="false">plugin.sprd.telephonysupportorange.TelephonySupportOrange</string>
+    <!-- @} -->
+    <!-- SPRD: Add for the clear code and RAU. @{ -->
+    <string name="feature_clearcode_and_rau" translatable="false">plugin.sprd.clearcode.ClearCodePlugin</string>
+    <!-- @} -->
+    <!-- SPRD: Add for bug544051 @{ -->
+    <bool name="config_enableDtmfLocalTone">false</bool>
+    <!-- @} -->
+    <!-- SPRD: modify for bug 581248 @{ -->
+    <string name="feature_ecc_list_customized_by_operator" translatable="false">plugin.sprd.operatorfeatures.OperatorEccPlugin</string>
+    <!-- @} -->
+    <!-- The packages processes you want to bringup after BOOT_COMPLETED -->
+    <string-array name="config_bringupProcesses">
+    </string-array>
+    <integer name="config_maxCachedApps">32</integer>
+
+    <!-- SPRD: Add for whether special plmn when pdp active. @{ -->
+    <string name="feature_for_plmn_match" translatable="false">plugin.sprd.operatorfeatures.plmnMatch.PlmnMatchPlugin</string>
+    <!-- @} -->
+</resources>

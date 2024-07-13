@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Vissza"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Tovább"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Kihagyás"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Nincs találat"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Keresés az oldalon"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g>/<xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 találat</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Kész"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Az USB-tár törlése..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Az SD-kártya törlése..."</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> kiválasztva</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> kiválasztva</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-Internet Tethering aktív"</string>
+     <string name="ext_media_status_shared">"UMS megosztva"</string>
+     <string name="sim_ready_title_for_usb">Figyelem</string>
+     <string name="sim_card_activation_warning">"Idegen alkalmazások telepítése esetén helyezze be a SIM/USIM kártyát az USB aktiválásához."</string>
+     <string name="usb_ok">"OK"</string>
+     <string name="usb_cdrom_notification_title">A virtuális meghajtó be van kapcsolva</string>
+     <string name="usb_charge_only_notification">Csatlakoztatva csak töltésre</string>
+     <string name="global_action_restart">"Újraindítás"</string>
+     <string name="reboot_device_title">"Újraindítás"</string>
+     <string name="global_reboot_close_apps">"Zárja be az összes alkalmazást és indítsa újra a telefont"</string>
+     <string name="reboot_device_confirm">"Újraindítja a telefont most?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"A telefon <xliff:g id="NUMBER">%d</xliff:g> másodperc múlva kikapcsol"</item>
+<item quantity="other">A telefon <xliff:g id="NUMBER">%d</xliff:g> másodperc múlva kikapcsol</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s csatlakozva, %2$s blokkolva"</string>
+     <string name="phoneFixedNumber">"RögzítettSzám"</string>
+     <string name="gps_time_sync_fail_str">"GPS idő beszerzése sikertelen"</string>
+     <string name="disable_touch_mode_title">"Képernyőzár zsebben hordáshoz"</string>
+     <string name="disable_touch_mode_hint">"Ne fedje le a telefon tetejét"</string>
+     <string name="exit_disable_touch_mode_hint">"Az üzemmód kikapcsolásához megnyomhatja egyszerre a bekapcsoló és a hangerő növelő gombot is"</string>
+
 </resources>

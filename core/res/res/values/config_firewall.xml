@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- SPRD: @{ -->
+    <string name="feature_Firewall_phone_intercept" translatable="false">plugin.sprdst.telephony.AddonBlockIncomingCallNotifierUtils</string>
+    <string name="feature_Firewall_sms" translatable="false">plugin.sprd.telephony.AddonBlockInboundSmsHandlerUtils</string>
+    <!-- @} -->
+</resources>

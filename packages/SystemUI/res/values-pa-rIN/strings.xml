@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"ਵਧਾਈਆਂ! ਸਿਸਟਮ UI ਟਿਊਨਰ ਨੂੰ ਸੈਟਿੰਗਜ਼ ਵਿੱਚ ਜੋੜਿਆ ਗਿਆ ਹੈ"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"ਸੈਟਿੰਗਜ਼ ਤੋਂ ਹਟਾਓ"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"ਕੀ ਸੈਟਿੰਗਜ਼ ਤੋਂ ਸਿਸਟਮ UI ਟਿਊਨਰ ਨੂੰ ਹਟਾਉਣਾ ਹੈ ਅਤੇ ਇਸਦੀਆਂ ਸਾਰੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਉਪਯੋਗ ਕਰਨ ਤੋਂ ਰੋਕਣਾ ਹੈ?"</string>
+    <string name="quick_settings_volume_label">"ਔਡਿਓ ਪ੍ਰੋਫਾਈਲ"</string>
+     <string name="assistant_key_home">ਹੋਮ</string>
+     <string name="assistant_key_search">"ਖੋਜੋ"</string>
+     <string name="assistant_key_menu">ਮੀਨੂੰ</string>
+     <string name="assistant_key_back">ਪਿੱਛੇ</string>
+
+    <string name="vibrate_hint">"ਵਾਈਬ੍ਰੇਟ ਕਰਨ ਲਈ ਖੱਬੇ ਪਾਸੇ ਸਵਾਈਪ ਕਰੋ"</string>
+     <string name="battery_overtage_title">ਸੁਰੱਖਿਅਤ ਚੇਤਾਵਨੀ</string>
+     <string name="battery_overtage_content">"ਚਾਰਜਿੰਗ ਵੋਲਟੇਜ ਬਹੁਤ ਜ਼ਿਆਦਾ ਹੈ!"</string>
+     <string name="battery_overtage_back">ਪਿੱਛੇ</string>
+    <string name="recent_app_clean_finished_toast">"<xliff:g id="count">%1$s</xliff:g> ਮੈਮਰੀ ਰਿਲੀਜ ਕਰੋ,<xliff:g id="count">%2$s</xliff:g> ਹੁਣ ਉਪਲਬਧ ਹੈ।"</string>
+     <string name="label_tab_notifications">ਸੂਚਨਾ ਦਿਓ</string>
+     <string name="label_tab_qs">"ਸਵਿਚ ਕਰੋ"</string>
+     <string name="label_screen_brightness">"ਡਿਸਪਲੇ ਚਮਕ"</string>
+     <string name="label_star_unlock">"* ਅਨਲੌਕ ਨੂੰ ਦਬਾ ਕੇ ਰੱਖੋ"</string>
+     <string name="speak_spec">"H m"</string>
 </resources>

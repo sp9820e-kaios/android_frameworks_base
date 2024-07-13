@@ -125,13 +125,28 @@ public final class CachedBluetoothDeviceManager {
     }
 
     public synchronized void onScanningStateChanged(boolean started) {
-        if (!started) return;
-
+        // if (!started) return;
         // If starting a new scan, clear old visibility
         // Iterate in reverse order since devices may be removed.
         for (int i = mCachedDevices.size() - 1; i >= 0; i--) {
             CachedBluetoothDevice cachedDevice = mCachedDevices.get(i);
-            cachedDevice.setVisible(false);
+            // cachedDevice.setVisible(false);
+            /*
+             * SPRD: Add the function that remove the devices when started is
+             * false.
+             * @{
+             */
+            if (started) {
+                cachedDevice.setVisible(false);
+            } else {
+                if (mBtManager.getBluetoothAdapter().isManualCancel() == false) {
+                    if (cachedDevice.getBondState() == BluetoothDevice.BOND_NONE &&
+                            cachedDevice.isVisible() == false) {
+                        mCachedDevices.remove(cachedDevice);
+                    }
+                }
+            }
+            /* @} */
         }
     }
 

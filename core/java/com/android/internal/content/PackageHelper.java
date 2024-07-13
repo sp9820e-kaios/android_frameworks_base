@@ -39,6 +39,10 @@ import android.util.Log;
 
 import libcore.io.IoUtils;
 
+import android.provider.Settings; //SPRD: suport double sdcard
+import android.os.SystemProperties; // SPRD: add for package install
+import com.android.internal.app.IMediaContainerService; //SPRD: suport double sdcard
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,6 +60,11 @@ import java.util.zip.ZipOutputStream;
 public class PackageHelper {
     public static final int RECOMMEND_INSTALL_INTERNAL = 1;
     public static final int RECOMMEND_INSTALL_EXTERNAL = 2;
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public static final int RECOMMEND_INSTALL_INTERNALSD = 3;
+    /* @} */
     public static final int RECOMMEND_FAILED_INSUFFICIENT_STORAGE = -1;
     public static final int RECOMMEND_FAILED_INVALID_APK = -2;
     public static final int RECOMMEND_FAILED_INVALID_LOCATION = -3;
@@ -71,6 +80,21 @@ public class PackageHelper {
     public static final int APP_INSTALL_INTERNAL = 1;
     public static final int APP_INSTALL_EXTERNAL = 2;
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public static final int APP_INSTALL_INTERNALSD = 3;
+    /* @} */
+
+    /* SPRD: support double sdcard
+     * add for package install @{
+     */
+    private static final int NAND = 1;
+    private static final int EMMC = 2;
+    private static final int flashType = SystemProperties.getInt("ro.storage.flash_type",0);
+    private static final boolean isInternalSDInstalld = SystemProperties.getInt("ro.storage.install2internal",0) == 1;
+    /* @} */
+
     public static IMountService getMountService() throws RemoteException {
         IBinder service = ServiceManager.getService("mount");
         if (service != null) {
@@ -85,14 +109,27 @@ public class PackageHelper {
             boolean isExternal) {
         // Round up to nearest MB, plus another MB for filesystem overhead
         final int sizeMb = (int) ((sizeBytes + MB_IN_BYTES) / MB_IN_BYTES) + 1;
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+        return createSdDir(sizeMb, cid, sdEncKey, uid, isExternal, true);
+    }
+
+    public static String createSdDir(int sizeMb, String cid, String sdEncKey, int uid,
+            boolean isExternal, boolean isForwardLocked) {
+    /* @} */
         try {
             IMountService mountService = getMountService();
 
             if (localLOGV)
                 Log.i(TAG, "Size of container " + sizeMb + " MB");
 
-            int rc = mountService.createSecureContainer(cid, sizeMb, "ext4", sdEncKey, uid,
-                    isExternal);
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             */
+            int rc = mountService.createInternalSdContainer(cid, sizeMb, "ext4", sdEncKey, uid,
+                    isExternal, isForwardLocked);
+            /* @} */
             if (rc != StorageResultCode.OperationSucceeded) {
                 Log.e(TAG, "Failed to create secure container " + cid);
                 return null;
@@ -221,6 +258,21 @@ public class PackageHelper {
         }
         return false;
     }
+
+    /* SPRD: support double sdcard
+     * add for avoiding system dump when firing UMS @{
+     * {@hide}
+     */
+     public static String[] getSecureContainerList(boolean externalStorage, boolean isInternlaSd) {
+        try {
+            return getMountService().getSecureContainerList(externalStorage,isInternlaSd);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Failed to get secure container list with exception" +
+                    e);
+        }
+        return null;
+    }
+    /* @} */
 
     public static String[] getSecureContainerList() {
         try {
@@ -416,11 +468,27 @@ public class PackageHelper {
 
     public static boolean fitsOnExternal(Context context, long sizeBytes) {
         final StorageManager storage = context.getSystemService(StorageManager.class);
+        /* SPRD: support double sdcard @{
+         * @orig
         final StorageVolume primary = storage.getPrimaryVolume();
         return (sizeBytes > 0) && !primary.isEmulated()
                 && Environment.MEDIA_MOUNTED.equals(primary.getState())
                 && sizeBytes <= storage.getStorageBytesUntilLow(primary.getPathFile());
+                */
+        final File target = Environment.getExternalStoragePath();
+        return ((sizeBytes > 0) && (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStoragePathState()))
+               && (sizeBytes <= storage.getStorageBytesUntilLow(target)));
+        /* @} */
     }
+
+    /* SPRD: support double sdcard @{*/
+    public static boolean fitsOnInternalSd(Context context, long sizeBytes) {
+        final StorageManager storage = context.getSystemService(StorageManager.class);
+        final File target = Environment.getInternalStoragePath();
+        return ((sizeBytes > 0) && (Environment.MEDIA_MOUNTED.equals(Environment.getInternalStoragePathState()))
+                && (sizeBytes <= storage.getStorageBytesUntilLow(target)));
+        }
+    /* @} */
 
     /**
      * Given a requested {@link PackageInfo#installLocation} and calculated
@@ -437,6 +505,37 @@ public class PackageHelper {
 
         final int prefer;
         final boolean checkBoth;
+        /* SPRD: support double sdcard
+         * add install location @{
+         */
+        int installPreference = Settings.Global.getInt(context.getApplicationContext()
+                 .getContentResolver(),
+                 Settings.Global.DEFAULT_INSTALL_LOCATION,
+                 PackageHelper.APP_INSTALL_AUTO);
+        Log.w(TAG, "Settings defaultInstallLocation :"+installPreference);
+
+        if ("android.deviceadmin.cts".equals(packageName)){
+            // make package android.deviceadmin.cts only install internal
+            prefer = RECOMMEND_INSTALL_INTERNAL;
+            checkBoth = false;
+        } else if (installPreference == PackageHelper.APP_INSTALL_INTERNAL) {
+            prefer = RECOMMEND_INSTALL_INTERNAL;
+            checkBoth = false;
+        } else if (installPreference == PackageHelper.APP_INSTALL_EXTERNAL) {
+            prefer = RECOMMEND_INSTALL_EXTERNAL;
+            checkBoth = false;
+        } else if (isInternalSDInstalld && installPreference == PackageHelper.APP_INSTALL_INTERNALSD) {
+            prefer = RECOMMEND_INSTALL_INTERNALSD;
+            checkBoth = false;
+        } else if (installPreference == PackageHelper.APP_INSTALL_AUTO && flashType == NAND) {
+            //default state install apk to external sd card if the flash type is nand
+            prefer = RECOMMEND_INSTALL_EXTERNAL;
+            checkBoth = false;
+        } else if (isInternalSDInstalld && (installFlags & PackageManager.INSTALL_INTERNALSD) != 0) {
+            prefer = RECOMMEND_INSTALL_INTERNALSD;
+            checkBoth = false;
+        } else
+        /* @} */
         if ((installFlags & PackageManager.INSTALL_INTERNAL) != 0) {
             prefer = RECOMMEND_INSTALL_INTERNAL;
             checkBoth = false;
@@ -455,6 +554,12 @@ public class PackageHelper {
                 // TODO: distinguish if this is external ASEC
                 if ((existingInfo.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0) {
                     prefer = RECOMMEND_INSTALL_EXTERNAL;
+                /* SPRD: support double sdcard
+                 * add install location @{
+                 */
+                } else if ((existingInfo.flags & ApplicationInfo.FLAG_INTERNALSD_STORAGE) != 0) {
+                    prefer = RECOMMEND_INSTALL_INTERNALSD;
+                /* @} */
                 } else {
                     prefer = RECOMMEND_INSTALL_INTERNAL;
                 }
@@ -467,6 +572,13 @@ public class PackageHelper {
             checkBoth = false;
         }
 
+        /* SPRD: @{ */
+        Log.w(TAG, "prefer installLocation:"+prefer);
+        /* @} */
+        /* SPRD: Add support for install apk to internal sdcard @{
+         */
+        final boolean internalSdemulated = Environment.internalIsEmulated();
+        /* @} */
         boolean fitsOnInternal = false;
         if (checkBoth || prefer == RECOMMEND_INSTALL_INTERNAL) {
             fitsOnInternal = fitsOnInternal(context, sizeBytes);
@@ -477,6 +589,19 @@ public class PackageHelper {
             fitsOnExternal = fitsOnExternal(context, sizeBytes);
         }
 
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         */
+        boolean fitsOnInternalSd = false;
+        if (isInternalSDInstalld && !internalSdemulated && (checkBoth || prefer == RECOMMEND_INSTALL_INTERNALSD)) {
+            try {
+                 fitsOnInternalSd = fitsOnInternalSd(context, sizeBytes);
+            } catch (Exception e) {
+                return PackageHelper.RECOMMEND_FAILED_INVALID_URI;
+            }
+        }
+        /* @} */
+
         if (prefer == RECOMMEND_INSTALL_INTERNAL) {
             if (fitsOnInternal) {
                 return PackageHelper.RECOMMEND_INSTALL_INTERNAL;
@@ -485,13 +610,22 @@ public class PackageHelper {
             if (fitsOnExternal) {
                 return PackageHelper.RECOMMEND_INSTALL_EXTERNAL;
             }
+        /* SPRD: support double sdcard @{ */
+        } else if (!internalSdemulated && prefer == RECOMMEND_INSTALL_INTERNALSD) {
+            if (fitsOnInternalSd) {
+                return PackageHelper.RECOMMEND_INSTALL_INTERNALSD;
+            }
+        /* @} */
         }
-
         if (checkBoth) {
             if (fitsOnInternal) {
                 return PackageHelper.RECOMMEND_INSTALL_INTERNAL;
             } else if (fitsOnExternal) {
                 return PackageHelper.RECOMMEND_INSTALL_EXTERNAL;
+            /* SPRD: support double sdcard @{ */
+            } else if (!internalSdemulated && fitsOnInternalSd) {
+                return PackageHelper.RECOMMEND_INSTALL_INTERNALSD;
+            /* @} */
             }
         }
 
@@ -525,6 +659,11 @@ public class PackageHelper {
 
         // Include all relevant native code
         sizeBytes += NativeLibraryHelper.sumNativeBinariesWithOverride(handle, abiOverride);
+        /* SPRD: support double sdcard
+         * space not enough,sizeMb var add one Mb @{
+         */
+        sizeBytes+=sizeBytes/10;
+        /* @} */
 
         return sizeBytes;
     }

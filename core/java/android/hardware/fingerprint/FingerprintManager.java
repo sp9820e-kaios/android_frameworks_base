@@ -542,6 +542,316 @@ public class FingerprintManager {
         return result;
     }
 
+    // Add by silead begin
+    /**
+     * @hide
+     */
+    public int setScreenStatus(int screenStatus) {
+        if (mService != null) {
+            try {
+                return mService.setScreenStatus(screenStatus);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setScreenStatus: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPEnableCredential(int index, int enable){
+        if (mService != null) {
+            try {
+                return mService.setFPEnableCredential(index,enable);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPEnableCredential: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPEnableCredential(int index){
+        if (mService != null) {
+            try {
+                return mService.getFPEnableCredential(index);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPEnableCredential: ", e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPVirtualKeyCode(){
+        if (mService != null) {
+            try {
+                return mService.getFPVirtualKeyCode();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPVirtualKeyCode: ", e);
+            }
+        }
+        return 0;
+    }
+
+   /**
+     * @hide
+     */
+    public int setFPVirtualKeyCode(int virtualKeyCode){
+        if (mService != null) {
+            try {
+                return mService.setFPVirtualKeyCode(virtualKeyCode);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPVirtualKeyCode: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPLongPressVirtualKeyCode(){
+        if (mService != null) {
+            try {
+                return mService.getFPLongPressVirtualKeyCode();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPLongPressVirtualKeyCode: ", e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPLongPressVirtualKeyCode(int virtualKeyCode){
+        if (mService != null) {
+            try {
+                return mService.setFPLongPressVirtualKeyCode(virtualKeyCode);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPLongPressVirtualKeyCode: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPDouClickVirtualKeyCode(){
+        if (mService != null) {
+            try {
+                return mService.getFPDouClickVirtualKeyCode();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPDouClickVirtualKeyCode: ", e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPDouClickVirtualKeyCode(int virtualKeyCode){
+        if (mService != null) {
+            try {
+                return mService.setFPDouClickVirtualKeyCode(virtualKeyCode);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPDouClickVirtualKeyCode: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPVirtualKeyState(){
+        if (mService != null) {
+            try {
+                return mService.getFPVirtualKeyState();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPDouClickVirtualKeyCode: ", e);
+            }
+        }
+        return 0;
+    }
+
+     /**
+     * @hide
+     */
+    public int setFPVirtualKeyState(int virtualKeyState){
+        if (mService != null) {
+            try {
+                return mService.setFPVirtualKeyState(virtualKeyState);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPVirtualKeyState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPWakeUpState(){
+        if (mService != null) {
+            try {
+                return mService.getFPWakeUpState();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPWakeUpState: ", e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPWakeUpState(int wakeUpState){
+        if (mService != null) {
+            try {
+                return mService.setFPWakeUpState(wakeUpState);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPWakeUpState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFingerPrintState(){
+        if (mService != null) {
+            try {
+                return mService.getFingerPrintState();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFingerPrintState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFingerPrintState(int fingerPrintState){
+        if (mService != null) {
+            try {
+                return mService.setFingerPrintState(fingerPrintState);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFingerPrintState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPPowerFuncKeyState(int funcKeyState){
+        if (mService != null) {
+            try {
+                return mService.setFPPowerFuncKeyState(funcKeyState);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPPowerFuncKeyState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPPowerFuncKeyState(){
+        if (mService != null) {
+            try {
+                return mService.getFPPowerFuncKeyState();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPPowerFuncKeyState: ", e);
+            }
+        }
+        return -1;
+    }
+
+     /**
+     * @hide
+     */
+    public int setFPIdleFuncKeyState(int funcKeyState){
+        if (mService != null) {
+            try {
+                return mService.setFPIdleFuncKeyState(funcKeyState);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPIdleFuncKeyState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPIdleFuncKeyState(){
+         if (mService != null) {
+            try {
+                return mService.getFPIdleFuncKeyState();
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPIdleFuncKeyState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPWholeFuncKeyState(int funcKeyState){
+        if (mService != null) {
+            try {
+                return mService.setFPWholeFuncKeyState(funcKeyState);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPWholeFuncKeyState: ", e);
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @hide
+     */
+    public int setFPFunctionKeyState(int index, int enable){
+        if (mService != null) {
+            try {
+                return mService.setFPFunctionKeyState(index,enable);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in setFPFunctionKeyState: ", e);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * @hide
+     */
+    public int getFPFunctionKeyState(int index){
+        if (mService != null) {
+            try {
+                return mService.getFPFunctionKeyState(index);
+            } catch (RemoteException e) {
+                Log.w(TAG, "SLCODE Remote exception in getFPFunctionKeyState: ", e);
+            }
+        }
+        return 0;
+    }
+    // Add by silead end
+
     /**
      * Remove given fingerprint template from fingerprint hardware and/or protected storage.
      * @param fp the fingerprint item to remove

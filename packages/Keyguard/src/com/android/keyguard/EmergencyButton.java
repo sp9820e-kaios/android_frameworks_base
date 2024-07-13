@@ -17,20 +17,33 @@
 package com.android.keyguard;
 
 import android.app.ActivityOptions;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.telecom.TelecomManager;
+import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.telephony.IccCardConstants.State;
+import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.widget.LockPatternUtils;
+import com.sprd.keyguard.KeyguardPluginsHelper;
+import android.os.SystemProperties;
+import android.provider.Settings;
+import android.telephony.PhoneStateListener;
+import android.telephony.ServiceState;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+import android.telephony.SubscriptionManager.OnSubscriptionsChangedListener;
+import android.util.Log;
 
 /**
  * This class implements a smart emergency button that updates itself based
@@ -45,11 +58,26 @@ public class EmergencyButton extends Button {
             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                     | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
                     | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
+    /* Feature 478270 Add EmergencyButton on the Lockscreen{ */
+    private static final String TAG = "EmergencyButtons";
+    private static final boolean DEBUG = /* Debug.isDebug() */true;
+    private int mNumPhones;
+    private TelephonyManager mTelephonyManager;
+    private SubscriptionManager  mSubscriptionManager;
+    private PhoneStateListener[] mPhoneStateListeners;
+    static ServiceState[] mServiceStates;
+    private int[] mSubIds;
+    private SubInfoUpdateReceiver mSubInfoUpdateReceiver;
+    /* @} */
     KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
         @Override
         public void onSimStateChanged(int subId, int slotId, State simState) {
+            /* Feature 478270 Add EmergencyButton on the Lockscreen{ */
+            if ( mSubscriptionManager == null ) {
+                mSubscriptionManager = SubscriptionManager.from(mContext);
+            }
+            /* @} */
             updateEmergencyCallButton();
         }
 
@@ -86,12 +114,27 @@ public class EmergencyButton extends Button {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         KeyguardUpdateMonitor.getInstance(mContext).registerCallback(mInfoCallback);
+        /* Feature 478270 Add EmergencyButton on the Lockscreen{ */
+        IntentFilter intentFilter = new IntentFilter(TelephonyIntents.ACTION_SUBINFO_RECORD_UPDATED);
+        if (mSubInfoUpdateReceiver == null) {
+            mSubInfoUpdateReceiver = new SubInfoUpdateReceiver();
+        }
+        mContext.registerReceiver(mSubInfoUpdateReceiver, intentFilter);
+        /* @} */
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         KeyguardUpdateMonitor.getInstance(mContext).removeCallback(mInfoCallback);
+        /* SPRD: Feature 478270 Add EmergencyButton on the Lockscreen{ */
+        listenPhoneState(PhoneStateListener.LISTEN_NONE);
+        for (int i = 0; i < mPhoneStateListeners.length; i++) {
+            mPhoneStateListeners[i] = null;
+        }
+        mContext.unregisterReceiver(mSubInfoUpdateReceiver);
+        mSubInfoUpdateReceiver = null;
+        /* @} */
     }
 
     @Override
@@ -99,6 +142,19 @@ public class EmergencyButton extends Button {
         super.onFinishInflate();
         mLockPatternUtils = new LockPatternUtils(mContext);
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+        /* Feature 478270 Add EmergencyButton on the Lockscreen@{ */
+        mTelephonyManager = TelephonyManager.from(mContext);
+        mSubscriptionManager = SubscriptionManager.from(mContext);
+        mNumPhones =TelephonyManager.from(mContext).getPhoneCount();
+        if(mServiceStates == null){
+            mServiceStates = new ServiceState[mNumPhones];
+        }
+        mPhoneStateListeners = new PhoneStateListener[mNumPhones];
+        /* SPRD: modify by BUG 499054 @{ */
+        mSubIds = new int[0];
+        listenPhoneState(PhoneStateListener.LISTEN_SERVICE_STATE);
+        /* @} */
+        /* @} */
         setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 takeEmergencyCallAction();
@@ -136,6 +192,7 @@ public class EmergencyButton extends Button {
     }
 
     private void updateEmergencyCallButton() {
+        /*
         boolean visible = false;
         if (mIsVoiceCapable) {
             // Emergency calling requires voice capability.
@@ -152,15 +209,25 @@ public class EmergencyButton extends Button {
                     visible = mLockPatternUtils.isSecure(KeyguardUpdateMonitor.getCurrentUser());
                 }
             }
-        }
-        if (visible) {
-            setVisibility(View.VISIBLE);
-
+        }*/
+        if (mIsVoiceCapable) {
+            /* SPRD: modify by BUG 529668 @{ */
+            boolean keyShowEccButton = KeyguardPluginsHelper.getInstance().makeEmergencyVisible();
+            setVisibility(keyShowEccButton ? View.VISIBLE : View.GONE);
+            /* @} */
+            /* @} */
             int textId;
             if (isInCall()) {
                 textId = com.android.internal.R.string.lockscreen_return_to_call;
             } else {
-                textId = com.android.internal.R.string.lockscreen_emergency_call;
+                if (!canMakeEmergencyCall()) {
+                    setClickable(false);
+                    textId = R.string.kg_emergency_call_no_service;
+                } else {
+                    setClickable(true);
+                    textId = com.android.internal.R.string.lockscreen_emergency_call;
+                 }
+                //textId = com.android.internal.R.string.lockscreen_emergency_call;
             }
             setText(textId);
         } else {
@@ -189,4 +256,114 @@ public class EmergencyButton extends Button {
     private TelecomManager getTelecommManager() {
         return (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
     }
+
+    /* Feature 478270 Add EmergencyButton on the Lockscreen@{ */
+    private PhoneStateListener getPhoneStateListener(int subId) {
+        final int phoneId = getPhoneId(subId);
+
+        if (mPhoneStateListeners[phoneId] == null) {
+            mPhoneStateListeners[phoneId] = new PhoneStateListener(subId) {
+                @Override
+                public void onServiceStateChanged(ServiceState state) {
+                    if (state != null) {
+                        if (DEBUG)
+                        Log.d(TAG, "onServiceStateChanged(), serviceState = " + state + ", phoneId = " + phoneId);
+                        mServiceStates[phoneId] = state;
+                    }
+                    updateEmergencyCallButton();
+                }
+            };
+        }
+        return mPhoneStateListeners[phoneId];
+    }
+    private boolean hasService(int phoneId) {
+        if (mServiceStates[phoneId] != null) {
+            switch (mServiceStates[phoneId].getState()) {
+                case ServiceState.STATE_OUT_OF_SERVICE:
+                    return false;
+                case ServiceState.STATE_POWER_OFF:
+                    /* SPRD: bug #541049. @{ */
+                    if (Settings.Global.getInt(mContext.getContentResolver(),
+                            Settings.Global.AIRPLANE_MODE_ON, 0) != 0) {
+                        return true;
+                    }
+                    /* @} */
+                    return false;
+                default:
+                    return true;
+            }
+        } else {
+            return false;
+        }
+
+    }
+    boolean canMakeEmergencyCall(){
+        for(int i=0; i<mServiceStates.length; i++) {
+            if (mServiceStates[i] != null) {
+                if (mServiceStates[i].isEmergencyOnly() || hasService(i)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void listenPhoneState(int listenMode) {
+        if (mSubIds == null || (mSubIds != null && mSubIds.length == 0)) {
+            mTelephonyManager.listen(getInvalidSubPhoneStateListener(), listenMode);
+        } else {
+            for (int i = 0; i< mSubIds.length; i++) {
+                mTelephonyManager.listen(getPhoneStateListener(mSubIds[i]), listenMode);
+            }
+        }
+    }
+
+    private int getPhoneId(int subId) {
+        /* SPRD: Use telephony internal API. See bug #513463. @{ */
+        int phoneId = SubscriptionManager.getPhoneId(subId);
+        if (!SubscriptionManager.isValidPhoneId(phoneId)) {
+            phoneId = 0;
+        }
+        return phoneId;
+        /* @} */
+    }
+
+    class SubInfoUpdateReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "SubInfoUpdateReceiver-onReceive");
+            /* SPRD: modify by BUG 499054 @{ */
+            int[] subIds = mSubscriptionManager.getActiveSubscriptionIdList();
+            if (mSubIds.length != subIds.length) {
+                mSubIds = subIds;
+                Log.d(TAG, "SubInfoUpdate, mSubIds = " + mSubIds);
+                for (int i = 0; i < mPhoneStateListeners.length; i++) {
+                    if (mPhoneStateListeners[i] != null) {
+                        mTelephonyManager.listen(mPhoneStateListeners[i], 0);
+                        mPhoneStateListeners[i] = null;
+                    }
+                }
+            }
+            /* @} */
+            listenPhoneState(PhoneStateListener.LISTEN_SERVICE_STATE);
+        }
+    }
+
+    private PhoneStateListener getInvalidSubPhoneStateListener () {
+        if (mPhoneStateListeners[0] == null) {
+            mPhoneStateListeners[0] = new PhoneStateListener() {
+                @Override
+                public void onServiceStateChanged(ServiceState state) {
+                    super.onServiceStateChanged(state);
+                    if (state != null) {
+                        Log.d(TAG, "InvalidSubPhoneStateListener: onServiceStateChanged(), serviceState = " + state);
+                        mServiceStates[0] = state;
+                    }
+                    updateEmergencyCallButton();
+                }
+            };
+        }
+        return mPhoneStateListeners[0];
+    }
+    /* @} */
 }

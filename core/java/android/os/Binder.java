@@ -73,6 +73,7 @@ public class Binder implements IBinder {
      * Control whether dump() calls are allowed.
      */
     private static String sDumpDisabled = null;
+    private static IBinder gSecurityService = null;
 
     /* mObject is used by native code, do not remove or rename */
     private long mObject;
@@ -109,6 +110,30 @@ public class Binder implements IBinder {
         return new UserHandle(UserHandle.getUserId(getCallingUid()));
     }
 
+    /**
+     * @hide
+     */
+    public static int  dojudge(int uid,  String name, int oprID, int    oprType, String param)
+    {
+            if (gSecurityService == null)
+                gSecurityService = ServiceManager.getService("security") ;
+            Parcel data =  Parcel.obtain() ;
+            Parcel reply = Parcel.obtain();
+            data.writeInterfaceToken("android.os.ISecurityService");
+            data.writeInt(uid);
+            data.writeString(name);
+            data.writeInt(oprID);
+            data.writeInt(oprType);
+            data.writeString(param);
+            try {
+                gSecurityService.transact(3, data, reply, 0);
+                reply.readExceptionCode();
+            }
+            catch (android.os.RemoteException e)
+            {
+            }
+            return reply.readInt();
+    }
     /**
      * Reset the identity of the incoming IPC on the current thread.  This can
      * be useful if, while handling an incoming call, you will be calling

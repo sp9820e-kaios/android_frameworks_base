@@ -16,6 +16,7 @@
 
 package android.app;
 
+import android.app.IActivityManager;
 import android.app.ActivityManager.StackInfo;
 import android.app.assist.AssistContent;
 import android.app.assist.AssistStructure;
@@ -2592,6 +2593,61 @@ public abstract class ActivityManagerNative extends Binder implements IActivityM
             reply.writeInt(res ? 1 : 0);
             return true;
         }
+        /* SPRD: add for bug 284692, add set process protect status interface @{ */
+        case SET_PROCESS_PROTECT_STATUS_BYPID: {
+            data.enforceInterface(IActivityManager.descriptor);
+            int pid = data.readInt();
+            int status = data.readInt();
+            setProcessProtectStatus(pid, status);
+            reply.writeNoException();
+            return true;
+        }
+        case SET_PROCESS_PROTECT_STATUS:{
+            data.enforceInterface(IActivityManager.descriptor);
+            String appName = data.readString();
+            int status = data.readInt();
+            setProcessProtectStatus(appName, status);
+            reply.writeNoException();
+            return true;
+        }
+
+        // SPRD: 380668 add kill-stop process @{
+        case KILL_STOP_FRONT_APP_TRANSACTION: {
+            data.enforceInterface(IActivityManager.descriptor);
+            killStopFrontApp(data.readInt());
+            reply.writeNoException();
+            return true;
+        }
+
+        case START_HOME_PRE: {
+            data.enforceInterface(IActivityManager.descriptor);
+            startHomePre();
+            reply.writeNoException();
+            return true;
+        }
+        // @}
+
+        /* SPRD: add for bug 495208, add log to dump trace when TimeoutException happen @{ */
+        case DUMP_PROCESS_TRACE:{
+            data.enforceInterface(IActivityManager.descriptor);
+            final int pid = data.readInt();
+            final String msg = data.readString();
+            dumpProcessTrace(pid, msg);
+            reply.writeNoException();
+            return true;
+        }
+        /* }@ */
+        case SET_PROCESS_PROTECT_AREA:{
+            data.enforceInterface(IActivityManager.descriptor);
+            String appName = data.readString();
+            int minAdj = data.readInt();
+            int maxAdj = data.readInt();
+            int protectLevel = data.readInt();
+            setProcessProtectArea(appName, minAdj, maxAdj, protectLevel);
+            reply.writeNoException();
+            return true;
+        }
+        /* }@ */
         }
 
         return super.onTransact(code, data, reply, flags);
@@ -5986,6 +6042,89 @@ class ActivityManagerProxy implements IActivityManager
         reply.recycle();
         return res != 0;
     }
+
+    /* SPRD: add for bug 284692, add set process protect status interface @{ */
+    public void setProcessProtectStatus(int pid, int status) throws RemoteException {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeInterfaceToken(IActivityManager.descriptor);
+        data.writeInt(pid);
+        data.writeInt(status);
+        mRemote.transact(SET_PROCESS_PROTECT_STATUS_BYPID, data, reply, 0);
+        reply.readException();
+        data.recycle();
+        reply.recycle();
+    }
+    /**
+     * SPRD: setProcessProtectStatus
+     * @param status process ptotected status, value of {@link ActivityManager#PROCESS_STATUS_IDLE}, {@link ActivityManager#PROCESS_STATUS_RUNNING}, {@link ActivityManager#PROCESS_STATUS_MAINTAIN}, {@link ActivityManager#PROCESS_STATUS_PERSISTENT}
+     */
+    public void setProcessProtectStatus(String appName, int status) throws RemoteException {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeInterfaceToken(IActivityManager.descriptor);
+        data.writeString(appName);
+        data.writeInt(status);
+        mRemote.transact(SET_PROCESS_PROTECT_STATUS, data, reply, 0);
+        reply.readException();
+        data.recycle();
+        reply.recycle();
+    }
+
+    /**
+     * SPRD: setProcessProtectArea
+     * @param protectLevel the lever of process ptotected area, value of {@link ActivityManager#PROCESS_PROTECT_CRITICAL}, {@link ActivityManager#PROCESS_PROTECT_IMPORTANCE}, {@link ActivityManager#PROCESS_PROTECT_NORMAL}
+     */
+    public void setProcessProtectArea(String appName,  int minAdj, int maxAdj, int protectLevel) throws RemoteException{
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeInterfaceToken(IActivityManager.descriptor);
+        data.writeString(appName);
+        data.writeInt(minAdj);
+        data.writeInt(maxAdj);
+        data.writeInt(protectLevel);
+        mRemote.transact(SET_PROCESS_PROTECT_AREA, data, reply, 0);
+        reply.readException();
+        data.recycle();
+        reply.recycle();
+    }
+    /* }@ */
+    /* SPRD: add for bug 495208, add log to dump trace when TimeoutException happen @{ */
+    public void dumpProcessTrace(int pid, String msg) throws RemoteException {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeInterfaceToken(IActivityManager.descriptor);
+        data.writeInt(pid);
+        data.writeString(msg);
+        mRemote.transact(DUMP_PROCESS_TRACE, data, reply, 0);
+        reply.readException();
+        data.recycle();
+        reply.recycle();
+    }
+    /* @} */
+
+    /* SPRD: add for kill-stop in call incoming @{ */
+    public void startHomePre() throws RemoteException {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeInterfaceToken(IActivityManager.descriptor);
+        mRemote.transact(START_HOME_PRE, data, reply, 0);
+        reply.readException();
+        data.recycle();
+        reply.recycle();
+    }
+
+    public void killStopFrontApp(int func) throws RemoteException {
+        Parcel data = Parcel.obtain();
+        Parcel reply = Parcel.obtain();
+        data.writeInterfaceToken(IActivityManager.descriptor);
+        data.writeInt(func);
+        mRemote.transact(KILL_STOP_FRONT_APP_TRANSACTION, data, reply, 0);
+        reply.readException();
+        data.recycle();
+        reply.recycle();
+    }
+    /* @} */
 
     private IBinder mRemote;
 }

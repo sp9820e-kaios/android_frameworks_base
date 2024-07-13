@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"برگشت"</string>
     <string name="next_button_label" msgid="1080555104677992408">"بعدی"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"پرش"</string>
-    <string name="no_matches" msgid="8129421908915840737">"مورد منطبقی موجود نیست"</string>
     <string name="find_on_page" msgid="1946799233822820384">"یافتن در صفحه"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="one"><xliff:g id="INDEX">%d</xliff:g> از <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> از <xliff:g id="TOTAL">%d</xliff:g></item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"انجام شد"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"‏در حال پاک کردن حافظهٔ USB..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"‏در حال پاک کردن کارت SD..."</string>
@@ -1516,4 +1511,31 @@
       <item quantity="one">‏<xliff:g id="COUNT_1">%1$d</xliff:g> انتخاب شد</item>
       <item quantity="other">‏<xliff:g id="COUNT_1">%1$d</xliff:g> انتخاب شد</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="شاخص" مثال="2">%d</xliff:g>/<xliff:g id="مجموع" مثال="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">""اتصال به USB اینترنت فعال" "</string>
+     <string name="ext_media_status_shared">"UMS به اشتراک گذاشته شد"</string>
+     <string name="sim_ready_title_for_usb">"هشدار"</string>
+     <string name="sim_card_activation_warning">"در صورت نصب برنامه توسط اشخاص ثالث، لطفاً برای فعال‌کردن USB، سیمکارت/USIM را وارد کنید"</string>
+     <string name="usb_ok">تایید</string>
+     <string name="usb_cdrom_notification_title">درایور مجازی روشن است</string>
+     <string name="usb_charge_only_notification">""متصل تنها به صورت شارژ" "</string>
+     <string name="global_action_restart">"راه‌اندازی مجدد"</string>
+     <string name="reboot_device_title">"راه‌اندازی مجدد"</string>
+     <string name="global_reboot_close_apps">"بستن تمام برنامه ها و خاموش شدن تلفن"</string>
+     <string name="reboot_device_confirm">"مایلید اکنون گوشی خود را راه اندازی کنید؟"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"دستگاه بعد از  <xliff:g id="NUMBER">%d</xliff:g> ثانیه خاموش می شود."</item>
+<item quantity="other">تلفن بعد از <xliff:g id="NUMBER">%d</xliff:g> ثانیه خاموش می شود</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s متصل است، %2$s مسدود است"</string>
+     <string name="phoneFixedNumber">"شماره ثابت"</string>
+     <string name="gps_time_sync_fail_str">"ناموفق در به دست آوردن زمان GPS"</string>
+     <string name="disable_touch_mode_title">"لمس جیب - غیرفعال"</string>
+     <string name="disable_touch_mode_hint">"بالای تلفن را نپوشانید"</string>
+     <string name="exit_disable_touch_mode_hint">"برای غیرفعال کردن این حالت می‌توانید دکمه پاور و افزایش صدا را نیز فشار دهید"</string>
+
 </resources>

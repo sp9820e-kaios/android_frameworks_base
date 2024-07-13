@@ -29,12 +29,17 @@ import static com.android.documentsui.DirectoryFragment.ANIM_UP;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.io.FileNotFoundException;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ComponentName;
@@ -50,6 +55,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.Handler;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Root;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -71,6 +77,10 @@ import com.android.documentsui.model.DocumentInfo;
 import com.android.documentsui.model.DocumentStack;
 import com.android.documentsui.model.DurableUtils;
 import com.android.documentsui.model.RootInfo;
+import com.android.documentsui.PlugInDrm.DocumentsUIPlugInDrm;
+import android.os.SystemProperties;
+import com.sprd.android.support.featurebar.FeatureBarHelper;
+import android.widget.TextView;
 
 public class DocumentsActivity extends BaseActivity {
     private static final int CODE_FORWARD = 42;
@@ -94,6 +104,11 @@ public class DocumentsActivity extends BaseActivity {
     private ItemSelectedListener mStackListener;
     private BaseAdapter mStackAdapter;
 
+    private ArrayList<String> copyUris;
+    private FeatureBarHelper mFeatureBarHelper;
+    private TextView  mLeftSkView;
+    private TextView  mRightSkView;
+    private  TextView mCenterSkView;
     public DocumentsActivity() {
         super(TAG);
     }
@@ -101,7 +116,16 @@ public class DocumentsActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        if(icicle != null){
+            copyUris = icicle.getStringArrayList("copyUris");
+        }
 
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        DocumentsUIPlugInDrm.getInstance().getDocumentsActivityContext(getApplicationContext());
+        /*@}*/
         setResult(Activity.RESULT_CANCELED);
         setContentView(R.layout.activity);
 
@@ -134,9 +158,18 @@ public class DocumentsActivity extends BaseActivity {
 
         mDirectoryContainer = (DirectoryContainerView) findViewById(R.id.container_directory);
 
-        mState = (icicle != null)
-                ? icicle.<State>getParcelable(EXTRA_STATE)
-                : buildDefaultState();
+        /* Modify for Bug:496070 change language, the actionbar tile is not changed start */
+        if (icicle != null) {
+            mState = icicle.<State>getParcelable(EXTRA_STATE);
+            Locale locale = getResources().getConfiguration().locale;
+            if(!locale.equals(mState.locale)){
+                mState.locale = locale;
+                new UpdateTitleTask().execute();
+            }
+        } else {
+            mState = buildDefaultState();
+        }
+        /* Modify for Bug:496070 change language, the actionbar tile is not changed end */
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitleTextAppearance(context,
@@ -183,6 +216,8 @@ public class DocumentsActivity extends BaseActivity {
                    mState.action == ACTION_OPEN_TREE ||
                    mState.action == ACTION_OPEN_COPY_DESTINATION) {
             RootsFragment.show(getFragmentManager(), null);
+        } else if (getIntent().getBooleanExtra(CopyService.EXTRA_OPEN_COPYING, false)) {
+            RootsFragment.show(getFragmentManager(), null);
         }
 
         if (!mState.restored) {
@@ -208,6 +243,10 @@ public class DocumentsActivity extends BaseActivity {
         } else {
             onCurrentDirectoryChanged(ANIM_NONE);
         }
+        mFeatureBarHelper = new FeatureBarHelper(this);
+        mLeftSkView = (TextView)mFeatureBarHelper.getOptionsKeyView() ;
+        mCenterSkView = (TextView)mFeatureBarHelper.getCenterKeyView();
+        mRightSkView = (TextView)mFeatureBarHelper.getBackKeyView();
     }
 
     private State buildDefaultState() {
@@ -242,7 +281,13 @@ public class DocumentsActivity extends BaseActivity {
         } else if (intent.hasExtra(Intent.EXTRA_MIME_TYPES)) {
             state.acceptMimes = intent.getStringArrayExtra(Intent.EXTRA_MIME_TYPES);
         } else {
-            state.acceptMimes = new String[] { intent.getType() };
+            /* Fix Bug:528738 Unable to select pictures 2016.01.27 start */
+            String types = intent.getType();
+            if (types != null && types.indexOf(",") != -1) {
+                state.acceptMimes = types.split(",");
+            } else
+                state.acceptMimes = new String[] { types };
+            /* Fix Bug:528738 Unable to select pictures 2016.01.27 end */
         }
 
         state.localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, false);
@@ -258,12 +303,38 @@ public class DocumentsActivity extends BaseActivity {
         if (state.action == ACTION_OPEN_COPY_DESTINATION) {
             state.directoryCopy = intent.getBooleanExtra(
                     BaseActivity.DocumentsIntent.EXTRA_DIRECTORY_COPY, false);
+            copyUris = intent.getStringArrayListExtra(BaseActivity.DocumentsIntent.EXTRA_DIRECTORY_COPY_URIS);
         }
 
         state.excludedAuthorities = getExcludedAuthorities();
 
+        state.locale = getResources().getConfiguration().locale;
+
         return state;
     }
+
+    /* Modify for Bug:463424 change language, the actionbar tile is not changed start */
+    private class UpdateTitleTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Update the restored stack to ensure we have freshest data
+            final Collection<RootInfo> matchingRoots = mRoots
+                    .getMatchingRootsBlocking(mState);
+            try {
+                mState.stack.updateRoot(matchingRoots);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (isDestroyed()) return;
+            updateActionBar();
+        }
+    }
+    /* Modify for Bug:463424 change language, the actionbar tile is not changed end */
 
     private class RestoreRootTask extends AsyncTask<Void, Void, RootInfo> {
         private Uri mRootUri;
@@ -375,17 +446,23 @@ public class DocumentsActivity extends BaseActivity {
         updateActionBar();
     }
 
+    public void rootsDrawerRequestFocus() {
+        mRootsDrawer.requestFocus();
+    }
+
     public void setRootsDrawerOpen(boolean open) {
         if (!mShowAsDialog) {
             if (open) {
+                findViewById(R.id.container_save).setVisibility(View.GONE);
                 mDrawerLayout.openDrawer(mRootsDrawer);
             } else {
+                findViewById(R.id.container_save).setVisibility(View.VISIBLE);
                 mDrawerLayout.closeDrawer(mRootsDrawer);
             }
         }
     }
 
-    private boolean isRootsDrawerOpen() {
+    public boolean isRootsDrawerOpen() {
         if (mShowAsDialog) {
             return false;
         } else {
@@ -472,12 +549,22 @@ public class DocumentsActivity extends BaseActivity {
         final MenuItem fileSize = menu.findItem(R.id.menu_file_size);
         final MenuItem settings = menu.findItem(R.id.menu_settings);
 
+        /**
+        *Add for barphone support
+        *@{
+        */
+        if (PRODUCT_BARPHONE){
+            createDir.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        }
+        /*@}*/
+
         boolean fileSizeVisible = !(mState.action == ACTION_MANAGE
                 || mState.action == ACTION_BROWSE);
         if (mState.action == ACTION_CREATE
                 || mState.action == ACTION_OPEN_TREE
                 || mState.action == ACTION_OPEN_COPY_DESTINATION) {
-            createDir.setVisible(cwd != null && cwd.isCreateSupported());
+            /*download can not create dir, make createDir invisible*/
+            createDir.setVisible(cwd != null && cwd.isCreateSupported() && !root.isDownloads());
             mSearchManager.showMenu(false);
 
             // No display options in recent directories
@@ -489,13 +576,17 @@ public class DocumentsActivity extends BaseActivity {
 
             if (mState.action == ACTION_CREATE) {
                 final FragmentManager fm = getFragmentManager();
-                SaveFragment.get(fm).setSaveEnabled(cwd != null && cwd.isCreateSupported());
+                SaveFragment mSaveFragment = SaveFragment.get(fm);
+                if(mSaveFragment != null){
+                    mSaveFragment.setSaveEnabled(cwd != null && cwd.isCreateSupported());
+                }
             }
         } else {
             createDir.setVisible(false);
         }
 
-        advanced.setVisible(!(mState.action == ACTION_MANAGE || mState.action == ACTION_BROWSE));
+        advanced.setVisible(!(mState.action == ACTION_MANAGE || mState.action == ACTION_BROWSE)
+                && !mState.forceAdvanced);
         fileSize.setVisible(fileSizeVisible);
 
         settings.setVisible((mState.action == ACTION_MANAGE || mState.action == ACTION_BROWSE)
@@ -509,18 +600,45 @@ public class DocumentsActivity extends BaseActivity {
         if (mDrawerToggle != null && mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        /**
+         * Add for BarPhone
+         *@{
+         */
+        final int id = item.getItemId();
+        if (id == R.id.menu_drawer) {
+            setRootsDrawerOpen(true);
+            return true;
+        }
+        /*@}*/
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
+        /**
+         * Add for BarPhone
+         *@{
+         */
+        if(SystemProperties.getBoolean("ro.product.barphone",false)){
+            if (isRootsDrawerOpen()){
+                Log.i(TAG,"handle back key ");
+                setRootsDrawerOpen(false);
+                return;
+            }
+        }
+        /*@}*/
+
         // While action bar is expanded, the state stack UI is hidden.
         if (mSearchManager.cancelSearch()) {
             return;
         }
 
         if (!mState.stackTouched) {
-            super.onBackPressed();
+            try {
+                super.onBackPressed();
+            } catch (IllegalStateException e) {
+                Log.w(TAG, e.toString());
+            }
             return;
         }
 
@@ -530,9 +648,17 @@ public class DocumentsActivity extends BaseActivity {
             onCurrentDirectoryChanged(ANIM_UP);
         } else if (size == 1 && !isRootsDrawerOpen()) {
             // TODO: open root drawer once we can capture back key
-            super.onBackPressed();
+            try {
+                super.onBackPressed();
+            } catch (IllegalStateException e) {
+                Log.w(TAG, e.toString());
+            }
         } else {
-            super.onBackPressed();
+            try {
+                super.onBackPressed();
+            } catch (IllegalStateException e) {
+                Log.w(TAG, e.toString());
+            }
         }
     }
 
@@ -640,15 +766,25 @@ public class DocumentsActivity extends BaseActivity {
             }
         } else if (mState.action == ACTION_BROWSE) {
             // Go straight to viewing
-            final Intent view = new Intent(Intent.ACTION_VIEW);
-            view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            view.setData(doc.derivedUri);
+            /*
+             * for downloadprovider_DRM
+             *@{
+             */
+            if (DocumentsUIPlugInDrm.getInstance().sendDRMFileIntent(this, doc.derivedUri,
+                    new Handler(getApplicationContext().getMainLooper()))) {
+                Log.d(TAG, "onDocumentPicked:ACTION_BROWSE, open Drm file!");
+            } else {
+                final Intent view = new Intent(Intent.ACTION_VIEW);
+                view.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                view.setData(doc.derivedUri);
 
-            try {
-                startActivity(view);
-            } catch (ActivityNotFoundException ex) {
-                Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                try {
+                    startActivity(view);
+                } catch (ActivityNotFoundException ex) {
+                    Toast.makeText(this, R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                }
             }
+            /*@}*/
         }
     }
 
@@ -666,6 +802,7 @@ public class DocumentsActivity extends BaseActivity {
 
     public void onPickRequested(DocumentInfo pickTarget) {
         Uri result;
+        String targetUri;
         if (mState.action == ACTION_OPEN_TREE) {
             result = DocumentsContract.buildTreeDocumentUri(
                     pickTarget.authority, pickTarget.documentId);
@@ -675,7 +812,29 @@ public class DocumentsActivity extends BaseActivity {
             // Should not be reached.
             throw new IllegalStateException("Invalid mState.action.");
         }
-        new PickFinishTask(result).executeOnExecutor(getCurrentExecutor());
+        /*new PickFinishTask(result).executeOnExecutor(getCurrentExecutor());*/
+        /* SPRD: Fix bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR start. { */
+        targetUri = result.toString();
+        if(copyUris != null){
+            boolean  checkUri = isParentOrEqualsFolder(targetUri,copyUris);
+            if(checkUri){
+                new AlertDialog.Builder(this)
+                .setTitle(R.string.cannot_copyfolder_itself)
+                .setPositiveButton(android.R.string.ok,new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog,
+                            int which) {
+                        return;
+                    }
+                })
+                .show();
+            }else{
+                new PickFinishTask(result).executeOnExecutor(getCurrentExecutor());
+            }
+        }else{
+            new PickFinishTask(result).executeOnExecutor(getCurrentExecutor());
+        }
+        /* SPRD: Fix bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR end. { */
     }
 
     @Override
@@ -764,6 +923,7 @@ public class DocumentsActivity extends BaseActivity {
 
     final class ExistingFinishTask extends AsyncTask<Void, Void, Void> {
         private final Uri[] mUris;
+        private int check_ret;
 
         public ExistingFinishTask(Uri... uris) {
             mUris = uris;
@@ -772,11 +932,28 @@ public class DocumentsActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... params) {
             saveStackBlocking();
+            try {
+                if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
+                    check_ret = DocumentsUIPlugInDrm.getInstance().checkDrmError(DocumentsActivity.this, mUris, mState.acceptMimes);
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "checkDrmError error: ", e);
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
+            /*
+             * for documentui_DRM
+             *@{
+             */
+            if (mState.action == ACTION_OPEN || mState.action == ACTION_GET_CONTENT) {
+                if (DocumentsUIPlugInDrm.getInstance().alertDrmError(check_ret)){
+                    return;
+                }
+            }
+            /*@}*/
             onTaskFinished(mUris);
         }
     }
@@ -835,4 +1012,36 @@ public class DocumentsActivity extends BaseActivity {
             setPending(false);
         }
     }
+
+    /* SPRD: Fix bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR start. { */
+    private static boolean isParentOrEqualsFolder(String targetUri,ArrayList<String> copyUris){
+        Log.d(TAG,"isParentOrEqualsFolder(),targetUri == "+targetUri);
+        for(String copyUri : copyUris){
+            Log.d(TAG,"isParentOrEqualsFolder() ,copyUri == "+copyUri);
+            boolean ret = targetUri.startsWith(copyUri);
+            if(ret){
+                int index = copyUri.length();
+                 if(index == targetUri.length()) {
+                    return true;
+                 }else{
+                    if(targetUri.charAt(index) == '%'){
+                        return true;
+                    }
+                 }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putStringArrayList("copyUris",copyUris);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        copyUris = savedInstanceState.getStringArrayList("copyUris");
+    }
+    /* SPRD: Fix bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR end. { */
 }

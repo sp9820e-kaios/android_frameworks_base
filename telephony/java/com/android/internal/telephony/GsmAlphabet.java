@@ -17,6 +17,7 @@
 package com.android.internal.telephony;
 
 import android.content.res.Resources;
+import android.os.SystemProperties;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
 
@@ -381,6 +382,11 @@ public class GsmAlphabet {
             boolean throwException, int languageTable, int languageShiftTable)
             throws EncodeException {
         int dataLen = data.length();
+        String encodeType = SystemProperties.get(SMS_ENCODE_TYPE,"0");
+        if (!"".equals(encodeType) && String.valueOf(SmsConstants.ENCODING_7BIT).equals(encodeType)) {
+            throwException = false;
+        }
+        Rlog.i(TAG+" - encodeTypeLog", "- GsmAlphablet - encodeType:"+encodeType+", throwException:"+throwException);
         int septetCount = countGsmSeptetsUsingTables(data, !throwException,
                 languageTable, languageShiftTable);
         if (septetCount == -1) {
@@ -419,6 +425,8 @@ public class GsmAlphabet {
         ret[0] = (byte) (septetCount);  // Validated by check above.
         return ret;
     }
+
+    private static final String SMS_ENCODE_TYPE = "persist.radio.sms_encode_type";//Add for Encode Type feature (562203)
 
     /**
      * Pack a 7-bit char into its appropriate place in a byte array
@@ -1502,4 +1510,145 @@ public class GsmAlphabet {
             }
         }
     }
+    /* SPRD: add SIMPhoneBook for bug 474587 @{ */
+    public static byte[] isAsciiStringToGsm8BitUnpackedField(String s)
+            throws EncodeException {
+        int i;
+        for (i = 0; i < s.length(); i++)
+        {
+            int c = s.charAt(i);
+            if (c >= 128) {
+                throw new EncodeException("string is not ascii string");
+            }
+        }
+
+        return GsmAlphabet.stringToGsm8BitPacked(s);
+
+    }
+
+    public static byte[] stringToGsmAlphaSS(String s)
+            throws EncodeException {
+        boolean isUcs2 = false;
+        int alphaType = 0;
+        int tempUcs2 = 0;
+        int maxUcs2 = 0;
+        int minUcs2 = 0;
+        int i = 0;
+        int count = s.length();
+
+        // find the max and min character in this string;
+        for (i = 0; i < count; i++) {
+            tempUcs2 = s.codePointAt(i);
+            if (tempUcs2 > 0x7F) {
+                if (isUcs2 == false) {
+                    isUcs2 = true;
+                    maxUcs2 = tempUcs2;
+                    minUcs2 = tempUcs2;
+                }
+                maxUcs2 = (tempUcs2 > maxUcs2) ? tempUcs2 : maxUcs2;
+                minUcs2 = (tempUcs2 < minUcs2) ? tempUcs2 : minUcs2;
+            }
+        }
+
+        if (count == 0 || isUcs2 == false) {
+            alphaType = 0;
+        } else {
+            if (maxUcs2 - minUcs2 > 128 || count < 3) {
+                alphaType = 80;
+            } else {
+                if (minUcs2 >= 0x8000) {
+                    alphaType = 82;
+                } else if ((maxUcs2 >> 7) == (minUcs2 >> 7)) {
+                    alphaType = 81;
+                } else {
+                    alphaType = 80;
+                }
+            }
+        }
+
+        byte[] ret = null;
+
+        switch (alphaType) {
+            case 0:// ***
+                ret = GsmAlphabet.isAsciiStringToGsm8BitUnpackedField(s.toString());
+                break;
+            case 80:// 0x80+***
+                ret = GsmAlphabet.isAsciiStringToGsm8BitUnpackedField(s.toString());
+                ret[0] = (byte) 0x80;
+                break;
+
+            case 81:// 0x81+length+base+***
+                ret = new byte[count + 3];
+                ret[0] = (byte) 0x81;
+                ret[1] = (byte) count;
+                ret[2] = (byte) (minUcs2 >> 7);
+                for (i = 0; i < count; i++) {
+                    tempUcs2 = s.codePointAt(i) & 0x7F;
+                    if (s.codePointAt(i) >= 0x80) {
+                        tempUcs2 += 0x80;
+                        ret[3 + i] = (byte) tempUcs2;
+                    } else {
+                        // To convert the character with Gsm 8bit coding
+                        ret[3 + i] = convertAsciiCharToGsm8BitUnpacked((char)s.codePointAt(i));
+                    }
+                }
+                break;
+
+            case 82:// 0x82+length+base_high++base_low+***
+                ret = new byte[count + 4];
+                ret[0] = (byte) 0x82;
+                ret[1] = (byte) count;
+                ret[2] = (byte) (minUcs2 >> 8);
+                ret[3] = (byte) (minUcs2 & 0xFF);
+                for (i = 0; i < count; i++) {
+                    if (s.codePointAt(i) >= 0x80) {
+                        tempUcs2 = s.codePointAt(i) - minUcs2;
+                        tempUcs2 += 0x80;
+                    } else {
+                        tempUcs2 = s.codePointAt(i) & 0x7F;
+                        /* SPRD:Bug#290451 convert the character with Gsm coding @{ */
+                        tempUcs2 = GsmAlphabet.charToGsm((char) tempUcs2);
+                        /* @} */
+                    }
+                    ret[4 + i] = (byte) tempUcs2;
+                }
+
+                break;
+            default:
+                ret = GsmAlphabet.isAsciiStringToGsm8BitUnpackedField(s.toString());
+                break;
+        }
+
+        return ret;
+
+    }
+
+    private static byte convertAsciiCharToGsm8BitUnpacked(char c) {
+        SparseIntArray charToLanguageTable = GsmAlphabet.getCharsToGsmTables()[0];
+        SparseIntArray charToShiftTable = GsmAlphabet.getCharsToShiftTables()[0];
+
+        int v = charToLanguageTable.get(c, -1);
+
+        if (v == -1) {
+            v = charToShiftTable.get(c, -1);
+            if (v == -1) {
+                // fall back to ASCII space
+                v = charToLanguageTable.get(' ', ' ');
+            } else {
+                return GsmAlphabet.GSM_EXTENDED_ESCAPE;
+            }
+        }
+
+        return (byte) v;
+    }
+
+    protected static SparseIntArray[] getCharsToGsmTables() {
+        return sCharsToGsmTables;
+    }
+
+    protected static SparseIntArray[] getCharsToShiftTables() {
+        return sCharsToShiftTables;
+    }
+
+    /* @} */
 }

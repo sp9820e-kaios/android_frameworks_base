@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Tocca per visualizzare i dettagli"</string>
     <string name="retry" msgid="7564024179122207376">"Riprova"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"I seguenti file non sono stati copiati: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">Impossibile condividere i file</string>
+     <string name="documents_deleting">"Eliminazione documenti"</string>
+     <string name="cannot_copyfolder_itself">"Impossibile copiare la cartella in sé stessa"</string>
+
+    <string name="error_permissions">"L\'app non dispone delle autorizzazioni necessarie all\'esecuzione. Controlla le impostazioni delle autorizzazioni."</string>
+     <string name="cannot_copy_drm">"Non puoi copiare i files DRM"</string>
+     <string name="cannot_copy_downloading">"Non puoi copiare i files DRM"</string>
 </resources>

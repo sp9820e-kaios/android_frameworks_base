@@ -28,6 +28,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.location.LocationManager;
 import android.media.AudioSystem;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
@@ -80,7 +81,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
     // database gets upgraded properly. At a minimum, please confirm that 'upgradeVersion'
     // is properly propagated through your change.  Not doing so will result in a loss of user
     // settings.
-    private static final int DATABASE_VERSION = 118;
+    private static final int DATABASE_VERSION = 119;
 
     private Context mContext;
     private int mUserHandle;
@@ -105,6 +106,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
         mValidTables.add("favorites");
         mValidTables.add("old_favorites");
         mValidTables.add("android_metadata");
+        mValidTables.add("apps_start");
     }
 
     static String dbNameForUser(final int userHandle) {
@@ -166,6 +168,19 @@ class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX secureIndex1 ON secure (name);");
     }
 
+    /* SPRD: Add Apps Inter Start management in settings @{ */
+    private void createAppsStartTable(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE apps_start (" +
+                "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "packageName TEXT UNIQUE," +
+                "allowed INTEGER," +
+                "callerPackages TEXT," +
+                "insertTime TEXT," +
+                "lastupdatetime TEXT" +
+                ");");
+    }
+    /* @} */
+
     private void createGlobalTable(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE global (" +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -177,6 +192,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // SPRD: Add Apps Inter Start management in settings
+        createAppsStartTable(db);
         db.execSQL("CREATE TABLE system (" +
                     "_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "name TEXT UNIQUE ON CONFLICT REPLACE," +
@@ -2359,6 +2376,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
                     R.bool.def_dim_screen);
             loadIntegerSetting(stmt, Settings.System.SCREEN_OFF_TIMEOUT,
                     R.integer.def_screen_off_timeout);
+            // set default button light timeout.
+            loadIntegerSetting(stmt, Settings.System.BUTTON_LIGHT_OFF_TIMEOUT,
+                    R.integer.def_button_light_off_timeout);
 
             // Set default cdma DTMF type
             loadSetting(stmt, Settings.System.DTMF_TONE_TYPE_WHEN_DIALING, 0);
@@ -2459,6 +2479,11 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadBooleanSetting(stmt, Settings.Secure.MOUNT_UMS_PROMPT,
                     R.bool.def_mount_ums_prompt);
 
+            /* SPRD:Default for Settings.Secure.SHOW_IME_WITH_HARD_KEYBOARD for bug 515449 @{ */
+            loadBooleanSetting(stmt, Settings.Secure.SHOW_IME_WITH_HARD_KEYBOARD,
+                    R.bool.def_show_ime_with_hard_keyboard);
+            /* @} */
+
             loadBooleanSetting(stmt, Settings.Secure.MOUNT_UMS_NOTIFY_ENABLED,
                     R.bool.def_mount_ums_notify_enabled);
 
@@ -2529,6 +2554,30 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadIntegerSetting(stmt, Settings.Secure.SLEEP_TIMEOUT,
                     R.integer.def_sleep_timeout);
 
+            /* SPRD: Bug 541355 Modify for CMCC case: change default input method */
+            /* SPRD: Bug 592065 change default input method for PikeL*/
+            //boolean isSupportCMCC = SprdCmccWorkspaceAddonStub.getInstance(mContext).isDefault();
+            /* SPRD: Bug 613720 change default input method for PikeL Reliance*/
+            String config = SystemProperties.get("ro.product.inputmethod");
+            Log.d(TAG, "ro.product.inputmethod value: " + config);
+            if(config.equals("Nikie")) {
+                loadStringSetting(stmt, Settings.Secure.DEFAULT_INPUT_METHOD,
+                        R.string.config_default_input_method_reliance);
+                loadStringSetting(stmt, Settings.Secure.ENABLED_INPUT_METHODS,
+                        R.string.config_enabled_input_method_reliance);
+            }else {
+                loadStringSetting(stmt, Settings.Secure.DEFAULT_INPUT_METHOD,
+                        R.string.config_default_input_method);
+                loadStringSetting(stmt, Settings.Secure.ENABLED_INPUT_METHODS,
+                        R.string.config_enabled_input_method);
+            }
+            /* @} */
+            /* @} */
+
+            /* SPRD:Default for Settings.Secure.TTS_DEFAULT_SYNTH @{ */
+            loadStringSetting(stmt, Settings.Secure.TTS_DEFAULT_SYNTH,
+                    R.string.config_default_tts);
+            /* @} */
             /*
              * IMPORTANT: Do not add any more upgrade steps here as the global,
              * secure, and system settings are no longer stored in a database
@@ -2555,6 +2604,10 @@ class DatabaseHelper extends SQLiteOpenHelper {
             stmt = db.compileStatement("INSERT OR IGNORE INTO global(name,value)"
                     + " VALUES(?,?);");
 
+            // SPRD: Add for bug473877
+            loadIntegerSetting(stmt, Settings.Global.FLIPPING_SILENCE_DATA,
+                    R.integer.def_flipping_silence_data);
+
             // --- Previously in 'system'
             loadBooleanSetting(stmt, Settings.Global.AIRPLANE_MODE_ON,
                     R.bool.def_airplane_mode_on);
@@ -2576,7 +2629,12 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
             loadBooleanSetting(stmt, Settings.Global.AUTO_TIME_ZONE,
                     R.bool.def_auto_time_zone); // Sync timezone to NITZ
-
+            /* SPRD:support GPS automatic update time @{ */
+            if (LocationManager.SUPPORT_CMCC) {
+                loadBooleanSetting(stmt, Settings.Global.AUTO_TIME_GPS,
+                        R.bool.def_auto_time_gps); // Sync time to GPS
+            }
+            /* @} */
             loadSetting(stmt, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
                     ("1".equals(SystemProperties.get("ro.kernel.qemu")) ||
                         mContext.getResources().getBoolean(R.bool.def_stay_on_while_plugged_in))
@@ -2710,6 +2768,13 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadSetting(stmt, Settings.Global.ENHANCED_4G_MODE_ENABLED,
                     ImsConfig.FeatureValueConstants.ON);
 
+            // SPRD: Add for always online feature
+            loadSetting(stmt, Settings.Global.MOBILE_DATA_ALWAYS_ONLINE, 1);
+
+            // SPRD：ADD for USB active feature
+            loadIntegerSetting(stmt, Settings.Global.SWITCH_FOR_USB_ACTIVE,
+                    R.integer.def_switch_for_usb_active);
+
             /*
              * IMPORTANT: Do not add any more upgrade steps here as the global,
              * secure, and system settings are no longer stored in a database
@@ -2717,6 +2782,11 @@ class DatabaseHelper extends SQLiteOpenHelper {
              *
              * See: SettingsProvider.UpgradeController#onUpgradeLocked
              */
+
+            // SPRD: Add for fade-in feature
+            loadIntegerSetting(stmt,Settings.Global.FADE_IN_ON,R.integer.def_fade_in_on);
+            //SPRD : Add for support mouse control.
+            loadSetting(stmt, Settings.Global.MOUSE_SUPPORT_LIST, "");
         } finally {
             if (stmt != null) stmt.close();
         }

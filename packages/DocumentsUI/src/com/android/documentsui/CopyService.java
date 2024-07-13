@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.android.documentsui.model.DocumentInfo;
 import com.android.documentsui.model.DocumentStack;
+import com.android.documentsui.PlugInDrm.DocumentsUIPlugInDrm;
 
 import libcore.io.IoUtils;
 
@@ -61,6 +62,7 @@ public class CopyService extends IntentService {
     public static final String EXTRA_SRC_LIST = "com.android.documentsui.SRC_LIST";
     public static final String EXTRA_STACK = "com.android.documentsui.STACK";
     public static final String EXTRA_FAILURE = "com.android.documentsui.FAILURE";
+    public static final String EXTRA_OPEN_COPYING = "com.android.documentsui.OPEN_COPYING";
 
     // TODO: Move it to a shared file when more operations are implemented.
     public static final int FAILURE_COPY = 1;
@@ -160,6 +162,8 @@ public class CopyService extends IntentService {
                 navigateIntent.putExtra(EXTRA_STACK, (Parcelable) stack);
                 navigateIntent.putExtra(EXTRA_FAILURE, FAILURE_COPY);
                 navigateIntent.putParcelableArrayListExtra(EXTRA_SRC_LIST, mFailedFiles);
+                /* SPRD:522786 put the extra to initialize RootsFragment*/
+                navigateIntent.putExtra(EXTRA_OPEN_COPYING, true);
 
                 final Notification.Builder errorBuilder = new Notification.Builder(this)
                         .setContentTitle(context.getResources().
@@ -200,6 +204,7 @@ public class CopyService extends IntentService {
         final Context context = getApplicationContext();
         final Intent navigateIntent = new Intent(context, DocumentsActivity.class);
         navigateIntent.putExtra(EXTRA_STACK, (Parcelable) stack);
+        navigateIntent.putExtra(EXTRA_OPEN_COPYING, true);
 
         mProgressBuilder = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.copy_notification_title))
@@ -442,6 +447,25 @@ public class CopyService extends IntentService {
      * @throws RemoteException
      */
     private void copyFileHelper(Uri srcUri, Uri dstUri) throws RemoteException {
+        /*
+         * Add for documentui_DRM
+         *@{
+         */
+        if(isDrmFile(srcUri)) {
+            // Clean up half-copied files.
+            try {
+                DocumentsContract.deleteDocument(mDstClient, dstUri);
+                mFailedFiles.add(DocumentInfo.fromUri(getContentResolver(), srcUri));
+            } catch (RemoteException e) {
+                Log.w(TAG, "DRM file,Failed to clean up: " + srcUri, e);
+                throw e;
+            } catch (FileNotFoundException ignore) {
+                Log.w(TAG, "DRM file,Source file gone: " + srcUri);
+            }
+            return;
+        }
+        /*@}*/
+
         // Copy an individual file.
         CancellationSignal canceller = new CancellationSignal();
         ParcelFileDescriptor srcFile = null;
@@ -501,4 +525,21 @@ public class CopyService extends IntentService {
             }
         }
     }
+
+    /*
+     * Add for documentui_DRM
+     *@{
+     */
+    private boolean isDrmFile (Uri srcUri) {
+        boolean isDrm = false;
+        try {
+            String drmPath = DocumentsUIPlugInDrm.getInstance().getDrmPath(getApplicationContext(),srcUri);
+            isDrm = DocumentsUIPlugInDrm.getInstance().getIsDrm(getApplicationContext(),drmPath);
+            Log.d(TAG, "isDrmFile, drmPath = " + drmPath + ", isDrm = " + isDrm);
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to check if Drm file: " + srcUri + ": " + e);
+        }
+        return isDrm;
+    }
+    /*@}*/
 }

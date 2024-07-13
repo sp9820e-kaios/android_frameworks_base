@@ -2940,6 +2940,38 @@ public final class CameraCharacteristics extends CameraMetadata<CameraCharacteri
      * End generated code
      *~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~O@*/
 
+    // SPRD Bug:474721 Feature:Contrast.
+    @PublicKey
+    public static final Key<int[]> CONTROL_AVAILABLE_CONTRAST =
+            new Key<int[]>("com.addParameters.availableContrast", int[].class);
 
+    // SPRD Bug:474715 Feature:Brightness.
+    @PublicKey
+    public static final Key<int[]> SPRD_OEM_AVAILABLE_BRIGHTNESS =
+            new Key<int[]>("com.addParameters.availableBrightness", int[].class);
 
+    // SPRD Bug:474724 Feature:ISO.
+    @PublicKey
+    public static final Key<int[]> CONTROL_AVAILABLE_ISO =
+            new Key<int[]>("com.addParameters.availableISO", int[].class);
+
+    // SPRD Bug:474718 Feature:Metering.
+    @PublicKey
+    public static final Key<int[]> CONTROL_AVAILABLE_METERING =
+            new Key<int[]>("com.addParameters.availableMeteringMode", int[].class);
+
+    // SPRD Bug:474722 Feature:Saturation.
+    @PublicKey
+    public static final Key<int[]> CONTROL_AVAILABLE_SATURATION =
+            new Key<int[]>("com.addParameters.availableSaturation", int[].class);
+
+    //SPRD:add for smile capture Bug548832
+    @PublicKey
+    public static final Key<Integer> CONTROL_AVAILABLE_SMILEENABLE =
+            new Key<Integer>("com.addParameters.availableSmileEnable", Integer.class);
+
+    // SPRD:add for auto antibanding Bug549740
+    @PublicKey
+    public static final Key<Integer> CONTROL_AVAILABLE_ANTIBAND_AUTO =
+            new Key<Integer>("com.addParameters.availableAntibandAutoSupported", Integer.class);
 }

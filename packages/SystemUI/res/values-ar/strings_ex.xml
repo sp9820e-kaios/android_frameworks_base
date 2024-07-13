@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"تحتاج نقطة اتصال Wi-Fi المتنقلة إلى اتصال بيانات الهاتف، مما قد يفرض رسوما إضافية."</string>
+<string name="softap_bt_cannot_coexist">"عند تمكين أو تشغيل البلوتوث، فلا يمكن أن تعمل softap، إذا أردت استخدام softap، يرجى التأكد من تعطيل البلوتوث."</string>
+<string name="bt_softap_cannot_coexist">"عند تمكين أو تشغيل softap، فلا يمكن أن يعمل البلوتوث، إذا أردت استخدام البلوتوث، يرجى التأكد من تعطيل softap."</string>
+<string name="lte_service_error_airplane">لا يمكنك استخدام LTE عندما يكون الهاتف في وضع الطيران."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"تم فتح 4G"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"تم إغلاق 4G"</string>
+<string name="accessibility_quick_settings_lte_on">"فتح 4G"</string>
+<string name="accessibility_quick_settings_lte_off">"إغلاق 4G"</string>
+<string name="toggle_data_error_airplane">"لا يمكنك إستخدام البيانات المحمولة عندما يكون الهاتف في وضع الطيران."</string>
+<string name="quick_settings_data_connection_label">"بيانات"</string>
+<string name="accessibility_quick_settings_data_changed_on">"تشغيل البيانات"</string>
+<string name="accessibility_quick_settings_data_changed_off">"إيقاف البيانات"</string>
+<string name="accessibility_quick_settings_data_on">"تشغيل البيانات"</string>
+<string name="accessibility_quick_settings_data_off">"إيقاف البيانات"</string>
+<string name="missing_sim_message">"لا يوجد SIM"</string>
+    <string name="lte_service_error_incall">"لا يمكنك الانتقال لخدمة LTE أثناء المكالمة."</string>
+
+</resources>

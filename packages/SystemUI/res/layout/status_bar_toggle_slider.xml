@@ -31,6 +31,7 @@
         android:background="@*android:drawable/switch_track_material"
         android:visibility="gone"
         />
+    <!-- SPRD: modify for bug 609215 @{ -->
     <com.android.systemui.settings.ToggleSeekBar
         android:id="@+id/slider"
         android:layout_width="0dp"
@@ -43,9 +44,10 @@
         android:paddingEnd="20dp"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
-        android:thumb="@drawable/ic_brightness_thumb"
+        android:thumb="@drawable/ic_brightness_thumb_customized"
         android:splitTrack="false"
         />
+    <!-- @} -->
     <TextView
         android:id="@+id/label"
         android:layout_width="0dp"

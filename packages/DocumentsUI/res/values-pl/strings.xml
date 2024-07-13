@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Kliknij, by zobaczyć szczegóły"</string>
     <string name="retry" msgid="7564024179122207376">"Ponów"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Te pliki nie zostały skopiowane: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Nie da się udostępnić pliku."</string>
+     <string name="documents_deleting">"Usuwanie dokumentów."</string>
+     <string name="cannot_copyfolder_itself">"Nie można skopiować folderu do samego siebie."</string>
+
+    <string name="error_permissions">"Aplikacja nie ma uprawnień niezbędnych do uruchomienia. Sprawdź ustawienia uprawnień."</string>
+     <string name="cannot_copy_drm">"Nie można skopiować plików DRM."</string>
+     <string name="cannot_copy_downloading">"Nie można skopiować pobieranych plików."</string>
 </resources>

@@ -43,6 +43,18 @@
                 android:layout_gravity="center"
                 android:src="@drawable/recents_lock_to_app_pin" />
         </com.android.systemui.statusbar.AlphaOptimizedFrameLayout>
+        <!-- SPRD: Bug 535096 new feature of lock recent apps @{ -->
+        <ImageView android:id="@+id/app_lock_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:padding="6dp"
+            android:background="@drawable/recents_button_bg"
+            android:src="@drawable/zzz_sprd_lock_recent_item"
+            android:layout_gravity="right|top"
+            android:layout_marginRight="10dip"
+            android:visibility="invisible" />
+        <!-- @} -->
     </FrameLayout>
 </com.android.systemui.recents.views.TaskView>
 

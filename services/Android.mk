@@ -35,6 +35,12 @@ services := \
 # The convention is to name each service module 'services.$(module_name)'
 LOCAL_STATIC_JAVA_LIBRARIES := $(addprefix services.,$(services))
 
+# SPRD: secure start
+SECURITY_SRC_FILES := $(call find-other-java-files, ../secure/services)
+$(warning  $(SECURITY_SRC_FILES))
+LOCAL_SRC_FILES += $(SECURITY_SRC_FILES)
+# SPRD: secure end
+
 include $(BUILD_JAVA_LIBRARY)
 
 # native library

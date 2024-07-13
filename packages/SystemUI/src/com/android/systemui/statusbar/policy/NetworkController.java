@@ -38,17 +38,44 @@ public interface NetworkController {
         void setWifiIndicators(boolean enabled, IconState statusIcon, IconState qsIcon,
                 boolean activityIn, boolean activityOut, String description);
 
+        /* SPRD: modify by BUG 491086 ; modify by BUG 517092, add roamIcon @{ */
+        void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+                int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
+                String description, boolean isWide, int subId, boolean dataConnected,
+                int colorScheme, int roamIcon);
+        /* @} */
         void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
                 int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
                 String description, boolean isWide, int subId);
+        /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+        void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+                int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
+                String description, boolean isWide, int subId, boolean dataConnect, int colorScheme,
+                int roamIcon, int imsregIcon, boolean isFourG);
+        /* @} */
         void setSubs(List<SubscriptionInfo> subs);
         void setNoSims(boolean show);
 
         void setEthernetIndicators(IconState icon);
 
+        // SPRD: Add VoLte icon for bug 509601.
+        void setVoLteIndicators(boolean enabled);
+
+        // SPRD: Add HD audio icon for bug 536924.
+        void setHdVoiceIndicators(boolean enabled);
+
         void setIsAirplaneMode(IconState icon);
 
         void setMobileDataEnabled(boolean enabled);
+
+        // SPRD: Add for SimSignal color change follow sim color.
+        void setSimSignalColor(int subId, int simColor);
+
+        // SPRD: modify for bug495410
+        void setDeactiveIcon(int subId);
+
+        // SPRD: modify by BUG 549167
+        void refreshIconsIfSimAbsent(int phoneId);
     }
 
     public static class IconState {

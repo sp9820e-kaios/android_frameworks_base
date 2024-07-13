@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Der bewegliche W-LAN-Hotspot erfordert eine mobile Datenverbindung, was Zusatzkosten verursachen könnte."</string>
+<string name="softap_bt_cannot_coexist">"Wenn Bluetooth aktiviert ist oder eingeschaltet wird, funktioniert Softap nicht. Wenn Sie Softap verwenden möchten, stellen Sie sicher, dass Bluetooth deaktiviert ist."</string>
+<string name="bt_softap_cannot_coexist">"Wenn Softap aktiviert ist oder eingeschaltet wird, funktioniert Bluetooth nicht. Wenn Sie Bluetooth verwenden möchten, stellen Sie sicher, dass Softap deaktiviert ist."</string>
+<string name="lte_service_error_airplane">"Sie können kein LTE verwenden, wenn das Telefon im Flugmodus ist."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G eingeschaltet"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ausgeschaltet"</string>
+<string name="accessibility_quick_settings_lte_on">"4G an"</string>
+<string name="accessibility_quick_settings_lte_off">"4G aus"</string>
+<string name="toggle_data_error_airplane">"Sie haben keinen Zugriff auf mobile Daten, wenn das Telefon im Flugzeugmodus ist."</string>
+<string name="quick_settings_data_connection_label">"DATEN"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Daten eingeschaltet"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Daten ausgeschaltet"</string>
+<string name="accessibility_quick_settings_data_on">"Daten an"</string>
+<string name="accessibility_quick_settings_data_off">"Daten aus"</string>
+<string name="missing_sim_message">"Keine SIM"</string>
+    <string name="lte_service_error_incall">"Sie können den LTE-Dienst nicht während einem Anruf wechseln."</string>
+
+</resources>

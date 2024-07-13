@@ -18,11 +18,13 @@ package com.android.systemui.recents.model;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.ContentResolver;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.UserHandle;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.SparseArray;
 import com.android.systemui.recents.Constants;
@@ -145,9 +147,11 @@ public class RecentsTaskLoadPlan {
                     : null;
 
             // Add the task to the stack
+            // Add for bug555057
+            boolean isLockToAppEnabled = Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCK_TO_APP_ENABLED, 0) != 0;
             Task task = new Task(taskKey, (t.id != RecentsTaskLoader.INVALID_TASK_ID),
                     t.affiliatedTaskId, t.affiliatedTaskColor, activityLabel, contentDescription,
-                    activityIcon, activityColor, (i == (taskCount - 1)), mConfig.lockToAppEnabled,
+                    activityIcon, activityColor, (i == (taskCount - 1)), /*mConfig.lockToAppEnabled*/isLockToAppEnabled,
                     icon, iconFilename);
             task.thumbnail = loader.getAndUpdateThumbnail(taskKey, mSystemServicesProxy, false);
             if (DEBUG) Log.d(TAG, "\tthumbnail: " + taskKey + ", " + task.thumbnail);

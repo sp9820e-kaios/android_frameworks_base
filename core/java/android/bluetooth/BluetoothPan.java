@@ -327,13 +327,14 @@ public final class BluetoothPan implements BluetoothProfile {
      */
     public int getConnectionState(BluetoothDevice device) {
         if (VDBG) log("getState(" + device + ")");
-        if (mPanService != null && isEnabled()
-            && isValidDevice(device)) {
-            try {
-                return mPanService.getConnectionState(device);
-            } catch (RemoteException e) {
-                Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
-                return BluetoothProfile.STATE_DISCONNECTED;
+        synchronized (mConnection) {
+            if (mPanService != null && isEnabled() && isValidDevice(device)) {
+                try {
+                    return mPanService.getConnectionState(device);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+                    return BluetoothProfile.STATE_DISCONNECTED;
+                }
             }
         }
         if (mPanService == null) Log.w(TAG, "Proxy not attached to service");
@@ -377,7 +378,9 @@ public final class BluetoothPan implements BluetoothProfile {
         }
         public void onServiceDisconnected(ComponentName className) {
             if (DBG) Log.d(TAG, "BluetoothPAN Proxy object disconnected");
-            mPanService = null;
+            synchronized (mConnection) {
+                mPanService = null;
+            }
             if (mServiceListener != null) {
                 mServiceListener.onServiceDisconnected(BluetoothProfile.PAN);
             }

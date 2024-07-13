@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="crop_wallpaper">"छाटिव वॉलपेपर"</string>
+<string name="wallpaper_instructions">"सेट कर्येव वॉलपेपर"</string>
+<string name="wallpaper_load_fail">"हकि नः लोड करिथ तस्वीर वॉलपेपरस मंज़"</string>
+</resources>

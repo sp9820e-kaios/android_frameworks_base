@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Tagasi"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Järgmine"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Jäta vahele"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Vasted puuduvad"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Otsige lehelt"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> vastet <xliff:g id="TOTAL">%d</xliff:g>-st</item>
-      <item quantity="one">1 vaste</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Valmis"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"USB-salvestusruumi kustutamine ..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"SD-kaardi kustutamine ..."</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> on valitud</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> on valitud</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-Interneti Jagamine aktiivne"</string>
+     <string name="ext_media_status_shared">"UMS Jagatud"</string>
+     <string name="sim_ready_title_for_usb">"Hoiatus"</string>
+     <string name="sim_card_activation_warning">"Juhul kui rakendusi installeeritakse kolmandate osapoolte poolt, sisesta palun SIM/USIM kaart, et aktiveerida USB."</string>
+     <string name="usb_ok">"OK"</string>
+     <string name="usb_cdrom_notification_title">"Virtuaal Draiver on sisselülitatud"</string>
+     <string name="usb_charge_only_notification">"Ühendatud ainult laadimiseks"</string>
+     <string name="global_action_restart">"Taaskäivita"</string>
+     <string name="reboot_device_title">"Taaskäivita"</string>
+     <string name="global_reboot_close_apps">"Sulge kõik rakendused ja taaskäivita telefon"</string>
+     <string name="reboot_device_confirm">"Kas soovid alustada telefoni taaskäivitamist?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Telefon lülitub välja pärast <xliff:g id="NUMBER">%d</xliff:g> sekund"</item>
+<item quantity="other">"Telefon lülitub välja peale <xliff:g id="NUMBER">%d</xliff:g> sekundit"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s ühendatud, %2$s blokeeritud"</string>
+     <string name="phoneFixedNumber">"FikseeritudArv"</string>
+     <string name="gps_time_sync_fail_str">"GPS aja saamine nurjus"</string>
+     <string name="disable_touch_mode_title">"Tasku Puutekeeld"</string>
+     <string name="disable_touch_mode_hint">"Ära kata telefoni ülaotsa"</string>
+     <string name="exit_disable_touch_mode_hint">"Võid vajutada ka toitenuppu või helitugevuse muutmise nuppe sellest olekust väljumiseks"</string>
+
 </resources>

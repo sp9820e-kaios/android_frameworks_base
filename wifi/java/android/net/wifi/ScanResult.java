@@ -124,6 +124,28 @@ public class ScanResult implements Parcelable {
      */
     public int isAutoJoinCandidate;
 
+
+    //NOTE: Add for SPRD Passpoint R1 Feature -->
+    /**
+     * If a configed passpoint cred match this scan result
+     * {@hide}
+     */
+    public boolean hasPasspointMatches;
+
+    /**
+     * corresponding HomeSP configkey
+     * @hide
+     */
+    public String passpointCredIdentifier;
+
+    /**
+     * If a scan result is a passpoint AP.
+     * {@hide}
+     */
+    public boolean hasPasspointScanReuslt;
+    //<-- Add for SPRD Passpoint R1 Feature
+
+
     /**
      * @hide
      * Update RSSI of the scan result
@@ -342,6 +364,12 @@ public class ScanResult implements Parcelable {
         this.centerFreq0 = UNSPECIFIED;
         this.centerFreq1 = UNSPECIFIED;
         this.flags = 0;
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        this.hasPasspointMatches = false;
+        this.passpointCredIdentifier = null;
+        //<-- Add for SPRD Passpoint R1 Feature
+
     }
 
     /** {@hide} */
@@ -360,6 +388,11 @@ public class ScanResult implements Parcelable {
         this.centerFreq0 = UNSPECIFIED;
         this.centerFreq1 = UNSPECIFIED;
         this.flags = 0;
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        this.hasPasspointMatches = false;
+        this.passpointCredIdentifier = null;
+        //<-- Add for SPRD Passpoint R1 Feature
     }
 
     /** {@hide} */
@@ -382,6 +415,11 @@ public class ScanResult implements Parcelable {
         } else {
             this.flags = 0;
         }
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        this.hasPasspointMatches = false;
+        this.passpointCredIdentifier = null;
+        //<-- Add for SPRD Passpoint R1 Feature
     }
 
     /** {@hide} */
@@ -418,6 +456,12 @@ public class ScanResult implements Parcelable {
             venueName = source.venueName;
             operatorFriendlyName = source.operatorFriendlyName;
             flags = source.flags;
+
+            //NOTE: Add for SPRD Passpoint R1 Feature -->
+            hasPasspointMatches = source.hasPasspointMatches;
+            passpointCredIdentifier = source.passpointCredIdentifier;
+            //<-- Add for SPRD Passpoint R1 Feature
+
         }
     }
 
@@ -509,6 +553,11 @@ public class ScanResult implements Parcelable {
         } else {
             dest.writeInt(0);
         }
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        dest.writeInt(hasPasspointMatches ? 1 : 0);
+        dest.writeString(passpointCredIdentifier);
+        //<-- Add for SPRD Passpoint R1 Feature
     }
 
     /** Implement the Parcelable interface {@hide} */
@@ -556,6 +605,11 @@ public class ScanResult implements Parcelable {
                         in.readByteArray(sr.informationElements[i].bytes);
                     }
                 }
+
+                //NOTE: Add for SPRD Passpoint R1 Feature -->
+                sr.hasPasspointMatches = in.readInt() != 0;
+                sr.passpointCredIdentifier = in.readString();
+                //<-- Add for SPRD Passpoint R1 Feature
                 return sr;
             }
 

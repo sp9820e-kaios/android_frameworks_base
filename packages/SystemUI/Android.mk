@@ -4,10 +4,11 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
-    src/com/android/systemui/EventLogTags.logtags
+    src/com/android/systemui/EventLogTags.logtags \
+    src/com/sprd/voicetrigger/aidl/IVoiceTriggerUnlock.aidl
 
 LOCAL_STATIC_JAVA_LIBRARIES := Keyguard
-LOCAL_JAVA_LIBRARIES := telephony-common
+LOCAL_JAVA_LIBRARIES := telephony-common ims-common
 
 LOCAL_PACKAGE_NAME := SystemUI
 LOCAL_CERTIFICATE := platform

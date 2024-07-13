@@ -44,34 +44,16 @@ import com.android.systemui.R;
  */
 public class NetworkOverLimitActivity extends Activity {
     private static final String TAG = "NetworkOverLimitActivity";
+    private static final int DATA_DISABLE = 0x1001;
 
+    /*Add for Bug 515018
+    Show the dialog when onResume. @{*/
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
-        final NetworkTemplate template = getIntent().getParcelableExtra(EXTRA_NETWORK_TEMPLATE);
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getLimitedDialogTitleForTemplate(template));
-        builder.setMessage(R.string.data_usage_disabled_dialog);
-
-        builder.setPositiveButton(android.R.string.ok, null);
-        builder.setNegativeButton(
-                R.string.data_usage_disabled_dialog_enable, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        snoozePolicy(template);
-                    }
-                });
-
-        final Dialog dialog = builder.create();
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            public void onDismiss(DialogInterface dialog) {
-                finish();
-            }
-        });
-
-        dialog.show();
+    protected void onResume() {
+        super.onResume();
+        showDialog(DATA_DISABLE);
     }
+    /* @} */
 
     private void snoozePolicy(NetworkTemplate template) {
         final INetworkPolicyManager policyService = INetworkPolicyManager.Stub.asInterface(
@@ -95,4 +77,49 @@ public class NetworkOverLimitActivity extends Activity {
                 return R.string.data_usage_disabled_dialog_title;
         }
     }
+
+    /*Add for Bug 515018.
+    Create the dialog in onCreateDialog, so that the activity will
+    manage dialog lifecycle by itself.@{*/
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id){
+            case DATA_DISABLE:
+                final NetworkTemplate template = getIntent().getParcelableExtra(EXTRA_NETWORK_TEMPLATE);
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getLimitedDialogTitleForTemplate(template));
+                builder.setMessage(R.string.data_usage_disabled_dialog);
+
+                builder.setPositiveButton(android.R.string.ok, null);
+                builder.setNegativeButton(
+                        R.string.data_usage_disabled_dialog_enable, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                snoozePolicy(template);
+                            }
+                        });
+
+                final Dialog dialog = builder.create();
+                dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    public void onDismiss(DialogInterface dialog) {
+                        if(isResumed()){
+                            finish();
+                        }
+                    }
+                });
+                return dialog;
+        }
+        return super.onCreateDialog(id);
+    }
+    /* @} */
+
+    /*Add for Bug 515018.
+    Dismiss the dialog.
+    Because we do not want to show multiple dialogs when screen oriented.@{ */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dismissDialog(DATA_DISABLE);
+    }
+    /* @} */
 }

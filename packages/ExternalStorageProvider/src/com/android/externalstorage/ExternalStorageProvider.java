@@ -54,6 +54,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
+import android.provider.MediaStore;
+import android.content.ContentProviderOperation;
+import android.media.MediaFile;
 
 public class ExternalStorageProvider extends DocumentsProvider {
     private static final String TAG = "ExternalStorage";
@@ -98,6 +102,12 @@ public class ExternalStorageProvider extends DocumentsProvider {
 
     @GuardedBy("mObservers")
     private ArrayMap<File, DirectoryObserver> mObservers = new ArrayMap<>();
+
+    /**
+     * add for notifying mediaprovider after file delelted
+     */
+    private ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+    private List<File> mDeleteFiles = new ArrayList<File>();
 
     @Override
     public boolean onCreate() {
@@ -281,7 +291,14 @@ public class ExternalStorageProvider extends DocumentsProvider {
 
         final String displayName = file.getName();
         final String mimeType = getTypeForFile(file);
-        if (mimeType.startsWith("image/")) {
+        /*
+         * for documentui_DRM
+         * original code
+         if (mimeType.startsWith("image/")) {
+         *@{
+         */
+        if (mimeType.startsWith("image/") || mimeType.equals("application/vnd.oma.drm.content")) {
+        /*@}*/
             flags |= Document.FLAG_SUPPORTS_THUMBNAIL;
         }
 
@@ -377,15 +394,82 @@ public class ExternalStorageProvider extends DocumentsProvider {
         }
     }
 
+    /**
+     * add for notifying mediaprovider after file delelted
+     */
+    private boolean deleteContents(File dir) {
+        File[] files = dir.listFiles();
+        boolean success = true;
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    success &= deleteContents(file);
+                }
+                if (!file.delete()) {
+                    Log.w(TAG, "Failed to delete " + file);
+                    success = false;
+                } else {
+                    String path = file.getAbsolutePath();
+                    if (path != null && path.startsWith("/mnt/media_rw/")) {
+                        path = path.replace("/mnt/media_rw/", "/storage/");
+                    }
+                    ops.add(ContentProviderOperation.newDelete(MediaStore.Files.getContentUri("external"))
+                            .withSelection(MediaStore.Files.FileColumns.DATA + "=?", new String[]{path})
+                            .build());
+                    mDeleteFiles.add(file);
+                }
+            }
+        }
+        return success;
+    }
+
     @Override
     public void deleteDocument(String docId) throws FileNotFoundException {
         final File file = getFileForDocId(docId);
         if (file.isDirectory()) {
-            FileUtils.deleteContents(file);
+            if (!deleteContents(file)) {
+                throw new IllegalStateException("Failed to delete " + file);
+            }
         }
         if (!file.delete()) {
             throw new IllegalStateException("Failed to delete " + file);
+        } else {
+            /**
+             * add for notifying mediaprovider after file delelted
+             */
+            String path = file.getAbsolutePath();
+            if (path != null && path.startsWith("/mnt/media_rw/")) {
+                path = path.replace("/mnt/media_rw/", "/storage/");
+            }
+           ops.add(ContentProviderOperation.newDelete(MediaStore.Files.getContentUri("external"))
+                    .withSelection(MediaStore.Files.FileColumns.DATA + "=?", new String[]{path})
+                    .build());
+           mDeleteFiles.add(file);
         }
+    }
+
+    /**
+     * add for notifying mediaprovider after file delelted
+     */
+    @Override
+    public void deleteDocumentsDone() {
+        Log.i(TAG, "deleteDocumentsDone");
+        try{
+            getContext().getContentResolver().applyBatch("media", ops);
+        }catch(Exception e){
+            Log.i(TAG,"media db applyBatch delete failed");
+            for(File f : mDeleteFiles){
+                String path = f.getAbsolutePath();
+                if (path != null && path.startsWith("/mnt/media_rw/")) {
+                    path = path.replace("/mnt/media_rw/", "/storage/");
+                }
+                getContext().getContentResolver().delete(MediaStore.Files.getContentUri("external"),
+                MediaStore.Files.FileColumns.DATA + "=?", new String[] {path});
+            }
+        }
+        ops.clear();
+        mDeleteFiles.clear();
+        Log.i(TAG, "deleteDocumentsDone end");
     }
 
     @Override
@@ -510,7 +594,17 @@ public class ExternalStorageProvider extends DocumentsProvider {
         final int lastDot = name.lastIndexOf('.');
         if (lastDot >= 0) {
             final String extension = name.substring(lastDot + 1).toLowerCase();
-            final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            /*
+             * for documentui_DRM
+             * original code
+             final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+             *@{
+             */
+            String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (mime == null) {
+                mime = MediaFile.getMimeTypeForFile(name);
+            }
+            /*@}*/
             if (mime != null) {
                 return mime;
             }

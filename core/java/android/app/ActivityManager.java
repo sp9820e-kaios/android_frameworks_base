@@ -397,6 +397,14 @@ public class ActivityManager {
      */
     public static final int COMPAT_MODE_TOGGLE = 2;
 
+    // SPRD: 380668 add kill-stop process @{
+    public static final int KILL_STOP_FRONT_APP = 1;
+
+    public static final int KILL_CONT_STOPPED_APP = 0;
+
+    public static final int CANCEL_KILL_STOP_TIMEOUT = 2;
+    //@}
+
     /** @hide */
     public int getFrontActivityScreenCompatMode() {
         try {
@@ -535,7 +543,7 @@ public class ActivityManager {
      */
     static public int getMaxRecentTasksStatic() {
         if (gMaxRecentTasks < 0) {
-            return gMaxRecentTasks = isLowRamDeviceStatic() ? 50 : 100;
+            return gMaxRecentTasks = isLowRamDeviceStatic() ? 10 : 100;
         }
         return gMaxRecentTasks;
     }
@@ -2988,4 +2996,58 @@ public class ActivityManager {
             }
         }
     }
+
+    /* SPRD: add for bug 284692, add set process protect status interface @{ */
+    /**
+     * normal bg process
+     * @hide
+     */
+    public static final int  PROCESS_STATUS_IDLE = 0;
+    /**
+     * running process in bg or foregroud, it's adj adjust to 0
+     * @hide
+     */
+    public static final int  PROCESS_STATUS_RUNNING = 1;
+    /**
+     * protacted process, it's adj adjust to 2
+     * @hide
+     */
+    public static final int  PROCESS_STATUS_MAINTAIN = 2;
+    /**
+     * protacted process, this process will be persistent
+     * if protected status is it, do not reset status to {@link PROCESS_STATUS_IDLE}
+     * @hide
+     */
+    public static final int  PROCESS_STATUS_PERSISTENT = 3;
+    /**
+     * Process protect area: in this level, it's adj adjust to 0
+     * @hide
+     */
+    public static final int  PROCESS_PROTECT_CRITICAL = 11;
+    /**
+     * Process protect area: in this level, it's adj adjust to 2
+     * @hide
+     */
+    public static final int  PROCESS_PROTECT_IMPORTANCE = 12;
+    /**
+     * Process protect area: in this level, it's adj adjust to 4
+     * @hide
+     */
+    public static final int  PROCESS_PROTECT_NORMAL = 13;
+    /**
+     * set myslef process protect status
+     * @see #PROCESS_STATUS_IDLE
+     * @see #PROCESS_STATUS_RUNNING
+     * @see #PROCESS_STATUS_MAINTAIN
+     * @see #PROCESS_STATUS_PERSISTENT
+     * @hide
+     */
+    public void setSelfProtectStatus(int status) {
+        try {
+            ActivityManagerNative.getDefault().setProcessProtectStatus(Process.myPid(), status);
+        } catch (RemoteException e) {}
+    }
+
+    /* }@ */
+
 }

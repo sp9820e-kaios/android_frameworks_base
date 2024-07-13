@@ -2558,6 +2558,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
 
     private static Intent buildViewDataUsageIntent(NetworkTemplate template) {
         final Intent intent = new Intent();
+
         intent.setComponent(new ComponentName(
                 "com.android.settings", "com.android.settings.Settings$DataUsageSummaryActivity"));
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

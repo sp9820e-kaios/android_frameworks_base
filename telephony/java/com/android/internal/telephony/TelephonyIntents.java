@@ -394,4 +394,44 @@ public class TelephonyIntents {
      */
     public static final String ACTION_SET_RADIO_CAPABILITY_FAILED =
             "android.intent.action.ACTION_SET_RADIO_CAPABILITY_FAILED";
+
+    /* SPRD:add SIMPhoneBook for bug 474587 @{ */
+    public static final String ACTION_STK_REFRESH_SIM_CONTACTS
+    = "android.intent.action.ACTION_STK_REFRESH_SIM_CONTACTS";
+   /* @} */
+
+   /**
+    * SPRD: Added for phone process start, send broadcast for rebuilding the adn
+    * cache of sim contacts.
+    */
+    public static final String ACTION_PHONE_START = "android.intent.action.PHONE_START";
+
+    /** SPRD: Added for simlock extra function @{ */
+    public static final String SHOW_SIMLOCK_UNLOCK_SCREEN_ACTION
+            = "android.intent.action.ACTION_SHOW_SIMLOCK_UNLOCK";
+
+    public static final String EXTRA_SIMLOCK_UNLOCK = "android.intent.extra.SIMLOCK_UNLOCK";
+
+    public static final String SHOW_SIMLOCK_UNLOCK_SCREEN_BYNV_ACTION
+            = "android.intent.action.ACTION_SHOW_SIMLOCK_UNLOCK_BYNV";
+    /* @} */
+    /* SPRD: Add for Bug 507099.Notify Apn load completed. @{ */
+    public static final String ACTION_APN_LOAD_COMPLETED =
+    "android.intent.action.APN_LOAD_COMPLETED";
+
+    /* SPRD: Added for VoLTE @{ */
+    public static final String EXTRA_IMS_CONFERENCE_REQUEST =
+            "android.intent.extra.IMS_CONFERENCE_REQUEST";
+    public static final String EXTRA_IMS_CONFERENCE_PARTICIPANTS =
+            "android.intent.extra.IMS_CONFERENCE_PARTICIPANTS";
+    /* @} */
+
+    /* SPRD: Add for bug 521132, bind ringer service when phone app created @{ */
+    public static final String ACTION_BIND_RINGER_SERVICE =
+            "android.intent.action.BIND_RINGER_SERVICE";
+    /* @} */
+    /**
+     * SPRD: add for HIGH_DEF_AUDIO_SUPPORT
+     */
+     public static final String ACTION_HIGH_DEF_AUDIO_SUPPORT = "android.intent.action.HIGH_DEF_AUDIO_SUPPORT";
 }

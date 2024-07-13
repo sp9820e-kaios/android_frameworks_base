@@ -190,10 +190,20 @@ interface INetworkManagementService
     void stopInterfaceForwarding(String fromIface, String toIface);
 
     /**
+     * Set the ext ipv6 interface
+     */
+    void addUpstreamV6Interface(String iface);
+
+    /**
+     * Set the ext ipv6 interface
+     */
+    void removeUpstreamV6Interface(String iface);
+    /**
      *  Enables Network Address Translation between two interfaces.
      *  The address and netmask of the external interface is used for
      *  the NAT'ed network.
      */
+
     void enableNat(String internalInterface, String externalInterface);
 
     /**
@@ -242,6 +252,11 @@ interface INetworkManagementService
      * Set Access Point config
      */
     void setAccessPoint(in WifiConfiguration wifiConfig, String iface);
+
+    /**
+     * Set Access Point white list enabled or not
+     */
+    void setAccessPointWhiteListEnable(boolean enable);
 
     /**
      ** DATA USAGE RELATED

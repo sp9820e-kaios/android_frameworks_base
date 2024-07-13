@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- SPRD: Add for dealing with SS notification @{ -->
+     <string name="CallForwarded">"呼叫轉接"</string>
+     <string name="CallWaiting">"呼叫等待中"</string>
+     <string name="IncomingCallForwarded">"另一通來電被轉接"</string>
+     <string name="OutCallBarred">"禁止呼出"</string>
+     <string name="InCallBarred">"禁止呼入"</string>
+     <string name="ActiveUnconCf">"無條件來電轉接啟動"</string>
+     <string name="ForwardedCall">"轉移呼叫"</string>
+     <string name="CallHold">"呼叫被保持"</string>
+     <string name="CallRetrieved">"呼叫被啟動"</string>
+     <string name="ActiveConCf">"有條件來電轉接啟動"</string>
+    <!-- SPRD: @} -->
+
+    <!-- SPRD: modify for bug479433 @{ -->
+    <string-array name="videophone_fallback_menu">
+        <item>@string/videophone_fallback_menu_videocall</item>
+        <item>@string/videophone_fallback_menu_voicecall</item>
+        <item>@string/videophone_fallback_menu_cancel</item>
+    </string-array>
+
+    <string name="videophone_fallback_title">視訊通話回落</string>
+    <string name="videophone_never_fallback">對方請求語音回撥，自動放棄</string>
+    <string name="videophone_always_fallback">對方請求語音回撥，自動回撥</string>
+    <string name="videophone_notin3g_never_fallback">當前網路不支援視頻呼叫，自動放棄</string>
+    <string name="videophone_notin3g_always_fallback">當前網路不支援視頻呼叫，自動回撥</string>
+    <string name="videophone_fallback_menu_videocall">視訊通話</string>
+    <string name="videophone_fallback_menu_voicecall">語音電話</string>
+    <string name="videophone_fallback_menu_cancel">取消</string>
+    <string name="videophone_fallback_question">您要進行什麼操作?</string>
+    <string name="videophone_failcause_1000">上一通視訊通話沒有正常結束，請稍後再試</string>
+    <string name="videophone_failcause_1">號碼錯誤</string>
+    <string name="videophone_failcause_3">對方無法接通</string>
+    <string name="videophone_failcause_8">呼叫禁止</string>
+    <string name="videophone_failcause_17">對方用戶忙</string>
+    <string name="videophone_failcause_19">對方無應答</string>
+    <string name="videophone_failcause_27">對方與網路通信異常</string>
+    <string name="videophone_failcause_34">連接已斷開</string>
+    <string name="videophone_failcause_63_modify">視訊通話無法建立</string>
+    <string name="videophone_failcause_79">對方不支援視訊通話</string>
+    <string name="videophone_failcause_default">對方無法接通</string>
+    <string name="videophone_failcause_47">對不起，不能發起視訊通話</string>
+    <string name="videophone_failcause_50">暫不支援視訊通話</string>
+    <string name="videophone_failcause_57_remote">對方未開通視訊通話</string>
+    <string name="videophone_failcause_58">對方暫不支援視訊通話</string>
+    <string name="videophone_failcause_157">本机未开通可视电话服务</string>
+    <string name="videophone_failcause_88">被叫選擇語音呼叫</string>
+    <string name="videophone_failcause_minus_1">無法獲得3G網路</string>
+    <string name="net_connection_disconnect">網路連接已斷開</string>
+    <string name="no_vt_service">"無法進行視訊通話"</string>
+    <string name="remote_request_change">"遠程媒體請求改變"</string>
+    <string name="choose_accept_reject">"請選擇接受或拒絕"</string>
+    <string name="remote_request_change_accept">"接受"</string>
+    <string name="remote_request_change_reject">"拒絕"</string>
+    <!-- SPRD: modify for bug 523225 @{ -->
+    <string name="reject_remote_audio_to_video">"對端拒絕遠程媒體請求改變"</string>
+    <string name="accept_remote_audio_to_video">"對端接受遠程媒體請求改變"</string>
+    <string name="video_fall_to_audio_automatic">"視頻回落到語音"</string>
+    <!-- @}-->
+    <!-- @} -->
+    <!-- SPRD: add pin2/puk2 string @{ -->
+    <string name="Pin2Mmi">"PIN2 碼更改"</string>
+    <string name="PukMmi">"解鎖PIN碼"</string>
+    <string name="Puk2Mmi">"解鎖PIN2碼"</string>
+    <string name="badPin2">"您輸入的舊 PIN2 不正確。"</string>
+    <string name="badPuk2">"您輸入的 PUK2 碼不正確。"</string>
+    <string name="mismatchPin2">"您輸入的 PIN2 碼不一致。"</string>
+    <string name="mismatchPuk">"您輸入的 PUK 碼不一致。"</string>
+    <string name="mismatchPuk2">"您輸入的 PUK2 碼不一致。"</string>
+    <!-- @}-->
+    <!-- SPRD: modify for bug 514467 @{ -->
+    <string name="puklengthlimit">"請輸入八位數的PUK碼。"</string>
+    <!-- @} -->
+    <!-- SPRD: add for bug569865 -->
+    <string name="data_unavailable">"當前數據服務不可用，請檢查數據鏈接開關和漫遊開關。"</string>
+</resources>

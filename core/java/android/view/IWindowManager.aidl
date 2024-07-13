@@ -126,6 +126,9 @@ interface IWindowManager
     void reenableKeyguard(IBinder token);
     void exitKeyguardSecurely(IOnKeyguardExitResult callback);
     boolean isKeyguardLocked();
+    /* SPRD: add for dynamic navigationbar @{ */
+    boolean isKeyguardShowingAndNotOccluded();
+    /* @} */
     boolean isKeyguardSecure();
     boolean inKeyguardRestrictedInputMode();
     void dismissKeyguard();
@@ -271,4 +274,28 @@ interface IWindowManager
      * @return The frame statistics or null if the window does not exist.
      */
     WindowContentFrameStats getWindowContentFrameStats(IBinder token);
+
+    /**
+     * SPRD: force to set the screen orientation
+     *
+     * @param rotation the force orientation or -1 for reset orientation
+     */
+    void setForceOrientation(int rotation);
+
+    /**
+     * SPRD: set mUserActivityEventNeeded flag when Stk's mEventList change.
+     */
+    void setEventUserActivityNeeded(boolean bEventNeeded);
+
+    /**
+     * SPRD: set mIdleScreenEventNeeded flag when Stk's mEventList change.
+     */
+    void setEventIdleScreenNeeded(boolean bEventNeeded);
+    boolean isEventIdleScreenNeeded();
+
+    /**
+     * SPRD: see if the current window is in idle screen
+     */
+    void setInIdleScreen(boolean isIdleScreen);
+    boolean isInIdleScreen();
 }

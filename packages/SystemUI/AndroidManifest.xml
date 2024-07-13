@@ -22,6 +22,8 @@
         android:sharedUserId="android.uid.systemui"
         coreApp="true">
 
+    <!-- SPRD: add for 4G and data connection quick setting -->
+    <uses-permission android:name="android.permission.WRITE_APN_SETTINGS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -130,6 +132,13 @@
     <permission android:name="com.android.systemui.permission.SELF"
             android:protectionLevel="signature" />
     <uses-permission android:name="com.android.systemui.permission.SELF" />
+    <!-- bug: 623120 add missCall and missMms notification on lockscreen @{-->
+    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <!-- @} -->
 
     <application
         android:name=".SystemUIApplication"
@@ -185,13 +194,15 @@
                   android:excludeFromRecents="true">
         </activity>
 
+           <!--  SPRD: fixbug494437  Receiving a dialog and rotating in Tuner happens framework crash -->
         <activity android:name=".tuner.TunerActivity"
                   android:enabled="false"
                   android:icon="@drawable/tuner"
                   android:theme="@android:style/Theme.Material.Settings"
                   android:label="@string/system_ui_tuner"
                   android:process=":tuner"
-                  android:exported="true">
+                  android:exported="true"
+                  android:configChanges="orientation|keyboard|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="com.android.settings.action.EXTRA_SETTINGS" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -201,6 +212,7 @@
         </activity>
 
         <!-- Alternate Recents -->
+       <!--  SPRD: fixbug495094   rotating in RecentsActivity with Multi window mode happens framework crash -->
         <activity android:name=".recents.RecentsActivity"
                   android:label="@string/accessibility_desc_recent_apps"
                   android:exported="false"
@@ -209,7 +221,8 @@
                   android:stateNotNeeded="true"
                   android:resumeWhilePausing="true"
                   android:screenOrientation="behind"
-                  android:theme="@style/config_recents_activity_theme">
+                  android:theme="@style/config_recents_activity_theme"
+                  android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="com.android.systemui.recents.TOGGLE_RECENTS" />
             </intent-filter>
@@ -400,6 +413,13 @@
             android:singleUser="true"
             android:permission="android.permission.BIND_DREAM_SERVICE" />
 
+        <service android:name="com.sprd.voicetrigger.app.VoiceTriggerUnlockService">
+            <intent-filter>
+                <action android:name="android.intent.action.VoiceTriggerUnlockAIDLService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </service>
         <receiver
             android:name=".tuner.TunerService$ClearReceiver"
             android:exported="false">

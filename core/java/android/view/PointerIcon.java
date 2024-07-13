@@ -18,6 +18,13 @@ package android.view;
 
 import com.android.internal.util.XmlUtils;
 
+/* SPRD: add mouse acquirement @ { */
+import android.hardware.input.InputManager;
+import android.hardware.input.InputManagerInternal;
+import com.android.server.LocalServices;
+import android.content.Intent;
+/* @ } */
+
 import android.annotation.XmlRes;
 import android.content.Context;
 import android.content.res.Resources;
@@ -69,6 +76,10 @@ public final class PointerIcon implements Parcelable {
 
     private static final PointerIcon gNullIcon = new PointerIcon(STYLE_NULL);
 
+    /* SPRD: add mouse acquirement @ { */
+    static boolean isScrollMode = false;
+    /* @ } */
+
     private final int mStyle;
     private int mSystemIconResourceId;
     private Bitmap mBitmap;
@@ -99,7 +110,26 @@ public final class PointerIcon implements Parcelable {
      * @throws IllegalArgumentException if context is null.
      */
     public static PointerIcon getDefaultIcon(Context context) {
-        return getSystemIcon(context, STYLE_DEFAULT);
+        /* SPRD: add mouse acquirement @ { */
+        InputManagerInternal mInputManagerInternal = LocalServices.getService(InputManagerInternal.class);
+        boolean scrollMode = false;
+        try {
+            scrollMode = mInputManagerInternal.getScrollMode();
+        } catch (Exception e) {
+        }
+        if (isScrollMode != scrollMode) {
+            isScrollMode = scrollMode;
+            Intent toastIntent = new Intent(isScrollMode
+                ? "com.sys.mouse.scroll.on"
+                : "com.sys.mouse.scroll.off");
+            context.sendBroadcast(toastIntent);
+        }
+        if (isScrollMode) {
+            return getSystemIcon(context, STYLE_SPOT_TOUCH);
+        } else {
+            return getSystemIcon(context, STYLE_DEFAULT);
+        }
+        /* @ } */
     }
 
     /**

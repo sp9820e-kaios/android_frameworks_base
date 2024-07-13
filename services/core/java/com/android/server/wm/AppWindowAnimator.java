@@ -200,7 +200,7 @@ public class AppWindowAnimator {
             if (winAnimator.mAnimLayer > thumbnailLayer) {
                 thumbnailLayer = winAnimator.mAnimLayer;
             }
-            if (DEBUG_LAYERS) Slog.v(TAG, "Updating layer " + w + ": " + winAnimator.mAnimLayer);
+            if (DEBUG_LAYERS || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Updating layer " + w + ": " + winAnimator.mAnimLayer);
             if (w == mService.mInputMethodTarget && !mService.mInputMethodTargetWaitingAnim) {
                 mService.setInputMethodAnimLayerAdjustment(adj);
             }

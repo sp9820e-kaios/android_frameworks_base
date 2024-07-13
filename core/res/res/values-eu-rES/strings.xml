@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Atzera"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Hurrengoa"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Saltatu"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Ez dago emaitzarik"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Aurkitu orri honetan"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g>/<xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">Emaitza bat</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Eginda"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"USB memoria ezabatzen…"</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"SD txartela ezabatzen…"</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> hautatuta</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> hautatuta</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-Internet Ainguraketa aktiboa"</string>
+     <string name="ext_media_status_shared">"UMS Partekatua"</string>
+     <string name="sim_ready_title_for_usb">Abisua</string>
+     <string name="sim_card_activation_warning">"Hirugarren batek aplikazioak instalatzen baditu, mesedez sartu SIM/USIM txartela USBa aktibatzeko."</string>
+     <string name="usb_ok">Ados</string>
+     <string name="usb_cdrom_notification_title">Kontrolatzaile birtuala aktibatuta dago</string>
+     <string name="usb_charge_only_notification">Kargadore gisa bakarrik konektatua</string>
+     <string name="global_action_restart">Berrabiarazi</string>
+     <string name="reboot_device_title">Berrabiarazi</string>
+     <string name="global_reboot_close_apps">Aplikazio guztiak itxi eta telefonoa berrabiarazi</string>
+     <string name="reboot_device_confirm">Telefonoa orain berrabiarazi nahi duzu?</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">Telefonoa itzaliko da <xliff:g id="NUMBER">%d</xliff:g> segundo barru</item>
+<item quantity="other">Telefonoa itzaliko da <xliff:g id="NUMBER">%d</xliff:g> segundo barru</item>
+    </plurals>
+
+    <string name="station_state_msg">%1$s konektatua, %2$s blokeatua</string>
+     <string name="phoneFixedNumber">"ZenbakiFinkoa"</string>
+     <string name="gps_time_sync_fail_str">GPS ordua ezin izan da lortu</string>
+     <string name="disable_touch_mode_title">"Pocket Touch-Desgaituta"</string>
+     <string name="disable_touch_mode_hint">"Ez estali telefonoaren goialdea"</string>
+     <string name="exit_disable_touch_mode_hint">"Modu hau desgaitzeko, sakatu pizteko botoia eta bolumena igotzeko botoia"</string>
+
 </resources>

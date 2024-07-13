@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Complimenti! Il sintetizzatore interfaccia utente di sistema è stato aggiunto alle impostazioni."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Rimuovi dalle impostazioni"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Vuoi rimuovere il sintetizzatore interfaccia utente di sistema dalle impostazioni e smettere di utilizzare tutte le sue funzioni?"</string>
+    <string name="quick_settings_volume_label">Profilo Audio</string>
+     <string name="assistant_key_home">"Home page"</string>
+     <string name="assistant_key_search">"Ricerca"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Indietro"</string>
+
+    <string name="vibrate_hint">Scorri a sinistra per la vibrzione</string>
+     <string name="battery_overtage_title">"Avviso di sicurezza"</string>
+     <string name="battery_overtage_content">"Il voltaggio di carica è troppo alto!"</string>
+     <string name="battery_overtage_back">"Indietro"</string>
 </resources>

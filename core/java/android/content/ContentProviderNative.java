@@ -35,6 +35,7 @@ import android.os.RemoteException;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import android.os.SystemProperties;
 
 /**
  * {@hide}
@@ -102,7 +103,28 @@ abstract public class ContentProviderNative extends Binder implements IContentPr
                             selectionArgs[i] = data.readString();
                         }
                     }
-
+                  if (SystemProperties.get("service.project.sec").equals("1")){
+                       String proviedname [] = {"sms","mms","mms-sms","call_log","contacts;com.android.contacts","contacts","com.android.contacts","icc",null} ;
+                       String proviedpath =  url.getPath();
+                       String proviedauthority = url.getAuthority();
+                       int   userId = Binder.getCallingUid();
+                       for (int i = 0 ; proviedname[i]  != null ; i++)
+                       {
+                           if (proviedauthority.equals(proviedname[i]))
+                           {
+                             int allow  =Binder.dojudge(userId,proviedname[i]+"query",1,0,null);
+                             if(allow < 0)
+                             {
+                                selection = "1==0" ;
+                                 for (int j = 0; j < num;j++) {
+                                    selectionArgs[j] = null;
+                                }
+                                selectionArgs = null ;
+                             }
+                             break ;
+                           }
+                        }
+                    }
                     String sortOrder = data.readString();
                     IContentObserver observer = IContentObserver.Stub.asInterface(
                             data.readStrongBinder());

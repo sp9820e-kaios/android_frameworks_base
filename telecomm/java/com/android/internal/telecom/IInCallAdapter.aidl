@@ -60,4 +60,10 @@ oneway interface IInCallAdapter {
     void turnOnProximitySensor();
 
     void turnOffProximitySensor(boolean screenOnImmediately);
+
+    /* SPRD Add for multi-part-call mode */
+    void answerMPCCall(String callId, int videoState, int mpcMode);
+
+    /* SPRD: Porting Explicit Transfer Call */
+    void explicitCallTransfer(String callId);
 }

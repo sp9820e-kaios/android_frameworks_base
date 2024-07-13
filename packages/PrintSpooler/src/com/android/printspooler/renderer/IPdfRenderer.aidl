@@ -29,4 +29,5 @@ interface IPdfRenderer {
     oneway void renderPage(int pageIndex, int bitmapWidth, int bitmapHeight,
         in PrintAttributes attributes, in ParcelFileDescriptor destination);
     oneway void closeDocument();
+    boolean isAlive();
 }

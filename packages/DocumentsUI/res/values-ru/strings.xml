@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Нажмите, чтобы узнать подробности."</string>
     <string name="retry" msgid="7564024179122207376">"Повторить"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Не удалось скопировать эти файлы: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Нельзя поделиться файлом"</string>
+     <string name="documents_deleting">"Удаление документов"</string>
+     <string name="cannot_copyfolder_itself">"Вы не можете скопировать папку саму в себя"</string>
+
+    <string name="error_permissions">"Для запуска приложения требуются определенные разрешения. Предоставьте их в настройках."</string>
+     <string name="cannot_copy_drm">"Невозможно скопировать файлы DRM"</string>
+     <string name="cannot_copy_downloading">"Невозможно скопировать загружающиеся файлы"</string>
 </resources>

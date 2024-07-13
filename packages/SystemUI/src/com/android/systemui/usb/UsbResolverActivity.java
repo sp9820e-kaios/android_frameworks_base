@@ -92,43 +92,44 @@ public class UsbResolverActivity extends ResolverActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected boolean onTargetSelected(TargetInfo target, boolean alwaysCheck) {
-        final ResolveInfo ri = target.getResolveInfo();
-        try {
-            IBinder b = ServiceManager.getService(USB_SERVICE);
-            IUsbManager service = IUsbManager.Stub.asInterface(b);
-            final int uid = ri.activityInfo.applicationInfo.uid;
-            final int userId = UserHandle.myUserId();
-
-            if (mDevice != null) {
-                // grant permission for the device
-                service.grantDevicePermission(mDevice, uid);
-                // set or clear default setting
-                if (alwaysCheck) {
-                    service.setDevicePackage(mDevice, ri.activityInfo.packageName, userId);
-                } else {
-                    service.setDevicePackage(mDevice, null, userId);
-                }
-            } else if (mAccessory != null) {
-                // grant permission for the accessory
-                service.grantAccessoryPermission(mAccessory, uid);
-                // set or clear default setting
-                if (alwaysCheck) {
-                    service.setAccessoryPackage(mAccessory, ri.activityInfo.packageName, userId);
-                } else {
-                    service.setAccessoryPackage(mAccessory, null, userId);
-                }
-            }
-
-            try {
-                target.startAsUser(this, null, new UserHandle(userId));
-            } catch (ActivityNotFoundException e) {
-                Log.e(TAG, "startActivity failed", e);
-            }
-        } catch (RemoteException e) {
-            Log.e(TAG, "onIntentSelected failed", e);
-        }
-        return true;
-    }
+// SPRD: bug586115, disable the ChooserTargetService feature for pikeL keyevent handle
+//    @Override
+//    protected boolean onTargetSelected(TargetInfo target, boolean alwaysCheck) {
+//        final ResolveInfo ri = target.getResolveInfo();
+//        try {
+//            IBinder b = ServiceManager.getService(USB_SERVICE);
+//            IUsbManager service = IUsbManager.Stub.asInterface(b);
+//            final int uid = ri.activityInfo.applicationInfo.uid;
+//            final int userId = UserHandle.myUserId();
+//
+//            if (mDevice != null) {
+//                // grant permission for the device
+//                service.grantDevicePermission(mDevice, uid);
+//                // set or clear default setting
+//                if (alwaysCheck) {
+//                    service.setDevicePackage(mDevice, ri.activityInfo.packageName, userId);
+//                } else {
+//                    service.setDevicePackage(mDevice, null, userId);
+//                }
+//            } else if (mAccessory != null) {
+//                // grant permission for the accessory
+//                service.grantAccessoryPermission(mAccessory, uid);
+//                // set or clear default setting
+//                if (alwaysCheck) {
+//                    service.setAccessoryPackage(mAccessory, ri.activityInfo.packageName, userId);
+//                } else {
+//                    service.setAccessoryPackage(mAccessory, null, userId);
+//                }
+//            }
+//
+//            try {
+//                target.startAsUser(this, null, new UserHandle(userId));
+//            } catch (ActivityNotFoundException e) {
+//                Log.e(TAG, "startActivity failed", e);
+//            }
+//        } catch (RemoteException e) {
+//            Log.e(TAG, "onIntentSelected failed", e);
+//        }
+//        return true;
+//    }
 }

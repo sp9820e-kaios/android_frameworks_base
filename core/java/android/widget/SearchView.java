@@ -1797,7 +1797,24 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
                         state.startTracking(event, this);
                     }
                     return true;
-                } else if (event.getAction() == KeyEvent.ACTION_UP) {
+                /*
+                 * SPRD: modify 20161221 Spreadtrum of Bug 626856 SearchView
+                 * word by word delete for PikeL @{
+                 */
+                } else if (event.getAction() == KeyEvent.ACTION_UP
+                        && keyCode == KeyEvent.KEYCODE_BACK) {
+                    int start = getSelectionStart();
+                    int end = getSelectionEnd();
+                    final Editable formulaText = getEditableText();
+                    if (end > start) {
+                        formulaText.delete(start, end);
+                        return true;
+                    }else if(start > 0){
+                        formulaText.delete(start - 1, start);
+                        return true;
+                    }else if(start == 0 && getEditableText().length() > 0){
+                        return true;
+                    }
                     KeyEvent.DispatcherState state = getKeyDispatcherState();
                     if (state != null) {
                         state.handleUpEvent(event);
@@ -1807,7 +1824,16 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
                         mSearchView.setImeVisibility(false);
                         return true;
                     }
+                } else if (event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_BACK) {
+                    int start = getSelectionStart();
+                    final Editable formulaText = getEditableText();
+                    if (start > 0) {
+                        formulaText.delete(start - 1, start);
+                        return true;
+                    }
                 }
+             /* @} */
             }
             return super.onKeyPreIme(keyCode, event);
         }

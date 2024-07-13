@@ -21,6 +21,7 @@ import com.android.server.SystemService;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemProperties;
 import android.os.Trace;
 import android.util.Slog;
 
@@ -29,7 +30,7 @@ public class LightsService extends SystemService {
     static final boolean DEBUG = false;
 
     final LightImpl mLights[] = new LightImpl[LightsManager.LIGHT_ID_COUNT];
-
+    private boolean isBatteryLightOpen = false;
     private final class LightImpl extends Light {
 
         private LightImpl(int id) {
@@ -94,20 +95,31 @@ public class LightsService extends SystemService {
         }
 
         private void setLightLocked(int color, int mode, int onMS, int offMS, int brightnessMode) {
-            if (color != mColor || mode != mMode || onMS != mOnMS || offMS != mOffMS) {
-                if (DEBUG) Slog.v(TAG, "setLight #" + mId + ": color=#"
+            if(!((mId == LightsManager.LIGHT_ID_NOTIFICATIONS)&&(isBatteryLightOpen))){
+                if (DEBUG || isDebugNotifyLight()) Slog.v(TAG, "isBatteryLightOpen = " + isBatteryLightOpen);
+                if (color != mColor || mode != mMode || onMS != mOnMS || offMS != mOffMS) {
+                    if (DEBUG || isDebugNotifyLight()) Slog.v(TAG, "setLight #" + mId + ": color=#"
                         + Integer.toHexString(color));
-                mColor = color;
-                mMode = mode;
-                mOnMS = onMS;
-                mOffMS = offMS;
-                Trace.traceBegin(Trace.TRACE_TAG_POWER, "setLight(" + mId + ", 0x"
+                    mColor = color;
+                    mMode = mode;
+                    mOnMS = onMS;
+                    mOffMS = offMS;
+                    Trace.traceBegin(Trace.TRACE_TAG_POWER, "setLight(" + mId + ", 0x"
                         + Integer.toHexString(color) + ")");
-                try {
-                    setLight_native(mNativePointer, mId, color, mode, onMS, offMS, brightnessMode);
-                } finally {
-                    Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                    try {
+                        setLight_native(mNativePointer, mId, color, mode, onMS, offMS, brightnessMode);
+                    } finally {
+                        Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                    }
                 }
+            } else {
+                Slog.d(TAG, "mid = " + mId +"; isBatteryLightOpen = " + isBatteryLightOpen);
+            }
+            if(mId == LightsManager.LIGHT_ID_BATTERY){
+                if(color == 0 ){
+                    isBatteryLightOpen = false;
+                } else
+                    isBatteryLightOpen = true;
             }
         }
 
@@ -166,4 +178,9 @@ public class LightsService extends SystemService {
             int onMS, int offMS, int brightnessMode);
 
     private long mNativePointer;
+
+    private boolean isDebugNotifyLight(){
+        return SystemProperties.getBoolean("debug.power.notify_light",false)
+                || SystemProperties.getBoolean("debug.power.all", false);
+    }
 }

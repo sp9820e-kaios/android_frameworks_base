@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ការបើកប្រើ Wi-Fi ហតស្ពតចល័ត ត្រូវការភ្ជាប់ប្រើទិន្នន័យអ៊ីនធឺនែតទូរស័ព្ទ ដូចនេះវាប្រហែលជាត្រូវគិតថ្លៃបន្ថែម។"</string>
+<string name="softap_bt_cannot_coexist">"នៅពេលដំណើការប៊្លូធូសឬបើកប៊្លូធូស នោះលោកអ្នកមិនអាចបើកប្រើប្រាស់WLAN ហតស្ពតបានទេ ប្រសិនបើលោកអ្នកចង់ប្រើWLAN ហតស្ពត សូមបិទការប្រើប្រាស់ប៊្លូធូសជាមុនសិន។  "</string>
+<string name="bt_softap_cannot_coexist">"នៅពេលដំណើការWLAN ហតស្ពត នោះលោកអ្នកមិនអាចបើកប្រើប្រាស់ប៊្លូធូសបានទេ ប្រសិនបើលោកអ្នកចង់ប្រើប៊្លូធូស សូមបិទការប្រើប្រាស់WLAN ហតស្ពតជាមុនសិន។  "</string>
+<string name="lte_service_error_airplane">លោកអ្នកមិនអាចប្រើប្រាស់LTEបានទេពេលប្រើប្រាស់ម៉ូដជិះយន្តហោះ។</string>
+<string name="lte_service_error_incall">"លោកអ្នកមិនអាចបើកប្រើសេវា LTEពេលកំពុងតែហៅទូរស័ព្ទបាននោះទេ។"</string>
+<string name="accessibility_quick_settings_lte_changed_on">4Gបានបើក</string>
+<string name="accessibility_quick_settings_lte_changed_off">4Gបានបិទ</string>
+<string name="accessibility_quick_settings_lte_on">4Gបើក</string>
+<string name="accessibility_quick_settings_lte_off">4Gបិទ</string>
+<string name="toggle_data_error_airplane">"លោកអ្នកមិនអាចប្រើប្រាស់សេវាកម្មអ៊ីនធឺនែតទូរស័ព្ទបានទេ ពេលដែលទូរស័ព្ទស្ថិតក្នុងម៉ូដការហោះហើរ។"</string>
+<string name="quick_settings_data_connection_label">ទិន្នន័យ</string>
+<string name="accessibility_quick_settings_data_changed_on">បានបើកប្រើប្រាស់ទិន្នន័យ</string>
+<string name="accessibility_quick_settings_data_changed_off">បានបិទប្រើប្រាស់ទិន្នន័យ</string>
+<string name="accessibility_quick_settings_data_on">បើកទិន្នន័យ</string>
+<string name="accessibility_quick_settings_data_off">បិទទិន្នន័យ</string>
+<string name="missing_sim_message">"គ្មានស៊ីម"</string>
+</resources>

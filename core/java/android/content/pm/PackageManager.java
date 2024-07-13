@@ -421,6 +421,12 @@ public abstract class PackageManager {
     /** {@hide} */
     public static final int INSTALL_FORCE_VOLUME_UUID = 0x00000200;
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public static final int INSTALL_INTERNALSD = 0x00001000;
+    /* @} */
+
     /**
      * Flag parameter for
      * {@link #setComponentEnabledSetting(android.content.ComponentName, int, int)} to indicate
@@ -990,6 +996,12 @@ public abstract class PackageManager {
      */
     @Deprecated
     public static final int MOVE_EXTERNAL_MEDIA = 0x00000002;
+
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public static final int MOVE_INTERNAL_MEDIA = 0x00000004;
+	 /* @} */
 
     /** {@hide} */
     public static final String EXTRA_MOVE_ID = "android.content.pm.extra.MOVE_ID";
@@ -2404,6 +2416,11 @@ public abstract class PackageManager {
      * @hide
      */
     public abstract List<PackageInfo> getInstalledPackages(int flags, int userId);
+
+    /*
+     * @hide
+     */
+    public abstract List<String> getOemPackageList();
 
     /**
      * Check whether a particular package has been granted a particular
@@ -4273,7 +4290,20 @@ public abstract class PackageManager {
      */
     public abstract void setComponentEnabledSetting(ComponentName componentName,
             int newState, int flags);
-
+    /*SPRD: update label and icon for app @{ */
+    public abstract void setComponentEnabledSettingForSetupMenu(ComponentName componentName,int flags,Intent attr);
+    /* @} */
+    /**
+     * add interface for specific app
+     * @param componentName
+     * @param newState
+     * @param flags
+     * @param attr
+     * SPRD: update label and icon for app @{ 
+     */
+    public abstract void setComponentEnabledSettingForSpecific(ComponentName componentName,
+            int newState, int flags,Intent attr);
+     /* @} */
 
     /**
      * Return the enabled setting for a package component (activity,
@@ -4460,6 +4490,17 @@ public abstract class PackageManager {
     public abstract @Nullable VolumeInfo getPrimaryStorageCurrentVolume();
     /** {@hide} */
     public abstract @NonNull List<VolumeInfo> getPrimaryStorageCandidateVolumes();
+
+    /* SPRD: add for emulated storage @{ */
+    /** {@hide} */
+    public int movePrimaryEmulatedStorage(VolumeInfo vol) {
+        return -1;
+    };
+    /** {@hide} */
+    public @Nullable VolumeInfo getPrimaryEmulatedStorageCurrentVolume() {
+        return null;
+    };
+    /* @} */
 
     /**
      * Returns the device identity that verifiers can use to associate their scheme to a particular
@@ -4709,4 +4750,38 @@ public abstract class PackageManager {
             }
         }
     }
+
+    /*
+     * SPRD: add for backup app
+     * @{
+     */
+    public static final int BACKUPAPP_SUCCEED = 0;
+    public static final int BACKUPAPP_FAILED_UNKNOWN = -1;
+    /*
+     * restore app, the srcDir is neither exist nor a folder
+     */
+    public static final int BACKUPAPP_FILE_NOTFOUND = -2;
+    /*
+     * backup app don't install
+     */
+    public static final int BACKUPAPP_PKG_DONINSTALL = -3;
+
+    /*
+     * implement cpoy data/data/pkgName files to destDir warning: this interface
+     * is a time-consuming operation in some time, so call it in UI thread is
+     * not a good idea
+     * @hide
+     */
+    public abstract int backupAppData(String pkgName, String destDir);
+
+    /*
+     * implement restore files from sourceDir to data/data/pkgName warning: this
+     * interface is a time-consuming operation in some time, so call it in UI
+     * thread is not a good idea
+     * @hide
+     */
+    public abstract int restoreAppData(String srcDir, String pkgName);
+    /*
+     * @}
+     */
 }

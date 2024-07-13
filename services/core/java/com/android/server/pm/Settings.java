@@ -155,7 +155,7 @@ final class Settings {
         public static final int SIGNATURE_MALFORMED_RECOVER = 3;
     }
 
-    private static final boolean DEBUG_STOPPED = false;
+    private static final boolean DEBUG_STOPPED = true;//SPRD:false->true
     private static final boolean DEBUG_MU = false;
 
     private static final String RUNTIME_PERMISSIONS_FILE_NAME = "runtime-permissions.xml";
@@ -2657,7 +2657,13 @@ final class Settings {
             mReadMessages.append("Error reading: " + e.toString());
             PackageManagerService.reportSettingsProblem(Log.ERROR, "Error reading settings: " + e);
             Slog.wtf(PackageManagerService.TAG, "Error reading package manager settings", e);
-
+            try{
+	        if(mSettingsFilename.exists()){
+                    mSettingsFilename.delete();
+                }
+            } catch(Exception ex){
+                Slog.wtf(PackageManagerService.TAG, "Error when delete mSettingsFilename", ex);
+            }
         } catch (java.io.IOException e) {
             mReadMessages.append("Error reading: " + e.toString());
             PackageManagerService.reportSettingsProblem(Log.ERROR, "Error reading settings: " + e);

@@ -757,6 +757,7 @@
   <java-symbol type="string" name="phoneTypeMms" />
   <java-symbol type="string" name="phoneTypeMobile" />
   <java-symbol type="string" name="phoneTypeOther" />
+  <java-symbol type="string" name="phoneFixedNumber" />
   <java-symbol type="string" name="phoneTypeOtherFax" />
   <java-symbol type="string" name="phoneTypePager" />
   <java-symbol type="string" name="phoneTypeRadio" />
@@ -1129,6 +1130,7 @@
   <java-symbol type="array" name="config_keySystemUuidMapping" />
   <java-symbol type="array" name="config_gpsParameters" />
 
+  <java-symbol type="array" name="touch_assistent_apps"/>
   <java-symbol type="drawable" name="default_wallpaper" />
   <java-symbol type="drawable" name="indicator_input_error" />
   <java-symbol type="drawable" name="popup_bottom_dark" />
@@ -1258,6 +1260,7 @@
   <java-symbol type="drawable" name="ic_sim_card_multi_48px_clr" />
 
   <java-symbol type="drawable" name="ic_account_circle" />
+  <java-symbol type="drawable" name="disable_touch_mode_pic" />
   <java-symbol type="color" name="user_icon_1" />
   <java-symbol type="color" name="user_icon_2" />
   <java-symbol type="color" name="user_icon_3" />
@@ -1333,6 +1336,7 @@
   <java-symbol type="layout" name="preference_list_content_single" />
   <java-symbol type="layout" name="preference_list_fragment" />
   <java-symbol type="layout" name="preference_widget_seekbar" />
+  <java-symbol type="layout" name="disable_touch_mode_panel" />
   <java-symbol type="layout" name="progress_dialog" />
   <java-symbol type="layout" name="resolve_list_item" />
   <java-symbol type="layout" name="select_dialog_singlechoice_holo" />
@@ -1430,6 +1434,17 @@
 
   <java-symbol type="dimen" name="config_minScalingSpan" />
   <java-symbol type="dimen" name="config_minScalingTouchMajor" />
+
+  <!-- SPRD： support usb interface @{ -->
+  <java-symbol type="string" name="sim_card_activation_warning" />
+  <java-symbol type="string" name="sim_ready_title_for_usb" />
+  <java-symbol type="string" name="usb_ok" />
+  <!-- @} -->
+
+  <!-- SPRD add usb @{ -->
+  <java-symbol type="string" name="usb_cdrom_notification_title" />
+  <java-symbol type="string" name="usb_charge_only_notification" />
+  <!-- @} -->
 
   <!-- From android.policy -->
   <java-symbol type="anim" name="app_starting_exit" />
@@ -2288,6 +2303,26 @@
   <java-symbol type="color" name="chooser_service_row_background_color" />
   <java-symbol type="id" name="target_badge" />
   <java-symbol type="bool" name="config_supportDoubleTapWake" />
+  <!-- SPRD: Bug 511228 Smart Controls in Settings @{ -->
+  <java-symbol type="bool" name="config_supportSmartWake" />
+  <java-symbol type="bool" name="config_supportEasyDial" />
+  <java-symbol type="bool" name="config_supportEasyAnswer" />
+  <java-symbol type="bool" name="config_supportHandsfreeSwitch" />
+  <java-symbol type="bool" name="config_supportSmartCallRecorder" />
+  <java-symbol type="bool" name="config_supportEasyBell" />
+  <java-symbol type="bool" name="config_supportMuteIncomingCalls" />
+  <java-symbol type="bool" name="config_supportPlayControl" />
+  <java-symbol type="bool" name="config_supportMusicSwitch" />
+  <java-symbol type="bool" name="config_supportLockMusicSwitch" />
+  <java-symbol type="bool" name="config_supportEasyStart" />
+  <java-symbol type="bool" name="config_supportMuteAlarms" />
+  <java-symbol type="bool" name="config_supportShakeToSwitch" />
+  <java-symbol type="bool" name="config_supportQuickBrowse" />
+  <java-symbol type="bool" name="config_supportEasyClearMemory" />
+  <java-symbol type="bool" name="config_supportTouchDisable" />
+  <java-symbol type="bool" name="config_supportSmartBell" />
+  <java-symbol type="bool" name="config_supportPowerSaving" />
+  <!-- @} -->
   <java-symbol type="drawable" name="ic_perm_device_info" />
   <java-symbol type="string" name="config_radio_access_family" />
   <java-symbol type="string" name="notification_inbox_ellipsis" />
@@ -2305,6 +2340,9 @@
   <java-symbol type="string" name="ext_media_status_ejecting" />
   <java-symbol type="string" name="ext_media_status_formatting" />
   <java-symbol type="string" name="ext_media_status_missing" />
+  <!-- SPRD: add for storage @{ -->
+  <java-symbol type="string" name="ext_media_status_shared" />
+  <!-- @} -->
   <java-symbol type="string" name="ext_media_unsupported_notification_message" />
   <java-symbol type="string" name="ext_media_unsupported_notification_title" />
   <java-symbol type="plurals" name="selected_count" />
@@ -2320,4 +2358,47 @@
 
   <java-symbol type="drawable" name="platlogo_m" />
 
+  <!-- SPRD: Bug 474763 support transition on low-ram device. -->
+  <java-symbol type="bool" name="config_force_use_color_view" />
+  <!-- SPRD: USB reverse tethering  @{ -->
+  <java-symbol type="string" name="tetheredPC_notification_title" />
+  <!-- @} -->
+
+  <!--  SPRD services we want to restart  {-->
+  <java-symbol type="integer" name="config_restartServiceInterval" />
+  <java-symbol type="integer" name="config_restartAppServiceInterval" />
+  <java-symbol type="array" name="restartServiceInterval" />
+  <java-symbol type="array" name="restartAppServiceInterval" />
+  <!-- } -->
+  <java-symbol type="array" name="usim_notify_packages" />
+  <java-symbol type="string" name="addon_usim_notify" />
+
+  <!--  SPRD add the reboot  @{ -->
+  <java-symbol type="string" name="global_action_restart" />
+  <java-symbol type="string" name="reboot_device_title" />
+  <java-symbol type="string" name="reboot_device_confirm" />
+  <java-symbol type="string" name="global_reboot_close_apps"/>
+  <java-symbol type="drawable" name="ic_lock_reboot" />
+  <!-- @} -->
+  <!-- workround for Screen pinning @{-->
+  <java-symbol type="bool" name="config_force_user_navigationbar" />
+  <!-- @} -->
+  <!-- SPRD： insert one activity in wizard @{ -->
+  <java-symbol type="array" name="config_actions_to_hook" />
+  <java-symbol type="array" name="config_components_to_hook" />
+  <!-- @} -->
+
+  <java-symbol type="string" name="station_state_msg" />
+
+  <!-- support for hotspot wps -->
+  <java-symbol type="bool" name="config_enableSoftApWPS" />
+  <!-- SPRD:support GPS automatic update time @{ -->
+  <java-symbol name="gps_time_sync_fail_str" type="string" />
+  <!-- @} -->
+
+  <!-- SPRD: Bug 565443 add broadcast to cts queue -->
+  <java-symbol type="array" name="special_broadcast_actions" />
+
+  <!-- SPRD: Bug 569231 add broadcast to foreground queue -->
+  <java-symbol type="array" name="broadcast_put_foreground_actions" />
 </resources>

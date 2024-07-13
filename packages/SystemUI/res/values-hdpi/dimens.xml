@@ -25,4 +25,5 @@
     <fraction name="battery_subpixel_smoothing_right">12%</fraction>
 
     <dimen name="battery_margin_bottom">1px</dimen>
+    <dimen name="qs_dual_tile_padding">18dp</dimen>
 </resources>

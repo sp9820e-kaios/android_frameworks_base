@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<!-- SPRD:Feature 475356, Support multi-card carrier info display-->
+    <string name="kg_no_sim_message">No SIM card</string>   
+    <!-- SPRD: Feature 478270 Add EmergencyButton on the Lockscreen-->
+    <string name="kg_emergency_call_no_service">No available network</string>
+    <!-- SPRD:add PIN verify success prompt -->
+    <string name="kg_sim_pin_verify_success">PIN verify success</string>
+    <!-- SPRD: Add string for flight mode to fix bug 532196 in reliance -->
+    <string name="keyguard_flight_mode">Flight mode</string>
+    <string name="kg_sim_pin_delete">Delete</string>
+    <string name="kg_sim_pin_ok">OK</string>
+</resources>

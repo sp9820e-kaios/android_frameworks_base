@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"נקודת Wi-Fi חמה ניידת צריכה חיבור נתונים נייד, ועשויה להוביל להוצאות נוספות בחשבון."</string>
+<string name="softap_bt_cannot_coexist">"כאשר ה-Bluetooth מופעל או פעיל, יישומון softap לא יכול לעבוד. אם תרצו להשתמש ב-softap, בבקשה ודאו שה-Bluetooth מנוטרל."</string>
+<string name="bt_softap_cannot_coexist">"כאשר יישומון softap מופעל או פעיל, חיבור ה-Bluetooth אינו יכול לעבוד. אם תרצו להשתמש ב-Bluetooth, בבקשה ודאו שיישומון softap מנוטרל."</string>
+<string name="lte_service_error_airplane">"אתם לא יכולים להשתמש ב-LTE כאשר הטלפון במצב טיסה"</string>
+<string name="lte_service_error_incall">"אינכם יכולים לשנות שירות LTE במהלך שיחה."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G מופעל"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G מכובה"</string>
+<string name="accessibility_quick_settings_lte_on">"4G פעיל"</string>
+<string name="accessibility_quick_settings_lte_off">"4G כבוי"</string>
+<string name="toggle_data_error_airplane">"אינכם יכולים להשתמש בנתוני הנייד כאשר הטלפון נמצא במצב טיסה."</string>
+<string name="quick_settings_data_connection_label">"נתונים"</string>
+<string name="accessibility_quick_settings_data_changed_on">הנתונים הופעלו</string>
+<string name="accessibility_quick_settings_data_changed_off">הנתונים כבויים</string>
+<string name="accessibility_quick_settings_data_on">הפעל נתונים</string>
+<string name="accessibility_quick_settings_data_off">כבה נתונים</string>
+<string name="missing_sim_message">"אין כרטיס SIM"</string>
+</resources>

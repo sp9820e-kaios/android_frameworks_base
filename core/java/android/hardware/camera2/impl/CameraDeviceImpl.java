@@ -1984,4 +1984,22 @@ public class CameraDeviceImpl extends CameraDevice {
         return mCharacteristics;
     }
 
+    /**
+     * SPRD:fix bug 473462 add for burst capture
+     */
+    public int cancelPicture() throws CameraAccessException {
+        int count;
+        try {
+        Log.d(TAG, "cancelPicture cameraDeviceImpl ");
+        count = mRemoteDevice.cancelPicture();
+        Log.i(TAG,"cameraDeviceImpl cancelPicture count="+count);
+      } catch (CameraRuntimeException e) {
+        Log.d(TAG, "cameraDeviceImpl cancelPicture exception");
+                throw e.asChecked();
+      }  catch (RemoteException e) {
+                // impossible
+                return -1;
+            }
+        return count;
+    }
 }

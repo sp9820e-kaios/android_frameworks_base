@@ -904,9 +904,11 @@ public class NetworkManagementService extends INetworkManagementService.Stub
             case NetdResponseCode.StrictCleartext:
                 final int uid = Integer.parseInt(cooked[1]);
                 final byte[] firstPacket = HexDump.hexStringToByteArray(cooked[2]);
+                Slog.d(TAG, "NetdResponseCode StrictCleartext uid: "+uid);
                 try {
                     ActivityManagerNative.getDefault().notifyCleartextNetwork(uid, firstPacket);
                 } catch (RemoteException ignored) {
+                    Slog.e(TAG, "remote error: "+ignored);
                 }
                 break;
             default: break;
@@ -1397,6 +1399,37 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         modifyInterfaceForward(false, fromIface, toIface);
     }
 
+// ADD FOR ipv6 tethering
+    @Override
+    public void addUpstreamV6Interface(String iface) throws IllegalStateException {
+        mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+
+        Slog.d(TAG, "addUpstreamV6Interface("+ iface + ")");
+        try {
+            final Command cmd = new Command("tether", "radvd", "add_upstream");
+            cmd.appendArg(iface);
+            mConnector.execute(cmd);
+        } catch (NativeDaemonConnectorException e) {
+            throw new IllegalStateException("Cannot add upstream interface");
+        }
+    }
+
+    @Override
+    public void removeUpstreamV6Interface(String iface) throws IllegalStateException {
+        mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+
+        Slog.d(TAG, "removeUpstreamV6Interface(" + iface + ")");
+
+        try {
+            final Command cmd = new Command("tether", "radvd", "remove_upstream");
+            cmd.appendArg(iface);
+            mConnector.execute(cmd);
+        } catch (NativeDaemonConnectorException e) {
+            throw new IllegalStateException("Cannot remove upstream interface");
+        }
+    }
+// ADD FOR ipv6 tethering END
+
     private void modifyNat(String action, String internalInterface, String externalInterface)
             throws SocketException {
         final Command cmd = new Command("nat", action, internalInterface, externalInterface);
@@ -1488,11 +1521,11 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         try {
             if (wifiConfig == null) {
                 mConnector.execute("softap", "set", wlanIface);
-            } else {
+            } else {//add "hidden" according to wifiConfig.hiddenSSID for hidden ssid feature
                 mConnector.execute("softap", "set", wlanIface, wifiConfig.SSID,
-                                   "broadcast", Integer.toString(wifiConfig.apChannel),
+                                   (wifiConfig.hiddenSSID?"hidden":"broadcast"), Integer.toString(wifiConfig.apChannel),
                                    getSecurityType(wifiConfig),
-                                   new SensitiveArg(wifiConfig.preSharedKey));
+                                   new SensitiveArg(wifiConfig.preSharedKey), wifiConfig.softApMaxNumSta);
             }
             mConnector.execute("softap", "startap");
         } catch (NativeDaemonConnectorException e) {
@@ -1548,6 +1581,23 @@ public class NetworkManagementService extends INetworkManagementService.Stub
             throw e.rethrowAsParcelableException();
         }
     }
+
+
+    /**
+     * Set Access Point white list enabled or not
+     */
+    @Override
+    public void setAccessPointWhiteListEnable(boolean enable) {
+        mContext.enforceCallingOrSelfPermission(CONNECTIVITY_INTERNAL, TAG);
+        try {
+
+            mConnector.execute("softap", "whitelist", (enable?"true":"false"));
+
+        } catch (Exception e) {
+
+        }
+    }
+
 
     @Override
     public void addIdleTimer(String iface, int timeout, final int type) {

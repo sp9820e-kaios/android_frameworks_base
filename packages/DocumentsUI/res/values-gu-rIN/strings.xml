@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"વિગતો જોવા માટે ટચ કરો"</string>
     <string name="retry" msgid="7564024179122207376">"ફરી પ્રયાસ કરો"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"આ ફાઇલો કૉપિ કરી નહોતી: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ફાઇલ શેર કરી શકે તેમ નથી "</string>
+     <string name="documents_deleting">"દસ્તાવેજો કાઢી રહ્યાં છે"</string>
+     <string name="cannot_copyfolder_itself">"તમે ફોલ્ડરને તેની અંદર જ કૉપી કરી શકતા નથી"</string>
+     <string name="menu_deselect_all">"દરેક સિલેક્ટ કરેલ કાઢી નાખો."</string>
+    <string name="error_permissions">"એપ્લિકેશન પાસે શરૂ થવા માટેની મહત્વપૂર્ણ પરવાનગીઓ નથી. કૃપા કરીને તમારી પરવાનગીઓ સેટિંગ્સ તપાસો."</string>
+     <string name="cannot_copy_drm">"DRM ફાઈલ કોપી થઇ શકશે નહિ"</string>
+     <string name="cannot_copy_downloading">"ડાઉનલોડ થતી ફાઈલ કોપી થઇ શકશે નહિ"</string>
 </resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="kg_no_sim_message">"Niciun card SIM"</string>
+<string name="kg_emergency_call_no_service">Nicio retea nu este disponibila. </string>
+<string name="kg_sim_pin_verify_success">"PIN-ul a fost verificat cu succes"</string>
+</resources>

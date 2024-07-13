@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"କଣ୍ଡା/ସ୍ପୁଲର ପ୍ରିଣ୍ଟ କରନ୍ତୁ"</string>
+<string name="more_options_button">"ଅଧିକ ବିକଳ୍ପ"</string>
+<string name="label_destination">"ଗନ୍ତବ୍ୟ"</string>
+<string name="label_copies">"ନକଲ ଗୁଡିକ"</string>
+<string name="label_copies_summary">"ନକଲ ଗୁଡିକ:"</string>
+<string name="label_paper_size">"ପେପର ଆକାର"</string>
+<string name="label_paper_size_summary">"ପେପର ଆକାର:"</string>
+<string name="label_color">"ରଙ୍ଗ"</string>
+<string name="label_duplex">"ଦୁଇ ପାଖିଆ"</string>
+<string name="label_orientation">"ଖାପ ଖୁଏଇବା"</string>
+<string name="label_pages">"ପୃଷ୍ଠା ଗୁଡିକ"</string>
+<string name="template_all_pages">"ସମସ୍ତ <xliff:g id="page_count" example="100">%1$s</xliff:g>"</string>
+<string name="template_page_range">"ର ପରିସର <xliff:g id="page_count" example="100">%1$s</xliff:g>"</string>
+<string name="pages_range_example">"ଉଦାହରଣ ସ୍ୱରୂପ 1&#8212;5,8,11&#8212;13"</string>
+<string name="print_preview">"ପ୍ରିଣ୍ଟ/ଛପା ପୂର୍ବ-ଦର୍ଶନ"</string>
+<string name="install_for_print_preview">"ପୂର୍ବ-ଦର୍ଶନ ପାଇଁ PDF ଦର୍ଶନକାରୀ ସ୍ଥାପନ କରନ୍ତୁ"</string>
+<string name="printing_app_crashed">"ଛାପିବା ଏପ ଭାଙ୍ଗିଯାଇଛି"</string>
+<string name="generating_print_job">"ପ୍ରିଣ୍ଟ କାମ ସୃଷ୍ଟି କରିବା"</string>
+<string name="save_as_pdf">"PDF ପରି ସଞ୍ଚୟ କରନ୍ତୁ"</string>
+<string name="all_printers">""ସମସ୍ତ ପ୍ରିଣ୍ଟର/ଛାପା କଳ&#8230;" "</string>
+<string name="print_dialog">"ଡାଇଲଗ ପ୍ରିଣ୍ଟ କରନ୍ତୁ"</string>
+<string name="current_page_template">"<xliff:g id="current_page">%1$d</xliff:g>/<xliff:g id="page_count">%2$d</xliff:g>"</string>
+<string name="page_description_template">"ପୃଷ୍ଠା <xliff:g id="current_page" example="1">%1$d</xliff:g> ରୁ <xliff:g id="page_count" example="100">%2$d</xliff:g>"</string>
+<string name="summary_template">"ସାରାଂଶ, ନକଲ ଗୁଡିକ <xliff:g id="copies" example="1">%1$s</xliff:g>,ପେପର ଆକାର <xliff:g id="paper_size" example="A4">%2$s</xliff:g>"</string>
+<string name="expand_handle">"ହେଣ୍ଡଳ ପ୍ରସାରଣ କରନ୍ତୁ"</string>
+<string name="collapse_handle">"ହେଣ୍ଡଳ ଛୋଟ କରନ୍ତୁ"</string>
+<string name="print_button">"ପ୍ରିଣ୍ଟ କରନ୍ତୁ"</string>
+<string name="savetopdf_button">"PDFରେ ସଞ୍ଚଯ କରନ୍ତୁ"</string>
+<string name="print_options_expanded">"ଛପା/ପ୍ରିଣ୍ଟ ବିକଳ୍ପ ବଢାଯାଇଛ"</string>
+<string name="print_options_collapsed">"ଛପା/ପ୍ରିଣ୍ଟ ବିକଳ୍ପ ଛୋଟ କରି ଦିଆଯାଇଛି"</string>
+<string name="search">"ଖୋଜ"</string>
+<string name="all_printers_label">"ସମସ୍ତ ପ୍ରିଣ୍ଟର"</string>
+<string name="add_print_service_label">"ସେବା ଯୋଗ କର"</string>
+<string name="print_search_box_shown_utterance">"ଦେଖାଉଥିବା ବକ୍ସ ଖୋଜନ୍ତୁ"</string>
+<string name="print_search_box_hidden_utterance">"ଲୁଚା ଯାଇଥିବା ବକ୍ସ ଖୋଜନ୍ତୁ"</string>
+<string name="print_add_printer">"ପ୍ରିଣ୍ଟର ଯୋଗ କରନ୍ତୁ"</string>
+<string name="print_select_printer">"ପ୍ରିଣ୍ଟର ବାଛନ୍ତୁ"</string>
+<string name="print_forget_printer">"ପ୍ରିଣ୍ଟର ଭୁଲିଯାନ୍ତୁ"</string>
+<plurals name="print_search_result_count_utterance">
+<item quantity="one">"<xliff:g id="count" example="1">%1$s</xliff:g> ପ୍ରିଣ୍ଟର ମିଳିଲା"</item>
+<item quantity="other">"<xliff:g id="count" example="2">%1$s</xliff:g> ପ୍ରିଣ୍ଟର ଗୁଡିକ ମିଳିଲା"</item>
+</plurals>
+<string name="choose_print_service">"ପ୍ରିଣ୍ଟର ସେବା ବାଛନ୍ତୁ"</string>
+<string name="print_searching_for_printers">"ପ୍ରିଣ୍ଟର ଖୋଜୁଛି"</string>
+<string name="print_no_printers">"କୌଣସି ପ୍ରିଣ୍ଟର ମିଳୁନାହିଁ"</string>
+<string name="printing_notification_title_template">"ପ୍ରିଣ୍ଟ କରୁଛି <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="cancelling_notification_title_template">"ବାତିଲ କରୁଛି <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="failed_notification_title_template">"ପ୍ରିଣ୍ଟର ତ୍ରୁଟି <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="blocked_notification_title_template">"ପ୍ରିଣ୍ଟର ଅବରୋଧ ହୋଇଯାଇଛି <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<plurals name="composite_notification_title_template">
+<item quantity="one">"<xliff:g id="print_job_name" example="foo.jpg">%1$d</xliff:g> କାମ ପ୍ରିଣ୍ଟ କରନ୍ତୁ"</item>
+<item quantity="other">"<xliff:g id="print_job_name" example="foo.jpg">%1$d</xliff:g> କାମ ଗୁଡିକ ପ୍ରିଣ୍ଟ କରନ୍ତୁ"</item>
+</plurals>
+<string name="cancel">"ବାତିଲ କରନ୍ତୁ"</string>
+<string name="restart">"ପୁନ ଆରମ୍ଭ କରନ୍ତୁ ।"</string>
+<string name="no_connection_to_printer">"ପ୍ରିଣ୍ଟରକୁ କୌଣସି ସଂଯୋଗ ନାହିଁ"</string>
+<string name="reason_unknown">"ଅଜଣା"</string>
+<string name="printer_unavailable">"<xliff:g id="print_job_name" example="Canon-123GHT">%1$s</xliff:g> &#8211; ଅନୁପଲବ୍ଧ"</string>
+<string-array name="color_mode_labels">
+<item>"କଳା &amp; ଧଳା"</item>
+<item>"ରଙ୍ଗ"</item>
+</string-array>
+<string-array name="duplex_mode_labels">
+<item>"କେହି ନାହିଁ"</item>
+<item>"ଲମ୍ବା ଧାର/ପ୍ରାନ୍ତ"</item>
+<item>"ଛୋଟ ଧାର/ପ୍ରାନ୍ତ"</item>
+</string-array>
+<string-array name="orientation_labels">
+<item>""ଲମ୍ବାକାର ଛବି" "</item>
+<item>""ଓସାରାକାର ଛବି" "</item>
+</string-array>
+<string name="print_write_error_message">"ଫାଇଲରେ ଲେଖାଯାଇ ପାରୁନି"</string>
+<string name="print_error_default_message">"ଦୁଖିତ, ଏହା କାମ କରୁନି । ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ ।"</string>
+<string name="print_error_retry">"ପୁନଃ ଚେଷ୍ଟା"</string>
+<string name="print_error_printer_unavailable">""ଏହି କ୍ଷଣି ଏହି ପ୍ରିଣ୍ଟର ଉପଲବ୍ଧ ନାହିଁ ।" "</string>
+<string name="print_preparing_preview">"... ପୂର୍ବଦୃଶ୍ୟ ପ୍ରସ୍ତୁତି କରୁଛି"</string>
+</resources>

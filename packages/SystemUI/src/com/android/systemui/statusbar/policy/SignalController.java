@@ -158,6 +158,8 @@ public abstract class SignalController<T extends SignalController.State,
         if (isDirty()) {
             saveLastState();
             notifyListeners();
+            // SPRD: modify by bug 474973
+            mNetworkController.refreshCarrierLabel();
         }
     }
 
@@ -216,7 +218,7 @@ public abstract class SignalController<T extends SignalController.State,
      * signal strength.
      */
     static class IconGroup {
-        final int[][] mSbIcons;
+        int[][] mSbIcons;
         final int[][] mQsIcons;
         final int[] mContentDesc;
         final int mSbNullState;

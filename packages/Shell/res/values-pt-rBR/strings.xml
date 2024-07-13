@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"Relatório de defeito capturado"</string>
+<string name="bugreport_finished_text" product="watch">"Deslizar para esquerda para compartilhar o seu relatório de bug"</string>
+<string name="bugreport_finished_text" product="default">"Toque para compartilhar o seu relatório de defeito"</string>
+<string name="bugreport_confirm">"Os relatórios de defeito têm os dados de vários arquivos de log de sistema, incluindo informação pessoal e privata. Apenas compartilhar os relatórios de defeito com as aplicações e pessoa que confia."</string>
+<string name="bugreport_confirm_repeat">"Mostrar esta mensagem na próxima vez"</string>
+<string name="bugreport_storage_title">"Relatórios de erro"</string>
+</resources>

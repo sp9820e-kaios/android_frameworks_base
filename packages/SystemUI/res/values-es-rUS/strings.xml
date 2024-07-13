@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Se agregó el sintonizador de IU del sistema a Configuración"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Quitar de Configuración"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"¿Quieres quitar el sintonizador de IU del sistema de Configuración y dejar de utilizar todas sus funciones?"</string>
+    <string name="quick_settings_volume_label">"Perfil de audio"</string>
+    <string name="assistant_key_home">"Pantalla principal"</string>
+    <string name="assistant_key_search">"Buscar"</string>
+    <string name="assistant_key_menu">"Menú"</string>
+    <string name="assistant_key_back">"Atrás"</string>
+    <string name="vibrate_hint">"Deslice a la izquierda para vibración"</string>
+    <string name="battery_overtage_title">"Advertencia de seguridad"</string>
+     <string name="battery_overtage_content">"¡El voltaje de carga es demasiado alto!"</string>
+     <string name="battery_overtage_back">"Atrás"</string>
+
 </resources>

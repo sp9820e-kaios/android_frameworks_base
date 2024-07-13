@@ -26,7 +26,6 @@ import static com.android.internal.util.XmlUtils.writeLongAttribute;
 import static com.android.internal.util.XmlUtils.writeStringAttribute;
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
-
 import android.Manifest;
 import android.annotation.Nullable;
 import android.app.ActivityManagerNative;
@@ -44,6 +43,8 @@ import android.content.pm.ProviderInfo;
 import android.content.pm.UserInfo;
 import android.content.res.Configuration;
 import android.content.res.ObbInfo;
+/* @SPRD: add for UMS */
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.DropBoxManager;
@@ -85,6 +86,9 @@ import android.util.Log;
 import android.util.Slog;
 import android.util.TimeUtils;
 import android.util.Xml;
+/* SPRD: add some log for debug @{ */
+import android.util.Log;
+/* @} */
 
 import libcore.io.IoUtils;
 import libcore.util.EmptyArray;
@@ -136,7 +140,6 @@ import java.util.concurrent.TimeoutException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-
 /**
  * Service responsible for various storage media. Connects to {@code vold} to
  * watch for and manage dynamically added storage, such as SD cards and USB mass
@@ -198,7 +201,13 @@ class MountService extends IMountService.Stub
 
     /** Magic value sent by MoveTask.cpp */
     private static final int MOVE_STATUS_COPY_FINISHED = 82;
+    /* SPRD: support double sdcard add for sdcard hotplug @{ */
+    class VolumesPresentState {
+        boolean mVolumeBadRemoved = false;
+    }
 
+    private VolumesPresentState mVolumesPresentState = new VolumesPresentState();
+    /* @} */
     /*
      * Internal vold response code constants
      */
@@ -261,6 +270,10 @@ class MountService extends IMountService.Stub
     private static final String TAG_VOLUMES = "volumes";
     private static final String ATTR_VERSION = "version";
     private static final String ATTR_PRIMARY_STORAGE_UUID = "primaryStorageUuid";
+    /* SPRD: add for primary storage @{ */
+    private static final String ATTR_PRIMARY_EMULATED_UUID = "primaryEmulatedUuid";
+    private static final String ATTR_PRIMARY_PHYSICAL_UUID = "primaryPhysicalUuid";
+    /* @} */
     private static final String ATTR_FORCE_ADOPTABLE = "forceAdoptable";
     private static final String TAG_VOLUME = "volume";
     private static final String ATTR_TYPE = "type";
@@ -297,6 +310,16 @@ class MountService extends IMountService.Stub
     private String mPrimaryStorageUuid;
     @GuardedBy("mLock")
     private boolean mForceAdoptable;
+    /* SPRD: add for primary storage @{ */
+    @GuardedBy("mLock")
+    private String mPrimaryEmulatedUuid;
+    @GuardedBy("mLock")
+    private String mPrimaryPhysicalUuid;
+    @GuardedBy("mLock")
+    private boolean mSetEmulated;
+    private String mPrimaryPhysicalLinkName;
+    private static final String DEFAULT_PRIMARY_PHYSICAL_LINK_NAME = "default";
+    /* @} */
 
     /** Map from disk ID to latches */
     @GuardedBy("mLock")
@@ -418,6 +441,20 @@ class MountService extends IMountService.Stub
     private final Object mUnmountLock = new Object();
     @GuardedBy("mUnmountLock")
     private CountDownLatch mUnmountSignal;
+
+    /* @SPRD: add for UMS @{ */
+    private final Object mShareLock = new Object();
+    private boolean mUMSShared = false;
+    private boolean mUmsAvailable = false;
+    private boolean mUmsEnabling = false;
+    /* flag for USB line connected */
+    private boolean mUSBIsConnected = false;
+    /* flag for USB line if unpluged after enable UMS */
+    private boolean mUSBIsUnpluged = false;
+    /* flag for if need send ums connected on system ready*/
+    private boolean mSendUmsConnectedOnBoot = false;
+    private static final boolean ENABLE_UMS = true;
+    /* @} */
 
     /**
      * Private hash of currently mounted secure containers.
@@ -560,6 +597,8 @@ class MountService extends IMountService.Stub
     private static final int H_VOLUME_MOUNT = 5;
     private static final int H_VOLUME_BROADCAST = 6;
     private static final int H_INTERNAL_BROADCAST = 7;
+    /* @SPRD: add for UMS */
+    private static final int H_VOLUME_UNSHARED_BROADCAST = 8;
 
     class MountServiceHandler extends Handler {
         public MountServiceHandler(Looper looper) {
@@ -663,6 +702,21 @@ class MountService extends IMountService.Stub
                     mContext.sendBroadcastAsUser(intent, UserHandle.ALL,
                             android.Manifest.permission.WRITE_MEDIA_STORAGE);
                 }
+                /* @SPRD: add for UMS @{ */
+                    break;
+                case H_VOLUME_UNSHARED_BROADCAST: {
+                    final StorageVolume userVol = (StorageVolume) msg.obj;
+                    Slog.d(TAG, "Volume " + userVol.getId() + " broadcasting unshared to "
+                           + userVol.getOwner());
+
+                    final Intent intent = new Intent(Intent.ACTION_MEDIA_UNSHARED,
+                                                     Uri.fromFile(userVol.getPathFile()));
+                    intent.putExtra(StorageVolume.EXTRA_STORAGE_VOLUME, userVol);
+                    intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
+                    mContext.sendBroadcastAsUser(intent, userVol.getOwner());
+                    break;
+                }
+                /* @} */
             }
         }
     }
@@ -739,6 +793,17 @@ class MountService extends IMountService.Stub
             resetIfReadyAndConnectedLocked();
         }
 
+        /* @SPRD: add for UMS @{ */
+        /*
+         * If UMS was connected on boot, send the connected event
+         * now that we're up.
+         */
+        if (mSendUmsConnectedOnBoot) {
+            sendUmsIntent(true);
+            mSendUmsConnectedOnBoot = false;
+        }
+        /* @} */
+
         // Start scheduling nominally-daily fstrim operations
         MountServiceIdler.scheduleIdlePass(mContext);
     }
@@ -756,8 +821,12 @@ class MountService extends IMountService.Stub
             if (provider != null) {
                 final IActivityManager am = ActivityManagerNative.getDefault();
                 try {
-                    am.killApplicationWithAppId(provider.applicationInfo.packageName,
-                            UserHandle.getAppId(provider.applicationInfo.uid), "vold reset");
+                    /* SPRD: modify kill mediaprovider method @{ */
+                    //am.killApplicationWithAppId(provider.applicationInfo.packageName,
+                    //        UserHandle.getAppId(provider.applicationInfo.uid), "vold reset");
+                    am.forceStopPackage(provider.applicationInfo.packageName,
+                            UserHandle.getAppId(provider.applicationInfo.uid));
+                    /* @} */
                 } catch (RemoteException e) {
                 }
             }
@@ -861,6 +930,18 @@ class MountService extends IMountService.Stub
         return mLastMaintenance;
     }
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    private boolean isInternalSd(VolumeInfo vol){
+        if(vol ==null || Environment.internalIsEmulated()){
+            return false;
+        }else{
+            Slog.w(TAG, "isInternalSd vol.linkName = " + vol.linkName + " Environment.internalIsEmulated() " + Environment.internalIsEmulated());
+            return !Environment.internalIsEmulated() && Objects.equals(vol.linkName, "sdcard0");
+        }
+    }
+    /* @} */
     /**
      * Callback from NativeDaemonConnector
      */
@@ -943,6 +1024,9 @@ class MountService extends IMountService.Stub
     }
 
     private boolean onEventLocked(int code, String raw, String[] cooked) {
+        /* SPRD: add for storage debug @{ */
+        Slog.v(TAG, "onEventLocked("+code+",\""+raw+"\","+java.util.Arrays.asList(cooked)+")");
+        /* @} */
         switch (code) {
             case VoldResponseCode.DISK_CREATED: {
                 if (cooked.length != 3) break;
@@ -1004,9 +1088,16 @@ class MountService extends IMountService.Stub
                 final int type = Integer.parseInt(cooked[2]);
                 final String diskId = TextUtils.nullIfEmpty(cooked[3]);
                 final String partGuid = TextUtils.nullIfEmpty(cooked[4]);
+                /* SPRD: add for storage manage */
+                final String linkName = TextUtils.nullIfEmpty(cooked[5]);
 
                 final DiskInfo disk = mDisks.get(diskId);
+                /* SPRD: modify for storage manage @{
+                 * @orig
                 final VolumeInfo vol = new VolumeInfo(id, type, disk, partGuid);
+                 */
+                final VolumeInfo vol = new VolumeInfo(id, type, disk, partGuid, linkName);
+                /* @}*/
                 mVolumes.put(id, vol);
                 onVolumeCreatedLocked(vol);
                 break;
@@ -1034,7 +1125,15 @@ class MountService extends IMountService.Stub
                 if (cooked.length != 3) break;
                 final VolumeInfo vol = mVolumes.get(cooked[1]);
                 if (vol != null) {
+                    /* SPRD: add for set primary storage @{ */
+                    String oldUuid = vol.fsUuid;
+                    /* @} */
                     vol.fsUuid = cooked[2];
+                    /* SPRD: add for set primary storage @{ */
+                    if (vol.type == VolumeInfo.TYPE_PUBLIC && oldUuid == null) {
+                        onVolumeCreatedLocked(vol);
+                    }
+                    /* @} */
                 }
                 break;
             }
@@ -1149,10 +1248,41 @@ class MountService extends IMountService.Stub
         mCallbacks.notifyDiskScanned(disk, volumeCount);
     }
 
+    /* SPRD: add for primary storage @{ */
+    private String getPrimaryPhysicalLinkName() {
+        if (mPrimaryPhysicalLinkName == null) {
+            mPrimaryPhysicalLinkName = DEFAULT_PRIMARY_PHYSICAL_LINK_NAME;
+            if (Environment.internalIsEmulated()) {
+                if (Environment.getStorageType() == Environment.STORAGE_PRIMARY_EXTERNAL) {
+                    mPrimaryPhysicalLinkName = "sdcard0";
+                }
+            } else {
+                if (Environment.getStorageType() == Environment.STORAGE_PRIMARY_INTERNAL) {
+                    mPrimaryPhysicalLinkName = "sdcard0";
+                }
+                if (Environment.getStorageType() == Environment.STORAGE_PRIMARY_EXTERNAL) {
+                    mPrimaryPhysicalLinkName = "sdcard1";
+                }
+            }
+        }
+        return mPrimaryPhysicalLinkName;
+    }
+    /* @} */
+
     private void onVolumeCreatedLocked(VolumeInfo vol) {
+        /* SPRD: add for storage debug @{ */
+        Slog.v(TAG, "onVolumeCreatedLocked{"+vol+"} mPrimaryStorageUuid is " + mPrimaryStorageUuid);
+        Slog.v(TAG, "mPrimaryPhysicalUuid is " + mPrimaryPhysicalUuid
+                + ", mPrimaryEmulatedUuid is " + mPrimaryEmulatedUuid);
+        /* @} */
         if (vol.type == VolumeInfo.TYPE_EMULATED) {
             final StorageManager storage = mContext.getSystemService(StorageManager.class);
             final VolumeInfo privateVol = storage.findPrivateForEmulated(vol);
+
+            /* SPRD: add for emulated storage @{ */
+            if (SystemProperties.getBoolean(StorageManager.PROP_INTERNAL_EMULATED, true)) {
+                if (Environment.getStorageType() == Environment.STORAGE_PRIMARY_INTERNAL) {
+            /* @} */
 
             if (Objects.equals(StorageManager.UUID_PRIVATE_INTERNAL, mPrimaryStorageUuid)
                     && VolumeInfo.ID_PRIVATE_INTERNAL.equals(privateVol.id)) {
@@ -1160,28 +1290,75 @@ class MountService extends IMountService.Stub
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_PRIMARY;
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
                 mHandler.obtainMessage(H_VOLUME_MOUNT, vol).sendToTarget();
-
             } else if (Objects.equals(privateVol.fsUuid, mPrimaryStorageUuid)) {
                 Slog.v(TAG, "Found primary storage at " + vol);
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_PRIMARY;
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
                 mHandler.obtainMessage(H_VOLUME_MOUNT, vol).sendToTarget();
             }
+            /* SPRD: add for emulated storage @{ */
+            } else {
+                if (Objects.equals(StorageManager.UUID_PRIVATE_INTERNAL, mPrimaryEmulatedUuid)
+                            && VolumeInfo.ID_PRIVATE_INTERNAL.equals(privateVol.id)) {
+                        Slog.v(TAG, "Found emulated storage at " + vol);
+                        vol.mountFlags |= VolumeInfo.MOUNT_FLAG_PRI_EMU;
+                        vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
+                        mHandler.obtainMessage(H_VOLUME_MOUNT, vol).sendToTarget();
+                } else if (Objects.equals(privateVol.fsUuid, mPrimaryEmulatedUuid)) {
+                    Slog.v(TAG, "Found emulated storage at " + vol);
+                    vol.mountFlags |= VolumeInfo.MOUNT_FLAG_PRI_EMU;
+                    vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
+                    mHandler.obtainMessage(H_VOLUME_MOUNT, vol).sendToTarget();
+                }
+            }
+        }
+            /* @} */
 
         } else if (vol.type == VolumeInfo.TYPE_PUBLIC) {
             // TODO: only look at first public partition
+            /* SPRD: set all public volume as visible @{
+             * @orig
             if (Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, mPrimaryStorageUuid)
                     && vol.disk.isDefaultPrimary()) {
                 Slog.v(TAG, "Found primary storage at " + vol);
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_PRIMARY;
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
             }
+             */
+            if (vol.fsUuid == null) {
+                /* if no fsUuid, do nothing.
+                 * and when fsUuid is set, we will recall this function.
+                 */
+                return;
+            }
+            if (Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, mPrimaryStorageUuid)
+                    && vol.disk.isDefaultPrimary()) {
+                if (mPrimaryPhysicalUuid == null
+                   || !Objects.equals(vol.fsUuid, mPrimaryPhysicalUuid)) {
+                    String pramryLinkName = getPrimaryPhysicalLinkName();
+                    if (pramryLinkName.equals(DEFAULT_PRIMARY_PHYSICAL_LINK_NAME) || vol.linkName.startsWith(pramryLinkName)) {
+                        mPrimaryPhysicalUuid = vol.fsUuid;
+                    }
+                }
+            }
+            if (Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, mPrimaryStorageUuid)
+                    && (mPrimaryPhysicalUuid != null && Objects.equals(vol.fsUuid, mPrimaryPhysicalUuid))) {
+                Slog.v(TAG, "Found primary storage at " + vol);
+                vol.mountFlags |= VolumeInfo.MOUNT_FLAG_PRIMARY;
+                vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
+            }
+            /* @} */
 
             // Adoptable public disks are visible to apps, since they meet
             // public API requirement of being in a stable location.
+            /* SPRD: set all public volume as visible @{
+             * @orig
             if (vol.disk.isAdoptable()) {
                 vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
             }
+             */
+            vol.mountFlags |= VolumeInfo.MOUNT_FLAG_VISIBLE;
+            /* @} */
 
             vol.mountUserId = UserHandle.USER_OWNER;
             mHandler.obtainMessage(H_VOLUME_MOUNT, vol).sendToTarget();
@@ -1242,6 +1419,33 @@ class MountService extends IMountService.Stub
             }
         }
 
+        /* @SPRD: add for UMS @{ */
+        if (oldState == VolumeInfo.STATE_SHARED && newState != oldState) {
+            for (int userId : mStartedUsers) {
+                if (vol.isVisibleForRead(userId)) {
+                    final StorageVolume userVol = vol.buildStorageVolume(mContext, userId, false);
+                    mHandler.obtainMessage(H_VOLUME_UNSHARED_BROADCAST, userVol).sendToTarget();
+                }
+            }
+        }
+        /* @} */
+        /* SPRD: support double sdcard add for sdcard hotplug @{*/
+        if (vol.type == VolumeInfo.TYPE_PUBLIC && (Objects.equals(vol.linkName,"sdcard0")
+                || Objects.equals(vol.linkName,"sdcard1")) && newState == VolumeInfo.STATE_MOUNTED) {
+            synchronized (mVolumesPresentState) {
+                if(mVolumesPresentState.mVolumeBadRemoved){
+                    synchronized (mAsecMountSet) {
+                        mAsecMountSet.clear();
+                    }
+                    mVolumesPresentState.mVolumeBadRemoved = false;
+                }
+                }
+        } else if(vol.type == VolumeInfo.TYPE_PUBLIC && (Objects.equals(vol.linkName,"sdcard0")
+                || Objects.equals(vol.linkName,"sdcard1")) && newState == VolumeInfo.STATE_EJECTING){
+            synchronized (mVolumesPresentState) {
+                mVolumesPresentState.mVolumeBadRemoved = true;
+            }
+        }
         mCallbacks.notifyVolumeStateChanged(vol, oldState, newState);
 
         if (isBroadcastWorthy(vol)) {
@@ -1300,7 +1504,58 @@ class MountService extends IMountService.Stub
         if (status == MOVE_STATUS_COPY_FINISHED) {
             Slog.d(TAG, "Move to " + mMoveTargetUuid + " copy phase finshed; persisting");
 
+            /* SPRD: modify for emulated storage @{
+             * @orig
             mPrimaryStorageUuid = mMoveTargetUuid;
+             */
+            if (mSetEmulated) {
+                /* when we migrate data, if primary is emulated, we should
+                 * keep primary storage as same as mounted emulated storage
+                 */
+                if (Objects.equals(mPrimaryStorageUuid, mPrimaryEmulatedUuid)) {
+                    mPrimaryStorageUuid = mMoveTargetUuid;
+                }
+                mPrimaryEmulatedUuid = mMoveTargetUuid;
+            } else {
+                final VolumeInfo target = findStorageForUuid(mMoveTargetUuid);
+                /* when we set primary, if target is phsical, we should
+                 * set mPrimaryStorageUuid as UUID_PRIMARY_PHYSICAL and
+                 * set mPrimaryPhysicalUuid as target stoarge fsUuid
+                 */
+                if (target != null && target.getType() == VolumeInfo.TYPE_PUBLIC) {
+                    mPrimaryStorageUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+                    mPrimaryPhysicalUuid = mMoveTargetUuid;
+                    if (Environment.internalIsEmulated()) {
+                        /* set priamry type as external primary */
+                        SystemProperties.set(StorageManager.PROP_PRIMARY_TYPE,
+                                             String.valueOf(Environment.STORAGE_PRIMARY_EXTERNAL));
+                    } else {
+                        if (target.linkName.startsWith("sdcard0")) {
+                            /* set priamry type as internal primary */
+                            SystemProperties.set(StorageManager.PROP_PRIMARY_TYPE,
+                                                 String.valueOf(Environment.STORAGE_PRIMARY_INTERNAL));
+                        } else {
+                            /* set priamry type as external primary */
+                            SystemProperties.set(StorageManager.PROP_PRIMARY_TYPE,
+                                                 String.valueOf(Environment.STORAGE_PRIMARY_EXTERNAL));
+                        }
+                    }
+                    mPrimaryPhysicalLinkName = null;
+                } else {
+                    /* when we set primary, if target is emulated, we should
+                     * keep mounted emulated storage as same as primary storage
+                     */
+                    if (target == null || target.getType() == VolumeInfo.TYPE_EMULATED) {
+                        mPrimaryEmulatedUuid = mMoveTargetUuid;
+                        mPrimaryPhysicalUuid = null;
+                        /* set priamry type as internal primary */
+                        SystemProperties.set(StorageManager.PROP_PRIMARY_TYPE,
+                                String.valueOf(Environment.STORAGE_PRIMARY_INTERNAL));
+                    }
+                    mPrimaryStorageUuid = mMoveTargetUuid;
+                }
+            }
+            /* @} */
             writeSettingsLocked();
         }
 
@@ -1309,6 +1564,8 @@ class MountService extends IMountService.Stub
 
             mMoveCallback = null;
             mMoveTargetUuid = null;
+            /* SPRD: add for emulated storage */
+            mSetEmulated = false;
         }
     }
 
@@ -1416,6 +1673,11 @@ class MountService extends IMountService.Stub
         userFilter.addAction(Intent.ACTION_USER_REMOVED);
         mContext.registerReceiver(mUserReceiver, userFilter, null, mHandler);
 
+        /* @SPRD: add for UMS @{ */
+        mContext.registerReceiver(
+            mUsbReceiver, new IntentFilter(UsbManager.ACTION_USB_STATE), null, mHandler);
+        /* @} */
+
         addInternalVolume();
 
         // Add ourself to the Watchdog monitors if enabled.
@@ -1440,6 +1702,10 @@ class MountService extends IMountService.Stub
     private void readSettingsLocked() {
         mRecords.clear();
         mPrimaryStorageUuid = getDefaultPrimaryStorageUuid();
+        /* SPRD: add for emulated storage @{ */
+        mPrimaryEmulatedUuid = StorageManager.UUID_PRIVATE_INTERNAL;
+        mPrimaryPhysicalUuid = null;
+        /* @} */
         mForceAdoptable = false;
 
         FileInputStream fis = null;
@@ -1461,6 +1727,12 @@ class MountService extends IMountService.Stub
                         if (validAttr) {
                             mPrimaryStorageUuid = readStringAttribute(in,
                                     ATTR_PRIMARY_STORAGE_UUID);
+                            /* SPRD: add for emulated storage @{ */
+                            mPrimaryEmulatedUuid = readStringAttribute(in,
+                                    ATTR_PRIMARY_EMULATED_UUID);
+                            mPrimaryPhysicalUuid = readStringAttribute(in,
+                                    ATTR_PRIMARY_PHYSICAL_UUID);
+                            /* @} */
                         }
                         mForceAdoptable = readBooleanAttribute(in, ATTR_FORCE_ADOPTABLE, false);
 
@@ -1492,6 +1764,10 @@ class MountService extends IMountService.Stub
             out.startTag(null, TAG_VOLUMES);
             writeIntAttribute(out, ATTR_VERSION, VERSION_FIX_PRIMARY);
             writeStringAttribute(out, ATTR_PRIMARY_STORAGE_UUID, mPrimaryStorageUuid);
+            /* SPRD: add for emulated storage @{ */
+            writeStringAttribute(out, ATTR_PRIMARY_EMULATED_UUID, mPrimaryEmulatedUuid);
+            writeStringAttribute(out, ATTR_PRIMARY_PHYSICAL_UUID, mPrimaryPhysicalUuid);
+            /* @} */
             writeBooleanAttribute(out, ATTR_FORCE_ADOPTABLE, mForceAdoptable);
             final int size = mRecords.size();
             for (int i = 0; i < size; i++) {
@@ -1559,17 +1835,41 @@ class MountService extends IMountService.Stub
 
     @Override
     public boolean isUsbMassStorageConnected() {
+        /* SPRD: modify for UMS @{
         throw new UnsupportedOperationException();
+         */
+        if (ENABLE_UMS) {
+            return isUMSConnected();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        /* @} */
     }
 
     @Override
     public void setUsbMassStorageEnabled(boolean enable) {
+        /* SPRD: modify for UMS @{
         throw new UnsupportedOperationException();
+         */
+        if (ENABLE_UMS) {
+            setUMSEnabled(enable);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        /* @} */
     }
 
     @Override
     public boolean isUsbMassStorageEnabled() {
+        /* SPRD: modify for UMS @{
         throw new UnsupportedOperationException();
+         */
+        if (ENABLE_UMS) {
+            return isUMSEnabled();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        /* @} */
     }
 
     @Override
@@ -1605,8 +1905,19 @@ class MountService extends IMountService.Stub
         waitForReady();
 
         final VolumeInfo vol = findVolumeByIdOrThrow(volId);
+        /* @SPRD: add for UMS @{ */
+        mount(vol);
+    }
+
+    public void mount(final VolumeInfo vol) {
+        /* @} */
         if (isMountDisallowed(vol)) {
+            /* @SPRD: modify for UMS @{
+             * @orig
             throw new SecurityException("Mounting " + volId + " restricted by policy");
+             */
+            throw new SecurityException("Mounting " + vol.id + " restricted by policy");
+            /* @} */
         }
         try {
             mConnector.execute("volume", "mount", vol.id, vol.mountFlags, vol.mountUserId);
@@ -1621,14 +1932,30 @@ class MountService extends IMountService.Stub
         waitForReady();
 
         final VolumeInfo vol = findVolumeByIdOrThrow(volId);
+        /* @SPRD: add for UMS @{ */
+        unmount(vol);
+    }
+
+    public void unmount(final VolumeInfo vol) {
+        /* @} */
 
         // TODO: expand PMS to know about multiple volumes
-        if (vol.isPrimaryPhysical()) {
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         * @orig if (vol.isPrimaryPhysical()) {
+         */
+        if(vol.type ==VolumeInfo.TYPE_PUBLIC && (Objects.equals(vol.linkName,"sdcard0")
+                || Objects.equals(vol.linkName,"sdcard1"))){
             final long ident = Binder.clearCallingIdentity();
             try {
                 synchronized (mUnmountLock) {
                     mUnmountSignal = new CountDownLatch(1);
-                    mPms.updateExternalMediaStatus(false, true);
+                    if(isInternalSd(vol)){
+                        mPms.updateInternalSdMediaStatus(false, true);
+                    }else{
+                        mPms.updateExternalMediaStatus(false, true);
+                    }
+                    /* @} */
                     waitForLatch(mUnmountSignal, "mUnmountSignal");
                     mUnmountSignal = null;
                 }
@@ -1664,7 +1991,7 @@ class MountService extends IMountService.Stub
 
         try {
             // TODO: make benchmark async so we don't block other commands
-            final NativeDaemonEvent res = mConnector.execute(3 * DateUtils.MINUTE_IN_MILLIS,
+            final NativeDaemonEvent res = mConnector.execute(3 * 20 * DateUtils.MINUTE_IN_MILLIS,
                     "volume", "benchmark", volId);
             return Long.parseLong(res.getMessage());
         } catch (NativeDaemonTimeoutException e) {
@@ -1678,11 +2005,26 @@ class MountService extends IMountService.Stub
     public void partitionPublic(String diskId) {
         enforcePermission(android.Manifest.permission.MOUNT_FORMAT_FILESYSTEMS);
         waitForReady();
-
+        /* SPRD: support double sdcard
+         * Add support for install apk to sdcard
+         * unmount apks on sdcard to unmount /mnt/secure/asec before partition public@{
+         */
+        final long ident = Binder.clearCallingIdentity();
+        try {
+            synchronized (mUnmountLock) {
+                mUnmountSignal = new CountDownLatch(1);
+                mPms.updateExternalMediaStatus(false, true);
+                waitForLatch(mUnmountSignal, "mUnmountSignal");
+                mUnmountSignal = null;
+            }
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+        /* @} */
         final CountDownLatch latch = findOrCreateDiskScanLatch(diskId);
         try {
             mConnector.execute("volume", "partition", diskId, "public");
-            waitForLatch(latch, "partitionPublic", 3 * DateUtils.MINUTE_IN_MILLIS);
+            waitForLatch(latch, "partitionPublic", 3 * 20 * DateUtils.MINUTE_IN_MILLIS);
         } catch (NativeDaemonConnectorException e) {
             throw e.rethrowAsParcelableException();
         } catch (TimeoutException e) {
@@ -1695,11 +2037,26 @@ class MountService extends IMountService.Stub
         enforcePermission(android.Manifest.permission.MOUNT_FORMAT_FILESYSTEMS);
         enforceAdminUser();
         waitForReady();
-
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard
+         * unmount apks on sdcard to unmount /mnt/secure/asec before partition private@{
+         */
+        final long ident = Binder.clearCallingIdentity();
+        try {
+            synchronized (mUnmountLock) {
+                mUnmountSignal = new CountDownLatch(1);
+                mPms.updateExternalMediaStatus(false, true);
+                waitForLatch(mUnmountSignal, "mUnmountSignal");
+                mUnmountSignal = null;
+            }
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+        /* @} */
         final CountDownLatch latch = findOrCreateDiskScanLatch(diskId);
         try {
             mConnector.execute("volume", "partition", diskId, "private");
-            waitForLatch(latch, "partitionPrivate", 3 * DateUtils.MINUTE_IN_MILLIS);
+            waitForLatch(latch, "partitionPrivate", 3 * 20 * DateUtils.MINUTE_IN_MILLIS);
         } catch (NativeDaemonConnectorException e) {
             throw e.rethrowAsParcelableException();
         } catch (TimeoutException e) {
@@ -1716,7 +2073,7 @@ class MountService extends IMountService.Stub
         final CountDownLatch latch = findOrCreateDiskScanLatch(diskId);
         try {
             mConnector.execute("volume", "partition", diskId, "mixed", ratio);
-            waitForLatch(latch, "partitionMixed", 3 * DateUtils.MINUTE_IN_MILLIS);
+            waitForLatch(latch, "partitionMixed", 3 * 20 * DateUtils.MINUTE_IN_MILLIS);
         } catch (NativeDaemonConnectorException e) {
             throw e.rethrowAsParcelableException();
         } catch (TimeoutException e) {
@@ -1765,12 +2122,41 @@ class MountService extends IMountService.Stub
             }
             mCallbacks.notifyVolumeForgotten(fsUuid);
 
+            /* SPRD: modify for primary storage @{
+             * @orig
             // If this had been primary storage, revert back to internal and
             // reset vold so we bind into new volume into place.
             if (Objects.equals(mPrimaryStorageUuid, fsUuid)) {
                 mPrimaryStorageUuid = getDefaultPrimaryStorageUuid();
                 resetIfReadyAndConnectedLocked();
             }
+             */
+            boolean needReset = false;
+            if (Objects.equals(mPrimaryStorageUuid, fsUuid)) {
+                mPrimaryStorageUuid = getDefaultPrimaryStorageUuid();
+                needReset = true;
+                /* SPRD: support physical external sotrage @{ */
+                if (SystemProperties.getBoolean(StorageManager.PROP_PRIMARY_PHYSICAL, false)) {
+                    SystemProperties.set(StorageManager.PROP_PRIMARY_TYPE,
+                            String.valueOf(Environment.STORAGE_PRIMARY_EXTERNAL));
+                }
+                /* @} */
+            }
+            if (Objects.equals(mPrimaryEmulatedUuid, fsUuid)) {
+                mPrimaryEmulatedUuid = StorageManager.UUID_PRIVATE_INTERNAL;
+                needReset = true;
+            }
+            if (Objects.equals(mPrimaryPhysicalUuid, fsUuid)) {
+                mPrimaryPhysicalUuid = null;
+                if (Objects.equals(mPrimaryStorageUuid, StorageManager.UUID_PRIMARY_PHYSICAL)) {
+                    mPrimaryStorageUuid = getDefaultPrimaryStorageUuid();
+                }
+                needReset = true;
+            }
+            if (needReset) {
+                resetIfReadyAndConnectedLocked();
+            }
+            /* @} */
 
             writeSettingsLocked();
         }
@@ -1795,6 +2181,15 @@ class MountService extends IMountService.Stub
             if (!Objects.equals(StorageManager.UUID_PRIVATE_INTERNAL, mPrimaryStorageUuid)) {
                 mPrimaryStorageUuid = getDefaultPrimaryStorageUuid();
             }
+
+            /* SPRD: add for primary storage @{ */
+            if (!Objects.equals(StorageManager.UUID_PRIVATE_INTERNAL, mPrimaryEmulatedUuid)) {
+                mPrimaryEmulatedUuid = StorageManager.UUID_PRIVATE_INTERNAL;
+            }
+            if (mPrimaryPhysicalUuid != null) {
+                mPrimaryPhysicalUuid = null;
+            }
+            /* @} */
 
             writeSettingsLocked();
             resetIfReadyAndConnectedLocked();
@@ -1849,6 +2244,65 @@ class MountService extends IMountService.Stub
         }
     }
 
+    /* SPRD: add for emulated storage @{ */
+    @Override
+    public String getPrimaryEmulatedStorageUuid() {
+        enforcePermission(android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS);
+        waitForReady();
+
+        synchronized (mLock) {
+            return mPrimaryEmulatedUuid;
+        }
+    }
+
+    @Override
+    public void setPrimaryEmulatedStorageUuid(String volumeUuid, IPackageMoveObserver callback) {
+        enforcePermission(android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS);
+        waitForReady();
+
+        final VolumeInfo target = findStorageForUuid(volumeUuid);
+
+        if (target == null || target.getType() != VolumeInfo.TYPE_EMULATED) {
+            throw new IllegalArgumentException("Target volume[" + volumeUuid + "] is not emulated");
+        }
+
+        synchronized (mLock) {
+            if (Objects.equals(mPrimaryEmulatedUuid, volumeUuid)) {
+                throw new IllegalArgumentException("Primary emulated storage already at " + volumeUuid);
+            }
+
+            if (mMoveCallback != null) {
+                throw new IllegalStateException("Move already in progress");
+            }
+            mMoveCallback = callback;
+            mMoveTargetUuid = volumeUuid;
+            mSetEmulated = true;
+
+            // Here just move from emulated storage to emulated storage
+            {
+                final VolumeInfo from = findStorageForUuid(mPrimaryEmulatedUuid);
+                final VolumeInfo to = findStorageForUuid(volumeUuid);
+
+                if (from == null) {
+                    Slog.w(TAG, "Failing move due to missing from volume " + mPrimaryEmulatedUuid);
+                    onMoveStatusLocked(PackageManager.MOVE_FAILED_INTERNAL_ERROR);
+                    return;
+                } else if (to == null) {
+                    Slog.w(TAG, "Failing move due to missing to volume " + volumeUuid);
+                    onMoveStatusLocked(PackageManager.MOVE_FAILED_INTERNAL_ERROR);
+                    return;
+                }
+
+                try {
+                    mConnector.execute("volume", "move_storage", from.id, to.id);
+                } catch (NativeDaemonConnectorException e) {
+                    throw e.rethrowAsParcelableException();
+                }
+            }
+        }
+    }
+    /* @} */
+
     @Override
     public String getPrimaryStorageUuid() {
         enforcePermission(android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS);
@@ -1865,9 +2319,18 @@ class MountService extends IMountService.Stub
         waitForReady();
 
         synchronized (mLock) {
+            /* SPRD: modify for primary storage @{
+             * @orig
             if (Objects.equals(mPrimaryStorageUuid, volumeUuid)) {
                 throw new IllegalArgumentException("Primary storage already at " + volumeUuid);
             }
+             */
+            if ((Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, mPrimaryStorageUuid)
+                    && Objects.equals(mPrimaryPhysicalUuid, volumeUuid))
+                || Objects.equals(mPrimaryStorageUuid, volumeUuid)) {
+                throw new IllegalArgumentException("Primary storage already at " + volumeUuid);
+            }
+            /* @} */
 
             if (mMoveCallback != null) {
                 throw new IllegalStateException("Move already in progress");
@@ -1875,6 +2338,8 @@ class MountService extends IMountService.Stub
             mMoveCallback = callback;
             mMoveTargetUuid = volumeUuid;
 
+            /* SPRD: modify for primary storage @{
+             * @orig
             // When moving to/from primary physical volume, we probably just nuked
             // the current storage location, so we have nothing to move.
             if (Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, mPrimaryStorageUuid)
@@ -1883,10 +2348,39 @@ class MountService extends IMountService.Stub
                 onMoveStatusLocked(MOVE_STATUS_COPY_FINISHED);
                 onMoveStatusLocked(PackageManager.MOVE_SUCCEEDED);
                 resetIfReadyAndConnectedLocked();
-
+             */
+            final VolumeInfo to = findStorageForUuid(volumeUuid);
+            final VolumeInfo from;
+            if ((to != null && to.getType() == VolumeInfo.TYPE_EMULATED)
+                    && !Objects.equals(mMoveTargetUuid, mPrimaryEmulatedUuid)) {
+                from = findStorageForUuid(mPrimaryEmulatedUuid);
             } else {
+                from = findStorageForUuid(mPrimaryStorageUuid);
+            }
+            if (to != null && (to.getType() == VolumeInfo.TYPE_PUBLIC
+                    || (from == null && Objects.equals(StorageManager.UUID_PRIMARY_PHYSICAL, mPrimaryStorageUuid))
+                    || (from != null && from.getType() == VolumeInfo.TYPE_PUBLIC))) {
+                if (to == null) {
+                    Slog.w(TAG, "Failing move due to missing to volume " + volumeUuid);
+                    onMoveStatusLocked(PackageManager.MOVE_FAILED_INTERNAL_ERROR);
+                    return;
+                }
+                /* if target volume is physical, nothing to be move,
+                 * and if current primary is physical, nothing to be move too.
+                 */
+                //from.mountFlags = from.mountFlags & ~VolumeInfo.MOUNT_FLAG_PRIMARY;
+                //to.mountFlags = to.mountFlags | VolumeInfo.MOUNT_FLAG_PRIMARY;
+                Slog.d(TAG, "Skipping move to/from primary physical");
+                onMoveStatusLocked(MOVE_STATUS_COPY_FINISHED);
+                onMoveStatusLocked(PackageManager.MOVE_SUCCEEDED);
+                resetIfReadyAndConnectedLocked();
+            /* @} */
+            } else {
+                /* SPRD: delete for primary storage
+                 * @orig
                 final VolumeInfo from = findStorageForUuid(mPrimaryStorageUuid);
                 final VolumeInfo to = findStorageForUuid(volumeUuid);
+                 */
 
                 if (from == null) {
                     Slog.w(TAG, "Failing move due to missing from volume " + mPrimaryStorageUuid);
@@ -1947,11 +2441,49 @@ class MountService extends IMountService.Stub
 
         Slog.w(TAG, "No primary storage mounted!");
     }
+    /** SPRD: support double sdcard
+     * add for avoiding system dump when firing UMS @{
+     * @hide
+     */
+    public String[] getSecureContainerList(boolean externalStorage, boolean isInternlaSd) {
+        enforcePermission(android.Manifest.permission.ASEC_ACCESS);
+        waitForReady();
+        warnOnNotMounted();
+
+        /* SPRD: support double sdcard add for sdcard hotplug @{ */
+       synchronized (mVolumesPresentState) {
+           if (mVolumesPresentState.mVolumeBadRemoved) {
+                    synchronized (mAsecMountSet) {
+                        Slog.w(TAG, "PrimaryStorageState is " + Environment.MEDIA_BAD_REMOVAL+ ", AsecMountSize is " + mAsecMountSet.size());
+                        return mAsecMountSet.toArray(new String[mAsecMountSet.size()]);
+                       }
+             }
+         }
+         /* @} */
+        try {
+            return NativeDaemonEvent.filterMessageList(
+                    mConnector.executeForList("asec", "list", externalStorage ? "1" : "0", isInternlaSd ? "1" : "0" ), VoldResponseCode.AsecListResult);
+        } catch (NativeDaemonConnectorException e) {
+            return new String[0];
+        }
+    }
+    /* @} */
 
     public String[] getSecureContainerList() {
         enforcePermission(android.Manifest.permission.ASEC_ACCESS);
         waitForReady();
         warnOnNotMounted();
+
+        /* SPRD: support double sdcard add for sdcard hotplug @{ */
+        synchronized (mVolumesPresentState) {
+            if (mVolumesPresentState.mVolumeBadRemoved) {
+                   synchronized (mAsecMountSet) {
+                       Slog.w(TAG, "PrimaryStorageState is " + Environment.MEDIA_BAD_REMOVAL+ ", AsecMountSize is " + mAsecMountSet.size());
+                       return mAsecMountSet.toArray(new String[mAsecMountSet.size()]);
+                     }
+              }
+         }
+         /* @} */
 
         try {
             return NativeDaemonEvent.filterMessageList(
@@ -1961,20 +2493,42 @@ class MountService extends IMountService.Stub
         }
     }
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
     public int createSecureContainer(String id, int sizeMb, String fstype, String key,
             int ownerUid, boolean external) {
+        return createInternalSdContainer(id, sizeMb, fstype, key, ownerUid, external, true);
+    }
+
+    public int createInternalSdContainer(String id, int sizeMb, String fstype, String key,
+            int ownerUid, boolean external, boolean isForwardLocked) {
+    /* @} */
         enforcePermission(android.Manifest.permission.ASEC_CREATE);
         waitForReady();
         warnOnNotMounted();
 
         int rc = StorageResultCode.OperationSucceeded;
         try {
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * orig
             mConnector.execute("asec", "create", id, sizeMb, fstype, new SensitiveArg(key),
                     ownerUid, external ? "1" : "0");
+             */
+            mConnector.execute("asec", "create", id, sizeMb, fstype, new SensitiveArg(key),
+                    ownerUid, external ? "1" : "0", isForwardLocked ? "1" : "0");
         } catch (NativeDaemonConnectorException e) {
             rc = StorageResultCode.OperationFailedInternalError;
         }
 
+       /* SPRD: support double sdcard add for sdcard hotplug @{ */
+       synchronized (mVolumesPresentState) {
+           if (mVolumesPresentState.mVolumeBadRemoved) {
+                rc = StorageResultCode.OperationSucceeded;
+             }
+        }
+       /* @} */
         if (rc == StorageResultCode.OperationSucceeded) {
             synchronized (mAsecMountSet) {
                 mAsecMountSet.add(id);
@@ -2195,6 +2749,12 @@ class MountService extends IMountService.Stub
             if (code == VoldResponseCode.OpFailedStorageNotFound) {
                 Slog.i(TAG, String.format("Container '%s' not found", id));
                 return null;
+                }
+            /*SPRD: workaround java.lang.IllegalStateException: Unexpected response code 400 @{ */
+            else if (code == 400) {
+                Slog.i(TAG, "Unexpected response code" + code, new Exception());
+                return null;
+            /* @} */
             } else {
                 throw new IllegalStateException(String.format("Unexpected response code %d", code));
             }
@@ -2660,7 +3220,24 @@ class MountService extends IMountService.Stub
                     StorageManager.PROP_PRIMARY_PHYSICAL, false);
 
             final String id = "stub_primary";
+            /* SPRD: support double sdcard @{
+             * @orig
             final File path = Environment.getLegacyExternalStorageDirectory();
+             */
+            File tempPath = null;
+            switch (Environment.getStorageType()) {
+                case Environment.STORAGE_PRIMARY_EXTERNAL:
+                    tempPath = Environment.getInternalStoragePath();
+                    break;
+
+                case Environment.STORAGE_PRIMARY_INTERNAL:
+                    tempPath = Environment.getInternalStorageLinkPath();
+                    break;
+                default:
+                    tempPath = Environment.getLegacyExternalStorageDirectory();
+            }
+            final File path = tempPath;
+            /* @}*/
             final String description = mContext.getString(android.R.string.unknownName);
             final boolean primary = true;
             final boolean removable = primaryPhysical;
@@ -2670,7 +3247,15 @@ class MountService extends IMountService.Stub
             final long maxFileSize = 0L;
             final UserHandle owner = new UserHandle(userId);
             final String uuid = null;
+            /* SPRD: support physical external sotrage @{
+             * @orig
             final String state = Environment.MEDIA_REMOVED;
+             */
+            String state = Environment.MEDIA_REMOVED;
+            if(Environment.getStorageType() == Environment.STORAGE_PRIMARY_EXTERNAL) {
+                state = Environment.MEDIA_MOUNTED;
+            }
+            /* @} */
 
             res.add(0, new StorageVolume(id, StorageVolume.STORAGE_ID_INVALID, path,
                     description, primary, removable, emulated, mtpReserveSize,
@@ -3221,6 +3806,8 @@ class MountService extends IMountService.Stub
         private static final int MSG_VOLUME_FORGOTTEN = 4;
         private static final int MSG_DISK_SCANNED = 5;
         private static final int MSG_DISK_DESTROYED = 6;
+        /* @SPRD: add for UMS */
+        private static final int MSG_UMS_CONNECTION_CHANGED = 7;
 
         private final RemoteCallbackList<IMountServiceListener>
                 mCallbacks = new RemoteCallbackList<>();
@@ -3280,6 +3867,12 @@ class MountService extends IMountService.Stub
                     callback.onDiskDestroyed((DiskInfo) args.arg1);
                     break;
                 }
+                /* @SPRD: add for UMS @{ */
+                case MSG_UMS_CONNECTION_CHANGED: {
+                    callback.onUsbMassStorageConnectionChanged(args.argi1 == 1);
+                    break;
+                }
+                /* @} */
             }
         }
 
@@ -3323,6 +3916,14 @@ class MountService extends IMountService.Stub
             args.arg1 = disk.clone();
             obtainMessage(MSG_DISK_DESTROYED, args).sendToTarget();
         }
+
+        /* @SPRD: add for UMS @{ */
+        private void notifyUMSConnectionChanged(boolean avail) {
+            final SomeArgs args = SomeArgs.obtain();
+            args.argi1 = (avail ? 1 : 0);
+            obtainMessage(MSG_UMS_CONNECTION_CHANGED, args).sendToTarget();
+        }
+        /* @} */
     }
 
     @Override
@@ -3466,4 +4067,204 @@ class MountService extends IMountService.Stub
             return true;
         }
     }
+
+    /* @SPRD: add for UMS @{ */
+    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mUSBIsConnected = intent.getBooleanExtra(UsbManager.USB_CONNECTED, false);
+            boolean available = (mUSBIsConnected &&
+                                 intent.getBooleanExtra(UsbManager.USB_FUNCTION_MASS_STORAGE, false));
+            synchronized (mShareLock) {
+                if (!mUSBIsConnected && !mUSBIsUnpluged) {
+                    mUSBIsUnpluged = true;
+                }
+            }
+            notifyShareAvailabilityChange(available);
+        }
+    };
+
+    private void sendUmsIntent(boolean c) {
+        mContext.sendBroadcastAsUser(
+            new Intent((c ? Intent.ACTION_UMS_CONNECTED : Intent.ACTION_UMS_DISCONNECTED)),
+            UserHandle.ALL);
+    }
+
+    private boolean isEnableUMSBroken() {
+        synchronized (mShareLock) {
+            return !mUSBIsConnected || mUSBIsUnpluged;
+        }
+    }
+
+    private void notifyShareAvailabilityChange(final boolean avail) {
+        synchronized (mLock) {
+            mCallbacks.notifyUMSConnectionChanged(avail);
+            synchronized (mShareLock) {
+                mUmsAvailable = avail;
+            }
+        }
+
+        if (mSystemReady == true) {
+            sendUmsIntent(avail);
+        } else {
+            mSendUmsConnectedOnBoot = avail;
+        }
+
+        if (avail == false && mUMSShared) {
+            /*
+             * USB mass storage disconnected while enabled
+             */
+            new Thread("MountService#AvailabilityChange") {
+                @Override
+                public void run() {
+                    try {
+                        Slog.w(TAG, "Disabling UMS after cable disconnect");
+                        setUMSEnabled(false);
+                    } catch (Exception ex) {
+                        Slog.w(TAG, "Failed to mount media on UMS enabled-disconnect", ex);
+                    }
+                }
+            }.start();
+        }
+    }
+
+    public boolean isUMSConnected() {
+        waitForReady();
+
+        synchronized (mShareLock) {
+            if (mUmsEnabling) {
+                return true;
+            }
+            return mUmsAvailable;
+        }
+    }
+
+    private boolean isUMSEnabled() {
+        waitForReady();
+
+        synchronized (mShareLock) {
+            return mUMSShared;
+        }
+    }
+
+    private void setUMSEnabled(boolean enable) {
+        boolean broken = false;
+        enforcePermission(android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS);
+        waitForReady();
+
+        final ArrayList<VolumeInfo> publicVolumes = new ArrayList<>();
+        synchronized (mLock) {
+            for (int i = 0; i < mVolumes.size(); i++) {
+                final VolumeInfo vol = mVolumes.valueAt(i);
+                if (vol.type == VolumeInfo.TYPE_PUBLIC) {
+                    publicVolumes.add(vol);
+                }
+            }
+        }
+
+        synchronized (mShareLock) {
+            if (enable) {
+                mUSBIsUnpluged = false;
+                mUmsEnabling = true;
+            }
+
+            int publicCount = publicVolumes.size();
+            if (enable) {
+                boolean prepareOK = prepareEnableUMS(publicCount);
+                if (isEnableUMSBroken() || !prepareOK) {
+                    if (prepareOK) {
+                        disableUMSOver();
+                    }
+                    mUmsEnabling = false;
+                    return;
+                }
+                int i;
+                for (i = 0; i < publicCount; i++) {
+                    if (isEnableUMSBroken()) {
+                        broken = true;
+                        break;
+                    }
+                    final VolumeInfo vol = publicVolumes.get(i);
+                    boolean enableOK = enableUMSLocked(vol);
+                    if (!enableOK || isEnableUMSBroken()) {
+                        i++;
+                        broken = true;
+                        break;
+                    }
+                }
+                if (broken || isEnableUMSBroken()) {
+                    mUmsEnabling = false;
+                    // if usb line is unconnected when sharing, roll back opration
+                    for (int j = 0; j < i; j++) {
+                        final VolumeInfo vol = publicVolumes.get(j);
+                        disableUMSLocked(vol);
+                    }
+                    disableUMSOver();
+                } else {
+                    mUmsEnabling = false;
+                    mUMSShared = true;
+                }
+            } else {
+                int i;
+                for (i = 0; i < publicCount; i++) {
+                    final VolumeInfo vol = publicVolumes.get(i);
+                    disableUMSLocked(vol);
+                }
+                if (i < publicCount) {
+                    // maybe cannot get here
+                    Slog.w(TAG, "Some thing wrong!", new Exception("disable UMS"));
+                }
+                disableUMSOver();
+                mUMSShared = false;
+            }
+        }
+    }
+
+    private boolean prepareEnableUMS(int shareCount) {
+        try {
+            mConnector.execute("volume", "pre_share", shareCount);
+        } catch (NativeDaemonConnectorException e) {
+            Slog.w(TAG, "prepare enable ums error:", new Exception(e));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean enableUMSLocked(final VolumeInfo vol) {
+        try {
+            vol.stateBeforeUMS = vol.state;
+            if (vol.state == VolumeInfo.STATE_MOUNTED) {
+                unmount(vol);
+            }
+            mConnector.execute("volume", "share", vol.id);
+        } catch (Exception e) {
+            Slog.w(TAG, "enable ums error:", new Exception(e));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean disableUMSLocked(final VolumeInfo vol) {
+        try {
+            mConnector.execute("volume", "unshare", vol.id);
+            if (vol.stateBeforeUMS == VolumeInfo.STATE_MOUNTED) {
+                mount(vol);
+            }
+        } catch (Exception e) {
+            Slog.w(TAG, "disable ums error:", new Exception(e));
+            return false;
+        }
+        return true;
+    }
+
+    private boolean disableUMSOver() {
+        try {
+            mConnector.execute("volume", "unshare_over");
+        } catch (NativeDaemonConnectorException e) {
+            Slog.w(TAG, "disable ums over error:", new Exception(e));
+            return false;
+        }
+        return true;
+    }
+    /* @} */
 }

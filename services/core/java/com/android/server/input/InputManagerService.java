@@ -187,6 +187,11 @@ public class InputManagerService extends IInputManager.Stub
     private static native void nativeSetPointerSpeed(long ptr, int speed);
     private static native void nativeSetShowTouches(long ptr, boolean enabled);
     private static native void nativeSetInteractive(long ptr, boolean interactive);
+    /* SPRD: add mouse acquirement @ { */
+    private static native void nativeSetEnableFor3rdApp(long ptr, boolean enable);
+    private static native boolean nativeGetEnableFor3rdApp(long ptr);
+    private static native boolean nativeGetScrollMode(long ptr);
+    /* @ } */
     private static native void nativeReloadCalibration(long ptr);
     private static native void nativeVibrate(long ptr, int deviceId, long[] pattern,
             int repeat, int token);
@@ -1793,5 +1798,22 @@ public class InputManagerService extends IInputManager.Stub
         public void setInteractive(boolean interactive) {
             nativeSetInteractive(mPtr, interactive);
         }
+
+        /* SPRD: add mouse acquirement @ { */
+        @Override
+        public void setEnableFor3rdApp(boolean enable) {
+            nativeSetEnableFor3rdApp(mPtr, enable);                            
+        }
+
+        @Override
+        public boolean getEnableFor3rdApp() {
+            return nativeGetEnableFor3rdApp(mPtr);
+        }
+
+        @Override
+        public boolean getScrollMode() {
+            return nativeGetScrollMode(mPtr);
+        }
+        /* @ } */
     }
 }

@@ -18,8 +18,9 @@ package com.android.systemui.settings;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.SeekBar;
 
@@ -37,6 +38,48 @@ public class ToggleSeekBar extends SeekBar {
     public ToggleSeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
+    /*SPRD bug 617670:Press left/right key when progress in min/max maybe cause view focus change wrong.{@*/
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_DPAD_DOWN:
+            break;
+        case KeyEvent.KEYCODE_DPAD_UP:
+            break;
+        case KeyEvent.KEYCODE_DPAD_LEFT:
+            /*SPRD bug 627046:Layout rtl maybe wrong*/
+            if(isLayoutRtl()){
+                if(getProgress() == getMax()){
+                    Log.d(VIEW_LOG_TAG, "onKeyDown left1 Progress="+getProgress()+",max="+ getMax());
+                    return true;
+                }
+            }else{
+                if(getProgress() == 0){
+                    Log.d(VIEW_LOG_TAG, "onKeyDown left2 Progress="+getProgress()+",max="+ getMax());
+                    return true;
+                }
+            }
+            break;
+        case KeyEvent.KEYCODE_DPAD_RIGHT:
+            /*SPRD bug 627046:Layout rtl maybe wrong*/
+            if(isLayoutRtl()){
+                if(getProgress() == 0){
+                    Log.d(VIEW_LOG_TAG, "onKeyDown right1 Progress="+getProgress()+",max="+ getMax());
+                    return true;
+                }
+            }else{
+                if(getProgress() == getMax()){
+                    Log.d(VIEW_LOG_TAG, "onKeyDown right2 Progress="+getProgress()+",max="+ getMax());
+                    return true;
+                }
+            }
+            break;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    /*@}*/
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

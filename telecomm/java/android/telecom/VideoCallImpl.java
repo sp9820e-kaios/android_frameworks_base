@@ -177,7 +177,8 @@ public class VideoCallImpl extends VideoCall {
 
     VideoCallImpl(IVideoProvider videoProvider, Call call) throws RemoteException {
         mVideoProvider = videoProvider;
-        mVideoProvider.asBinder().linkToDeath(mDeathRecipient, 0);
+        //SPRD: modify for bug482044. Release VideoCallImpl.
+        //mVideoProvider.asBinder().linkToDeath(mDeathRecipient, 0);
 
         mBinder = new VideoCallListenerBinder();
         mVideoProvider.addVideoCallback(mBinder);

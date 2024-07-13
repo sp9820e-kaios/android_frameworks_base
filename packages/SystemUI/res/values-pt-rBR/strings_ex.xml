@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"O ponto quente de Wi-Fi portável precisa de ligação de dados, que pode produzir os custos adicionais."</string>
+<string name="softap_bt_cannot_coexist">"Quando o Bluetooth é ativado ou está ligando, o software não pode funcionar, se você quer usar o software, favor assegura que o Bluetooth é desativado."</string>
+<string name="bt_softap_cannot_coexist">"Quando o software é ativado ou está ligando, o Bluetooth não pode funcionar, se você quer usar o Bluetooth, favor assegura que o software é desativado."</string>
+<string name="lte_service_error_airplane">"Você não pode usar LTE quando o telefone é no modo de avião."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ligado"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G desligado"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ligar"</string>
+<string name="accessibility_quick_settings_lte_off">"4G desligar"</string>
+<string name="toggle_data_error_airplane">"Você não pode usar os dados Móveis quando o telefone é no modo de avião."</string>
+<string name="quick_settings_data_connection_label">"Dados"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Dados ligados"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Dados desligados"</string>
+<string name="accessibility_quick_settings_data_on">"Dados ligar"</string>
+<string name="accessibility_quick_settings_data_off">"Dados desligar"</string>
+<string name="missing_sim_message">"Sem sim"</string>
+    <string name="lte_service_error_incall">"Não pode alterar o serviço LTE durante a chamada."</string>
+
+</resources>

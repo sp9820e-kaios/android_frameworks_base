@@ -73,10 +73,16 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.phone.StatusBarKeyguardViewManager;
 import com.android.systemui.statusbar.phone.StatusBarWindowManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import android.speech.tts.TextToSpeech;
 import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
+import android.provider.Settings;
+import com.android.systemui.R;
 
 /**
  * Mediates requests related to the keyguard.  This includes queries about the
@@ -259,7 +265,9 @@ public class KeyguardViewMediator extends SystemUI {
     private boolean mGoingToSleep;
 
     // last known state of the cellular connection
-    private String mPhoneState = TelephonyManager.EXTRA_STATE_IDLE;
+    /* Fix BUG #525749, Awkward sound in call when lock and unlock {@ */
+    private int mPhoneState = TelephonyManager.CALL_STATE_IDLE;
+    /* @} */
 
     /**
      * Whether a hide is pending an we are just waiting for #startKeyguardExitAnimation to be
@@ -321,7 +329,9 @@ public class KeyguardViewMediator extends SystemUI {
 
     private boolean mWakeAndUnlocking;
     private IKeyguardDrawnCallback mDrawnCallback;
-
+    /* sprd BUG 616435{@ */
+    private boolean mPhoneStatusCalling = false;
+    /* @} */
     KeyguardUpdateMonitorCallback mUpdateCallback = new KeyguardUpdateMonitorCallback() {
 
         @Override
@@ -356,6 +366,9 @@ public class KeyguardViewMediator extends SystemUI {
         @Override
         public void onPhoneStateChanged(int phoneState) {
             synchronized (KeyguardViewMediator.this) {
+                /* Fix BUG #525749, Awkward sound in call when lock and unlock {@ */
+                mPhoneState = phoneState;
+                /* @} */
                 if (TelephonyManager.CALL_STATE_IDLE == phoneState  // call ending
                         && !mDeviceInteractive                           // screen off
                         && mExternallyEnabled) {                // not disabled by any app
@@ -366,6 +379,9 @@ public class KeyguardViewMediator extends SystemUI {
                     // flicker while turning back on the screen and disabling the keyguard again).
                     if (DEBUG) Log.d(TAG, "screen is off and call ended, let's make sure the "
                             + "keyguard is showing");
+                    /* sprd BUG 616435{@ */
+                    mPhoneStatusCalling = true;
+                    /* @} */
                     doKeyguardLocked(null);
                 }
             }
@@ -927,6 +943,14 @@ public class KeyguardViewMediator extends SystemUI {
                     Slog.w(TAG, "Failed to call onKeyguardExitResult(false)", e);
                 }
             } else {
+                /* SPRD: when keyguard is disable update InputRestricted and return @{*/
+                if (!mExternallyEnabled) {
+                    Log.i(TAG,"keyguard is disable");
+                    mNeedToReshowWhenReenabled = false;
+                    updateInputRestricted();
+                    return;
+                }
+                /* @} */
                 mExitSecureCallback = callback;
                 verifyUnlockLocked();
             }
@@ -1061,14 +1085,14 @@ public class KeyguardViewMediator extends SystemUI {
         }
 
         if (mLockPatternUtils.checkVoldPassword(KeyguardUpdateMonitor.getCurrentUser())) {
-            if (DEBUG) Log.d(TAG, "Not showing lock screen since just decrypted");
+            if (DEBUG) Log.v(TAG, "Not showing lock screen since just decrypted");
             // Without this, settings is not enabled until the lock screen first appears
             setShowingLocked(false);
             hideLocked();
             return;
         }
 
-        if (DEBUG) Log.d(TAG, "doKeyguard: showing the lock screen");
+        if (DEBUG) Log.d(TAG, "doKeyguard: showing the lock screen mPhoneState:"+mPhoneState);
         showLocked(options);
     }
 
@@ -1121,7 +1145,13 @@ public class KeyguardViewMediator extends SystemUI {
     private void notifyScreenOn(IKeyguardDrawnCallback callback) {
         if (DEBUG) Log.d(TAG, "notifyScreenOn");
         Message msg = mHandler.obtainMessage(NOTIFY_SCREEN_TURNING_ON, callback);
-        mHandler.sendMessage(msg);
+        /** SRPD : fixbug 604035 @{ **/
+        /** SRPD : fixbug 565623  Splash screen phenomenon @{ **/
+        //mHandler.sendMessage(msg);
+        /** SRPD : fixbug 596648  Splash screen phenomenon @{ **/
+        mHandler.sendMessageDelayed(msg, 450);
+        /** @} **/
+        /** @} **/
     }
 
     private void notifyScreenTurnedOn() {
@@ -1178,6 +1208,9 @@ public class KeyguardViewMediator extends SystemUI {
         public void onReceive(Context context, Intent intent) {
             if (DELAYED_KEYGUARD_ACTION.equals(intent.getAction())) {
                 final int sequence = intent.getIntExtra("seq", 0);
+                /* sprd BUG 616435{@ */
+                mPhoneStatusCalling = true;
+                /* @} */
                 if (DEBUG) Log.d(TAG, "received DELAYED_KEYGUARD_ACTION with seq = "
                         + sequence + ", mDelayedShowingSequence = " + mDelayedShowingSequence);
                 synchronized (KeyguardViewMediator.this) {
@@ -1272,8 +1305,39 @@ public class KeyguardViewMediator extends SystemUI {
      * @see #keyguardDone
      * @see #KEYGUARD_DONE
      */
+    TextToSpeech mTextToSpeech;/** Fix bug 593060, Unlock speaking current time {@ **/
     private void handleKeyguardDone(boolean authenticated, boolean wakeup) {
+        /** Fix bug 593060, Unlock speaking current time {@ **/
+        try {
+            if(Settings.System.getInt(mContext.getContentResolver(), Settings.System.VOICE_FOR_DATE, 0) == 1){
+                mTextToSpeech = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                     /* sprd BUG 616435{@ */
+                     Log.d(TAG, "handleKeyguardDone mPhoneStatusCalling:"+mPhoneStatusCalling+" mPhoneState:"+mPhoneState);
+                     if (status == TextToSpeech.SUCCESS && !mPhoneStatusCalling && mPhoneState != 2) {
+                         SimpleDateFormat df = new SimpleDateFormat(mContext.getResources().getString(R.string.speak_spec));
+                         Date da = new Date();
+                         String time = df.format(da);
+                         mTextToSpeech.speak(time, TextToSpeech.QUEUE_FLUSH, null);
+                         Log.d(TAG, "handleKeyguardDone mTextToSpeech.speak");
+                     } else {
+                         Log.d(TAG, "handleKeyguardDone Could not initialize TextToSpeech.");
+                     }
+                     /* @} */
+                 }
+              });
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "handleKeyguardDone Exception .", e);
+        }
+        /** @} **/
         if (DEBUG) Log.d(TAG, "handleKeyguardDone");
+        // SPRD: When handleKeyguardDone call scheduleButtonTimeout.
+        if(authenticated) {
+                mPM.scheduleButtonLightTimeout(SystemClock.uptimeMillis());
+        }
+
         synchronized (this) {
             resetKeyguardDonePendingLocked();
         }
@@ -1331,6 +1395,10 @@ public class KeyguardViewMediator extends SystemUI {
     private void handleKeyguardDoneDrawing() {
         synchronized(this) {
             if (DEBUG) Log.d(TAG, "handleKeyguardDoneDrawing");
+            /* sprd BUG 616435{@ */
+            if(mPhoneState == 0)
+                mPhoneStatusCalling = false;
+            /* @} */
             if (mWaitingUntilKeyguardVisible) {
                 if (DEBUG) Log.d(TAG, "handleKeyguardDoneDrawing: notifying mWaitingUntilKeyguardVisible");
                 mWaitingUntilKeyguardVisible = false;
@@ -1405,6 +1473,11 @@ public class KeyguardViewMediator extends SystemUI {
             mShowKeyguardWakeLock.release();
         }
         mKeyguardDisplayManager.show();
+        /* SPRD: Bug 583693 Hide items in PikeL {@ */
+        Log.d(TAG, "INTO LOCKSCREEN, hide some items ...");
+        mStatusBarKeyguardViewManager.hideSwtichPanel(true);
+        mStatusBarKeyguardViewManager.hideNotifications(true);
+        /* @} */
     }
 
     private final Runnable mKeyguardGoingAwayRunnable = new Runnable() {
@@ -1412,7 +1485,10 @@ public class KeyguardViewMediator extends SystemUI {
         public void run() {
             try {
                 mStatusBarKeyguardViewManager.keyguardGoingAway();
-
+                /* SPRD: Bug 583693 show buttons and notifications when not in keyguard {@ */
+                //mStatusBarKeyguardViewManager.hideSwtichPanel(false);
+                //mStatusBarKeyguardViewManager.hideNotifications(false);
+                /* @} */
                 // Don't actually hide the Keyguard at the moment, wait for window
                 // manager until it tells us it's safe to do so with
                 // startKeyguardExitAnimation.
@@ -1435,7 +1511,7 @@ public class KeyguardViewMediator extends SystemUI {
             if (DEBUG) Log.d(TAG, "handleHide");
 
             mHiding = true;
-            if (mShowing && !mOccluded) {
+            if (mShowing && /*!mOccluded*/false) {//sprd: 627358 splash screen when unlock screen
                 if (!mHideAnimationRun) {
                     mStatusBarKeyguardViewManager.startPreHideAnimation(mKeyguardGoingAwayRunnable);
                 } else {
@@ -1461,7 +1537,7 @@ public class KeyguardViewMediator extends SystemUI {
 
     private void handleStartKeyguardExitAnimation(long startTime, long fadeoutDuration) {
         synchronized (KeyguardViewMediator.this) {
-
+            fadeoutDuration = 0;//sprd: 627358 splash screen when unlock screen
             if (!mHiding) {
                 return;
             }
@@ -1469,9 +1545,14 @@ public class KeyguardViewMediator extends SystemUI {
 
             // only play "unlock" noises if not on a call (since the incall UI
             // disables the keyguard)
-            if (TelephonyManager.EXTRA_STATE_IDLE.equals(mPhoneState)) {
+            /* Fix BUG #525749, Awkward sound in call when lock and unlock {@ */
+            if (TelephonyManager.CALL_STATE_IDLE == mPhoneState) {
+                /** Fix bug 560335, Duplicate unlock sounds while screen off {@ **/
+                if (mDeviceInteractive && mShowing)
+                /** @} **/
                 playSounds(false);
             }
+            /* @} */
 
             setShowingLocked(false);
             mStatusBarKeyguardViewManager.hide(startTime, fadeoutDuration);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="kg_no_sim_message">"SIM કાર્ડ નથી"</string>
+<string name="kg_emergency_call_no_service">"કોઇ નેટવર્ક ઉપલબ્ધ નથી "</string>
+<string name="kg_sim_pin_verify_success">"PIN ચકાસણી સફળ"</string>
+    <string name="kg_sim_pin_delete">"ભૂંસો"</string>
+     <string name="kg_sim_pin_ok">ઓકે</string>
+
+</resources>

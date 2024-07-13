@@ -48,10 +48,12 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.UserHandle;
+import android.os.ServiceManager;
 import android.provider.Settings;
 
 import com.android.internal.telephony.IccCardConstants;
 import com.android.internal.telephony.IccCardConstants.State;
+import com.android.internal.telephony.ITelephony;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.TelephonyIntents;
 
@@ -141,7 +143,8 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
     private static final int MSG_SIM_SUBSCRIPTION_INFO_CHANGED = 328;
     private static final int MSG_AIRPLANE_MODE_CHANGED = 329;
     private static final int MSG_SERVICE_STATE_CHANGE = 330;
-
+    // SPRD: modify by BUG 558060
+    private static final int MSG_SIM_STANDBY_CHANGE = 331;
     private static KeyguardUpdateMonitor sInstance;
 
     private final Context mContext;
@@ -247,6 +250,9 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                 case MSG_SERVICE_STATE_CHANGE:
                     handleServiceStateChange(msg.arg1, (ServiceState) msg.obj);
                     break;
+                case MSG_SIM_STANDBY_CHANGE:
+                    handleSimStandbyChange((Integer)msg.obj);
+                    break;
             }
         }
     };
@@ -342,7 +348,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
     }
 
     /** @return List of SubscriptionInfo records, maybe empty but never null */
-    List<SubscriptionInfo> getSubscriptionInfo(boolean forceReload) {
+    public List<SubscriptionInfo> getSubscriptionInfo(boolean forceReload) {
         List<SubscriptionInfo> sil = mSubscriptionInfo;
         if (sil == null || forceReload) {
             sil = mSubscriptionManager.getActiveSubscriptionInfoList();
@@ -697,11 +703,33 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                     state = IccCardConstants.State.PIN_REQUIRED;
                 } else if (IccCardConstants.INTENT_VALUE_LOCKED_ON_PUK.equals(lockedReason)) {
                     state = IccCardConstants.State.PUK_REQUIRED;
+                /** SPRD: modified for simlock status {@ */
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK.equals(lockedReason)) {
+                    state = IccCardConstants.State.NETWORK_LOCKED;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_NS.equals(lockedReason)) {
+                    state = IccCardConstants.State.NETWORK_SUBSET_LOCKED;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_SP.equals(lockedReason)) {
+                    state = IccCardConstants.State.SERVICE_PROVIDER_LOCKED;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_CP.equals(lockedReason)) {
+                    state = IccCardConstants.State.CORPORATE_LOCKED;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_SIM.equals(lockedReason)) {
+                    state = IccCardConstants.State.SIM_LOCKED;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK_PUK.equals(lockedReason)) {
+                    state = IccCardConstants.State.NETWORK_LOCKED_PUK;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_NS_PUK.equals(lockedReason)) {
+                    state = IccCardConstants.State.NETWORK_SUBSET_LOCKED_PUK;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_SP_PUK.equals(lockedReason)) {
+                    state = IccCardConstants.State.SERVICE_PROVIDER_LOCKED_PUK;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_CP_PUK.equals(lockedReason)) {
+                    state = IccCardConstants.State.CORPORATE_LOCKED_PUK;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_SIM_PUK.equals(lockedReason)) {
+                    state = IccCardConstants.State.SIM_LOCKED_PUK;
+                } else if (IccCardConstants.INTENT_VALUE_LOCKED_FOREVER.equals(lockedReason)) {
+                    state = IccCardConstants.State.SIM_LOCKED_FOREVER;
+                /** @} */
                 } else {
                     state = IccCardConstants.State.UNKNOWN;
                 }
-            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK.equals(stateExtra)) {
-                state = IccCardConstants.State.NETWORK_LOCKED;
             } else if (IccCardConstants.INTENT_VALUE_ICC_LOADED.equals(stateExtra)
                         || IccCardConstants.INTENT_VALUE_ICC_IMSI.equals(stateExtra)) {
                 // This is required because telephony doesn't return to "READY" after
@@ -883,6 +911,14 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
 
         mFpm = (FingerprintManager) context.getSystemService(Context.FINGERPRINT_SERVICE);
         updateFingerprintListeningState();
+        /* SPRD: modify by BUG 558060 @{ */
+        int phoneCount = TelephonyManager.from(mContext).getPhoneCount();
+        for (int i = 0; i < phoneCount; i++) {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.Global.getUriFor(Settings.Global.SIM_STANDBY + i)
+                    , true, getSimStandbyObserver(i));
+        }
+        /* @} */
     }
 
     private void updateFingerprintListeningState() {
@@ -1175,6 +1211,8 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         for (int j = 0; j < mCallbacks.size(); j++) {
             KeyguardUpdateMonitorCallback cb = mCallbacks.get(j).get();
             if (cb != null) {
+                //SPRD: modify by BUG 540847
+                cb.onServiceStateChange(subId, serviceState);
                 cb.onRefreshCarrierInfo();
             }
         }
@@ -1489,7 +1527,11 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
             final SubscriptionInfo info = list.get(i);
             final int id = info.getSubscriptionId();
             int slotId = SubscriptionManager.getSlotId(id);
-            if (state == getSimState(id) && bestSlotId > slotId ) {
+            /* SPRD: modify by BUG 541723 @{ */
+            boolean isSimStandBy = Settings.Global.getInt(mContext.getContentResolver(),
+                    Settings.Global.SIM_STANDBY + slotId, 1) == 1;
+            /* @} */
+            if (state == getSimState(id) && bestSlotId > slotId && isSimStandBy) {
                 resultId = id;
                 bestSlotId = slotId;
             }
@@ -1523,4 +1565,53 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
             pw.println("    " + subId + "=" + mServiceStates.get(subId));
         }
     }
+
+    /* SPRD: Show pin/puk remaining times @{*/
+    public int getRemainstimes(int type, int subId) {
+        int remainTimes = 0;
+        try {
+            remainTimes = ITelephony.Stub.asInterface(
+                    ServiceManager.getService(Context.TELEPHONY_SERVICE)).getRemainTimesForSubscriber(type, subId);
+            Log.d(TAG, "getRemainstimes : subId =" + subId + ", remaintime = " + remainTimes);
+        } catch (RemoteException e) {
+            Log.e(TAG, "RemoteException for getRemainTimesForSubscriber:", e);
+        }
+        return remainTimes;
+    }
+    /* @}*/
+
+    /* SPRD: modify by BUG 558060 @{ */
+    private ContentObserver getSimStandbyObserver(final int phoneId) {
+        ContentObserver SimStandbyObserver = new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+                Log.d(TAG, "SimStandbyObserver onChange PhoneId : " + phoneId);
+                mHandler.sendMessage(mHandler.obtainMessage(
+                        MSG_SIM_STANDBY_CHANGE, phoneId));
+            }
+        };
+        return SimStandbyObserver;
+    }
+
+    private void handleSimStandbyChange(int phoneId) {
+        boolean isAirplaneModeOn = (Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) == 1);
+        boolean isSimStandby = Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.SIM_STANDBY + phoneId, 1) == 1;
+        if (!isAirplaneModeOn && isSimStandby) {
+            if (SubscriptionManager.getSubId(phoneId) == null) return;
+            int subId = (SubscriptionManager.getSubId(phoneId))[0];
+            if (!SubscriptionManager.isValidSubscriptionId(subId)) return;
+            SimData data = mSimDatas.get(subId);
+            Log.d(TAG, "simstate : " + data.simState + "; phoneId : " +
+                    phoneId + "; mKeyguardIsVisible : " + mKeyguardIsVisible);
+            for (int j = 0; j < mCallbacks.size(); j++) {
+                KeyguardUpdateMonitorCallback cb = mCallbacks.get(j).get();
+                if (cb != null) {
+                    cb.onSimStateChanged(data.subId, data.slotId, data.simState);
+                }
+            }
+        }
+    }
+    /* @} */
 }

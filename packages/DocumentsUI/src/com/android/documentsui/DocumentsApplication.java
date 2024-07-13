@@ -28,6 +28,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.text.format.DateUtils;
+import com.android.documentsui.PlugInDrm.DocumentsUIPlugInDrm;
 
 public class DocumentsApplication extends Application {
     private static final long PROVIDER_ANR_TIMEOUT = 20 * DateUtils.SECOND_IN_MILLIS;
@@ -50,6 +51,17 @@ public class DocumentsApplication extends Application {
         return thumbnails;
     }
 
+    /*
+     * for documentui_DRM
+     *@{
+     */
+    public static void clearThumbnailsCache(Context context) {
+        final DocumentsApplication app = (DocumentsApplication) context.getApplicationContext();
+        final ThumbnailCache thumbnails = app.mThumbnails;
+        thumbnails.evictAll();
+    }
+    /*@}*/
+
     public static ContentProviderClient acquireUnstableProviderOrThrow(
             ContentResolver resolver, String authority) throws RemoteException {
         final ContentProviderClient client = resolver.acquireUnstableContentProviderClient(
@@ -57,7 +69,12 @@ public class DocumentsApplication extends Application {
         if (client == null) {
             throw new RemoteException("Failed to acquire provider for " + authority);
         }
-        client.setDetectNotResponding(PROVIDER_ANR_TIMEOUT);
+        /* SPRD:526287 not detect ANR if is external storage provider, because it will spend long time
+            to query from file system. */
+        if (!"com.android.externalstorage.documents".equals(authority)) {
+            client.setDetectNotResponding(PROVIDER_ANR_TIMEOUT);
+        }
+        /*@}*/
         return client;
     }
 
@@ -70,7 +87,12 @@ public class DocumentsApplication extends Application {
         mRoots.updateAsync();
 
         mThumbnails = new ThumbnailCache(memoryClassBytes / 4);
-
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        DocumentsUIPlugInDrm.getInstance().getDrmEnabled();
+        /*@}*/
         final IntentFilter packageFilter = new IntentFilter();
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
         packageFilter.addAction(Intent.ACTION_PACKAGE_CHANGED);

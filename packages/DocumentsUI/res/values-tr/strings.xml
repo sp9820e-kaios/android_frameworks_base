@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Ayrıntıları görüntülemek için dokunun"</string>
     <string name="retry" msgid="7564024179122207376">"Yeniden dene"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Şu dosyalar kopyalanmadı: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Dosya paylaşılamıyor"</string>
+     <string name="documents_deleting">"Belgeleri siliyor"</string>
+     <string name="cannot_copyfolder_itself">"Klasörü kendi içine kopyalayamazsınız"</string>
+
+    <string name="error_permissions">"Uygulamanın, çalışması için gerekli olan kritik izinleri yok. Lütfen izin ayarlarınızı kontrol edin."</string>
+     <string name="cannot_copy_drm">"DRM dosyalarını kopyalayamaz"</string>
+     <string name="cannot_copy_downloading">""Dosya indirirken kopyalanamıyor" "</string>
 </resources>

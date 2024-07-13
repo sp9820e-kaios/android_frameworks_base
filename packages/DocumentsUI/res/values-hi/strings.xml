@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"विवरण देखने के लिए स्पर्श करें"</string>
     <string name="retry" msgid="7564024179122207376">"पुन: प्रयास करें"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"इन फ़ाइलों की कॉपी नहीं बनाई गई: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"फाइल शेयर नहीं कर सकता"</string>
+     <string name="documents_deleting">"दस्तावेज मिटाए जा रहे हैं"</string>
+     <string name="cannot_copyfolder_itself">"आप फोल्डर को इसमें ही कापी नहीं कर सकते"</string>
+     <string name="menu_deselect_all">"सभी को अचयनित करें"</string>
+    <string name="error_permissions">"ऐप के पास चलने के लिए महत्‍वपूर्ण अनुमतियां नहीं हैं. कृपया अपनी अनुमतियां सेटिंग जांचें."</string>
+     <string name="cannot_copy_drm">"DRM फाइलें कॉपी नहीं की जा सकतीं"</string>
+     <string name="cannot_copy_downloading">"डाउनलोड हो रही फाइलें कॉपी नहीं की जा सकतीं"</string>
 </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="backup_confirm_title">"Reserva cheia"</string>
+<string name="restore_confirm_title">"Completa restaura"</string>
+<string name="backup_confirm_text">"Uma reserva cheia de todos os dados para um computador de desktop ligado foi solicitada. Se quer permitir isso para acontecer\?\n\nSe você não solicita a reserva por si próprio, não permite a operação proceder."</string>
+<string name="allow_backup_button_label">"Fazer backup dos meus dados"</string>
+<string name="deny_backup_button_label">"Não reserva"</string>
+<string name="restore_confirm_text">"Uma guarda cheia de todos os dados de um computador de desktop ligado já solicitou. Se quer permitir isso acontecer\?\n\nSe você não solicita a guarda por si próprio, não permite a operação processar. O qual vai substituir qualquer dados atualmente no aparelho!"</string>
+<string name="allow_restore_button_label">"Restaurar meus dados"</string>
+<string name="deny_restore_button_label">"Não restaura"</string>
+<string name="current_password_text">"Favor entre a sua senha de reserva corrente abaixo:"</string>
+<string name="device_encryption_restore_text">"Favor entre a sua senha de encriptação de aparelho abaixo." "</string>
+<string name="device_encryption_backup_text">"Favor entre a sua senha de encriptação de aparelho abaixo. A qual também será usada para encriptar o arquivo de reserva." "</string>
+<string name="backup_enc_password_text">"Favor entre uma senha para usar a encriptar os dados de reserva completa. Se é branco deixado, sua senha de reserva corrente será usada."</string>
+<string name="backup_enc_password_optional">"Se você quer encriptar os dados de reserva completa, entre uma senha abaixo:"</string>
+<string name="backup_enc_password_required">"Como o seu aparelho é encriptado, você é solicitado encriptar a sua reserva. Favor entre uma senha abaixo:"</string>
+<string name="restore_enc_password_text">"Se os dados de restaura são encriptados, favor entre a senha abaixo:"</string>
+<string name="toast_backup_started">"Iniciando reserva..."</string>
+<string name="toast_backup_ended">"Reserva acabada"</string>
+<string name="toast_restore_started">"Iniciando restaurar..."</string>
+<string name="toast_restore_ended">"Restaura acabada"</string>
+<string name="toast_timeout">"Operação expirada"</string>
+</resources>

@@ -34,6 +34,8 @@
         <item name="android:windowNoTitle">true</item>
 
         <item name="android:windowSoftInputMode">stateUnspecified|adjustUnspecified</item>
+
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_selector</item>
     </style>
 
 </resources>

@@ -123,6 +123,9 @@ public class SettingsProvider extends ContentProvider {
     private static final String TABLE_BLUETOOTH_DEVICES = "bluetooth_devices";
     private static final String TABLE_BOOKMARKS = "bookmarks";
     private static final String TABLE_ANDROID_METADATA = "android_metadata";
+    //SPRD: Added for bug 566810, change default sleep time
+    private static final String GOOGLE_SLEEP_TIME = "121000";
+    private static final String TABLE_APPS_START = "apps_start";
 
     // The set of removed legacy tables.
     private static final Set<String> REMOVED_LEGACY_TABLES = new ArraySet<>();
@@ -282,6 +285,18 @@ public class SettingsProvider extends ContentProvider {
         if (DEBUG) {
             Slog.v(LOG_TAG, "query() for user: " + UserHandle.getCallingUserId());
         }
+        /* SPRD: Add Apps Inter Start management in settings @{ */
+        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+        queryBuilder.setTables(TABLE_APPS_START);
+        Slog.e(LOG_TAG, "current query:" + uri);
+        String table = getValidTableOrThrow(uri);
+        if (table.equalsIgnoreCase(TABLE_APPS_START)) {
+            DatabaseHelper dbHelper = new DatabaseHelper(getContext(), UserHandle.USER_OWNER);
+            SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+            Slog.e(LOG_TAG, "query return");
+            return queryBuilder.query(sqlDB, projection, where, whereArgs, null, null, order);
+        }
+        /* @} */
 
         Arguments args = new Arguments(uri, where, whereArgs, true);
         String[] normalizedProjection = normalizeProjection(projection);
@@ -334,6 +349,20 @@ public class SettingsProvider extends ContentProvider {
         }
 
         String table = getValidTableOrThrow(uri);
+
+        /* SPRD: Add Apps Inter Start management in settings @{ */
+        Slog.e(LOG_TAG, "current insert:" + uri);
+        if (table.equalsIgnoreCase(TABLE_APPS_START)) {
+            DatabaseHelper dbHelper = new DatabaseHelper(getContext(), UserHandle.USER_OWNER);
+            SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+            long id = sqlDB.insert(TABLE_APPS_START, null, values);
+            if (id == -1) {
+                return null;
+            }
+            getContext().getContentResolver().notifyChange(uri, null);
+            return Uri.withAppendedPath(uri, Long.toString(id));
+        }
+        /* @} */
 
         // If a legacy table that is gone, done.
         if (REMOVED_LEGACY_TABLES.contains(table)) {
@@ -398,6 +427,20 @@ public class SettingsProvider extends ContentProvider {
             Slog.v(LOG_TAG, "delete() for user: " + UserHandle.getCallingUserId());
         }
 
+        /* SPRD: Add Apps Inter Start management in settings @{ */
+        String table = getValidTableOrThrow(uri);
+        if (table.equalsIgnoreCase(TABLE_APPS_START)) {
+            DatabaseHelper dbHelper = new DatabaseHelper(getContext(), UserHandle.USER_OWNER);
+            SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+            int rowDeleted = sqlDB.delete(TABLE_APPS_START, where, whereArgs);
+            if (rowDeleted > 0) {
+                getContext().getContentResolver().notifyChange(uri, null);
+            }
+            Slog.e(LOG_TAG, "SettingsProvider del:" + rowDeleted);
+            return rowDeleted;
+        }
+        /* @} */
+
         Arguments args = new Arguments(uri, where, whereArgs, false);
 
         // If a legacy table that is gone, done.
@@ -436,6 +479,20 @@ public class SettingsProvider extends ContentProvider {
         if (DEBUG) {
             Slog.v(LOG_TAG, "update() for user: " + UserHandle.getCallingUserId());
         }
+
+        /* SPRD: Add Apps Inter Start management in settings @{ */
+        String table = getValidTableOrThrow(uri);
+        if (table.equalsIgnoreCase(TABLE_APPS_START)) {
+            DatabaseHelper dbHelper = new DatabaseHelper(getContext(), UserHandle.USER_OWNER);
+            SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
+            int rowUpdated = sqlDB.update(TABLE_APPS_START, values, where, whereArgs);
+            if (rowUpdated > 0) {
+                getContext().getContentResolver().notifyChange(uri, null);
+            }
+            Slog.e(LOG_TAG, "update:====" + rowUpdated);
+            return rowUpdated;
+        }
+        /* @} */
 
         Arguments args = new Arguments(uri, where, whereArgs, false);
 
@@ -870,7 +927,11 @@ public class SettingsProvider extends ContentProvider {
             Slog.v(LOG_TAG, "insertSystemSetting(" + name + ", " + value + ", "
                     + requestingUserId + ")");
         }
-
+        /*SPRD: Added for bug 566810, change default sleep time @{*/
+        if (Settings.System.SCREEN_OFF_TIMEOUT.equals(name) && value.trim().equals(GOOGLE_SLEEP_TIME)) {
+            return false;
+        }
+        /* @} */
         return mutateSystemSetting(name, value, requestingUserId, MUTATION_OPERATION_INSERT);
     }
 
@@ -887,7 +948,11 @@ public class SettingsProvider extends ContentProvider {
             Slog.v(LOG_TAG, "updateSystemSetting(" + name + ", " + value + ", "
                     + requestingUserId + ")");
         }
-
+        /*SPRD: Added for bug 566810, change default sleep time @{*/
+        if (Settings.System.SCREEN_OFF_TIMEOUT.equals(name) && value.trim().equals(GOOGLE_SLEEP_TIME)) {
+            return false;
+        }
+        /* @} */
         return mutateSystemSetting(name, value, requestingUserId, MUTATION_OPERATION_UPDATE);
     }
 

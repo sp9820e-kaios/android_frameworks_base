@@ -85,10 +85,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
+import android.os.PowerManagerInternal;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.TransactionTooLargeException;
 import android.os.UserHandle;
 import android.os.WorkSource;
@@ -318,6 +320,8 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
     /** Used to keep resumeTopActivityLocked() from being entered recursively */
     boolean inResumeTopActivity;
+    static final boolean SUPPORT_POWER_HINT = "true".equals(SystemProperties.get("ro.powerhint.fw", null));
+    PowerManagerInternal mPowerManagerInternal;
 
     /**
      * Description of a request to start a new activity, which has been held
@@ -1646,6 +1650,15 @@ public final class ActivityStackSupervisor implements DisplayListener {
             r.appTimeTracker = sourceRecord.appTimeTracker;
         }
 
+        //bug 507281 PowerHint Optimization in Framework
+        //if(SUPPORT_POWER_HINT){
+            if((!r.isHomeActivity())&&(!r.isRecentsActivity())){
+                    Slog.d(TAG,"DEBUG_POWER_HINT start activityh");
+                    mPowerManagerInternal = LocalServices.getService(PowerManagerInternal.class);
+                    mPowerManagerInternal.powerHint(PowerManagerInternal.POWER_HINT_INTERACTION, 0);
+            }
+        //}
+
         final ActivityStack stack = mFocusedStack;
         if (voiceSession == null && (stack.mResumedActivity == null
                 || stack.mResumedActivity.info.applicationInfo.uid != callingUid)) {
@@ -1674,6 +1687,8 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
         err = startActivityUncheckedLocked(r, sourceRecord, voiceSession, voiceInteractor,
                 startFlags, true, options, inTask);
+
+        Slog.d(TAG,"startActivityUncheckedLocked return : "+err);
 
         if (err < 0) {
             // If someone asked to have the keyguard dismissed on the next
@@ -2669,8 +2684,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         boolean didSomething = false;
         for (int displayNdx = mActivityDisplays.size() - 1; displayNdx >= 0; --displayNdx) {
             final ArrayList<ActivityStack> stacks = mActivityDisplays.valueAt(displayNdx).mStacks;
-            final int numStacks = stacks.size();
-            for (int stackNdx = 0; stackNdx < numStacks; ++stackNdx) {
+            for (int stackNdx = stacks.size() - 1; stackNdx >= 0; --stackNdx) {
                 final ActivityStack stack = stacks.get(stackNdx);
                 if (stack.finishDisabledPackageActivitiesLocked(
                         packageName, filterByClasses, doit, evenPersistent, userId)) {
@@ -2825,7 +2839,8 @@ public final class ActivityStackSupervisor implements DisplayListener {
                 final ArrayList<ActivityRecord> activities = task.mActivities;
                 for (int activityNdx = activities.size() - 1; activityNdx >= 0; --activityNdx) {
                     final ActivityRecord r = activities.get(activityNdx);
-                    if (r.isHomeActivity()
+                    // modify for 517644 : add finishing check for Home
+                    if (r.isHomeActivity() && !r.finishing
                             && ((userId == UserHandle.USER_ALL) || (r.userId == userId))) {
                         return r;
                     }
@@ -4090,6 +4105,9 @@ public final class ActivityStackSupervisor implements DisplayListener {
                         if (mLockTaskNotify == null) {
                             mLockTaskNotify = new LockTaskNotify(mService.mContext);
                         }
+                        /* notify taActivityStackSupervisorsk locked state @{ */
+                        mService.notifyLockTaskState(true);
+                        /* @} */
                         mLockTaskNotify.show(true);
                         mLockTaskModeState = msg.arg2;
                         if (getStatusBarService() != null) {
@@ -4119,8 +4137,8 @@ public final class ActivityStackSupervisor implements DisplayListener {
                     // When lock task ends, we enable the status bars.
                     try {
                         if (getStatusBarService() != null) {
-                            getStatusBarService().disable(StatusBarManager.DISABLE_NONE, mToken,
-                                    mService.mContext.getPackageName());
+                            getStatusBarService().disableForUser(StatusBarManager.DISABLE_NONE, mToken,
+                                    mService.mContext.getPackageName(), msg.arg1 /* task.userId */);
                         }
                         mWindowManager.reenableKeyguard(mToken);
                         if (getDevicePolicyManager() != null) {
@@ -4130,6 +4148,9 @@ public final class ActivityStackSupervisor implements DisplayListener {
                         if (mLockTaskNotify == null) {
                             mLockTaskNotify = new LockTaskNotify(mService.mContext);
                         }
+                        /* notify task locked state @{ */
+                        mService.notifyLockTaskState(false);
+                        /* @} */
                         mLockTaskNotify.show(false);
                         try {
                             boolean shouldLockKeyguard = Settings.Secure.getInt(

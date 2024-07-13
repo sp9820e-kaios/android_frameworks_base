@@ -86,6 +86,8 @@ final class ServiceRecord extends Binder {
             = new ArrayMap<IBinder, ArrayList<ConnectionRecord>>();
                             // IBinder -> ConnectionRecord of all bound clients
 
+    final ArrayList<ProcessRecord>  callingApps;//SPRD:add callingApps
+
     ProcessRecord app;      // where this service is running or null.
     ProcessRecord isolatedProc; // keep track of isolated process, if requested
     ProcessStats.ServiceState tracker; // tracking service execution, may be null
@@ -324,6 +326,7 @@ final class ServiceRecord extends Binder {
         lastActivity = SystemClock.uptimeMillis();
         userId = UserHandle.getUserId(appInfo.uid);
         createdFromFg = callerIsFg;
+        callingApps = new ArrayList<ProcessRecord>();
     }
 
     public ProcessStats.ServiceState getTracker() {

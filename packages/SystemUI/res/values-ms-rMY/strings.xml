@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Tahniah! Penala UI Sistem telah ditambahkan pada Tetapan"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Alih keluar daripada Tetapan"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Alih keluar Penala UI Sistem daripada Tetapan dan berhenti menggunakan semua cirinya?"</string>
+    <string name="quick_settings_volume_label">"Profil Audio"</string>
+     <string name="assistant_key_home">"Laman Utama"</string>
+     <string name="assistant_key_search">"Cari"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">Undur</string>
+
+    <string name="vibrate_hint">"Leret ke kiri untuk Getaran"</string>
+     <string name="battery_overtage_title">"Amaran keselamatan"</string>
+     <string name="battery_overtage_content">"Cas voltan terlalu tinggi!"</string>
+     <string name="battery_overtage_back">Undur</string>
 </resources>

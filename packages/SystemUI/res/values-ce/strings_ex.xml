@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Ang mabalhin nga Wi-Fi hotspot nanginahanglan ug mobayl nga datus nga koneksyon, kini mahimong magdugang ug bayad."</string>
+<string name="softap_bt_cannot_coexist">"Kon ang bluetooth nagagana o padulong na sa paggana, ang softap dili makatrabaho, kon gusto nimo gamiton ang softap, palihug siguroa nga ang bluetooth wala naggana."</string>
+<string name="bt_softap_cannot_coexist">"Kon ang softap nagagana o padulong na sa paggana, ang bluetooth dili makatrabaho, kon gusto nimo gamiton ang bluetooth, palihug siguroa nga ang softap wala naggana."</string>
+<string name="lte_service_error_airplane">"Ikaw dili makagamit sa LTE kung ang telepono ana-a sa eruplano nga moda."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G kay gipagana"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G kay gipawng"</string>
+<string name="accessibility_quick_settings_lte_on">"4G kay migana"</string>
+<string name="accessibility_quick_settings_lte_off">"4G kay pawng"</string>
+<string name="toggle_data_error_airplane">"Dili nimo magamit ang Mobayl nga datus kung anaa ang imong telepono sa eruplano nga moda."</string>
+<string name="quick_settings_data_connection_label">"DATUS"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Ang mga datus gipagana"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Ang mga datus gipalong"</string>
+<string name="accessibility_quick_settings_data_on">"Mga datus migana"</string>
+<string name="accessibility_quick_settings_data_off">"Mga datus napalong"</string>
+<string name="missing_sim_message">"Walay SIM"</string>
+    <string name="lte_service_error_incall">"Dili ka makahimo sa pagsuwits sa serbisyo nga LTE samtang nagatawag."</string>
+
+</resources>

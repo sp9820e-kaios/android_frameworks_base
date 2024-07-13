@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Буцах"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Дараах"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Алгасах"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Илэрц алга"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Хуудаснаас олох"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="TOTAL">%d</xliff:g>-н <xliff:g id="INDEX">%d</xliff:g></item>
-      <item quantity="one">1 үр дүн гарч ирсэн байна</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Дуусгах"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"USB санг арилгаж байна…"</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"SD картыг цэвэрлэж байна…"</string>

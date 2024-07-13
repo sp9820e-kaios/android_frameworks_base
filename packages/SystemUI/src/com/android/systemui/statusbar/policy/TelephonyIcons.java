@@ -26,19 +26,27 @@ class TelephonyIcons {
 
     //GSM/UMTS
     static final int TELEPHONY_NO_NETWORK = R.drawable.stat_sys_signal_null;
-
+    /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+    static int Signal_Zero = SystemUIPluginsHelper.getInstance().getSignalZeroIcon();
+    static int Signal_One = SystemUIPluginsHelper.getInstance().getSignalOneIcon();
+    static int Signal_Two = SystemUIPluginsHelper.getInstance().getSignalTwoIcon();
+    static int Signal_Three = SystemUIPluginsHelper.getInstance().getSignalThreeIcon();
+    static int Signal_Four = SystemUIPluginsHelper.getInstance().getSignalFourIcon();
+    /* @} */
+    /* SPRD: modify by bug474984 @{ */
     static final int[][] TELEPHONY_SIGNAL_STRENGTH = {
-        { R.drawable.stat_sys_signal_0,
-          R.drawable.stat_sys_signal_1,
-          R.drawable.stat_sys_signal_2,
-          R.drawable.stat_sys_signal_3,
-          R.drawable.stat_sys_signal_4 },
-        { R.drawable.stat_sys_signal_0_fully,
-          R.drawable.stat_sys_signal_1_fully,
-          R.drawable.stat_sys_signal_2_fully,
-          R.drawable.stat_sys_signal_3_fully,
-          R.drawable.stat_sys_signal_4_fully }
+        { Signal_Zero,
+          Signal_One,
+          Signal_Two,
+          Signal_Three,
+          Signal_Four },
+        { Signal_Zero,
+          Signal_One,
+          Signal_Two,
+          Signal_Three,
+          Signal_Four }
     };
+    /* @} */
 
     static final int QS_TELEPHONY_NO_NETWORK = R.drawable.ic_qs_signal_no_signal;
 
@@ -56,7 +64,7 @@ class TelephonyIcons {
     };
 
     static final int[][] TELEPHONY_SIGNAL_STRENGTH_ROAMING = {
-        { R.drawable.stat_sys_signal_0,
+        { Signal_Zero,
           R.drawable.stat_sys_signal_1,
           R.drawable.stat_sys_signal_2,
           R.drawable.stat_sys_signal_3,
@@ -194,23 +202,43 @@ class TelephonyIcons {
                     R.drawable.stat_sys_data_fully_connected_lte }
     };
 
+    /* SPRD: Add For LTE_CA @{ */
+    static final int[][] DATA_4G_PLUS = {
+            { R.drawable.stat_sys_data_fully_connected_4g_plus,
+              R.drawable.stat_sys_data_fully_connected_4g_plus,
+              R.drawable.stat_sys_data_fully_connected_4g_plus,
+              R.drawable.stat_sys_data_fully_connected_4g_plus },
+            { R.drawable.stat_sys_data_fully_connected_4g_plus,
+              R.drawable.stat_sys_data_fully_connected_4g_plus,
+              R.drawable.stat_sys_data_fully_connected_4g_plus,
+              R.drawable.stat_sys_data_fully_connected_4g_plus }
+    };
+
+    static final int QS_DATA_4G_PLUS = R.drawable.ic_qs_signal_4g_plus;
+    /* @} */
+
     static final int QS_DATA_LTE = R.drawable.ic_qs_signal_lte;
 
     static final int FLIGHT_MODE_ICON = R.drawable.stat_sys_airplane_mode;
-    static final int ROAMING_ICON = R.drawable.stat_sys_data_fully_connected_roam;
-    static final int ICON_LTE = R.drawable.stat_sys_data_fully_connected_lte;
-    static final int ICON_G = R.drawable.stat_sys_data_fully_connected_g;
-    static final int ICON_E = R.drawable.stat_sys_data_fully_connected_e;
-    static final int ICON_H = R.drawable.stat_sys_data_fully_connected_h;
-    static final int ICON_3G = R.drawable.stat_sys_data_fully_connected_3g;
-    static final int ICON_4G = R.drawable.stat_sys_data_fully_connected_4g;
-    static final int ICON_1X = R.drawable.stat_sys_data_fully_connected_1x;
+    /* SPRD: modify by bug474984 @{ */
+    static final int ROAMING_ICON = SystemUIPluginsHelper.getInstance().getRoamIcon();
+    static final int ICON_LTE = SystemUIPluginsHelper.getInstance().getLteIcon();
+    static final int ICON_G = SystemUIPluginsHelper.getInstance().getGIcon();
+    static final int ICON_E = SystemUIPluginsHelper.getInstance().getEIcon();
+    static final int ICON_H = SystemUIPluginsHelper.getInstance().getHIcon();
+    static final int ICON_HP = SystemUIPluginsHelper.getInstance().getHPIcon();
+    static final int ICON_3G = SystemUIPluginsHelper.getInstance().getThreeGIcon();
+    static final int ICON_4G = SystemUIPluginsHelper.getInstance().getFourGIcon();
+    static final int ICON_4G_PLUS = R.drawable.stat_sys_data_fully_connected_4g_plus;
+    static final int ICON_1X = SystemUIPluginsHelper.getInstance().getOneXIcon();
+    /* @} */
     static final int ICON_CARRIER_NETWORK_CHANGE =
             R.drawable.stat_sys_signal_carrier_network_change_animation;
 
     static final int QS_ICON_LTE = R.drawable.ic_qs_signal_lte;
     static final int QS_ICON_3G = R.drawable.ic_qs_signal_3g;
     static final int QS_ICON_4G = R.drawable.ic_qs_signal_4g;
+    static final int QS_ICON_4G_PLUS = R.drawable.ic_qs_signal_4g_plus;
     static final int QS_ICON_1X = R.drawable.ic_qs_signal_1x;
     static final int QS_ICON_CARRIER_NETWORK_CHANGE =
             R.drawable.ic_qs_signal_carrier_network_change_animation;
@@ -329,6 +357,23 @@ class TelephonyIcons {
             TelephonyIcons.QS_DATA_H
             );
 
+    /* SPRD: add for H+ icons for bug494075 @{ */
+    static final MobileIconGroup HP = new MobileIconGroup(
+            "H+",
+            TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH,
+            TelephonyIcons.QS_TELEPHONY_SIGNAL_STRENGTH,
+            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
+            0, 0,
+            TelephonyIcons.TELEPHONY_NO_NETWORK,
+            TelephonyIcons.QS_TELEPHONY_NO_NETWORK,
+            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
+            R.string.accessibility_data_connection_3_5g,
+            TelephonyIcons.ICON_HP,
+            false,
+            TelephonyIcons.QS_DATA_H
+            );
+    /* @} */
+
     static final MobileIconGroup FOUR_G = new MobileIconGroup(
             "4G",
             TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH,
@@ -339,10 +384,27 @@ class TelephonyIcons {
             TelephonyIcons.QS_TELEPHONY_NO_NETWORK,
             AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
             R.string.accessibility_data_connection_4g,
-            TelephonyIcons.ICON_4G,
+            SystemUIPluginsHelper.getInstance().getLteIconId(),
             true,
             TelephonyIcons.QS_DATA_4G
             );
+
+    /* SPRD: Add For LTE_CA @{ */
+    static final MobileIconGroup FOUR_G_PLUS = new MobileIconGroup(
+            "4G+",
+            TelephonyIcons.TELEPHONY_SIGNAL_STRENGTH,
+            TelephonyIcons.QS_TELEPHONY_SIGNAL_STRENGTH,
+            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH,
+            0,0,
+            TelephonyIcons.TELEPHONY_NO_NETWORK,
+            TelephonyIcons.QS_TELEPHONY_NO_NETWORK,
+            AccessibilityContentDescriptions.PHONE_SIGNAL_STRENGTH[0],
+            R.string.accessibility_data_connection_4g_plus,
+            TelephonyIcons.ICON_4G_PLUS,
+            true,
+            TelephonyIcons.QS_DATA_4G_PLUS
+            );
+    /* @} */
 
     static final MobileIconGroup LTE = new MobileIconGroup(
             "LTE",

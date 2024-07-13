@@ -196,13 +196,14 @@ public final class BluetoothAvrcpController implements BluetoothProfile {
      */
     public int getConnectionState(BluetoothDevice device) {
         if (VDBG) log("getState(" + device + ")");
-        if (mService != null && isEnabled()
-            && isValidDevice(device)) {
-            try {
-                return mService.getConnectionState(device);
-            } catch (RemoteException e) {
-                Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
-                return BluetoothProfile.STATE_DISCONNECTED;
+        synchronized (mConnection) {
+            if (mService != null && isEnabled() && isValidDevice(device)) {
+                try {
+                    return mService.getConnectionState(device);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Stack:" + Log.getStackTraceString(new Throwable()));
+                    return BluetoothProfile.STATE_DISCONNECTED;
+                }
             }
         }
         if (mService == null) Log.w(TAG, "Proxy not attached to service");
@@ -235,7 +236,9 @@ public final class BluetoothAvrcpController implements BluetoothProfile {
         }
         public void onServiceDisconnected(ComponentName className) {
             if (DBG) Log.d(TAG, "Proxy object disconnected");
-            mService = null;
+            synchronized (mConnection) {
+                mService = null;
+            }
             if (mServiceListener != null) {
                 mServiceListener.onServiceDisconnected(BluetoothProfile.AVRCP_CONTROLLER);
             }

@@ -34,11 +34,34 @@ public class SignalCallbackAdapter implements SignalCallback {
             boolean activityIn, boolean activityOut, String description) {
     }
 
+    /* SPRD: modify for bug495410 @{ */
+    @Override
+    public void setDeactiveIcon(int subId) {
+    }
+    /* @} */
+
+    /* SPRD: modify by BUG 491086 ; modify by BUG 517092, add roamIcon @{ */
+    @Override
+    public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+            int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
+            String description, boolean isWide, int subId, boolean dataConnect,
+            int colorScheme, int roamIcon) {
+    }
+    /* @} */
+
     @Override
     public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
             int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
             String description, boolean isWide, int subId) {
     }
+
+    /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+    public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
+            int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
+            String description, boolean isWide, int subId, boolean dataConnect, int colorScheme,
+            int roamIcon, int imsregIcon, boolean isFourG) {
+    }
+    /* @} */
 
     @Override
     public void setSubs(List<SubscriptionInfo> subs) {
@@ -52,6 +75,14 @@ public class SignalCallbackAdapter implements SignalCallback {
     public void setEthernetIndicators(IconState icon) {
     }
 
+    // SPRD: Add VoLte icon for bug 509601.
+    public void setVoLteIndicators(boolean enabled) {
+    }
+
+    // SPRD: Add HD audio icon for bug 536924.
+    public void setHdVoiceIndicators(boolean enabled) {
+    }
+
     @Override
     public void setIsAirplaneMode(IconState icon) {
     }
@@ -59,5 +90,17 @@ public class SignalCallbackAdapter implements SignalCallback {
     @Override
     public void setMobileDataEnabled(boolean enabled) {
     }
+
+    /* SPRD: Add for SimSignal color change follow sim color @{ */
+    @Override
+    public void setSimSignalColor(int subId, int simColor) {
+    }
+    /* @} */
+
+    /* SPRD: modify by BUG 549167 @{ */
+    @Override
+    public void refreshIconsIfSimAbsent(int phoneId) {
+    }
+    /* @} */
 
 }

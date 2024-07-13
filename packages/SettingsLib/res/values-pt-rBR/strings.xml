@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="wifi_fail_to_scan">"Não pode explorar os redes"</string>
+<string name="wifi_security_none">"Nenhum"</string>
+<string name="wifi_remembered">"Salvo"</string>
+<string name="wifi_disabled_generic">"Desativada"</string>
+<string name="wifi_disabled_network_failure">"IP Configuração Falhada"</string>
+<string name="wifi_disabled_wifi_failure">"WiFi Ligação Falhada"</string>
+<string name="wifi_disabled_password_failure">"Problema de autenticação"</string>
+<string name="wifi_not_in_range">"Fora de alcance"</string>
+<string name="wifi_no_internet">"Sem Acesso de Internet Detetado, não vai religar automaticamente."</string>
+<string name="saved_network">"Guardado por <xliff:g id="name">%1$s</xliff:g>"</string>
+<string name="connected_via_wfa">"Ligado via Wi\u2011Fi assistente"</string>
+<string name="connected_via_passpoint">"Ligado via %1$s"</string>
+<string name="available_via_passpoint">"Disponível via %1$s"</string>
+<string name="wifi_connected_no_internet">"Ligado, sem Internet"</string>
+<string name="bluetooth_disconnected">"Desconectado"</string>
+<string name="bluetooth_disconnecting">"Desconectando…"</string>
+<string name="bluetooth_connecting">"Conectando..."</string>
+<string name="bluetooth_connected">"Conectada"</string>
+<string name="bluetooth_pairing">"Emparelhando\u2026"</string>
+<string name="bluetooth_connected_no_headset">"Ligado (sem telefone)"</string>
+<string name="bluetooth_connected_no_a2dp">"Ligado (sem media)"</string>
+<string name="bluetooth_connected_no_map">"Ligado (sem acesso de mensagem)"</string>
+<string name="bluetooth_connected_no_headset_no_a2dp">"Ligado (sem telefone nem media)"</string>
+<string name="bluetooth_profile_a2dp">"Audio de media"</string>
+<string name="bluetooth_profile_headset">"Audio de telefone"</string>
+<string name="bluetooth_profile_opp">"Transferência de Ficheiro"</string>
+<string name="bluetooth_profile_hid">"Aparelho de entrada"</string>
+<string name="bluetooth_profile_pan">"Acesso de Internet"</string>
+<string name="bluetooth_profile_pbap">"Contato emparelhando"</string>
+<string name="bluetooth_profile_pbap_summary">"Uso para contato emparelhando"</string>
+<string name="bluetooth_profile_pan_nap">"Compartilhamento de ligação de Internet"</string>
+<string name="bluetooth_profile_map">"Acesso de Mensagem"</string>
+<string name="bluetooth_profile_sap">"SIM Acesso"</string>
+<string name="bluetooth_a2dp_profile_summary_connected">"Conectado a áudio média"</string>
+<string name="bluetooth_headset_profile_summary_connected">"Conectado a áudio de telefone"</string>
+<string name="bluetooth_opp_profile_summary_connected">"Conectado ao servidor de transferência de arquivos"</string>
+<string name="bluetooth_map_profile_summary_connected">"Ligado com mapa"</string>
+<string name="bluetooth_sap_profile_summary_connected">"Ligado com SAP"</string>
+<string name="bluetooth_opp_profile_summary_not_connected">"Não conectadoao servidor de transferência de arquivos"</string>
+<string name="bluetooth_hid_profile_summary_connected">"Ligado com o aparelho de entrada"</string>
+<string name="bluetooth_pan_user_profile_summary_connected">"Conectado ao dispositivo para acesso à Internet"</string>
+<string name="bluetooth_pan_nap_profile_summary_connected">"Compart. conexão local de Intern. com disp."</string>
+<string name="bluetooth_pan_profile_summary_use_for">"Usar para o acesso de Internet"</string>
+<string name="bluetooth_map_profile_summary_use_for">"Usar para mapa"</string>
+<string name="bluetooth_sap_profile_summary_use_for">"Usar para SIM acesso"</string>
+<string name="bluetooth_a2dp_profile_summary_use_for">"Usar para áudio mídia"</string>
+<string name="bluetooth_headset_profile_summary_use_for">"Usar para áudio mídia"</string>
+<string name="bluetooth_opp_profile_summary_use_for">"Usar para transferência de arquivos"</string>
+<string name="bluetooth_hid_profile_summary_use_for">"Usar para entrada"</string>
+<string name="bluetooth_pairing_accept">"Parear"</string>
+<string name="bluetooth_pairing_accept_all_caps">"Parear"</string>
+<string name="bluetooth_pairing_decline">"Cancelar"</string>
+<string name="bluetooth_pairing_will_share_phonebook">"Emparelhando o acesso de subvenções para os seus contatos e história de chamada quando ligado."</string>
+<string name="bluetooth_pairing_error_message">"Não pode emparelhar com <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_pin_error_message">"Não pode emparelhar com <xliff:g id="device_name">%1$s</xliff:g> devido a um PIN ou senha incorreta."</string>
+<string name="bluetooth_pairing_device_down_error_message">"Não pode comunicar com <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_rejected_error_message">"Emparelhamento rejeitada por <xliff:g id="device_name">%1$s</xliff:g>."</string>
+    <string name="wifi_secured_first_item">"Segurado com <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_secured_second_item">", segurado com <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_wps_available_first_item">"WPS disponível"</string>
+     <string name="wifi_wps_available_second_item">" (WPS disponível)"</string>
+
+</resources>

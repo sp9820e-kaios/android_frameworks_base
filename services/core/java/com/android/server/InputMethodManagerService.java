@@ -838,7 +838,6 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
         } catch (RemoteException e) {
             Slog.w(TAG, "Couldn't get current user ID; guessing it's 0", e);
         }
-        mMyPackageMonitor.register(mContext, null, UserHandle.ALL, true);
 
         // mSettings should be created before buildInputMethodListLocked
         mSettings = new InputMethodSettings(
@@ -906,6 +905,9 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             mSettingsObserver.registerContentObserverLocked(userId);
             updateFromSettingsLocked(true);
         }
+
+        //SPRD:Bug 525918 move mMyPackageMonitor register function after mFileManager init.
+        mMyPackageMonitor.register(mContext, null, UserHandle.ALL, true);
 
         // IMMS wants to receive Intent.ACTION_LOCALE_CHANGED in order to update the current IME
         // according to the new system locale.

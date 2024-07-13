@@ -76,7 +76,7 @@
     <dimen name="status_bar_clock_size">14sp</dimen>
 
     <!-- Height of a small notification in the status bar -->
-    <dimen name="notification_min_height">64dp</dimen>
+    <dimen name="notification_min_height">80dp</dimen>
 
     <!-- Height of a large notification in the status bar -->
     <dimen name="notification_max_height">256dp</dimen>
@@ -125,7 +125,7 @@
     <dimen name="navbar_search_panel_height">230dip</dimen>
 
     <!-- Height of the draggable handle at the bottom of the phone notification panel -->
-    <dimen name="close_handle_height">36dp</dimen>
+    <dimen name="close_handle_height">48dp</dimen>
 
     <!-- Amount of close_handle that will NOT overlap the notification list -->
     <dimen name="close_handle_underlap">32dp</dimen>
@@ -165,25 +165,25 @@
 
     <dimen name="qs_tile_height">88dp</dimen>
     <dimen name="qs_tile_icon_size">24dp</dimen>
-    <dimen name="qs_tile_text_size">12sp</dimen>
+    <dimen name="qs_tile_text_size">16px</dimen>
     <dimen name="qs_tile_divider_height">1dp</dimen>
-    <dimen name="qs_panel_padding">16dp</dimen>
+    <dimen name="qs_panel_padding">4dp</dimen>
     <dimen name="qs_dual_tile_height">112dp</dimen>
     <dimen name="qs_dual_tile_padding_vertical">8dp</dimen>
     <dimen name="qs_dual_tile_padding_horizontal">6dp</dimen>
-    <dimen name="qs_tile_padding_top">14dp</dimen>
+    <dimen name="qs_tile_padding_top">8dp</dimen>
     <dimen name="qs_tile_padding_top_large_text">4dp</dimen>
-    <dimen name="qs_tile_padding_below_icon">12dp</dimen>
-    <dimen name="qs_tile_padding_bottom">16dp</dimen>
+    <dimen name="qs_tile_padding_below_icon">4dp</dimen>
+    <dimen name="qs_tile_padding_bottom">8dp</dimen>
     <dimen name="qs_tile_spacing">4dp</dimen>
     <dimen name="qs_panel_padding_bottom">8dp</dimen>
     <dimen name="qs_detail_item_height">48dp</dimen>
-    <dimen name="qs_brightness_padding_top">6dp</dimen>
+    <dimen name="qs_brightness_padding_top">12dp</dimen>
     <dimen name="qs_detail_header_text_size">20sp</dimen>
     <dimen name="qs_detail_button_text_size">14sp</dimen>
     <dimen name="qs_detail_item_primary_text_size">16sp</dimen>
     <dimen name="qs_detail_item_secondary_text_size">14sp</dimen>
-    <dimen name="qs_detail_empty_text_size">14sp</dimen>
+    <dimen name="qs_detail_empty_text_size">18px</dimen>
     <dimen name="qs_data_usage_text_size">14sp</dimen>
     <dimen name="qs_data_usage_usage_text_size">36sp</dimen>
 
@@ -282,7 +282,8 @@
     <dimen name="top_stack_slow_down_length">12dp</dimen>
 
     <!-- The side padding of the notifications-->
-    <dimen name="notification_side_padding">8dp</dimen>
+    <!-- SPRD 583693 change the value from 8 to 62, the notifications sides padding value -->
+    <dimen name="notification_side_padding">6dp</dimen>
 
     <!-- Z distance between notifications if they are in the stack -->
     <dimen name="z_distance_between_notifications">1dp</dimen>
@@ -291,7 +292,8 @@
     <dimen name="notification_padding_dimmed">0dp</dimen>
 
     <!-- The padding between the individual notification cards. -->
-    <dimen name="notification_padding">4dp</dimen>
+    <!-- SPRD 583693 change the value from 4 to 2, the two notifications padding value -->
+    <dimen name="notification_padding">2dp</dimen>
 
     <!-- The minimum amount of top overscroll to go to the quick settings. -->
     <dimen name="min_top_overscroll_to_qs">36dp</dimen>
@@ -312,7 +314,7 @@
     <dimen name="swipe_helper_falsing_threshold">70dp</dimen>
 
     <dimen name="notifications_top_padding">8dp</dimen>
-    
+
     <!-- Minimum distance the user has to drag down to go to the full shade. -->
     <dimen name="keyguard_drag_down_min_distance">100dp</dimen>
 
@@ -429,7 +431,8 @@
     <dimen name="qs_emergency_calls_only_text_size">12sp</dimen>
 
     <!-- The font size of the date in QS -->
-    <dimen name="qs_date_collapsed_size">14sp</dimen>
+    <!--  SPRD: 536885 DUT show overlapped Date string in notification bar when slide down the notification page. -->
+    <dimen name="qs_date_collapsed_size">12dp</dimen>
 
     <!-- Battery level text padding end when in expanded QS and on Keyguard -->
     <dimen name="battery_level_padding_end">2dp</dimen>
@@ -523,7 +526,7 @@
 
     <!-- The maximum width of the navigation bar ripples. -->
     <dimen name="key_button_ripple_max_width">95dp</dimen>
-    
+
     <!-- Inset shadow for FakeShadowDrawable. It is used to avoid gaps between the card
          and the shadow. -->
     <dimen name="fake_shadow_inset">1dp</dimen>
@@ -587,4 +590,12 @@
 
     <!-- Thickness of the shadows of the assist disclosure beams -->
     <dimen name="assist_disclosure_shadow_thickness">1.5dp</dimen>
+
+    <!--  SPRD: 527554 Set the String displays complete. -->
+    <dimen name="qs_dual_tile_padding">8dp</dimen>
+
+    <!-- SPRD 583693/585904 PIKEL New Feature -->
+    <dimen name="switch_buttons_height">42dp</dimen>
+    <dimen name="qs_tile_top_offset">16dp</dimen>
+    <dimen name="switch_bg_button_height">20px</dimen>
 </resources>

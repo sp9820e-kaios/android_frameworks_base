@@ -101,6 +101,29 @@ public class AlarmManager {
     public static final int ELAPSED_REALTIME = 3;
 
     /**
+     * SPRD: Regular PowerOnOff Feature @{
+     * Alarm time in {@link System#currentTimeMillis System.currentTimeMillis()}
+     * (wall clock time in UTC), which will wake up the device when it goes off.
+     * @hide
+     */
+    public static final int POWER_OFF_WAKEUP = 4;
+
+    /**
+     * Alarm time in {@link System#currentTimeMillis System.currentTimeMillis()}
+     * (wall clock time in UTC), which will boot the device when time is on.
+     * @hide
+     */
+    public static final int POWER_ON_WAKEUP = 5;
+
+    /**
+     * Alarm time in {@link System#currentTimeMillis System.currentTimeMillis()}
+     * (wall clock time in UTC), which will wake up the device and boot up with ro.bootmode=alarm
+     * @hide
+     * */
+    public static final int POWER_OFF_ALARM = 6;
+    /** @} */
+
+    /**
      * Broadcast Action: Sent after the value returned by
      * {@link #getNextAlarmClock()} has changed.
      *
@@ -859,4 +882,52 @@ public class AlarmManager {
             }
         };
     }
+
+    /**
+     * SPRD: Regular PowerOnOff Feature @{
+     * Remove any power off alarms.
+     * Any alarm, of any type, whose Intent matches this one (as defined by
+     * {@link Intent#filterEquals}), will be canceled.
+     *
+     * @param operation IntentSender which matches a previously added
+     * IntentSender.
+     * @see #set
+     *
+     * @hide
+     */
+    public void cancelAlarm(PendingIntent operation) {
+        try {
+            mService.removeAlarm(operation);
+        } catch (RemoteException ex) {
+        }
+    }
+    /* @} */
+
+    /**
+     * SPRD: Add for power optimization
+     * @param flag enable or disable the alarm align feature.
+     * @param updated beatlist is updated if true.
+     * @hide
+     * @{ */
+    public boolean setHeartBeatAdjustEnable(boolean enable, boolean updated){
+        try {
+            mService.setHeartBeatAdjustEnable(enable, updated);
+        } catch (RemoteException ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * SPRD: Add for adjust align length dynamically.
+     * @param length the new length.
+     * @hide
+     */
+    public void setAlignLength(int length){
+        try{
+            mService.setAlignLength(length);
+        }catch(RemoteException ex){
+        }
+    }
+    /* @} */
 }

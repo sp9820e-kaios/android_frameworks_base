@@ -101,6 +101,12 @@ public abstract class ConnectionService extends Service {
     private static final int MSG_ANSWER_VIDEO = 17;
     private static final int MSG_MERGE_CONFERENCE = 18;
     private static final int MSG_SWAP_CONFERENCE = 19;
+    // SPRD: Porting Explicit Transfer Call
+    private static final int MSG_EXPLICIT_CALL_TRANSFER = 20;
+    // SPRD Add answer with multi-part-call mode
+    private static final int MSG_ANSWER_VIDEO_WITH_MODE = 21;
+    // SPRD Add answer with multi-part-call mode
+    private static final int MSG_ANSWER_WITH_MODE = 22;
 
     private static Connection sNullConnection;
 
@@ -115,6 +121,7 @@ public abstract class ConnectionService extends Service {
 
     private boolean mAreAccountsInitialized = false;
     private Conference sNullConference;
+    private final List<Conference> mPendingConferences = new ArrayList<>();//SPRD: Add for VoLTE
 
     private final IBinder mBinder = new IConnectionService.Stub() {
         @Override
@@ -227,6 +234,35 @@ public abstract class ConnectionService extends Service {
             args.arg1 = callId;
             args.argi1 = proceed ? 1 : 0;
             mHandler.obtainMessage(MSG_ON_POST_DIAL_CONTINUE, args).sendToTarget();
+        }
+
+        /** SPRD Add for Multi-Part-Call Mode. */
+        @Override
+        /** @hide */
+        public void answerMPCVideo(String callId, int videoState, int mpcMode) {
+            SomeArgs args = SomeArgs.obtain();
+            args.arg1 = callId;
+            args.argi1 = videoState;
+            args.argi2 = mpcMode;
+            mHandler.obtainMessage(MSG_ANSWER_VIDEO_WITH_MODE, args).sendToTarget();
+        }
+
+        /** SPRD Add for Multi-Part-Call Mode. */
+        @Override
+        /** @hide */
+        public void answerMPC(String callId, int mpcMode) {
+            SomeArgs args = SomeArgs.obtain();
+            args.arg1 = callId;
+            args.argi1 = mpcMode;
+            mHandler.obtainMessage(MSG_ANSWER_WITH_MODE, args).sendToTarget();
+        }
+
+        /** SPRD: Porting Explicit Transfer Call */
+        @Override
+        public void explicitCallTransfer(String callId) {
+            SomeArgs args = SomeArgs.obtain();
+            args.arg1 = callId;
+            mHandler.obtainMessage(MSG_EXPLICIT_CALL_TRANSFER, callId).sendToTarget();
         }
     };
 
@@ -353,6 +389,35 @@ public abstract class ConnectionService extends Service {
                     }
                     break;
                 }
+                /** SPRD Add for multi-part-call Mode. @{ */
+                case MSG_ANSWER_VIDEO_WITH_MODE: {
+                    SomeArgs args = (SomeArgs) msg.obj;
+                    try {
+                        String callId = (String) args.arg1;
+                        int videoState = args.argi1;
+                        int mpcMode = args.argi2;
+                        answerVideo(callId, videoState, mpcMode);
+                    } finally {
+                        args.recycle();
+                    }
+                    break;
+                }
+                case MSG_ANSWER_WITH_MODE: {
+                    SomeArgs args = (SomeArgs) msg.obj;
+                    try {
+                        String callId = (String) args.arg1;
+                        int mpcMode = args.argi1;
+                        answer(callId, mpcMode);
+                    } finally {
+                        args.recycle();
+                    }
+                    break;
+                }
+                /** SPRD: Porting Explicit Transfer Call @{ */
+                case MSG_EXPLICIT_CALL_TRANSFER:
+                    explicitCallTransfer((String) msg.obj);
+                    break;
+                /** @} */
                 default:
                     break;
             }
@@ -673,6 +738,20 @@ public abstract class ConnectionService extends Service {
         findConnectionForAction(callId, "answer").onAnswer();
     }
 
+    /** SPRD: Add for multi-part-call mode. */
+    protected void answerVideo(String callId, int videoState, int mpcMode) {
+        Log.d(this, "answerVideo %s %d %d", callId, videoState, mpcMode);
+        findConnectionForAction(callId, "answerMPC").setAnswerMode(mpcMode);
+        findConnectionForAction(callId, "answerMPC").onAnswer(videoState);
+    }
+
+    /** SPRD: Add for multi-part-call mode. */
+    protected void answer(String callId, int mpcMode) {
+        Log.d(this, "answer %s %d", callId, mpcMode);
+        findConnectionForAction(callId, "answerMPC").setAnswerMode(mpcMode);
+        findConnectionForAction(callId, "answerMPC").onAnswer();
+    }
+
     private void reject(String callId) {
         Log.d(this, "reject %s", callId);
         findConnectionForAction(callId, "reject").onReject();
@@ -918,6 +997,44 @@ public abstract class ConnectionService extends Service {
      */
     public final void addConference(Conference conference) {
         Log.d(this, "addConference: conference=%s", conference);
+        /* SPRD: Add for VoLTE @{ */
+        synchronized(mPendingConferences){
+            if(conference != null){
+                boolean shouldPendingConference = false;
+                for (Connection connection : conference.getConnections()) {
+                    if (!mIdByConnection.containsKey(connection)) {
+                        shouldPendingConference = true;
+                        break;
+                    }
+                }
+                if(shouldPendingConference){
+                    int pendingIndex = -1;
+                    for(int i=0;i<mPendingConferences.size();i++){
+                        if(conference.equals(mPendingConferences.get(i))){
+                            pendingIndex = i;
+                        }
+                    }
+                    if(pendingIndex == -1){
+                        mPendingConferences.add(conference);
+                        Log.w(this, "addConference->add mPendingConferences.");
+                    }
+                    Log.w(this, "addConference->connection haven't create! ");
+                    return;
+                } else if(mPendingConferences.size()>0) {
+                    int pendingIndex = -1;
+                    for(int i=0;i<mPendingConferences.size();i++){
+                        if(conference.equals(mPendingConferences.get(i))){
+                            pendingIndex = i;
+                        }
+                    }
+                    if(pendingIndex >= 0){
+                        mPendingConferences.remove(pendingIndex);
+                        Log.w(this, "addConference->remove mPendingConferences.");
+                    }
+                }
+            }
+        }
+        /* @} */
 
         String id = addConferenceInternal(conference);
         if (id != null) {
@@ -939,6 +1056,7 @@ public abstract class ConnectionService extends Service {
                     conference.getStatusHints(),
                     conference.getExtras());
 
+            parcelableConference.setConnectRealTimeMillis(conference.getConnectRealTimeMillis()); //SPRD: add for bug492533
             mAdapter.addConferenceCall(id, parcelableConference);
             mAdapter.setVideoProvider(id, conference.getVideoProvider());
             mAdapter.setVideoState(id, conference.getVideoState());
@@ -1131,6 +1249,20 @@ public abstract class ConnectionService extends Service {
         mIdByConnection.put(connection, callId);
         connection.addConnectionListener(mConnectionListener);
         connection.setConnectionService(this);
+        /* SPRD: Add for VoLTE @{ */
+        synchronized(mPendingConferences){
+            if(mPendingConferences.size()>0){
+                Log.i(this, "addConnection->mPendingConferences.size(): "+mPendingConferences.size());
+                List<Conference> tempConferences = new ArrayList<>();
+                for(Conference temp : mPendingConferences){
+                    tempConferences.add(temp);
+                }
+                for(Conference c : tempConferences){
+                    addConference(c);
+                }
+            }
+        }
+        /* @} */
     }
 
     /** {@hide} */
@@ -1247,5 +1379,13 @@ public abstract class ConnectionService extends Service {
         for (Conference conference : mIdByConference.keySet()) {
             conference.onDisconnect();
         }
+    }
+
+    // --------------------------------- SPRD ---------------------------------------------
+
+    /** SPRD: Porting Explicit Transfer Call */
+    private void explicitCallTransfer(String callId) {
+        Log.d(this, "explicitCallTransfer(%s)", callId);
+        findConnectionForAction(callId, "onTransferCall").onTransferCall();
     }
 }

@@ -38,6 +38,7 @@ import android.provider.Settings;
 import android.util.Slog;
 import android.view.View;
 
+import android.widget.Toast;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.phone.SystemUIDialog;
@@ -185,6 +186,12 @@ public class PowerNotificationWarnings implements PowerUI.WarningsUI {
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setColor(mContext.getColor(
                         com.android.internal.R.color.battery_saver_mode_color));
+        /* SPRD: Bug 604684 Low battery, pop up toast {@ */
+        Toast toast = Toast.makeText(mContext,
+                mContext.getString(R.string.battery_low_title) + "\n " + mContext.getString(textRes, percentage),
+                Toast.LENGTH_SHORT);
+        toast.show();
+        /* @} */
         if (hasBatterySettings()) {
             nb.setContentIntent(pendingBroadcast(ACTION_SHOW_BATTERY_SETTINGS));
         }

@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Félicitations ! System UI Tuner a bien été ajouté aux paramètres."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Supprimer l\'outil des paramètres"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Supprimer System UI Tuner des paramètres et arrêter d\'utiliser toutes ses fonctionnalités ?"</string>
+    <string name="quick_settings_volume_label">"Profil Audio"</string>
+     <string name="assistant_key_home">"Accueil"</string>
+     <string name="assistant_key_search">"rechercher"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Retour"</string>
+
+    <string name="vibrate_hint">Glissez vers la gauche pour Vibreur</string>
+     <string name="battery_overtage_title">"Avertissement de sécurité"</string>
+     <string name="battery_overtage_content">"La tension de charge est trop élevée!"</string>
+     <string name="battery_overtage_back">"Retour"</string>
 </resources>

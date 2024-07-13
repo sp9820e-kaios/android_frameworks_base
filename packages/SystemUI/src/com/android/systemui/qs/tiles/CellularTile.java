@@ -35,6 +35,7 @@ import com.android.systemui.statusbar.policy.NetworkController.MobileDataControl
 import com.android.systemui.statusbar.policy.NetworkController.MobileDataController.DataUsageInfo;
 import com.android.systemui.statusbar.policy.NetworkController.SignalCallback;
 import com.android.systemui.statusbar.policy.SignalCallbackAdapter;
+import com.android.systemui.statusbar.policy.SystemUIPluginsHelper;
 
 /** Quick settings tile: Cellular **/
 public class CellularTile extends QSTile<QSTile.SignalState> {
@@ -46,6 +47,10 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
     private final CellularDetailAdapter mDetailAdapter;
 
     private final CellSignalCallback mSignalCallback = new CellSignalCallback();
+
+    // SPRD: Bug 474780 CMCC version hidden data traffic interface.
+    private final static boolean SupportCMCC = SystemUIPluginsHelper.getInstance()
+            .showDataUseInterface();
 
     public CellularTile(Host host) {
         super(host);
@@ -81,6 +86,9 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
     @Override
     protected void handleClick() {
         MetricsLogger.action(mContext, getMetricsCategory());
+
+        // SPRD: Bug 474780 CMCC version hidden data traffic interface.
+        if (!SupportCMCC) return;
         if (mDataController.isMobileDataSupported()) {
             showDetail(true);
         } else {
@@ -165,10 +173,12 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
             refreshState(mInfo);
         }
 
+        //SPRD: modify by BUG 491086,add dataConnect ; bug 517092 add roamIcon
         @Override
         public void setMobileDataIndicators(IconState statusIcon, IconState qsIcon, int statusType,
                 int qsType, boolean activityIn, boolean activityOut, String typeContentDescription,
-                String description, boolean isWide, int subId) {
+                String description, boolean isWide, int subId, boolean dataConnect, int colorScheme,
+                int roamIcon) {
             if (qsIcon == null) {
                 // Not data sim, don't display.
                 return;

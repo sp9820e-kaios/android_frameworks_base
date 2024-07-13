@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="action_use_network">"Usar este rede como é"</string>
+<string name="action_do_not_use_network">"Não usa este rede"</string>
+<string name="action_bar_label">"Fazer login na rede"</string>
+<string name="ssl_error_warning">"O rede você&#8217;está tentando participar tem problema de segurança."</string>
+<string name="ssl_error_example">"Por exemplo, a página de entrada talvez não pertença à organização mostrada."</string>
+<string name="ssl_error_continue">"Continuar qualquer maneira via navegador"</string>
+</resources>

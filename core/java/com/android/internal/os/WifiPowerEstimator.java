@@ -16,6 +16,7 @@
 package com.android.internal.os;
 
 import android.os.BatteryStats;
+import android.os.SystemProperties;
 import android.util.Log;
 
 /**
@@ -78,7 +79,7 @@ public class WifiPowerEstimator extends PowerCalculator {
         }
 
         app.wifiPowerMah = wifiPacketPower + wifiLockPower + wifiScanPower + wifiBatchScanPower;
-        if (DEBUG && app.wifiPowerMah != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && app.wifiPowerMah != 0) {
             Log.d(TAG, "UID " + u.getUid() + ": power=" +
                     BatteryStatsHelper.makemAh(app.wifiPowerMah));
         }

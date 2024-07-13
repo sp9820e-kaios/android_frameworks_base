@@ -51,6 +51,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.ConcurrentModificationException;
 
 public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
     private static final boolean LOGD = true;
@@ -303,11 +304,13 @@ public class RecentLoader extends AsyncTaskLoader<DirectoryResult> {
 
         // Ensure the loader is stopped
         onStopLoading();
-
-        for (RecentTask task : mTasks.values()) {
-            IoUtils.closeQuietly(task);
+        try {
+            for (RecentTask task : mTasks.values()) {
+                IoUtils.closeQuietly(task);
+            }
+        } catch (ConcurrentModificationException e) {
+            Log.d(TAG, "onReset failed " +  e);
         }
-
         IoUtils.closeQuietly(mResult);
         mResult = null;
     }

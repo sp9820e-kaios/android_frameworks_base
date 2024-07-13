@@ -896,6 +896,17 @@ android_media_MediaPlayer_release(JNIEnv *env, jobject thiz)
 }
 
 static void
+android_media_MediaPlayer_setNeedConsume(JNIEnv *env, jobject thiz,jboolean needConsume)
+{
+    ALOGV("setNeedConsume %d", needConsume);
+
+    sp<MediaPlayer> mp = getMediaPlayer(env, thiz);
+    if (mp != NULL ) {
+        mp->setNeedConsume(needConsume);
+    }
+}
+
+static void
 android_media_MediaPlayer_native_finalize(JNIEnv *env, jobject thiz)
 {
     ALOGV("native_finalize");
@@ -1080,6 +1091,7 @@ static JNINativeMethod gMethods[] = {
     {"native_pullBatteryData", "(Landroid/os/Parcel;)I",        (void *)android_media_MediaPlayer_pullBatteryData},
     {"native_setRetransmitEndpoint", "(Ljava/lang/String;I)I",  (void *)android_media_MediaPlayer_setRetransmitEndpoint},
     {"setNextMediaPlayer",  "(Landroid/media/MediaPlayer;)V",   (void *)android_media_MediaPlayer_setNextMediaPlayer},
+    {"setNeedConsume",      "(Z)V",                             (void *)android_media_MediaPlayer_setNeedConsume},
 };
 
 // This function only registers the native methods

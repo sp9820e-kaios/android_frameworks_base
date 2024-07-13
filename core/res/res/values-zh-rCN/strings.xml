@@ -233,7 +233,7 @@
     <string name="permgrouplab_calendar" msgid="5863508437783683902">"日历"</string>
     <string name="permgroupdesc_calendar" msgid="3889615280211184106">"访问您的日历"</string>
     <string name="permgrouplab_sms" msgid="228308803364967808">"短信"</string>
-    <string name="permgroupdesc_sms" msgid="4656988620100940350">"发送和查看短信"</string>
+    <string name="permgroupdesc_sms" msgid="4656988620100940350">"发送和查看信息"</string>
     <string name="permgrouplab_storage" msgid="1971118770546336966">"存储空间"</string>
     <string name="permgroupdesc_storage" msgid="637758554581589203">"访问您设备上的照片、媒体内容和文件"</string>
     <string name="permgrouplab_microphone" msgid="171539900250043464">"麦克风"</string>
@@ -272,9 +272,9 @@
     <string name="permdesc_readCellBroadcasts" msgid="6361972776080458979">"允许应用读取您的设备收到的小区广播消息。小区广播消息是在某些地区发送的、用于发布紧急情况警告的提醒信息。恶意应用可能会在您收到小区紧急广播时干扰您设备的性能或操作。"</string>
     <string name="permlab_subscribedFeedsRead" msgid="4756609637053353318">"读取订阅的供稿"</string>
     <string name="permdesc_subscribedFeedsRead" msgid="5557058907906144505">"允许应用获取有关当前同步的 Feed 的详情。"</string>
-    <string name="permlab_sendSms" msgid="7544599214260982981">"发送和查看短信"</string>
+    <string name="permlab_sendSms" msgid="7544599214260982981">"发送和查看信息"</string>
     <string name="permdesc_sendSms" msgid="7094729298204937667">"允许该应用发送短信。此权限可能会导致意外收费。恶意应用可能会未经您的确认而发送短信，由此产生相关费用。"</string>
-    <string name="permlab_readSms" msgid="8745086572213270480">"读取您的讯息（短信或彩信）"</string>
+    <string name="permlab_readSms" msgid="8745086572213270480">"读取您的信息（短信或彩信）"</string>
     <string name="permdesc_readSms" product="tablet" msgid="2467981548684735522">"允许该应用读取您平板电脑或SIM卡上存储的短信。此权限可让该应用读取所有短信，而不考虑短信内容或机密性。"</string>
     <string name="permdesc_readSms" product="tv" msgid="5102425513647038535">"允许应用读取您的电视或 SIM 卡上存储的短信。此权限会允许应用读取所有短信，而不论短信内容是什么或是否属于机密内容。"</string>
     <string name="permdesc_readSms" product="default" msgid="3695967533457240550">"允许该应用读取您手机或SIM卡上存储的短信。此权限可让该应用读取所有短信，而不考虑短信内容或机密性。"</string>
@@ -650,7 +650,7 @@
     <string name="keyguard_password_wrong_pin_code" msgid="2422225591006134936">"PIN码有误。"</string>
     <string name="keyguard_label_text" msgid="861796461028298424">"要解锁，请先按 MENU 再按 0。"</string>
     <string name="emergency_call_dialog_number_for_display" msgid="696192103195090970">"急救或报警电话"</string>
-    <string name="lockscreen_carrier_default" msgid="8963839242565653192">"无服务。"</string>
+    <string name="lockscreen_carrier_default" msgid="8963839242565653192">"无服务"</string>
     <string name="lockscreen_screen_locked" msgid="7288443074806832904">"屏幕已锁定。"</string>
     <string name="lockscreen_instructions_when_pattern_enabled" msgid="46154051614126049">"按 Menu 解锁或进行紧急呼救。"</string>
     <string name="lockscreen_instructions_when_pattern_disabled" msgid="686260028797158364">"按 MENU 解锁。"</string>
@@ -1042,9 +1042,9 @@
     <string name="usb_ptp_notification_title" msgid="1347328437083192112">"正在通过 USB 传输照片"</string>
     <string name="usb_midi_notification_title" msgid="4850904915889144654">"正在通过 USB 连接到 MIDI 接口"</string>
     <string name="usb_accessory_notification_title" msgid="7848236974087653666">"已连接到USB配件"</string>
-    <string name="usb_notification_message" msgid="7347368030849048437">"触摸以查看更多选项。"</string>
+    <string name="usb_notification_message" msgid="7347368030849048437">"选择此项并进入以查看更多选项。"</string>
     <string name="adb_active_notification_title" msgid="6729044778949189918">"已连接到USB调试"</string>
-    <string name="adb_active_notification_message" msgid="1016654627626476142">"触摸可停用USB调试。"</string>
+    <string name="adb_active_notification_message" msgid="1016654627626476142">"选择此项并进入可停用USB调试。"</string>
     <string name="select_input_method" msgid="8547250819326693584">"更改键盘"</string>
     <string name="configure_input_methods" msgid="4769971288371946846">"选择键盘"</string>
     <string name="show_ime" msgid="9157568568695230830">"显示输入法"</string>
@@ -1139,16 +1139,12 @@
     <string name="car_mode_disable_notification_title" msgid="3164768212003864316">"已启用车载模式"</string>
     <string name="car_mode_disable_notification_message" msgid="8035230537563503262">"触摸可退出车载模式。"</string>
     <string name="tethered_notification_title" msgid="3146694234398202601">"网络共享或热点已启用"</string>
+    <string name="tetheredPC_notification_title">"USB-互联网PC功能已启用"</string>
     <string name="tethered_notification_message" msgid="6857031760103062982">"触摸可进行设置。"</string>
     <string name="back_button_label" msgid="2300470004503343439">"上一步"</string>
     <string name="next_button_label" msgid="1080555104677992408">"下一步"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"跳过"</string>
-    <string name="no_matches" msgid="8129421908915840737">"无匹配项"</string>
     <string name="find_on_page" msgid="1946799233822820384">"在网页上查找"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other">第 <xliff:g id="INDEX">%d</xliff:g> 条结果（共 <xliff:g id="TOTAL">%d</xliff:g> 条）</item>
-      <item quantity="one">1 条结果</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"完成"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"正在清除USB存储设备的数据..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"正在清除SD卡的数据..."</string>
@@ -1460,7 +1456,7 @@
       <item quantity="one">1 分钟（到<xliff:g id="FORMATTEDTIME_0">%2$s</xliff:g>）</item>
     </plurals>
     <plurals name="zen_mode_duration_minutes_summary_short" formatted="false" msgid="6830154222366042597">
-      <item quantity="other">%1$d 分钟（到<xliff:g id="FORMATTEDTIME_1">%2$s</xliff:g>)）</item>
+      <item quantity="other">%1$d 分钟（到<xliff:g id="FORMATTEDTIME_1">%2$s</xliff:g>）</item>
       <item quantity="one">1 分钟（到<xliff:g id="FORMATTEDTIME_0">%2$s</xliff:g>）</item>
     </plurals>
     <plurals name="zen_mode_duration_hours_summary" formatted="false" msgid="8152974162096743862">
@@ -1516,4 +1512,43 @@
       <item quantity="other">已选择 <xliff:g id="COUNT_1">%1$d</xliff:g> 项</item>
       <item quantity="one">已选择 <xliff:g id="COUNT_0">%1$d</xliff:g> 项</item>
     </plurals>
+
+    <!-- SPRD: add for storage @{ -->
+    <!-- Short summary of storage media status when shared [CHAR LIMIT=32] -->
+    <string name="ext_media_status_shared">UMS共享</string>
+    <!-- @} -->
+
+    <!-- SPRD: support usb interface @{ -->
+    <string name="sim_ready_title_for_usb">"警告"</string>
+    <string name="sim_card_activation_warning">"为防止手机出厂后被第三方恶意刷入程序，请插入SIM/USIM卡激活USB接口"</string>
+    <string name="usb_ok">"确定"</string>
+    <!-- @} -->
+
+    <!-- SPRD: support usb interface -->
+    <string name="usb_cdrom_notification_title">"虚拟光驱已启用"</string>
+    <string name="usb_charge_only_notification">作为仅充电连接</string>
+    <!-- SPRD add the reboot -->
+    <string name="reboot_device_title">重新启动</string>
+    <string name="global_action_restart">重新启动</string>
+    <string name="global_reboot_close_apps">关闭所有应用程序并重启手机</string>
+    <string name="reboot_device_confirm">您确定需要重新启动手机吗 ?</string>
+    <!-- @} -->
+    <string name="station_state_msg">%1$s个已连接, %2$s个已阻止</string>
+    <plurals name="shutdown_after_seconds_plurals">
+        <item quantity="one">您的手机会在 <xliff:g id="NUMBER">%d</xliff:g> 秒后关机</item>
+        <item quantity="other">您的手机会在 <xliff:g id="NUMBER">%d</xliff:g> 秒后关机</item>
+    </plurals>
+
+    <!-- SPRD add for usim phone type display @{ -->
+    <string name="phoneFixedNumber">"固定号码"</string>
+    <!-- @} -->
+    <!-- SPRD:support GPS automatic update time @{ -->
+    <string name="gps_time_sync_fail_str">获取GPS时间失败</string>
+    <!-- @} -->
+
+    <!-- SPRD add for pocket mode @{ -->
+    <string name="disable_touch_mode_title">口袋防误触</string>
+    <string name="disable_touch_mode_hint">请勿遮挡手机顶端</string>
+    <string name="exit_disable_touch_mode_hint">同时按电源键及音量上键可强行退出</string>
+    <!-- @} -->
 </resources>

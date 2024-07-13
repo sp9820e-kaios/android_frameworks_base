@@ -106,6 +106,7 @@ import com.android.internal.os.BinderInternal;
 import com.android.internal.os.RuntimeInit;
 import com.android.internal.os.SamplingProfilerIntegration;
 import com.android.internal.util.FastPrintWriter;
+import com.sprd.internal.telephony.UsimNotifier;
 import com.android.org.conscrypt.OpenSSLSocketImpl;
 import com.android.org.conscrypt.TrustedCertificateStore;
 import com.google.android.collect.Lists;
@@ -3163,6 +3164,13 @@ public final class ActivityThread {
                 WindowManager.LayoutParams l = r.window.getAttributes();
                 a.mDecor = decor;
                 l.type = WindowManager.LayoutParams.TYPE_BASE_APPLICATION;
+                /* SPRD:add for STK 27.22.7.5.1 @{ */
+                if (r.intent.hasCategory(Intent.CATEGORY_HOME)) {
+                    l.idleScreenAvailable = true;
+                } else {
+                    l.idleScreenAvailable = false;
+                }
+                /* @} */
                 l.softInputMode |= forwardBit;
                 if (a.mVisibleFromClient) {
                     a.mWindowAdded = true;
@@ -3226,6 +3234,13 @@ public final class ActivityThread {
                 Looper.myQueue().addIdleHandler(new Idler());
             }
             r.onlyLocalRequest = false;
+
+            /* SPRD: [bug478944] Add for CUCC case: Check whether the SIM card is belonged to CUCC
+               or not before start CUCC application. @{ */
+            if (UsimNotifier.isNotifyEnabled(getApplication())) {
+                UsimNotifier.getInstance().startNotify(r.activity);
+            }
+            /* @} */
 
             // Tell the activity manager we have resumed.
             if (reallyResume) {
@@ -4427,6 +4442,14 @@ public final class ActivityThread {
         }
     }
 
+    private void checkTime(long startTime, String where) {
+        long now = SystemClock.elapsedRealtime();
+        if ((now-startTime) > 200) {
+            // If we are taking a long time, log about it.
+            Slog.w(TAG, "Slow operation: " + (now-startTime) + "ms so far, now at " + where);
+        }
+    }
+
     private void handleBindApplication(AppBindData data) {
         mBoundApplication = data;
         mConfiguration = new Configuration(data.config);
@@ -4450,7 +4473,10 @@ public final class ActivityThread {
             // use hardware accelerated drawing, since this can add too much
             // overhead to the process.
             if (!ActivityManager.isHighEndGfx()) {
-                HardwareRenderer.disable(false);
+                if (!("com.android.systemui").equals(data.processName)) {
+                    Slog.d(TAG, "HardwareRenderer disable, processName = " + data.processName);
+                    HardwareRenderer.disable(false);
+                }
             }
         }
 
@@ -4675,25 +4701,32 @@ public final class ActivityThread {
         // probably end up doing the same disk access.
         final StrictMode.ThreadPolicy savedPolicy = StrictMode.allowThreadDiskWrites();
         try {
+            long startTime = SystemClock.elapsedRealtime();
             // If the app is being launched for full backup or restore, bring it up in
             // a restricted environment with the base application class.
             Application app = data.info.makeApplication(data.restrictedBackupMode, null);
+            checkTime(startTime, "handleBindApplication : makeApplication");
             mInitialApplication = app;
+
+            AddonManager.attachApplication(app);
 
             // don't bring up providers in restricted mode; they may depend on the
             // app's custom Application class
             if (!data.restrictedBackupMode) {
                 List<ProviderInfo> providers = data.providers;
                 if (providers != null) {
+                    startTime = SystemClock.elapsedRealtime();
                     installContentProviders(app, providers);
                     // For process that contains content providers, we want to
                     // ensure that the JIT is enabled "at some point".
                     mH.sendEmptyMessageDelayed(H.ENABLE_JIT, 10*1000);
+                    checkTime(startTime, "handleBindApplication : installContentProviders");
                 }
             }
 
             // Do this after providers, since instrumentation tests generally start their
             // test thread at this point, and we don't want that racing.
+            startTime = SystemClock.elapsedRealtime();
             try {
                 mInstrumentation.onCreate(data.instrumentationArgs);
             }
@@ -4705,6 +4738,7 @@ public final class ActivityThread {
 
             try {
                 mInstrumentation.callApplicationOnCreate(app);
+                checkTime(startTime, "handleBindApplication : callApplicationOnCreate");
             } catch (Exception e) {
                 if (!mInstrumentation.onException(app, e)) {
                     throw new RuntimeException(
@@ -4756,6 +4790,22 @@ public final class ActivityThread {
         try {
             ActivityManagerNative.getDefault().publishContentProviders(
                 getApplicationThread(), results);
+            if (SystemProperties.get("persist.support.securetest").equals("1"))
+            {
+                for(IActivityManager.ContentProviderHolder holder : results)
+                {
+                    Log.i(TAG , "add content provider authority:" + holder.info.authority + ", provider binder:" + holder.provider.asBinder());
+                    String proviedname [] = {"sms","mms","mms-sms","call_log","contacts;com.android.contacts","icc",null} ;
+                    for (int i = 0 ; proviedname[i] != null ; i++)
+                    {
+                        if (proviedname[i].equals(holder.info.authority))
+                        {
+                            ServiceManager.addService(holder.info.authority, holder.provider.asBinder());
+                        }
+                    }
+                }
+            }
+
         } catch (RemoteException ex) {
         }
     }
@@ -5278,6 +5328,7 @@ public final class ActivityThread {
                         this, getSystemContext().mPackageInfo);
                 mInitialApplication = context.mPackageInfo.makeApplication(true, null);
                 mInitialApplication.onCreate();
+                AddonManager.attachApplication(getSystemContext());
             } catch (Exception e) {
                 throw new RuntimeException(
                         "Unable to instantiate Application():" + e.toString(), e);

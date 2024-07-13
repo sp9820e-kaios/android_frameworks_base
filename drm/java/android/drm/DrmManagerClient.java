@@ -734,6 +734,22 @@ public class DrmManagerClient {
         return result;
     }
 
+    public int setPlaybackStatus(DecryptHandle decryptHandle,int playbackStatus) {
+        return _setPlaybackStatus(mUniqueId, decryptHandle, playbackStatus);	
+    }
+
+    public int closeDecryptSession(DecryptHandle handle) {
+        return _closeDecryptSession(mUniqueId, handle);
+    }
+    
+    public DecryptHandle openDecryptSession(String path) {
+        return _openDecryptSession(mUniqueId, path, null);
+    }
+
+    public byte[] pread(DecryptHandle handle, int offset, int size) {
+	return _pread(mUniqueId, handle, offset, size);
+    }
+
     /**
      * Initiates a new conversion session. An application must initiate a conversion session
      * with this method each time it downloads a rights-protected file that needs to be converted.
@@ -900,6 +916,11 @@ public class DrmManagerClient {
 
     private native DrmSupportInfo[] _getAllSupportInfo(int uniqueId);
 
+    private native int  _closeDecryptSession(int uniqueId, DecryptHandle handle);
+    private native DecryptHandle _openDecryptSession(int uniqueId, String path, String mimeType);
+    private native int _setPlaybackStatus(int uniqueId, DecryptHandle decryptHandle, int playbackStatus);
+    private native byte[] _pread(int uniqueId, DecryptHandle decryptHandle, int size, int offset);
+    
     private void createEventThreads() {
         if (mEventHandler == null && mInfoHandler == null) {
             mInfoThread = new HandlerThread("DrmManagerClient.InfoHandler");

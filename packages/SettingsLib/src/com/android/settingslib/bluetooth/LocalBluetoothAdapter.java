@@ -50,6 +50,8 @@ public final class LocalBluetoothAdapter {
 
     private long mLastScan;
 
+    private boolean mManualCancel = false;
+
     private LocalBluetoothAdapter(BluetoothAdapter adapter) {
         mAdapter = adapter;
     }
@@ -96,6 +98,14 @@ public final class LocalBluetoothAdapter {
 
     public Set<BluetoothDevice> getBondedDevices() {
         return mAdapter.getBondedDevices();
+    }
+
+    public boolean isManualCancel() {
+        return mManualCancel;
+    }
+
+    public void setManualCancel(boolean manualCancel) {
+        mManualCancel = manualCancel;
     }
 
     public String getName() {
@@ -158,6 +168,8 @@ public final class LocalBluetoothAdapter {
                     return;
                 }
             }
+            // SPRD: reset mManualCancel variable to false
+            setManualCancel(false);
 
             if (mAdapter.startDiscovery()) {
                 mLastScan = System.currentTimeMillis();
@@ -167,6 +179,7 @@ public final class LocalBluetoothAdapter {
 
     public void stopScanning() {
         if (mAdapter.isDiscovering()) {
+            setManualCancel(true);
             mAdapter.cancelDiscovery();
         }
     }
@@ -191,9 +204,9 @@ public final class LocalBluetoothAdapter {
 
     // Returns true if the state changed; false otherwise.
     boolean syncBluetoothState() {
-        int currentState = mAdapter.getState();
+        int currentState = mAdapter.getBluetoothDetailState();
         if (currentState != mState) {
-            setBluetoothStateInt(mAdapter.getState());
+            setBluetoothStateInt(mAdapter.getBluetoothDetailState());
             return true;
         }
         return false;

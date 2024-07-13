@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"גע כדי להציג את הפרטים"</string>
     <string name="retry" msgid="7564024179122207376">"נסה שוב"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"הקבצים הבאים לא הועתקו: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"לא ניתן לשתף את הקובץ"</string>
+     <string name="documents_deleting">"מוחק מסמכים"</string>
+     <string name="error_permissions">"האפליקציה זקוקה להרשאות קריטיות בשביל לפעול. בדוק את הגדרת ההרשאות."</string>
+     <string name="cannot_copyfolder_itself">"אינכם יכולים להעתיק תיקייה לתוך עצמה"</string>
+     <string name="cannot_copy_drm">"לא ניתן להעתיק קבצי DRM"</string>
+     <string name="cannot_copy_downloading">"לא ניתן להעתיק את הקבצים שהורדו"</string>
+
 </resources>

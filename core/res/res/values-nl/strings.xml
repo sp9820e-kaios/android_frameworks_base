@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Vorige"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Volgende"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Overslaan"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Geen overeenkomsten"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Zoeken op pagina"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> van <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 overeenkomst</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Gereed"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"USB-opslag wissen..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"SD-kaart wissen..."</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> geselecteerd</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> geselecteerd</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" voorbeeld="2">%d</xliff:g>/<xliff:g id="total" voorbeeld="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-Internet Tethering actief"</string>
+     <string name="ext_media_status_shared">"UMS Gedeeld"</string>
+     <string name="sim_ready_title_for_usb">Waarschuwing</string>
+     <string name="sim_card_activation_warning">In het geval van de installatie van toepassingen van derden, gelieve de SIM / USIM-kaart naar USB te activeren.</string>
+     <string name="usb_ok">OK</string>
+     <string name="usb_cdrom_notification_title">"Virtuele Driver staat aan"</string>
+     <string name="usb_charge_only_notification">"Verbonden als laden enkel"</string>
+     <string name="global_action_restart">"Opnieuw opstarten"</string>
+     <string name="reboot_device_title">"Opnieuw opstarten"</string>
+     <string name="global_reboot_close_apps">"Sluit all Apps en herstart telefoon"</string>
+     <string name="reboot_device_confirm">Wil je je telefoon nu opstarten ?</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Telefoon zal uitschakelen na <xliff:g id="NUMBER">%d</xliff:g> seconden"</item>
+<item quantity="other">"De telefoon zal afsluiten na <xliff:g id="NUMBER">%d</xliff:g> seconden"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s verbonden, %2$s geblokkeerd"</string>
+     <string name="phoneFixedNumber">"VastNummer"</string>
+     <string name="gps_time_sync_fail_str">"Fout bij verkrijgen GPS tijd"</string>
+     <string name="disable_touch_mode_title">"Pocket Touch-Uitschakelen"</string>
+     <string name="disable_touch_mode_hint">"Bedek de bovenkant van de telefoon niet"</string>
+     <string name="exit_disable_touch_mode_hint">"Je kan ook op de aan/uit en volume omhoog knoppen drukken om deze modus uit te zetten"</string>
+
 </resources>

@@ -2615,12 +2615,16 @@ final class ActivityStack {
     }
 
     private void adjustFocusedActivityLocked(ActivityRecord r, String reason) {
-        if (mStackSupervisor.isFrontStack(this) && mService.mFocusedActivity == r) {
+        if (mStackSupervisor.isFrontStack(this) && (mService.mFocusedActivity == r || mService.mFocusedActivity == null) && r.state != ActivityState.STOPPING) {
             ActivityRecord next = topRunningActivityLocked(null);
             final String myReason = reason + " adjustFocus";
             if (next != r) {
                 final TaskRecord task = r.task;
-                if (r.frontOfTask && task == topTask() && task.isOverHomeStack()) {
+                /* SPRD: modify for bug 512908 { */
+                final TaskRecord top = topTask();
+                final ActivityRecord topAct = top == null ? null : top.getTopActivity();
+                if (r.frontOfTask && (task == top  || (r.finishing && topAct == null)) && task.isOverHomeStack()) {
+                /* } */
                     // For non-fullscreen stack, we want to move the focus to the next visible
                     // stack to prevent the home screen from moving to the top and obscuring
                     // other visible stacks.
@@ -3970,6 +3974,9 @@ final class ActivityStack {
         if (andResume) {
             results = r.results;
             newIntents = r.newIntents;
+            //SPRD: if activity which will be resumed is not the one we considered as focusedActivity,
+            //give a second chance to setFocusActivity
+            mService.setFocusedActivityLocked(r," relaunchActivityLocked ");
         }
         if (DEBUG_SWITCH) Slog.v(TAG_SWITCH,
                 "Relaunching: " + r + " with results=" + results + " newIntents=" + newIntents

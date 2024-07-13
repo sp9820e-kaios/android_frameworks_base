@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"ଦଲିଲ ଗୁଡିକ"</string>
+<string name="title_open">"ରୁ ଖୋଲନ୍ତୁ"</string>
+<string name="title_save">"କୁ ସଞ୍ଚୟ କରନ୍ତୁ"</string>
+<string name="menu_create_dir">"ଫୋଲଡର ସୃଷ୍ଟି କରନ୍ତୁ"</string>
+<string name="menu_grid">"ଜାଲି ଦୃଶ୍ୟ"</string>
+<string name="menu_list">"ତାଲିକା ଦୃଶ୍ୟ"</string>
+<string name="menu_sort">"ଦ୍ଵାରା ଶ୍ରେଣୀଭୁକ୍ତ କରନ୍ତୁ"</string>
+<string name="menu_search">"ଖୋଜ"</string>
+<string name="menu_settings">"ସଂସ୍ଥାପନା"</string>
+<string name="menu_open">"ଖୋଲନ୍ତୁ"</string>
+<string name="menu_save">"ସଞ୍ଚୟ କରନ୍ତୁ"</string>
+<string name="menu_share">"ଭାଗୀଦାରୀତା କରନ୍ତୁ"</string>
+<string name="menu_delete">"କାଟ"</string>
+<string name="menu_select_all">"ସବୁ ଯାକ ବାଛନ୍ତୁ"</string>
+<string name="menu_deselect_all">"ସମସ୍ତ ଅମନୋନୀତ କରନ୍ତୁ"</string>
+<string name="menu_copy">"...କୁ ନକଲ କର"</string>
+<string name="menu_advanced_show" product="nosdcard">"ଅଭ୍ୟନ୍ତରୀଣ ସଂରକ୍ଷକ ଦେଖାନ୍ତୁ"</string>
+<string name="menu_advanced_show" product="default">"SD କାର୍ଡ ଦେଖାନ୍ତୁ"</string>
+<string name="menu_advanced_hide" product="nosdcard">"ଅଭ୍ୟନ୍ତରୀଣ ସଂରକ୍ଷକ ଲୁଚାନ୍ତୁ"</string>
+<string name="menu_advanced_hide" product="default">"SD କାର୍ଡ ଲୁଚାନ୍ତୁ"</string>
+<string name="menu_file_size_show">"ଫାଇଲ ଆକାର ଦେଖାନ୍ତୁ"</string>
+<string name="menu_file_size_hide">"ଫାଇଲ ଆକାର ଲୁଚାନ୍ତୁ"</string>
+<string name="button_select">"ବାଛନ୍ତୁ"</string>
+<string name="button_copy">"ନକଲ କରନ୍ତୁ"</string>
+<string name="sort_name">"ନାମ ଦ୍ଵାରା"</string>
+<string name="sort_date">"ପରିବର୍ତ୍ତିତ ହୋଇଥିବା ତାରିଖ ଦ୍ଵାରା"</string>
+<string name="sort_size">"ଆକାର ଦ୍ଵାରା"</string>
+<string name="drawer_open">"ତାଲିକା-ମୂଳ ଗୁଡିକ/ରୁଟ ଦେଖାନ୍ତୁ"</string>
+<string name="drawer_close">"ତାଲିକା-ମୂଳ ଗୁଡିକ/ରୁଟ ଲୁଚାନ୍ତୁ"</string>
+<string name="save_error">"ଦଲିଲ ସଞ୍ଚୟ କରିବା ପାଇଁ ବିଫଳ ହୋଇଛି"</string>
+<string name="create_error">"ଫୋଲଡର ସୃଷ୍ଟି କରିବାକୁ ବିଫଳ ହୋଇଛି"</string>
+<string name="query_error">"ଦଲିଲ ଗୁଡିକୁ ପ୍ରଶ୍ନ କାରିବାରେ ବିଫଳ ହୋଇଛି"</string>
+<string name="root_recent">"ଏବେ"</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g> ମୁକ୍ତ"</string>
+<string name="root_type_service">"ସଂରକ୍ଷକ ସେବା"</string>
+<string name="root_type_shortcut">"ଶୀଘ୍ର-ପହଞ୍ଚ/ସର୍ଟକାଟ ଗୁଡିକ"</string>
+<string name="root_type_device">"ଉପକରଣ ଗୁଡିକ"</string>
+<string name="root_type_apps">"ଅଧିକ ଏପ"</string>
+<string name="empty">"କିଛି ଜିନିଷ ନାହିଁ"</string>
+<string name="toast_no_application">"ଫାଇଲ ଖୋଲା ଯାଇ ପାରିବ ନାହିଁ"</string>
+<string name="toast_failed_delete">"କିଛି ଦଲିଲ କାଟିଦେବା ପାଇଁ ଅକ୍ଷମ"</string>
+<string name="share_via">"ମଧ୍ୟ ଦେଇ ଭାଗୀଦାରୀତା କରନ୍ତୁ"</string>
+<string name="copy_notification_title">"ଫାଇଲ ଗୁଡିକୁ ନକଲ କରୁଛି"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> ବାକି ଅଛି"</string>
+<plurals name="copy_begin">
+<item quantity="one">"ନକଲ କରୁଛି <xliff:g id="count" example="1">%1$d</xliff:g> ଫାଇଲ ।"</item>
+<item quantity="other">"ନକଲ କରୁଛି <xliff:g id="count" example="3">%1$d</xliff:g> ଫାଇଲ ଗୁଡିକ ।"</item>
+</plurals>
+<string name="copy_preparing">"...ନକଲ କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ ହେଉଛି"</string>
+<plurals name="copy_error_notification_title">
+<item quantity="one">"ନକଲ କରିପାରୁନି <xliff:g id="count" example="1">%1$d</xliff:g> ଫାଇଲ"</item>
+<item quantity="other">"ନକଲ କରିପାରୁନି  <xliff:g id="count" example="2">%1$d</xliff:g> ଫାଇଲ ଗ୍ଗୁଡିକ"</item>
+</plurals>
+<string name="notification_touch_for_details">"ସବିଶେଷ ଦେଖିବା ପାଇଁ ସ୍ପର୍ଶ କରନ୍ତୁ"</string>
+<string name="retry">"ପୁନଃ ଚେଷ୍ଟା"</string>
+<string name="copy_failure_alert_content">"ଏହି ଫାଇଲ ଗୁଡିକ ନକଲ ହୋଇନାହିଁ: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"ଫାଇଲ ଭାଗୀଦାରୀତା କରାଯାଇ ପାରିବ ନାହିଁ"</string>
+<string name="documents_deleting">"ଦଲିଲ ଗୁଡିକୁ କାଟିଦେଉଛି"</string>
+<string name="error_permissions">"ଚାଲିବା ପାଇଁ ଆବଶ୍ୟକ ନିର୍ଣ୍ଣୟମୂଳକ ଅନୁମତି ଏପ ର ନାହିଁ । ଦୟାକରି ଆପଣଙ୍କ ଅନୁମତି ସଂସ୍ଥାପନା ଗୁଡିକୁ ଯାଞ୍ଚ କରନ୍ତୁ ।"</string>
+<string name="cannot_copyfolder_itself">"ଆପଣ ଫୋଲଡରଟିକୁ ତା\'ନିଜ ଭିତରକୁ ନକଲ କରିପାରିବେ ନାହିଁ"</string>
+<string name="cannot_copy_drm">"DRM ଫାଇଲ ଗୁଡିକୁ ନକଲ କରିପାରିବେ ନାହିଁ"</string>
+<string name="cannot_copy_downloading">"ଡାଉନଲୋଡ ହୋଇଥିବା ଫାଇଲ ଗୁଡିକୁ ନକଲ କରି ପାରିବ ନାହିଁ"</string>
+</resources>

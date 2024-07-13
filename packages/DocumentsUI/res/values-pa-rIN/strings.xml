@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"ਵੇਰਵੇ ਵੇਖਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ"</string>
     <string name="retry" msgid="7564024179122207376">"ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦੀ ਪ੍ਰਤੀਲਿਪੀ ਨਹੀਂ ਬਣਾਈ ਗਈ: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ਫਾਈਲ ਸ਼ੇਅਰ ਨਹੀਂ ਕਰ ਸਕਦਾ"</string>
+     <string name="documents_deleting">"ਦਸਤਾਵੇਜ਼ ਮਿਟਾਏ ਜਾ ਰਹੇ ਹਨ"</string>
+     <string name="cannot_copyfolder_itself">"ਤੁਸੀਂ ਫੋਲਡਰ ਨੂੰ ਇਸ ਵਿੱਚ ਹੀ ਕਾਪੀ ਨਹੀਂ ਕਰ ਸਕਦੇ"</string>
+    <string name="menu_deselect_all">"ਸਾਰਿਆਂ ਨੂੰ ਅਚੋਣਵਾਂ ਕਰੋ"</string>
+    <string name="error_permissions">"ਐਪ ਨੂੰ ਚਲਾਉਣ ਲਈ ਲੁੜੀਂਦੀਆਂ ਲਾਜ਼ਮੀ ਅਨੁਮਤੀਆਂ ਨਹੀਂ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੀਆਂ ਅਨੁਮਤੀ ਸੈਟਿੰਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।"</string>
+     <string name="cannot_copy_drm">"DRM ਫਾਈਲਾਂ ਕਾਪੀ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ"</string>
+     <string name="cannot_copy_downloading">"ਡਾਊਨਲੋਡ ਹੋ ਰਹੀਆਂ ਫਾਈਲਾਂ ਕਾਪੀ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ"</string>
 </resources>

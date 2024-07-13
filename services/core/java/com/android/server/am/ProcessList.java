@@ -37,6 +37,8 @@ import android.net.LocalSocket;
 import android.util.Slog;
 import android.view.Display;
 
+import static com.android.internal.R.integer.config_maxCachedApps;
+
 /**
  * Activity manager code dealing with processes.
  */
@@ -74,7 +76,7 @@ final class ProcessList {
     // This is a process holding the home application -- we want to try
     // avoiding killing it, even if it would normally be in the background,
     // because the user interacts with it so much.
-    static final int HOME_APP_ADJ = 6;
+    static final int HOME_APP_ADJ = 2;
 
     // This is a process holding an application service -- killing it will not
     // have much of an impact as far as the user is concerned.
@@ -92,7 +94,7 @@ final class ProcessList {
     // This is a process only hosting components that are perceptible to the
     // user, and we really want to avoid killing them, but they are not
     // immediately visible. An example is background music playback.
-    static final int PERCEPTIBLE_APP_ADJ = 2;
+    static final int PERCEPTIBLE_APP_ADJ = 4;
 
     // This is a process only hosting activities that are visible to the
     // user, so we'd prefer they don't disappear.
@@ -133,7 +135,7 @@ final class ProcessList {
     // we have no limit on the number of service, visible, foreground, or other such
     // processes and the number of those processes does not count against the cached
     // process limit.
-    static final int MAX_CACHED_APPS = 32;
+    static final int MAX_CACHED_APPS = Math.max(Resources.getSystem().getInteger(config_maxCachedApps), 32);
 
     // We allow empty processes to stick around for at most 30 minutes.
     static final long MAX_EMPTY_TIME = 30*60*1000;
@@ -230,6 +232,46 @@ final class ProcessList {
         }
 
         float scale = scaleMem > scaleDisp ? scaleMem : scaleDisp;
+
+        // SPRD: optimazation for low memory @{
+        String lmkProperty = SystemProperties.get("lmk.autocalc", "true");
+        boolean autocalc =  "true".equalsIgnoreCase(lmkProperty);
+        if(!autocalc)
+        {
+                String adj = SystemProperties.get("sys.lmk.adj","");
+                String minfree = SystemProperties.get("sys.lmk.minfree","");
+                if(adj != null &&  adj != "" && minfree != null && minfree != "")
+                {
+                        String[] adjs = adj.split(",");
+                        String[] minfrees = minfree.split(",");
+                        try {
+                                int length = adjs.length > mOomAdj.length ? mOomAdj.length :adjs.length;
+                                for (int i = 0; i <length; ++i) {
+                                        mOomAdj[i] = Integer.parseInt(adjs[i]);
+                                   // Log.i(TAG, "adj: " + mOomAdj[i]);
+                                }
+                                for (int i = 0; i <  length ; ++i) {
+                                        mOomMinFree[i] = Integer.parseInt(minfrees[i]) * PAGE_SIZE / 1024;
+                                }
+                        } catch (Exception e) {
+                                Slog.w(TAG, "adj:"+ adj);
+                        }
+                        // SPRD: update mCachedRestoreLevel
+                        mCachedRestoreLevel = (getMemLevel(ProcessList.CACHED_APP_MAX_ADJ)/1024) / 3;
+                        if (write) {
+                            ByteBuffer buf = ByteBuffer.allocate(4 * (2*mOomAdj.length + 1));
+                            buf.putInt(LMK_TARGET);
+                            for (int i=0; i<mOomAdj.length; i++) {
+                                buf.putInt((mOomMinFree[i]*1024)/PAGE_SIZE);
+                                buf.putInt(mOomAdj[i]);
+                            }
+                            writeLmkd(buf);
+                        }
+                        return;
+                }
+        }
+        // SPRD: optimazation for low memory @}
+
         if (scale < 0) scale = 0;
         else if (scale > 1) scale = 1;
         int minfree_adj = Resources.getSystem().getInteger(

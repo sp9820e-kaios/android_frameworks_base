@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"Ang taho sa sayop kay nadakpan"</string>
+<string name="bugreport_finished_text" product="watch">"Ipadanas sa wala para sa pagbahin sa mga sayop nga taho"</string>
+<string name="bugreport_finished_text" product="default">"Hikapa para mahatag ang taho sa sayop"</string>
+<string name="bugreport_confirm">"Taho sa sayop nga anaay datus gikan sa lain-lain nga log payl sa sistema, lakip na ang personal ug pribado nga impormasyon. Ibahin lamang ang mga taho sa sayop ngadto sa mga apps ug tawo nga imong gikasaligan."</string>
+<string name="bugreport_confirm_repeat">"Ipakita ni nga mensahe sa sunod"</string>
+<string name="bugreport_storage_title">"Mga report sa mga bug"</string>
+</resources>

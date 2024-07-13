@@ -31,6 +31,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.text.format.DateUtils;
 import android.util.EventLog;
 import android.util.MathUtils;
@@ -344,7 +345,7 @@ class AutomaticBrightnessController {
             long startTime = (mAmbientLightRingBuffer.getTime(i) - now);
             float weight = calculateWeight(startTime, endTime);
             float lux = mAmbientLightRingBuffer.getLux(i);
-            if (DEBUG) {
+            if (DEBUG || isDebugLcdBacklight()) {
                 Slog.d(TAG, "calculateAmbientLux: [" +
                         (startTime) + ", " +
                         (endTime) + "]: lux=" + lux + ", weight=" + weight);
@@ -353,7 +354,7 @@ class AutomaticBrightnessController {
             sum += mAmbientLightRingBuffer.getLux(i) * weight;
             endTime = startTime;
         }
-        if (DEBUG) {
+        if (DEBUG || isDebugLcdBacklight()) {
             Slog.d(TAG, "calculateAmbientLux: totalWeight=" + totalWeight +
                     ", newAmbientLux=" + (sum / totalWeight));
         }
@@ -407,7 +408,7 @@ class AutomaticBrightnessController {
             final long timeWhenSensorWarmedUp =
                 mLightSensorWarmUpTimeConfig + mLightSensorEnableTime;
             if (time < timeWhenSensorWarmedUp) {
-                if (DEBUG) {
+                if (DEBUG || isDebugLcdBacklight()) {
                     Slog.d(TAG, "updateAmbientLux: Sensor not  ready yet: "
                             + "time=" + time
                             + ", timeWhenSensorWarmedUp=" + timeWhenSensorWarmedUp);
@@ -418,7 +419,7 @@ class AutomaticBrightnessController {
             }
             setAmbientLux(calculateAmbientLux(time));
             mAmbientLuxValid = true;
-            if (DEBUG) {
+            if (DEBUG || isDebugLcdBacklight()) {
                 Slog.d(TAG, "updateAmbientLux: Initializing: "
                         + "mAmbientLightRingBuffer=" + mAmbientLightRingBuffer
                         + ", mAmbientLux=" + mAmbientLux);
@@ -433,7 +434,7 @@ class AutomaticBrightnessController {
         if (ambientLux >= mBrighteningLuxThreshold && nextBrightenTransition <= time
                 || ambientLux <= mDarkeningLuxThreshold && nextDarkenTransition <= time) {
             setAmbientLux(ambientLux);
-            if (DEBUG) {
+            if (DEBUG || isDebugLcdBacklight()) {
                 Slog.d(TAG, "updateAmbientLux: "
                         + ((ambientLux > mAmbientLux) ? "Brightened" : "Darkened") + ": "
                         + "mBrighteningLuxThreshold=" + mBrighteningLuxThreshold
@@ -453,7 +454,7 @@ class AutomaticBrightnessController {
         // weighted ambient lux or not.
         nextTransitionTime =
                 nextTransitionTime > time ? nextTransitionTime : time + mLightSensorRate;
-        if (DEBUG) {
+        if (DEBUG || isDebugLcdBacklight()) {
             Slog.d(TAG, "updateAmbientLux: Scheduling ambient lux update for "
                     + nextTransitionTime + TimeUtils.formatUptime(nextTransitionTime));
         }
@@ -473,7 +474,7 @@ class AutomaticBrightnessController {
             final float adjGamma = MathUtils.pow(SCREEN_AUTO_BRIGHTNESS_ADJUSTMENT_MAX_GAMMA,
                     Math.min(1.0f, Math.max(-1.0f, -mScreenAutoBrightnessAdjustment)));
             gamma *= adjGamma;
-            if (DEBUG) {
+            if (DEBUG || isDebugLcdBacklight()) {
                 Slog.d(TAG, "updateAutoBrightness: adjGamma=" + adjGamma);
             }
         }
@@ -487,7 +488,7 @@ class AutomaticBrightnessController {
                 final float lateGamma =
                         getTwilightGamma(now, state.getTodaySunset(), state.getTomorrowSunrise());
                 gamma *= earlyGamma * lateGamma;
-                if (DEBUG) {
+                if (DEBUG || isDebugLcdBacklight()) {
                     Slog.d(TAG, "updateAutoBrightness: earlyGamma=" + earlyGamma
                             + ", lateGamma=" + lateGamma);
                 }
@@ -497,7 +498,7 @@ class AutomaticBrightnessController {
         if (gamma != 1.0f) {
             final float in = value;
             value = MathUtils.pow(value, gamma);
-            if (DEBUG) {
+            if (DEBUG || isDebugLcdBacklight()) {
                 Slog.d(TAG, "updateAutoBrightness: gamma=" + gamma
                         + ", in=" + in + ", out=" + value);
             }
@@ -506,7 +507,7 @@ class AutomaticBrightnessController {
         int newScreenAutoBrightness =
                 clampScreenBrightness(Math.round(value * PowerManager.BRIGHTNESS_ON));
         if (mScreenAutoBrightness != newScreenAutoBrightness) {
-            if (DEBUG) {
+            if (DEBUG || isDebugLcdBacklight()) {
                 Slog.d(TAG, "updateAutoBrightness: mScreenAutoBrightness="
                         + mScreenAutoBrightness + ", newScreenAutoBrightness="
                         + newScreenAutoBrightness);
@@ -551,7 +552,7 @@ class AutomaticBrightnessController {
         if (mBrightnessAdjustmentSamplePending) {
             mBrightnessAdjustmentSamplePending = false;
             if (mAmbientLuxValid && mScreenAutoBrightness >= 0) {
-                if (DEBUG) {
+                if (DEBUG || isDebugLcdBacklight()) {
                     Slog.d(TAG, "Auto-brightness adjustment changed by user: "
                             + "adj=" + mScreenAutoBrightnessAdjustment
                             + ", lux=" + mAmbientLux
@@ -617,6 +618,9 @@ class AutomaticBrightnessController {
             if (mLightSensorEnabled) {
                 final long time = SystemClock.uptimeMillis();
                 final float lux = event.values[0];
+                if (isDebugLcdBacklight()){
+                    Slog.i(TAG, "onSensorChanged, time = " + time + ",lux = " + lux);
+                }
                 handleLightSensorEvent(time, lux);
             }
         }
@@ -764,5 +768,10 @@ class AutomaticBrightnessController {
             }
             return index;
         }
+    }
+
+    private boolean isDebugLcdBacklight(){
+        return SystemProperties.getBoolean("debug.power.lcd_backlight" , false)
+                || SystemProperties.getBoolean("debug.power.all", false);
     }
 }

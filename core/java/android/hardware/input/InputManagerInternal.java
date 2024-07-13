@@ -39,4 +39,9 @@ public abstract class InputManagerInternal {
      * watching for wake events.
      */
     public abstract void setInteractive(boolean interactive);
+    /* SPRD: add mouse acquirement @ { */
+    public abstract void setEnableFor3rdApp(boolean enable);
+    public abstract boolean getEnableFor3rdApp();
+    public abstract boolean getScrollMode();
+    /* @ } */
 }

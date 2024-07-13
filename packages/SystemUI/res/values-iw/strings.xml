@@ -428,4 +428,15 @@
     <string name="tuner_toast" msgid="603429811084428439">"‏מזל טוב! System UI Tuner נוסף ל\'הגדרות\'"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"הסר מההגדרות"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"‏האם להסיר את System UI Tuner ולהפסיק להשתמש בכל התכונות שלו?"</string>
+    <string name="quick_settings_volume_label">"פרופיל שמע"</string>
+     <string name="assistant_key_home">"דף הבית"</string>
+     <string name="assistant_key_search">"חפש"</string>
+     <string name="assistant_key_menu">"תפריט"</string>
+     <string name="assistant_key_back">"הקודם"</string>
+     <string name="vibrate_hint">החליקו אצבעות שמאלה להפעלת הרטט</string>
+     <string name="battery_overtage_title">"אזהרת אבטחה"</string>
+     <string name="battery_overtage_content">"מתח הטעינה גבוה מדי!"</string>
+     <string name="battery_overtage_back">"הקודם"</string>
+     <string name="recent_app_clean_finished_toast">"משחרר <xliff:g id="count">%1$s</xliff:g> זיכרון,<xliff:g id="count">%2$s</xliff:g> זמין כעת."</string>
+
 </resources>

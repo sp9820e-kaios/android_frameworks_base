@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="prompt">"ସଂଯୋଗ ଅନୁରୋଧ"</string>
+<string name="warning">"<xliff:g id="app">%s</xliff:g> ଏକ VPN ସଂଯୋଗ ସ୍ଥାପିତ କରିବାକୁ ଚାହାଁନ୍ତି ଯାହା ନେଟୱର୍କ ଯାତାୟାତ ଉପରେ ନଜର ରଖିବା ପାଇଁ ଏହାକୁ ଅନୁମତି ଦେଇଥାଏ । ଗ୍ରହଣ କରନ୍ତୁ  କେବଳ  ଯଦି ଆପଣ ଉତ୍ସକୁ ବିଶ୍ଵାସ କରୁଥାନ୍ତି ।  <![CDATA[ <br /> <br /> <img src="vpn_icon" /> ]]> ଆପଣଙ୍କ ସ୍କ୍ରିନ/ପରଦାର ସର୍ବା ଉପରେ ଦେଖା ଦେଇଥାଏ ଯେତେବେଳେ VPN ସକ୍ରିୟ ଥାଏ ।  "</string>
+<string name="legacy_title">"VPN ସଂଯୋଗ କରାଯାଇଛି"</string>
+<string name="configure">"ସଜାନ୍ତୁ"</string>
+<string name="disconnect">"ସଂଯୋଗ କାଟିଦିଅନ୍ତୁ"</string>
+<string name="session">"ଅଧିବେସନ:"</string>
+<string name="duration">"ଅବଧି:"</string>
+<string name="data_transmitted">"ପଠାଗଲା:"</string>
+<string name="data_received">"ଗ୍ରହଣ କରାଗଲା:"</string>
+<string name="data_value_format">" <xliff:g id="number">%1$s</xliff:g> ବାଇଟ୍ସ / <xliff:g id="number">%2$s</xliff:g> ପକେଟ"</string>
+</resources>

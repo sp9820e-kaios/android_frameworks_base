@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"போர்டபில் Wi-Fi ஹாட்ஸ்பாட்டுக்கு மொபைல் தரவு இணைப்பு தேவைப்படுகிறது, கூடுதல் கட்டணங்கள் ஆகலாம்."</string>
+<string name="softap_bt_cannot_coexist">"Bluetooth செயலாக்கப்பட்டிருக்கும் போது அல்லது செயல்பட ஆரம்பிக்கும்போது, softap செயல்பட முடியாது, நீங்கள் softapஐ பயன்படுத்த விரும்பினால், தயவுசெய்து bluetooth செயல்பாடு நிறுத்தப்பட்டிருப்பதை உறுதி செய்யவும்."</string>
+<string name="bt_softap_cannot_coexist">"Softap செயலாக்கப்பட்டிருக்கும் போது அல்லது செயல்பட ஆரம்பிக்கும்போது, bluetooth செயல்பட முடியாது, நீங்கள் bluetoothஐ பயன்படுத்த விரும்பினால், தயவுசெய்து softap செயல்பாடு நிறுத்தப்பட்டிருப்பதை உறுதி செய்யவும்."</string>
+<string name="lte_service_error_airplane">"போன் ஏர்ப்ளேன் மோடில் இருக்கும் போது நீங்கள் LTEஐ பயன்படுத்த முடியாது"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ஆன் செய்யப்பட்டுவிட்டது"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ஆஃப் செய்யப்பட்டுவிட்டது"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ஆன்"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ஆஃப்"</string>
+<string name="toggle_data_error_airplane">தொலைபேசி ஆகாயவிமான மோடில் இருக்கும்போது நீங்கள் மொபைல் தரவு பயன்படுத்த முடியாது.</string>
+<string name="quick_settings_data_connection_label">தரவுகள் &amp; சின்க் செய்தல்</string>
+<string name="accessibility_quick_settings_data_changed_on">"தரவு துவங்கப்பட்டுள்ளது"</string>
+<string name="accessibility_quick_settings_data_changed_off">"தரவு அணைக்கப்பட்டுள்ளது"</string>
+<string name="accessibility_quick_settings_data_on">"தரவு இயங்குகிறது"</string>
+<string name="accessibility_quick_settings_data_off">"தரவு அணைந்துள்ளது"</string>
+<string name="missing_sim_message">"SIM இல்லை"</string>
+    <string name="lte_service_error_incall">""அழைப்பு நேரத்தில் உங்களால்  LTE சர்விஸை மாற்ற முடியாது." "</string>
+
+</resources>

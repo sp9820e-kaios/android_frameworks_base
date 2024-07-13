@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Parabéns! O Sintonizador da interface do sistema foi adicionado às Definições"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Remover das Definições"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Pretende remover o Sintonizador da interface do sistema das Definições e deixar de utilizar todas as respetivas funcionalidades?"</string>
+    <string name="quick_settings_volume_label">"AUDIOPERFIL"</string>
+     <string name="assistant_key_home">"Ecrã principal"</string>
+     <string name="assistant_key_search">"Pesquisar"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Anterior"</string>
+
+    <string name="vibrate_hint">"Deslizar para esquerda para Vibrar"</string>
+     <string name="battery_overtage_title">"Aviso de segurança"</string>
+     <string name="battery_overtage_content">"A voltagem de carrega é tão alta!"</string>
+     <string name="battery_overtage_back">"Anterior"</string>
 </resources>

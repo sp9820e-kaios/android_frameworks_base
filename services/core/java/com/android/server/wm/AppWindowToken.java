@@ -133,7 +133,7 @@ class AppWindowToken extends WindowToken {
                 continue;
             }
             try {
-                if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(WindowManagerService.TAG,
+                if (WindowManagerService.DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(WindowManagerService.TAG,
                         "Setting visibility of " + win + ": " + (!clientHidden));
                 win.mClient.dispatchAppVisibility(!clientHidden);
             } catch (RemoteException e) {
@@ -151,7 +151,7 @@ class AppWindowToken extends WindowToken {
         int numDrawn = 0;
         boolean nowGone = true;
 
-        if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(WindowManagerService.TAG,
+        if (WindowManagerService.DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(WindowManagerService.TAG,
                 "Update reported visibility: " + this);
         final int N = allAppWindows.size();
         for (int i=0; i<N; i++) {
@@ -162,7 +162,7 @@ class AppWindowToken extends WindowToken {
                     || win.mDestroying) {
                 continue;
             }
-            if (WindowManagerService.DEBUG_VISIBILITY) {
+            if (WindowManagerService.DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) {
                 Slog.v(WindowManagerService.TAG, "Win " + win + ": isDrawn="
                         + win.isDrawnLw()
                         + ", isAnimating=" + win.mWinAnimator.isAnimating());
@@ -200,7 +200,7 @@ class AppWindowToken extends WindowToken {
                 nowVisible = reportedVisible;
             }
         }
-        if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(WindowManagerService.TAG, "VIS " + this + ": interesting="
+        if (WindowManagerService.DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(WindowManagerService.TAG, "VIS " + this + ": interesting="
                 + numInteresting + " visible=" + numVisible);
         if (nowDrawn != reportedDrawn) {
             if (nowDrawn) {
@@ -211,7 +211,7 @@ class AppWindowToken extends WindowToken {
             reportedDrawn = nowDrawn;
         }
         if (nowVisible != reportedVisible) {
-            if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(
+            if (WindowManagerService.DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(
                     WindowManagerService.TAG, "Visibility changed in " + this
                     + ": vis=" + nowVisible);
             reportedVisible = nowVisible;
@@ -277,7 +277,7 @@ class AppWindowToken extends WindowToken {
                 // and never beyond allAppWindows bounds.
                 winNdx = Math.min(winNdx - 1, allAppWindows.size() - 1)) {
             WindowState win = allAppWindows.get(winNdx);
-            if (WindowManagerService.DEBUG_WINDOW_MOVEMENT) {
+            if (WindowManagerService.DEBUG_WINDOW_MOVEMENT || WindowManagerService.mIsPrintLogs) {
                 Slog.w(WindowManagerService.TAG, "removeAllWindows: removing win=" + win);
             }
 

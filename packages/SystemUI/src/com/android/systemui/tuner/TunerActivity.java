@@ -16,6 +16,7 @@
 package com.android.systemui.tuner;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 public class TunerActivity extends Activity {
@@ -26,5 +27,10 @@ public class TunerActivity extends Activity {
         getFragmentManager().beginTransaction().replace(android.R.id.content, new TunerFragment())
                 .commit();
     }
-
+    /* SPRD: fixbug494437  Receiving a dialog and rotating in Tuner happens framework crash @{ */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+    /*@} */
 }

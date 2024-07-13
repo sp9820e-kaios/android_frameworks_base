@@ -42,10 +42,12 @@ import android.os.DropBoxManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.UEventObserver;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.EventLog;
+import android.util.Log;
 import android.util.Slog;
 
 import java.io.File;
@@ -258,12 +260,17 @@ public final class BatteryService extends SystemService {
         // shut down gracefully if our battery is critically low and we are not powered.
         // wait until the system has booted before attempting to display the shutdown dialog.
         if (mBatteryProps.batteryLevel == 0 && !isPoweredLocked(BatteryManager.BATTERY_PLUGGED_ANY)) {
+            if (getDeBugBatteryStatusLog()) {
+                Log.d(TAG, "Low battery shutdown, batteryLevel : " + mBatteryProps.batteryLevel);
+            }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (ActivityManagerNative.isSystemReady()) {
                         Intent intent = new Intent(Intent.ACTION_REQUEST_SHUTDOWN);
                         intent.putExtra(Intent.EXTRA_KEY_CONFIRM, false);
+                        //SPRD: add shutdown reason for PhoneInfo feature 
+                        intent.putExtra("shutdown_mode", "battery");
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         mContext.startActivityAsUser(intent, UserHandle.CURRENT);
                     }
@@ -277,6 +284,10 @@ public final class BatteryService extends SystemService {
         // wait until the system has booted before attempting to display the
         // shutdown dialog.
         if (mBatteryProps.batteryTemperature > mShutdownBatteryTemperature) {
+            if (getDeBugBatteryStatusLog()) {
+                Log.d(TAG, "Battery over-temperature shutdown, batteryTemperature : "
+                        + mBatteryProps.batteryTemperature);
+            }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -318,20 +329,18 @@ public final class BatteryService extends SystemService {
             mPlugType = BATTERY_PLUGGED_NONE;
         }
 
-        if (DEBUG) {
-            Slog.d(TAG, "Processing new values: "
-                    + "chargerAcOnline=" + mBatteryProps.chargerAcOnline
-                    + ", chargerUsbOnline=" + mBatteryProps.chargerUsbOnline
-                    + ", chargerWirelessOnline=" + mBatteryProps.chargerWirelessOnline
-                    + ", batteryStatus=" + mBatteryProps.batteryStatus
-                    + ", batteryHealth=" + mBatteryProps.batteryHealth
-                    + ", batteryPresent=" + mBatteryProps.batteryPresent
-                    + ", batteryLevel=" + mBatteryProps.batteryLevel
+        if (DEBUG || getDeBugBatteryStatusLog()) {
+            Log.d(TAG, "Processing new values: " + "chargerAcOnline="
+                    + mBatteryProps.chargerAcOnline + ", chargerUsbOnline="
+                    + mBatteryProps.chargerUsbOnline + ", chargerWirelessOnline="
+                    + mBatteryProps.chargerWirelessOnline + ", batteryStatus="
+                    + mBatteryProps.batteryStatus + ", batteryHealth="
+                    + mBatteryProps.batteryHealth + ", batteryPresent="
+                    + mBatteryProps.batteryPresent + ", batteryLevel=" + mBatteryProps.batteryLevel
                     + ", batteryTechnology=" + mBatteryProps.batteryTechnology
-                    + ", batteryVoltage=" + mBatteryProps.batteryVoltage
-                    + ", batteryTemperature=" + mBatteryProps.batteryTemperature
-                    + ", mBatteryLevelCritical=" + mBatteryLevelCritical
-                    + ", mPlugType=" + mPlugType);
+                    + ", batteryVoltage=" + mBatteryProps.batteryVoltage + ", batteryTemperature="
+                    + mBatteryProps.batteryTemperature + ", mBatteryLevelCritical="
+                    + mBatteryLevelCritical + ", mPlugType=" + mPlugType);
         }
 
         // Let the battery stats keep track of the current level.
@@ -431,7 +440,7 @@ public final class BatteryService extends SystemService {
                     }
                 });
             }
-            else if (mPlugType == 0 && mLastPlugType != 0) {
+            else if (mPlugType == 0 && mLastPlugType != 0 && mLastPlugType != -1) {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -829,5 +838,11 @@ public final class BatteryService extends SystemService {
                 return mInvalidCharger;
             }
         }
+    }
+
+    private boolean getDeBugBatteryStatusLog() {
+        boolean DEBUG_BATTERY_STATUS = SystemProperties.getBoolean("debug.power.battery",
+                false) || SystemProperties.getBoolean("debug.power.all", false);
+        return DEBUG_BATTERY_STATUS;
     }
 }

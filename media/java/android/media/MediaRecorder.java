@@ -30,6 +30,8 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.ref.WeakReference;
+import android.os.SystemProperties;
+import java.io.File;
 
 /**
  * Used to record audio and video. The recording control is based on a
@@ -762,7 +764,22 @@ public class MediaRecorder
     public void prepare() throws IllegalStateException, IOException
     {
         if (mPath != null) {
+            if(SystemProperties.get("service.project.sec").equals("1")){
+                if(mPath.contains("CTTL")){
+                    System.err.println("java.io.File in MediaRecorder CTTL file path is "+mPath);
+                    File cttlFile = new File(mPath);
+                    File parentFile = cttlFile.getParentFile();
+                    if(!parentFile.exists()){
+                        boolean mkdirs = parentFile.mkdirs();
+                        System.err.println("java.io.File in MediaREcorder CTTL file's parentFile do not exist, we mkdirs for it, result is "+mkdirs);
+                    }
+                }
+            }
+            // SPRD: add log for bug 541933 camera occurs anr
+            Log.d(TAG, "New RandomAccessFile start");
             RandomAccessFile file = new RandomAccessFile(mPath, "rws");
+            // SPRD: add log for bug 541933 camera occurs anr
+            Log.d(TAG, "New RandomAccessFile end");
             try {
                 _setOutputFile(file.getFD(), 0, 0);
             } finally {
@@ -791,6 +808,20 @@ public class MediaRecorder
      * prepare().
      */
     public native void start() throws IllegalStateException;
+
+    /**
+     * SPRD: pause recording. Call this after start().bug_474602
+     *
+     * @throws IllegalStateException if it is called before start()
+    */
+
+    public native void pause() throws IllegalStateException;
+    /**
+     * SPRD: resume recording. Call this after pause().
+     *
+     * @throws IllegalStateException if it is called before start()
+    */
+    public native void resume() throws IllegalStateException;
 
     /**
      * Stops recording. Call this after start(). Once recording is stopped,
@@ -891,6 +922,10 @@ public class MediaRecorder
      */
     public static final int MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED = 801;
 
+    /** Info of tracks have data.
+     * @see android.media.MediaRecorder.OnInfoListener
+     */
+    public static final int MEDIA_RECORDER_INFO_TRACKS_HAVE_DATA = 802;
     /** informational events for individual tracks, for testing purpose.
      * The track informational event usually contains two parts in the ext1
      * arg of the onInfo() callback: bit 31-28 contains the track id; and

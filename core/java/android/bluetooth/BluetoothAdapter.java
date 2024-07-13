@@ -36,6 +36,7 @@ import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.os.SystemProperties;
 import android.util.Log;
 import android.util.Pair;
 
@@ -126,6 +127,14 @@ public final class BluetoothAdapter {
             "android.bluetooth.adapter.action.STATE_CHANGED";
 
     /**
+     * Broadcast Action: The state of the local Bluetooth adapter has been
+     * changed due to radio state change
+     * @hide
+     **/
+    public static final String ACTION_RADIO_STATE_CHANGED =
+            "android.bluetooth.adapter.action.RADIO_STATE_CHANGED";
+
+    /**
      * Used as an int extra field in {@link #ACTION_STATE_CHANGED}
      * intents to request the current power state. Possible values are:
      * {@link #STATE_OFF},
@@ -190,6 +199,17 @@ public final class BluetoothAdapter {
      */
     public static final int STATE_BLE_TURNING_OFF = 16;
 
+    // TODO:TBD move all the FM related code changes to FM Proxy
+    /**
+     * Indicates the local Bluetooth adapter radio is turned on.
+     * @hide
+     **/
+    public static final int STATE_RADIO_ON = 17;
+    /**
+     * Indicates the local Bluetooth adapter radio is turned off.
+     * @hide
+     **/
+    public static final int STATE_RADIO_OFF = 18;
     /**
      * Activity Action: Show a system activity that requests discoverable mode.
      * This activity will also request the user to turn on Bluetooth if it
@@ -484,7 +504,7 @@ public final class BluetoothAdapter {
 
     private final IBluetoothManager mManagerService;
     private IBluetooth mService;
-
+    private static final boolean WCN_DISABLED = SystemProperties.get("ro.wcn").equals("disabled");
     private final Object mLock = new Object();
     private final Map<LeScanCallback, ScanCallback> mLeScanClients;
 
@@ -593,6 +613,36 @@ public final class BluetoothAdapter {
             }
         }
         return sBluetoothLeScanner;
+    }
+
+    /**
+     * Return true if Radio is currently enabled and ready for use.
+     *
+     * @hide
+     */
+    public boolean isRadioEnabled() {
+
+        try {
+            synchronized(mManagerCallback) {
+                if (mService != null) return mService.isRadioEnabled();
+            }
+        } catch (RemoteException e) {Log.e(TAG, "", e);}
+        return false;
+    }
+
+    /**
+     * When fm exit, do unBind AdapterService and exit bluetooth process if neccessary.
+     * @hide
+     */
+    public boolean doUnBindFromFMRadio() {
+        try {
+            if (mManagerService != null) {
+                return mManagerService.doUnBindFromFMRadio();
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "", e);
+        }
+        return false;
     }
 
     /**
@@ -807,6 +857,24 @@ public final class BluetoothAdapter {
     }
 
     /**
+     * Get Bluetooth detail state, include ble intermediate states
+     * @return
+     * @hide
+     */
+    public int getBluetoothDetailState() {
+        try {
+            synchronized(mManagerCallback) {
+                if (mService != null)
+                {
+                    int state=  mService.getState();
+                    return state;
+                }
+            }
+        } catch (RemoteException e) {Log.e(TAG, "", e);}
+        return STATE_OFF;
+    }
+
+    /**
      * Get the current state of the local Bluetooth adapter
      * <p>This returns current internal state of Adapter including LE ON/OFF
      *
@@ -880,6 +948,7 @@ public final class BluetoothAdapter {
      */
     @RequiresPermission(Manifest.permission.BLUETOOTH_ADMIN)
     public boolean enable() {
+        if(WCN_DISABLED) return false;
         int state = STATE_OFF;
         if (isEnabled() == true){
             if (DBG) Log.d(TAG, "enable(): BT is already enabled..!");
@@ -899,6 +968,18 @@ public final class BluetoothAdapter {
         }
         try {
             return mManagerService.enable();
+        } catch (RemoteException e) {Log.e(TAG, "", e);}
+        return false;
+    }
+    /**
+     * Turn on Radio.This turns on the  combo chip.
+     * Can be used as generic API for any other radio turn on also.
+     * @hide
+     */
+        public boolean enableRadio() {
+        boolean enabled = false;
+        try {
+            return mManagerService.enableRadio();
         } catch (RemoteException e) {Log.e(TAG, "", e);}
         return false;
     }
@@ -934,7 +1015,17 @@ public final class BluetoothAdapter {
         } catch (RemoteException e) {Log.e(TAG, "", e);}
         return false;
     }
-
+    /**
+     * Turn Off Radio.This turns Off the  combo chip.
+     * Can be used as generic API for any other radio turn Off also.
+     * @hide
+     */
+    public boolean disableRadio() {
+        try {
+            return mManagerService.disableRadio();
+        } catch (RemoteException e) {Log.e(TAG, "", e);}
+        return false;
+    }
     /**
      * Turn off the local Bluetooth adapter and don't persist the setting.
      *

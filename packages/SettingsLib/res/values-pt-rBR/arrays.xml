@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string-array name="wifi_status">
+<item></item>
+<item>"Procurando…"</item>
+<item>"Conectando..."</item>
+<item>"Autenticando..."</item>
+<item>"Obtendo endereço IP…"</item>
+<item>"Conectada"</item>
+<item>"Suspenso"</item>
+<item>"Desconectando…"</item>
+<item>"Desconectado"</item>
+<item>"Falha"</item>
+<item>"Bloqueados"</item>
+<item>"Temporariamente evitando uma conexão ruim"</item>
+</string-array>
+<string-array name="wifi_status_with_ssid">
+<item></item>
+<item>"Procurando…"</item>
+<item>"Conectando-se a <xliff:g id="NETWORK_NAME">%1$s</xliff:g>…"</item>
+<item>"Autenticando com a <xliff:g id="NETWORK_NAME">%1$s</xliff:g>…"</item>
+<item>"Obtendo endereço IP da <xliff:g id="NETWORK_NAME">%1$s</xliff:g>…"</item>
+<item>"Conectado a <xliff:g id="NETWORK_NAME">%1$s</xliff:g>"</item>
+<item>"Suspenso"</item>
+<item>"Desconectando da <xliff:g id="NETWORK_NAME">%1$s</xliff:g>…"</item>
+<item>"Desconectado"</item>
+<item>"Falha"</item>
+<item>"Bloqueados"</item>
+<item>"Temporariamente evitando uma conexão ruim"</item>
+</string-array>
+</resources>

@@ -102,4 +102,6 @@ interface ICameraDeviceUser
     int prepare(int streamId);
 
     int tearDown(int streamId);
+
+    int cancelPicture();//SPRD: fix bug 473462 add burst capture
 }

@@ -198,12 +198,21 @@ public:
     void setPointerSpeed(int32_t speed);
     void setShowTouches(bool enabled);
     void setInteractive(bool interactive);
+    /* SPRD: add mouse acquirement @ { */
+    void setEnableFor3rdApp(bool enable);
+    bool getEnableFor3rdApp();
+    bool getScrollMode();
+    /* @ } */
     void reloadCalibration();
 
     /* --- InputReaderPolicyInterface implementation --- */
 
     virtual void getReaderConfiguration(InputReaderConfiguration* outConfig);
     virtual sp<PointerControllerInterface> obtainPointerController(int32_t deviceId);
+    /* SPRD: add mouse acquirement @ { */
+    sp<PointerController> mController;
+    virtual void updateIcon();
+    /* @ } */
     virtual void notifyInputDevicesChanged(const Vector<InputDeviceInfo>& inputDevices);
     virtual sp<KeyCharacterMap> getKeyboardLayoutOverlay(const InputDeviceIdentifier& identifier);
     virtual String8 getDeviceAlias(const InputDeviceIdentifier& identifier);
@@ -486,8 +495,33 @@ sp<PointerControllerInterface> NativeInputManager::obtainPointerController(int32
 
         updateInactivityTimeoutLocked(controller);
     }
+    /* SPRD: add mouse acquirement @ { */
+    mController = controller;
+    /* @ } */
     return controller;
 }
+
+/* SPRD: add mouse acquirement @ { */
+void NativeInputManager::updateIcon() {
+    if (mController != NULL) {
+        JNIEnv* env = jniEnv();
+        jobject pointerIconObj = env->CallObjectMethod(mServiceObj,
+            gServiceClassInfo.getPointerIcon);
+        if (!checkAndClearExceptionFromCallback(env, "getPointerIcon")) {
+            PointerIcon pointerIcon;
+            status_t status = android_view_PointerIcon_load(env, pointerIconObj,
+                mContextObj, &pointerIcon);
+            if (!status && !pointerIcon.isNullIcon()) {
+                mController->setPointerIcon(SpriteIcon(pointerIcon.bitmap,
+                    pointerIcon.hotSpotX, pointerIcon.hotSpotY)); 
+            } else {
+                mController->setPointerIcon(SpriteIcon());
+            }
+            env->DeleteLocalRef(pointerIconObj); 
+        } 
+    }
+}
+/* @ } */
 
 void NativeInputManager::ensureSpriteControllerLocked() {
     if (mLocked.spriteController == NULL) {
@@ -772,7 +806,26 @@ void NativeInputManager::setShowTouches(bool enabled) {
 
 void NativeInputManager::setInteractive(bool interactive) {
     mInteractive = interactive;
+    /* SPRD: add mouse acquirement @ { */
+    mInputManager->getReader()->setInteractive(interactive);
+    /* @ } */
 }
+
+/* SPRD: add mouse acquirement @ { */
+void NativeInputManager::setEnableFor3rdApp(bool enable) {
+    mInputManager->getReader()->setEnableFor3rdApp(enable);
+
+}
+
+bool NativeInputManager::getEnableFor3rdApp() {
+    return mInputManager->getReader()->getEnableFor3rdApp();
+
+}
+
+bool NativeInputManager::getScrollMode() {
+    return mInputManager->getReader()->getScrollMode();
+}
+/* @ } */
 
 void NativeInputManager::reloadCalibration() {
     mInputManager->getReader()->requestRefreshConfiguration(
@@ -1299,6 +1352,26 @@ static void nativeSetInteractive(JNIEnv* env,
     im->setInteractive(interactive);
 }
 
+/* SPRD: add mouse acquirement @ { */
+static void nativeSetEnableFor3rdApp(JNIEnv* env,
+    jclass clazz, jlong ptr, jboolean enable) {
+    NativeInputManager* im = reinterpret_cast<NativeInputManager*>(ptr);
+    im->setEnableFor3rdApp(enable);
+}
+
+static jboolean nativeGetEnableFor3rdApp(JNIEnv* env,
+    jclass clazz, jlong ptr) {
+    NativeInputManager* im = reinterpret_cast<NativeInputManager*>(ptr);
+    return im->getEnableFor3rdApp();
+}
+
+static jboolean nativeGetScrollMode(JNIEnv* env,
+    jclass clazz, jlong ptr) {
+    NativeInputManager* im = reinterpret_cast<NativeInputManager*>(ptr);
+    return im->getScrollMode();
+    }
+/* @ } */
+
 static void nativeReloadCalibration(JNIEnv* env, jclass clazz, jlong ptr) {
     NativeInputManager* im = reinterpret_cast<NativeInputManager*>(ptr);
     im->reloadCalibration();
@@ -1411,6 +1484,14 @@ static JNINativeMethod gInputManagerMethods[] = {
             (void*) nativeSetShowTouches },
     { "nativeSetInteractive", "(JZ)V",
             (void*) nativeSetInteractive },
+    /* SPRD: add mouse acquirement @ { */
+    { "nativeSetEnableFor3rdApp", "(JZ)V",
+        (void*) nativeSetEnableFor3rdApp },
+    { "nativeGetEnableFor3rdApp", "(J)Z",
+        (void*) nativeGetEnableFor3rdApp },
+    { "nativeGetScrollMode", "(J)Z",
+        (void*) nativeGetScrollMode },
+    /* @ } */
     { "nativeReloadCalibration", "(J)V",
             (void*) nativeReloadCalibration },
     { "nativeVibrate", "(JI[JII)V",

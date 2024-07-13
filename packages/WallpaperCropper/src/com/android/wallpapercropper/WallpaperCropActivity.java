@@ -98,20 +98,16 @@ public class WallpaperCropActivity extends Activity {
             finish();
             return;
         }
-
-        // Action bar
-        // Show the custom action bar view
-        final ActionBar actionBar = getActionBar();
-        actionBar.setCustomView(R.layout.actionbar_set_wallpaper);
-        actionBar.getCustomView().setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
+        mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
+        mSetWallpaperButton.setOnClickListener(
+            new View.OnClickListener() {
+                @Override
                     public void onClick(View v) {
+                        mSetWallpaperButton.setEnabled(false);
                         boolean finishActivityWhenDone = true;
                         cropImageAndSetWallpaper(imageUri, null, finishActivityWhenDone);
                     }
                 });
-        mSetWallpaperButton = findViewById(R.id.set_wallpaper_button);
 
         // Load image in background
         final BitmapRegionTileSource.UriBitmapSource bitmapSource =
@@ -544,6 +540,8 @@ public class WallpaperCropActivity extends Activity {
                     }
                 } catch (FileNotFoundException e) {
                     Log.w(LOGTAG, "cannot read file: " + mInUri.toString(), e);
+                } catch (SecurityException e) {
+                    Log.w(LOGTAG, "security exception cannot read file: " + mInUri.toString(), e);
                 }
             }
             return null;
@@ -804,6 +802,10 @@ public class WallpaperCropActivity extends Activity {
 
         @Override
         protected void onPostExecute(Boolean result) {
+            if (!result) {
+                String prompt = mContext.getResources().getString(R.string.set_wallpaper_failed);
+                Toast.makeText(mContext, prompt, Toast.LENGTH_SHORT).show();
+            }
             if (mOnEndRunnable != null) {
                 mOnEndRunnable.run();
             }

@@ -273,6 +273,35 @@ public interface IMountService extends IInterface {
                 return _result;
             }
 
+            /** SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * @hide
+             */
+            public int createInternalSdContainer(String id, int sizeMb, String fstype, String key,
+                    int ownerUid, boolean external, boolean isForwardLocked) throws RemoteException {
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(id);
+                    _data.writeInt(sizeMb);
+                    _data.writeString(fstype);
+                    _data.writeString(key);
+                    _data.writeInt(ownerUid);
+                    _data.writeInt(external ? 1 : 0);
+                    _data.writeInt(isForwardLocked ? 1 : 0);
+                    mRemote.transact(Stub.TRANSACTION_createInternalSdContainer, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+            /* @} */
+
             /*
              * Destroy a secure container, and free up all resources associated
              * with it. NOTE: Ensure all references are released prior to
@@ -427,6 +456,27 @@ public interface IMountService extends IInterface {
                 return _result;
             }
 
+            /* SPRD: support double sdcard
+             * add for avoiding system dump when firing UMS @{
+             * @hide
+             */
+            public String[] getSecureContainerList(boolean externalStorage, boolean isInternlaSd) throws RemoteException {
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String[] _result;
+                try {
+                    _data.writeInt(externalStorage? 1 : 0);
+                    _data.writeInt( isInternlaSd ? 1 : 0);
+                    mRemote.transact(Stub.TRANSACTION_getSecureContainerList2, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.createStringArray();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+            /* @} */
             /**
              * Gets an Array of currently known secure container IDs
              */
@@ -1180,6 +1230,42 @@ public interface IMountService extends IInterface {
                     _data.recycle();
                 }
             }
+
+            /* SPRD: add for emulated storage @{ */
+            @Override
+            public String getPrimaryEmulatedStorageUuid() throws RemoteException {
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                String _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getPrimaryEmulatedStorageUuid, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readString();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+
+            @Override
+            public void setPrimaryEmulatedStorageUuid(String volumeUuid, IPackageMoveObserver callback)
+            throws RemoteException {
+                Parcel _data = Parcel.obtain();
+                Parcel _reply = Parcel.obtain();
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    _data.writeString(volumeUuid);
+                    _data.writeStrongBinder((callback != null ? callback.asBinder() : null));
+                    mRemote.transact(Stub.TRANSACTION_setPrimaryEmulatedStorageUuid, _data, _reply, 0);
+                    _reply.readException();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+            }
+            /* @} */
         }
 
         private static final String DESCRIPTOR = "IMountService";
@@ -1292,8 +1378,25 @@ public interface IMountService extends IInterface {
         static final int TRANSACTION_getPrimaryStorageUuid = IBinder.FIRST_CALL_TRANSACTION + 57;
         static final int TRANSACTION_setPrimaryStorageUuid = IBinder.FIRST_CALL_TRANSACTION + 58;
 
+        /* SPRD: add for emulated storage @{ */
+        static final int TRANSACTION_getPrimaryEmulatedStorageUuid = IBinder.FIRST_CALL_TRANSACTION + 101;
+        static final int TRANSACTION_setPrimaryEmulatedStorageUuid = IBinder.FIRST_CALL_TRANSACTION + 102;
+        /* @} */
+
         static final int TRANSACTION_benchmark = IBinder.FIRST_CALL_TRANSACTION + 59;
         static final int TRANSACTION_setDebugFlags = IBinder.FIRST_CALL_TRANSACTION + 60;
+
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         */
+        static final int TRANSACTION_createInternalSdContainer = IBinder.FIRST_CALL_TRANSACTION + 103;
+        /* @} */
+
+        /*  SPRD: support double sdcard
+         * add for avoiding system dump when firing UMS @{
+         */
+        static final int TRANSACTION_getSecureContainerList2 = IBinder.FIRST_CALL_TRANSACTION + 104;
+        /* @} */
 
         /**
          * Cast an IBinder object into an IMountService interface, generating a
@@ -1431,6 +1534,32 @@ public interface IMountService extends IInterface {
                     reply.writeInt(resultCode);
                     return true;
                 }
+                /* SPRD: support double sdcard
+                 * Add support for install apk to internal sdcard @{
+                 */
+                case TRANSACTION_createInternalSdContainer: {
+                    data.enforceInterface(DESCRIPTOR);
+                    String id;
+                    id = data.readString();
+                    int sizeMb;
+                    sizeMb = data.readInt();
+                    String fstype;
+                    fstype = data.readString();
+                    String key;
+                    key = data.readString();
+                    int ownerUid;
+                    ownerUid = data.readInt();
+                    boolean external;
+                    external = 0 != data.readInt();
+                    boolean isForwardLocked;
+                    isForwardLocked = 0 != data.readInt();
+                    int resultCode = createInternalSdContainer(id, sizeMb, fstype, key, ownerUid,
+                            external, isForwardLocked);
+                    reply.writeNoException();
+                    reply.writeInt(resultCode);
+                    return true;
+                }
+                /* @} */
                 case TRANSACTION_finalizeSecureContainer: {
                     data.enforceInterface(DESCRIPTOR);
                     String id;
@@ -1506,6 +1635,21 @@ public interface IMountService extends IInterface {
                     reply.writeString(path);
                     return true;
                 }
+                /* SPRD: support double sdcard
+                 * add for avoiding system dump when firing UMS @{
+                 */
+                case TRANSACTION_getSecureContainerList2: {
+                    data.enforceInterface(DESCRIPTOR);
+                    boolean externalStorage;
+                    externalStorage = 0 != data.readInt();
+                    boolean isInternlaSd;
+                    isInternlaSd = 0 != data.readInt();
+                    String[] ids = getSecureContainerList(externalStorage,isInternlaSd);
+                    reply.writeNoException();
+                     reply.writeStringArray(ids);
+                    return true;
+                }
+                /* @} */
                 case TRANSACTION_getSecureContainerList: {
                     data.enforceInterface(DESCRIPTOR);
                     String[] ids = getSecureContainerList();
@@ -1850,6 +1994,24 @@ public interface IMountService extends IInterface {
                     reply.writeNoException();
                     return true;
                 }
+                /* SPRD: add for emulated storage @{ */
+                case TRANSACTION_getPrimaryEmulatedStorageUuid: {
+                    data.enforceInterface(DESCRIPTOR);
+                    String volumeUuid = getPrimaryEmulatedStorageUuid();
+                    reply.writeNoException();
+                    reply.writeString(volumeUuid);
+                    return true;
+                }
+                case TRANSACTION_setPrimaryEmulatedStorageUuid: {
+                    data.enforceInterface(DESCRIPTOR);
+                    String volumeUuid = data.readString();
+                    IPackageMoveObserver listener = IPackageMoveObserver.Stub.asInterface(
+                            data.readStrongBinder());
+                    setPrimaryEmulatedStorageUuid(volumeUuid, listener);
+                    reply.writeNoException();
+                    return true;
+                }
+                /* @} */
             }
             return super.onTransact(code, data, reply, flags);
         }
@@ -1861,6 +2023,13 @@ public interface IMountService extends IInterface {
      */
     public int createSecureContainer(String id, int sizeMb, String fstype, String key,
             int ownerUid, boolean external) throws RemoteException;
+
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public int createInternalSdContainer(String id, int sizeMb, String fstype, String key,
+            int ownerUid, boolean external, boolean isForwardLocked) throws RemoteException;
+    /* @} */
 
     /*
      * Destroy a secure container, and free up all resources associated with it.
@@ -1893,6 +2062,12 @@ public interface IMountService extends IInterface {
      */
     public String getMountedObbPath(String rawPath) throws RemoteException;
 
+    /* SPRD: support double sdcard
+     * add for avoiding system dump when firing UMS @{
+     * @hide
+     */
+    public String[] getSecureContainerList(boolean externalStorage, boolean isInternlaSd) throws RemoteException;
+    /* @} */
     /**
      * Gets an Array of currently known secure container IDs
      */
@@ -2159,4 +2334,10 @@ public interface IMountService extends IInterface {
     public String getPrimaryStorageUuid() throws RemoteException;
     public void setPrimaryStorageUuid(String volumeUuid, IPackageMoveObserver callback)
             throws RemoteException;
+
+    /* SPRD: add for emulated storage @{ */
+    public String getPrimaryEmulatedStorageUuid() throws RemoteException;
+    public void setPrimaryEmulatedStorageUuid(String volumeUuid, IPackageMoveObserver callback)
+            throws RemoteException;
+    /* @} */
 }

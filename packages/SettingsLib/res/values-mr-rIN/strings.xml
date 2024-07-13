@@ -89,4 +89,9 @@
     <skip />
     <!-- no translation found for accessibility_wifi_signal_full (7061045677694702) -->
     <skip />
+    <string name="wifi_secured_first_item">"<xliff:g>%1$s</xliff:g> द्वारे सुरक्षित;"</string>
+     <string name="wifi_secured_second_item">", <xliff:g>%1$s</xliff:g> द्वारे सुरक्षित;"</string>
+     <string name="wifi_wps_available_first_item">"WPS उपलब्ध आहे"</string>
+     <string name="wifi_wps_available_second_item">"\u0020(WPS उपलब्ध)"</string>
+
 </resources>

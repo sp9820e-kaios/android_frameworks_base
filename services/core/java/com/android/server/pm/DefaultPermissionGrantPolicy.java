@@ -35,13 +35,25 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.Telephony.Sms.Intents;
 import android.security.Credentials;
+import android.util.AtomicFile;
 import android.util.ArraySet;
 import android.util.Log;
+import android.util.Xml;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 
 import static android.os.Process.FIRST_APPLICATION_UID;
 
@@ -57,6 +69,7 @@ final class DefaultPermissionGrantPolicy {
     private static final boolean DEBUG = false;
 
     private static final String AUDIO_MIME_TYPE = "audio/mpeg";
+    private static String SPRD_APP_PERMS = "/system/etc/sprd-app-perms.xml";
 
     private static final Set<String> PHONE_PERMISSIONS = new ArraySet<>();
     static {
@@ -164,6 +177,83 @@ final class DefaultPermissionGrantPolicy {
     public void grantDefaultPermissions(int userId) {
         grantPermissionsToSysComponentsAndPrivApps(userId);
         grantDefaultSystemHandlerPermissions(userId);
+        grantSprdSystemPermissions(userId);
+    }
+
+    private void grantSprdSystemPermissions(int userId){
+        Log.i(TAG,"Granting Sprd platform permmissionm");
+        File permsFile = new File(SPRD_APP_PERMS);
+        if(!permsFile.exists()){
+            return;
+        }
+        FileInputStream fis = null;
+        AtomicFile userListFile = new AtomicFile(permsFile);
+        try {
+            fis = userListFile.openRead();
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setInput(fis, StandardCharsets.UTF_8.name());
+            int type;
+            while ((type = parser.next()) != XmlPullParser.START_TAG
+                    && type != XmlPullParser.END_DOCUMENT) {
+                ;
+            }
+            if (type != XmlPullParser.START_TAG) {
+                return;
+            }
+
+            if (!parser.getName().equals("perms")) {
+                Log.i(TAG, "sprd-app-perms.xml format errors!");
+                return;
+            }
+            String pkgName = null;
+            while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+                if (type == XmlPullParser.START_TAG) {
+                    final String name = parser.getName();
+                    if (name.equals("package")) {
+                        pkgName = parser.getAttributeValue(null, "name");
+                    }
+                    if ("use-perm".equals(name)){
+                        String permName = parser.getAttributeValue(null, "name");
+                        if(permName !=null && pkgName !=null){
+                            PackageParser.Package pkg = getSystemPackageLPr(pkgName);
+                            synchronized(mService.mPackages) {
+                                if(PHONE_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, PHONE_PERMISSIONS, userId);
+                                if(CONTACTS_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, CONTACTS_PERMISSIONS, userId);
+                                if(LOCATION_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, LOCATION_PERMISSIONS, userId);
+                                if(CALENDAR_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, CALENDAR_PERMISSIONS, userId);
+                                if(SMS_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, SMS_PERMISSIONS, userId);
+                                if(MICROPHONE_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, MICROPHONE_PERMISSIONS, userId);
+                                if(CAMERA_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, CAMERA_PERMISSIONS, userId);
+                                if(SENSORS_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, SENSORS_PERMISSIONS, userId);
+                                if(STORAGE_PERMISSIONS.contains(permName))
+                                    grantRuntimePermissionsLPw(pkg, STORAGE_PERMISSIONS, userId);
+                           }
+                       }
+                   }
+                }
+            }
+        } catch (IOException ioe) {
+            Log.e(TAG, "Ioexception catched!" + ioe);
+            return;
+        } catch (XmlPullParserException pe) {
+            Log.e(TAG, "XmlPullParserException catched!" + pe);
+            return;
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                }
+            }
+        }
     }
 
     private void grantPermissionsToSysComponentsAndPrivApps(int userId) {

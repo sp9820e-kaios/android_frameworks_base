@@ -41,7 +41,12 @@ public class NativeDaemonConnectorException extends Exception {
     }
 
     public int getCode() {
+        /* SPRD: To prevent null point exception @{
+         * @orig
         return mEvent.getCode();
+         */
+        return (mEvent == null) ? -1 : mEvent.getCode();
+        /* @} */
     }
 
     public String getCmd() {

@@ -274,6 +274,13 @@ public class ConnectivityManager {
 
     /**
      * @hide
+     */
+    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+    public static final String ACTION_PC_SHARE_CHANGED =
+            "android.net.conn.PC_SHARE_CHANGED";
+
+    /**
+     * @hide
      * gives a String[] listing all the interfaces configured for
      * tethering and currently available for tethering.
      */
@@ -2726,5 +2733,32 @@ public class ConnectivityManager {
     public static boolean setProcessDefaultNetworkForHostResolution(Network network) {
         return NetworkUtils.bindProcessToNetworkForHostResolution(
                 network == null ? NETID_UNSET : network.netId);
+    }
+
+    /** enableTetherPCInternet @hide */
+    public int enableTetherPCInternet(String hostAddress) {
+        try {
+            return mService.enableTetherPCInternet(hostAddress);
+        } catch (RemoteException e) {
+            return TETHER_ERROR_UNKNOWN_IFACE;
+        }
+    }
+
+    /** disableTetherPCInternet @hide */
+    public int disableTetherPCInternet(){
+        try {
+            return mService.disableTetherPCInternet();
+        } catch (RemoteException e) {
+            return TETHER_ERROR_UNKNOWN_IFACE;
+        }
+    }
+
+    /** getPCNetTether @hide */
+    public boolean getPCNetTether(){
+        try {
+            return mService.getPCNetTether();
+        } catch (RemoteException e) {
+            return false;
+        }
     }
 }

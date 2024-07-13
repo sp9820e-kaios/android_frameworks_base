@@ -3483,6 +3483,7 @@ public final class BatteryStatsImpl extends BatteryStats {
                     bin = DATA_CONNECTION_EVDO_B;
                     break;
                 case TelephonyManager.NETWORK_TYPE_LTE:
+                case TelephonyManager.NETWORK_TYPE_LTE_CA:
                     bin = DATA_CONNECTION_LTE;
                     break;
                 case TelephonyManager.NETWORK_TYPE_EHRPD:

@@ -221,6 +221,19 @@ public abstract class PanelView extends FrameLayout {
                 || (mMotionAborted && event.getActionMasked() != MotionEvent.ACTION_DOWN)) {
             return false;
         }
+        /*SPRD bug 629098:Open notification view by BT mouse isn't correct{@*/
+        if (true) {
+            if(event.getActionMasked() == MotionEvent.ACTION_UP){
+                if(mStatusBar.isPanelFullyCollapsed()){
+                    mStatusBar.onNotiBarClick();
+                }else{
+                    Log.d(TAG, "onTouchEvent isPanelFullyCollapsed false!");
+                }
+                return false;
+            }
+            return false;
+        }
+        /*@}*/
 
         /*
          * We capture touch events here and update the expand height here in case according to
@@ -659,6 +672,9 @@ public abstract class PanelView extends FrameLayout {
                                 / collapseSpeedUpFactor));
             }
         }
+        /* SPRD: Bug 583693 Expand panel duration {@ */
+        animator.setDuration(0);
+        /* @} */
         animator.addListener(new AnimatorListenerAdapter() {
             private boolean mCancelled;
 
@@ -846,6 +862,19 @@ public abstract class PanelView extends FrameLayout {
             if (DEBUG) logf("skipping expansion: is expanded");
         }
     }
+
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    public void expandQuickly() {
+        if (DEBUG) logf("expand: " + this);
+        if (isFullyCollapsed()) {
+            mBar.startOpeningPanel(this);
+            notifyExpandingStarted();
+            fling(15000.0f, true /* expand */);
+        } else if (DEBUG) {
+            if (DEBUG) logf("skipping expansion: is expanded");
+        }
+    }
+    /* @} */
 
     public void cancelPeek() {
         if (mPeekAnimator != null) {

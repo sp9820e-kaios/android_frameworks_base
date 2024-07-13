@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Wi-Fi sarbide eramangarriak datu konexio mugikorra behar du eta honek kostu gehigarriak ekar ditzake."</string>
+<string name="softap_bt_cannot_coexist">"Bluetootha gaituta dagoenean edo aktibatzen ari denean,haririk gabeko sarbideak ezin du funtzionatu, haririk gabeko sarbidea erabili nahi baduzu, ziurtatu bluetootha desgaituta dagoela."</string>
+<string name="bt_softap_cannot_coexist">"Haririk gabeko sarbidea gaituta dagoenean edo aktibatzen ari denean, bluetoothak ezin du funtzionatu, bluetootha erabili nahi baduzu, ziurtatu haririk gabeko sarbidea desgaituta dagoela."</string>
+<string name="lte_service_error_airplane">Ezin duzu LTE erabili zure telefonoa hegazkin moduan dagoenean.</string>
+<string name="accessibility_quick_settings_lte_changed_on">4G piztu da</string>
+<string name="accessibility_quick_settings_lte_changed_off">4G itzali da</string>
+<string name="accessibility_quick_settings_lte_on">4G piztuta</string>
+<string name="accessibility_quick_settings_lte_off">4G itzalita</string>
+<string name="toggle_data_error_airplane">Ezin dituzu datu mugikorrak erabili telefonoa hegazkin moduan dagoenean.</string>
+<string name="quick_settings_data_connection_label">Datuak</string>
+<string name="accessibility_quick_settings_data_changed_on">Datuak piztu dira</string>
+<string name="accessibility_quick_settings_data_changed_off">Datuak itzali dira</string>
+<string name="accessibility_quick_settings_data_on">Datuak piztuta</string>
+<string name="accessibility_quick_settings_data_off">Datuak itzalita</string>
+<string name="missing_sim_message">Sim-ik ez</string>
+    <string name="lte_service_error_incall">"Ezin da deian zehar LTE zerbitzua aldatu."</string>
+
+</resources>

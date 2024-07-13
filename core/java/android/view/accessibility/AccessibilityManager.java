@@ -203,6 +203,7 @@ public final class AccessibilityManager {
                 IAccessibilityManager service = iBinder == null
                         ? null : IAccessibilityManager.Stub.asInterface(iBinder);
                 sInstance = new AccessibilityManager(context, service, userId);
+                Log.d(LOG_TAG, "getInstance() new sInstance = "+sInstance+", context = "+context+", userId = "+userId);
             }
         }
         return sInstance;
@@ -242,6 +243,7 @@ public final class AccessibilityManager {
         synchronized (mLock) {
             IAccessibilityManager service = getServiceLocked();
             if (service == null) {
+                Log.d(LOG_TAG, "service == null, isEnabled() return false");
                 return false;
             }
             return mIsEnabled;
@@ -306,6 +308,7 @@ public final class AccessibilityManager {
                 return;
             }
             if (!mIsEnabled) {
+                Log.d(LOG_TAG, "sendAccessibilityEvent(), Accessibility off, sInstance = "+sInstance+", mUserId = "+mUserId);
                 throw new IllegalStateException("Accessibility off. Did you forget to check that?");
             }
             userId = mUserId;
@@ -343,6 +346,7 @@ public final class AccessibilityManager {
                 return;
             }
             if (!mIsEnabled) {
+                Log.d(LOG_TAG, "interrupt(), Accessibility off, sInstance = "+sInstance+", mUserId = "+mUserId);
                 throw new IllegalStateException("Accessibility off. Did you forget to check that?");
             }
             userId = mUserId;

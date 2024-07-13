@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Αγγίξτε για προβολή λεπτομερειών"</string>
     <string name="retry" msgid="7564024179122207376">"Επανάληψη"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Αυτά τα αρχεία δεν αντιγράφηκαν: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Αδύνατη η κοινοποίηση του αρχείου"</string>
+     <string name="documents_deleting">"Διαγραφή εγγράφων"</string>
+     <string name="cannot_copyfolder_itself">"Δεν μπορείτε να αντιγράψετε το φάκελο μέσα στον ίδιο"</string>
+
+    <string name="error_permissions">"Η εφαρμογή δεν διαθέτει κρίσιμα δικαιώματα που απαιτούνται για την εκτέλεσή της. Ελέγξτε τις ρυθμίσεις δικαιωμάτων."</string>
+     <string name="cannot_copy_drm">"Αδύνατη η αντιγραφή αρχείων DRM"</string>
+     <string name="cannot_copy_downloading">""Αδύνατη η αντιγραφή ληφθέντων αρχείων" "</string>
 </resources>

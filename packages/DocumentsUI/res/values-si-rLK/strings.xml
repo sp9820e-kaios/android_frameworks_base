@@ -71,4 +71,10 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"විස්තර බැලීමට ස්පර්ශ කරන්න"</string>
     <string name="retry" msgid="7564024179122207376">"නැවත උත්සාහ කරන්න"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"මෙම ගොනු පිටපත් නොකරන ලදී: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ගොනුව බෙදා ගැනීමට නොහැකිය"</string>
+    <string name="documents_deleting">"ලේඛන මකමින්"</string>
+    <string name="error_permissions">"මෙම යෙදුම ධාවනය කිරීමට අවශ්‍ය අවශ්‍යම අවසර නැත. කරුණාකර ඔබගේ අවසර සැකසීම් පරික්ෂා කරන්න."</string>
+    <string name="cannot_copyfolder_itself">"ඔබට ෆෝල්ඩරය එය වෙතටම පිටපත් කළ නොහැකිය"</string>
+    <string name="cannot_copy_drm">"DRM ගොනු පිටපත් කළ නොහැකිය"</string>
+    <string name="cannot_copy_downloading">"බාගන්නා ගොනු පිටපත් කළ නොහැකිය"</string>
 </resources>

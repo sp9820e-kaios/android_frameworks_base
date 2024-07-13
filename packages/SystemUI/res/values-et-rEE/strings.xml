@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Õnnitleme! Süsteemi kasutajaliidese tuuner lisati seadetesse"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Eemalda seadetest"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Kas eemaldada seadetest süsteemi kasutajaliidese tuuner ja lõpetada kõikide selle funktsioonide kasutamine?"</string>
+    <string name="quick_settings_volume_label">"Audioprofiil"</string>
+     <string name="assistant_key_home">"Kodu"</string>
+     <string name="assistant_key_search">"Otsing"</string>
+     <string name="assistant_key_menu">"Menüü"</string>
+     <string name="assistant_key_back">"Tagasi"</string>
+
+    <string name="vibrate_hint">"Vibratsiooniks libista vasakule"</string>
+     <string name="battery_overtage_title">"Turvahoiatus"</string>
+     <string name="battery_overtage_content">"Laadimispinge on liiga tugev!!"</string>
+     <string name="battery_overtage_back">"Tagasi"</string>
 </resources>

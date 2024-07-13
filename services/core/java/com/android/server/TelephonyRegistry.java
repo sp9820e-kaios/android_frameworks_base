@@ -159,7 +159,9 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
 
     private String[] mDataConnectionApn;
 
-    private ArrayList<String> mConnectedApns;
+    /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+    private ArrayList<String>[] mConnectedApns;
+    /* @} */
 
     private LinkProperties[] mDataConnectionLinkProperties;
 
@@ -292,11 +294,16 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
 
         mContext = context;
         mBatteryStats = BatteryStatsService.getService();
-        mConnectedApns = new ArrayList<String>();
+        /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+        // mConnectedApns = new ArrayList<String>();
+        /* @} */
 
         int numPhones = TelephonyManager.getDefault().getPhoneCount();
         if (DBG) log("TelephonyRegistor: ctor numPhones=" + numPhones);
         mNumPhones = numPhones;
+        /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+        mConnectedApns = new ArrayList[numPhones];
+        /* @} */
         mCallState = new int[numPhones];
         mDataActivity = new int[numPhones];
         mDataConnectionState = new int[numPhones];
@@ -327,6 +334,9 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
             mDataConnectionApn[i] =  "";
             mCellLocation[i] = new Bundle();
             mCellInfo.add(i, null);
+            /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+            mConnectedApns[i] = new ArrayList<String>();
+            /* @} */
         }
 
         // Note that location can be null for non-phone builds like
@@ -336,7 +346,9 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
                 location.fillInNotifierBundle(mCellLocation[i]);
             }
         }
-        mConnectedApns = new ArrayList<String>();
+        /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+        // mConnectedApns = new ArrayList<String>();
+        /* @} */
 
         mAppOps = mContext.getSystemService(AppOpsManager.class);
     }
@@ -542,6 +554,17 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
                             remove(r.binder);
                         }
                     }
+                    /* SPRD: Add for VoLTE @{ */
+                    if ((events & PhoneStateListener.LISTEN_VOLTE_STATE) != 0) {
+                        try {
+                            if (VDBG) log("listen: mVoLteServiceState=" + mVoLteServiceState);
+                            r.callback.onVoLteServiceStateChanged(
+                                    new VoLteServiceState(mVoLteServiceState));
+                        } catch (RemoteException ex) {
+                            remove(r.binder);
+                        }
+                    }
+                    /* @} */
                     if ((events & PhoneStateListener.LISTEN_SIGNAL_STRENGTH) != 0) {
                         try {
                             int gsmSignalStrength = mSignalStrength[phoneId]
@@ -779,7 +802,10 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
                                 + " phoneId=" + phoneId + " state=" + state);
                     }
                     if (r.matchPhoneStateListenerEvent(PhoneStateListener.LISTEN_SERVICE_STATE) &&
-                            idMatch(r.subId, subId, phoneId)) {
+                            /* SPRD: Bug 492517 add for monitor service state when there is no SIM card @{ */
+//                            idMatch(r.subId, subId, phoneId)) {
+                            idMatchForServiceState(r.subId, subId, phoneId)) {
+                                /* @} */
                         try {
                             if (DBG) {
                                 log("notifyServiceStateForSubscriber: callback.onSSC r=" + r
@@ -797,7 +823,7 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
             }
             handleRemoveListLocked();
         }
-        broadcastServiceStateChanged(state, subId);
+        broadcastServiceStateChanged(state, subId, phoneId);
     }
 
     public void notifySignalStrength(SignalStrength signalStrength) {
@@ -1019,7 +1045,9 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
             if (validatePhoneId(phoneId)) {
                 mDataActivity[phoneId] = state;
                 for (Record r : mRecords) {
-                    if (r.matchPhoneStateListenerEvent(PhoneStateListener.LISTEN_DATA_ACTIVITY)) {
+                    // SPRD: Bug 540967 TelephonyRegister notifies wrong data activity
+                    if (r.matchPhoneStateListenerEvent(PhoneStateListener.LISTEN_DATA_ACTIVITY) &&
+                            idMatch(r.subId, subId, phoneId)) {
                         try {
                             r.callback.onDataActivity(state);
                         } catch (RemoteException ex) {
@@ -1059,16 +1087,20 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
             if (validatePhoneId(phoneId)) {
                 boolean modified = false;
                 if (state == TelephonyManager.DATA_CONNECTED) {
-                    if (!mConnectedApns.contains(apnType)) {
-                        mConnectedApns.add(apnType);
+                    /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+                    if (!mConnectedApns[phoneId].contains(apnType)) {
+                        mConnectedApns[phoneId].add(apnType);
+                    /* @} */
                         if (mDataConnectionState[phoneId] != state) {
                             mDataConnectionState[phoneId] = state;
                             modified = true;
                         }
                     }
                 } else {
-                    if (mConnectedApns.remove(apnType)) {
-                        if (mConnectedApns.isEmpty()) {
+                    /* SPRD: Bug 492698 Track connected APNs for each phone @{ */
+                    if (mConnectedApns[phoneId].remove(apnType)) {
+                        if (mConnectedApns[phoneId].isEmpty()) {
+                    /* @} */
                             mDataConnectionState[phoneId] = state;
                             modified = true;
                         } else {
@@ -1299,6 +1331,7 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
         if (!checkNotifyPermission("notifyVoLteServiceStateChanged()")) {
             return;
         }
+        if (VDBG) log("notifyVoLteServiceStateChanged->lteState:"+lteState);//SPRD:add log for VoLTE
         synchronized (mRecords) {
             mVoLteServiceState = lteState;
             for (Record r : mRecords) {
@@ -1382,7 +1415,7 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
     // the legacy intent broadcasting
     //
 
-    private void broadcastServiceStateChanged(ServiceState state, int subId) {
+    private void broadcastServiceStateChanged(ServiceState state, int subId, int phoneId) {
         long ident = Binder.clearCallingIdentity();
         try {
             mBatteryStats.notePhoneState(state.getState());
@@ -1398,6 +1431,10 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
         intent.putExtras(data);
         // Pass the subscription along with the intent.
         intent.putExtra(PhoneConstants.SUBSCRIPTION_KEY, subId);
+        /* SPRD: [bug475223] Pass phoneId along with the intent. If service state changed with no
+         sim card, subId will be invalid, need to use phoneId to notify which radio do change. @{ */
+        intent.putExtra(PhoneConstants.PHONE_KEY, phoneId);
+        /* @} */
         mContext.sendStickyBroadcastAsUser(intent, UserHandle.ALL);
     }
 
@@ -1734,6 +1771,18 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
                 mRemoveList.add(r.binder);
             }
         }
+        /* SPRD: Add for VoLTE @{ */
+        if ((events & PhoneStateListener.LISTEN_VOLTE_STATE) != 0) {
+            try {
+                if (VDBG) log("checkPossibleMissNotify: mVoLteServiceState state=" +
+                        mVoLteServiceState);
+                r.callback.onVoLteServiceStateChanged(
+                        new VoLteServiceState(mVoLteServiceState));
+            } catch (RemoteException ex) {
+                mRemoveList.add(r.binder);
+            }
+        }
+        /* @} */
 
         if ((events & PhoneStateListener.LISTEN_SIGNAL_STRENGTHS) != 0) {
             try {
@@ -1825,4 +1874,13 @@ class TelephonyRegistry extends ITelephonyRegistry.Stub {
             }
         }
     }
+
+    /* SPRD: Bug 492517 add for monitor service state when there is no SIM card @{ */
+    boolean idMatchForServiceState(int rSubId, int subId, int phoneId) {
+        if (subId == -2 && phoneId == 0) {
+            return rSubId == SubscriptionManager.DEFAULT_SUBSCRIPTION_ID;
+        }
+        return idMatch(rSubId, subId, phoneId);
+    }
+    /* @} */
 }

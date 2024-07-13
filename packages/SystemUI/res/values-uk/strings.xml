@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Вітаємо! System UI Tuner установлено в додатку Налаштування"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Видалити з додатка Налаштування"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Видалити інструмент System UI Tuner із додатка Налаштування та припинити користуватися всіма його функціями?"</string>
+    <string name="quick_settings_volume_label">АУДІОПРОФІЛЬ</string>
+     <string name="assistant_key_home">"Головний екран"</string>
+     <string name="assistant_key_search">"Пошук"</string>
+     <string name="assistant_key_menu">"Меню"</string>
+     <string name="assistant_key_back">Задня_камера</string>
+
+    <string name="vibrate_hint">"Проведіть пальцем вліво до появи вібрації"</string>
+     <string name="battery_overtage_title">"Застереж. про небезп."</string>
+     <string name="battery_overtage_content">"Занадто висока напруга зарядки!"</string>
+     <string name="battery_overtage_back">Задня_камера</string>
 </resources>

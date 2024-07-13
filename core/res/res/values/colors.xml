@@ -176,4 +176,9 @@
     <color name="Red_800">#ffb93221</color>
 
     <color name="chooser_service_row_background_color">#fff5f5f5</color>
+    <!-- SPRD add for pocket mode @{ -->
+    <color name="disable_touch_mode_panel_white">#ffffffff</color>
+    <color name="disable_touch_mode_panel_background">#dd000000</color>
+    <color name="disable_touch_mode_panel_black">#ff000000</color>
+    <!-- @} -->
 </resources>

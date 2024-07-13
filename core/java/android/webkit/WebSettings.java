@@ -112,6 +112,14 @@ public abstract class WebSettings {
 
         int value;
     }
+    /**
+     * Add for modify Browser UA through EM
+     *@
+    */
+    public static final int UA_CHOICE_DEFAULT = 0;
+    public static final int UA_CHOICE_OTHER = 1;
+    public static final int UA_CHOICE_CUSTOM = 2;
+    /*@}*/
 
     /**
      * Default cache usage mode. If the navigation type doesn't impose any
@@ -1363,4 +1371,21 @@ public abstract class WebSettings {
      * offscreen but attached to a window.
      */
     public abstract boolean getOffscreenPreRaster();
+
+    //SPRD:Add the interface to sync the settings of force enable scalable.@{
+    /**
+     * Returns whether the viewport metatag can disable zooming
+     */
+    public boolean getForceUserScalable() {
+        // TODO:sprd_check mUSToVERRIDEeXCEPTION HAS NOT BEEN NEEDED
+        return false;
+    }
+
+    /**
+     * Sets whether viewport metatag can disable zooming.
+     * @param flag Whether or not to forceably enable user scalable.
+     */
+    public synchronized void setForceUserScalable(boolean flag) {
+    }
+    //@}
 }

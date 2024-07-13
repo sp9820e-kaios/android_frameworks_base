@@ -58,6 +58,8 @@ final class LocalDisplayAdapter extends DisplayAdapter {
             SurfaceControl.BUILT_IN_DISPLAY_ID_HDMI,
     };
 
+
+
     private final SparseArray<LocalDisplayDevice> mDevices =
             new SparseArray<LocalDisplayDevice>();
     @SuppressWarnings("unused")  // Becomes active at instantiation time.
@@ -353,13 +355,20 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                             }
                         }
 
+
                         // Apply brightness changes given that we are in a non-suspended state.
                         if (brightnessChanged) {
-                            setDisplayBrightness(brightness);
+							if(isPowerDebug()){
+								Slog.d(TAG,"set display brightness=" +brightness);
+							}
+							setDisplayBrightness(brightness);
                         }
 
                         // Enter the final desired state, possibly suspended.
                         if (state != currentState) {
+							if(isPowerDebug()){
+								Slog.d(TAG,"set display state=" +state);
+							}
                             setDisplayState(state);
                         }
                     }
@@ -467,4 +476,8 @@ final class LocalDisplayAdapter extends DisplayAdapter {
             }
         }
     }
+//SPRD:add power debug log
+	private boolean isPowerDebug(){
+		return	SystemProperties.getBoolean("debug.power.lcd_backlight",false) || SystemProperties.getBoolean("debug.power.all", false);
+	}
 }

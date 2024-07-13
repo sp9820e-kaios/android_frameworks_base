@@ -56,7 +56,9 @@ public class FindActionModeCallback implements ActionMode.Callback, TextWatcher,
                 com.android.internal.R.layout.webview_find, null);
         mEditText = (EditText) mCustomView.findViewById(
                 com.android.internal.R.id.edit);
-        mEditText.setCustomSelectionActionModeCallback(new NoAction());
+        //SPRD:bug505205,disable the NoAction callback for inputbox.@{
+        //mEditText.setCustomSelectionActionModeCallback(new NoAction());
+        //@}
         mEditText.setOnClickListener(this);
         setText("");
         mMatches = (TextView) mCustomView.findViewById(
@@ -142,7 +144,10 @@ public class FindActionModeCallback implements ActionMode.Callback, TextWatcher,
         CharSequence find = mEditText.getText();
         if (0 == find.length()) {
             mWebView.clearMatches();
-            mMatches.setVisibility(View.GONE);
+            //SPRD:bug491323,can't show the whole word which find in the webpage.@{
+            //mMatches.setVisibility(View.GONE);
+            mMatches.setVisibility(View.INVISIBLE);
+            //@}
             mMatchesFound = false;
             mWebView.findAll(null);
         } else {
@@ -154,7 +159,9 @@ public class FindActionModeCallback implements ActionMode.Callback, TextWatcher,
     }
 
     public void showSoftInput() {
-        if (mEditText.requestFocus()) {
+        if (mInput != null) {
+            mInput.onPreWindowFocus(mEditText.getRootView(),true);
+            mInput.focusIn(mEditText);
             mInput.showSoftInput(mEditText, 0);
         }
     }
@@ -163,11 +170,14 @@ public class FindActionModeCallback implements ActionMode.Callback, TextWatcher,
         if (!isEmptyFind) {
             mNumberOfMatches = matchCount;
             mActiveMatchIndex = matchIndex;
-            updateMatchesString();
         } else {
-            mMatches.setVisibility(View.GONE);
+            //SPRD:bug491323,can't show the whole word which find in the webpage.@{
+            //mMatches.setVisibility(View.GONE);
+            mMatches.setVisibility(View.INVISIBLE);
+            //@}
             mNumberOfMatches = 0;
         }
+        updateMatchesString();
     }
 
     /*
@@ -210,7 +220,10 @@ public class FindActionModeCallback implements ActionMode.Callback, TextWatcher,
         mActionMode = mode;
         Editable edit = mEditText.getText();
         Selection.setSelection(edit, edit.length());
-        mMatches.setVisibility(View.GONE);
+        //SPRD:bug491323,can't show the whole word which find in the webpage.@{
+        //mMatches.setVisibility(View.GONE);
+        mMatches.setVisibility(View.INVISIBLE);
+        //@}
         mMatchesFound = false;
         mMatches.setText("0");
         mEditText.requestFocus();

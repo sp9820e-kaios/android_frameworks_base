@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"প\'ৰ্টেবল ‌ৱাই-ফাই হটস্পটৰ বাবে মোবাইল তথ্য সংযোগ প্ৰয়োজন, ব্যয় সাপেক্ষ হ\'ব পাৰে"</string>
+<string name="softap_bt_cannot_coexist">"যেতিয়া ব্লুটুথ সক্ষম বা অন থাকে, softapএ কাম কৰিব নোৱাৰে, আপুনি যদি softap ব্যৱহাৰ কৰিব বিচাৰে, অনুগ্ৰহ কৰি ব্লুটুথ অক্ষম থকাটো নিশ্চিত কৰক।"</string>
+<string name="bt_softap_cannot_coexist">"যেতিয়া softap সক্ষম বা অন থাকে, ব্লুটুথে কাম কৰিব নোৱাৰে, আপুনি যদি ব্লুটুথ ব্যৱহাৰ কৰিব বিচাৰে, অনুগ্ৰহ কৰি softap অক্ষম থকাটো নিশ্চিত কৰক।"</string>
+<string name="lte_service_error_airplane">"ফোনটো এয়াৰপ্লেন মোডত থাকোতে আপুনি LTE ব্যৱহাৰ কৰিব নোৱাৰে।"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G অন কৰা হৈছে"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G অফ কৰা হৈছে"</string>
+<string name="accessibility_quick_settings_lte_on">"4G অন"</string>
+<string name="accessibility_quick_settings_lte_off">"4G অফ"</string>
+<string name="toggle_data_error_airplane">"আপোনাৰ ফোনটো এৰোপ্লেন ম\'ডত থাকিলে আপুনি মোবাইল ডাটা ব্যৱহাৰ কৰিব নোৱাৰে"</string>
+<string name="quick_settings_data_connection_label">"ডাটা"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ডাটা অন কৰা হৈছে"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ডাটা অফ কৰা হৈছে"</string>
+<string name="accessibility_quick_settings_data_on">"ডাটা অন"</string>
+<string name="accessibility_quick_settings_data_off">"ডাটা অফ"</string>
+<string name="missing_sim_message">"SIM কার্ড নাই"</string>
+    <string name="lte_service_error_incall">"কলৰ সময়তে আপুনি LTE সাৰ্ভিস চালু কৰিব নোৱাৰে।"</string>
+
+</resources>

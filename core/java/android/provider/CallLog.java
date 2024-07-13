@@ -17,6 +17,7 @@
 
 package android.provider;
 
+import android.app.ActivityManager;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -175,6 +176,8 @@ public class CallLog {
         /** Call had video. */
         public static final int FEATURES_VIDEO = 0x1;
 
+        // SPRD: add for volte
+        public static final int FEATURES_VOLTE = 0x2;
         /**
          * The phone number as the user entered it.
          * <P>Type: TEXT</P>
@@ -397,6 +400,11 @@ public class CallLog {
         private static final int MIN_DURATION_FOR_NORMALIZED_NUMBER_UPDATE_MS = 1000 * 10;
 
         /**
+         * SPRD: modify for bug484161
+         */
+        public static final String USERS_ID = "users_id";
+
+        /**
          * Adds a call to the call log.
          *
          * @param ci the CallerInfo object to get the target contact from.  Can be null
@@ -540,6 +548,8 @@ public class CallLog {
             values.put(FEATURES, features);
             values.put(DATE, Long.valueOf(start));
             values.put(DURATION, Long.valueOf(duration));
+            // SPRD:add for bug484161
+            values.put(USERS_ID, Integer.valueOf(ActivityManager.getCurrentUser()));
             if (dataUsage != null) {
                 values.put(DATA_USAGE, dataUsage);
             }
@@ -551,6 +561,12 @@ public class CallLog {
             if (callType == MISSED_TYPE) {
                 values.put(IS_READ, Integer.valueOf(is_read ? 1 : 0));
             }
+
+            /* SPRD: modify for bug576761 @{*/
+            if (ci != null) {
+                values.put(CACHED_NAME, ci.name);
+            }
+            /* @} */
 
             if ((ci != null) && (ci.contactIdOrZero > 0)) {
                 // Update usage information for the number associated with the contact ID.
@@ -707,5 +723,14 @@ public class CallLog {
             }
             return countryIso;
         }
+
+        /**
+         * SPRD: return the user id for bug491865 @{
+         * @return
+         */
+        public static int getUserId() {
+            return UserHandle.myUserId();
+        }
+        /** @} */
     }
 }

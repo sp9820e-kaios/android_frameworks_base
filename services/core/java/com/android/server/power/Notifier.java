@@ -28,6 +28,9 @@ import android.app.ActivityManagerNative;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+// Add by silead begin
+import android.hardware.fingerprint.FingerprintManager;
+// Add by silead end
 import android.hardware.input.InputManagerInternal;
 import android.media.AudioManager;
 import android.media.Ringtone;
@@ -600,7 +603,9 @@ final class Notifier {
         if (DEBUG) {
             Slog.d(TAG, "Sending wake up broadcast.");
         }
-
+        // Add by silead begin
+        setScreenStatus(1);
+        // Add by silead end
         if (ActivityManagerNative.isSystemReady()) {
             mContext.sendOrderedBroadcastAsUser(mScreenOnIntent, UserHandle.ALL, null,
                     mWakeUpBroadcastDone, mHandler, 0, null, null);
@@ -619,11 +624,21 @@ final class Notifier {
         }
     };
 
+    // Add by silead begin
+    private void setScreenStatus(int screenStatus) {
+        Slog.d(TAG, "SLCODE setScreenStatus, screenStatus: " + screenStatus);
+        FingerprintManager fpm = (FingerprintManager) mContext.getSystemService(Context.FINGERPRINT_SERVICE);
+        fpm.setScreenStatus(screenStatus);
+    }
+    // Add by silead end
+
     private void sendGoToSleepBroadcast() {
         if (DEBUG) {
             Slog.d(TAG, "Sending go to sleep broadcast.");
         }
-
+        // Add by silead begin
+        setScreenStatus(0);
+        // Add by silead end
         if (ActivityManagerNative.isSystemReady()) {
             mContext.sendOrderedBroadcastAsUser(mScreenOffIntent, UserHandle.ALL, null,
                     mGoToSleepBroadcastDone, mHandler, 0, null, null);

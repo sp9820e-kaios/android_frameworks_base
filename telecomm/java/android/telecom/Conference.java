@@ -19,6 +19,7 @@ package android.telecom;
 import android.annotation.Nullable;
 import android.annotation.SystemApi;
 import android.os.Bundle;
+import android.os.SystemProperties;
 import android.telecom.Connection.VideoProvider;
 
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public abstract class Conference extends Conferenceable {
     private int mConnectionCapabilities;
     private String mDisconnectMessage;
     private long mConnectTimeMillis = CONNECT_TIME_NOT_SPECIFIED;
+    private long mConnectRealTimeMillis = CONNECT_TIME_NOT_SPECIFIED; //SPRD: add for bug492533
     private StatusHints mStatusHints;
     private Bundle mExtras;
 
@@ -560,7 +562,9 @@ public abstract class Conference extends Conferenceable {
     private void setState(int newState) {
         if (newState != Connection.STATE_ACTIVE &&
                 newState != Connection.STATE_HOLDING &&
-                newState != Connection.STATE_DISCONNECTED) {
+                newState != Connection.STATE_DISCONNECTED &&
+                //SPRD:add for volte bug525513
+                !SystemProperties.getBoolean("persist.sys.volte.enable", false)) {
             Log.w(this, "Unsupported state transition for Conference call.",
                     Connection.stateToString(newState));
             return;
@@ -632,4 +636,14 @@ public abstract class Conference extends Conferenceable {
     public final Bundle getExtras() {
         return mExtras;
     }
+
+    /** SPRD: add for bug492533. @{ */
+    public void setConnectRealTimeMillis(long connectRealTimeMillis) {
+        mConnectRealTimeMillis = connectRealTimeMillis;
+    }
+
+    public long getConnectRealTimeMillis() {
+        return mConnectRealTimeMillis;
+    }
+    /** @} */
 }

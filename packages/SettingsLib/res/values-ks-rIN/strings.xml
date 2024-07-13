@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="wifi_fail_to_scan">"हेकि न स्कैन करिथ नेटवर्क बापथ"</string>
+<string name="wifi_security_none">"कहेंनः"</string>
+<string name="wifi_remembered">"महफूज़ गमुत"</string>
+<string name="wifi_disabled_generic">"कमज़ोर गमुत"</string>
+<string name="wifi_disabled_network_failure">"आय पी कॉन्फ़िगरेशन नाकामयाबी"</string>
+<string name="wifi_disabled_wifi_failure">"वाई-फाई कनेक्शन नाकामयाबी"</string>
+<string name="wifi_disabled_password_failure">"तस्दीकी मुश्किलात"</string>
+<string name="wifi_not_in_range">"छु न पोहंच्स मंज़"</string>
+<string name="wifi_no_internet">"कंह ति इन्टरनेट एक्सेस आव न लबनः, जुडिनह पानय दुबार."</string>
+<string name="saved_network">"महफूज़ आव करनः <xliff:g id="name">%1$s</xliff:g>"</string>
+<string name="connected_via_wfa">"जोडिथ Wi-Fi मददगार सीत"</string>
+<string name="connected_via_passpoint">"जोडिथ सीत %1$s"</string>
+<string name="available_via_passpoint">"दस्तियाब सीत %1$s"</string>
+<string name="wifi_connected_no_internet">"जोडिथ, इन्टरनेट छुनः"</string>
+<string name="bluetooth_disconnected">"अलग गमुत"</string>
+<string name="bluetooth_disconnecting">"अलग गस्सन..."</string>
+<string name="bluetooth_connecting">"जुडन..."</string>
+<string name="bluetooth_connected">"जुड़नः आमुत"</string>
+<string name="bluetooth_pairing">"रलान..."</string>
+<string name="bluetooth_connected_no_headset">""जोडिथ (फ़ोन छुनः) "</string>
+<string name="bluetooth_connected_no_a2dp">""जोडिथ (मीडिया छुनः)"</string>
+<string name="bluetooth_connected_no_map">"जोडिथ (मेसेज रसाई छेनः)"</string>
+<string name="bluetooth_connected_no_headset_no_a2dp">"जोडिथ (फ़ोन या मीडिया छुनः)"</string>
+<string name="bluetooth_profile_a2dp">"मीडिया आवाज़"</string>
+<string name="bluetooth_profile_headset">"फ़ोन आवाज़)"</string>
+<string name="bluetooth_profile_opp">"फाइल तब्दील करेन"</string>
+<string name="bluetooth_profile_hid">"इनपुट आलः"</string>
+<string name="bluetooth_profile_pan">"इन्टरनेट रसाई"</string>
+<string name="bluetooth_profile_pbap">"राबितः छाड़ेन"</string>
+<string name="bluetooth_profile_pbap_summary">"इस्तेमाल राबितः बाँटनः खात्र"</string>
+<string name="bluetooth_profile_pan_nap">"इन्टरनेट कनेक्शन बाँटून"</string>
+<string name="bluetooth_profile_map">"मेसेज रसाई"</string>
+<string name="bluetooth_profile_sap">"SIM रसाई"</string>
+<string name="bluetooth_a2dp_profile_summary_connected">"जोडिथ मीडिया आवाज़ सीत"</string>
+<string name="bluetooth_headset_profile_summary_connected">"जोडिथ फ़ोन आवाज़ सीत"</string>
+<string name="bluetooth_opp_profile_summary_connected">"जोडिथ फाइल ट्रान्सफर सर्वर्स सीत"</string>
+<string name="bluetooth_map_profile_summary_connected">"जोडिथ नक्शस सीत"</string>
+<string name="bluetooth_sap_profile_summary_connected">"जोडिथ SAP सीत"</string>
+<string name="bluetooth_opp_profile_summary_not_connected">"छुनः जोडिथ फाइल ट्रान्सफर सर्वर्स सीत"</string>
+<string name="bluetooth_hid_profile_summary_connected">"छुनः जोडिथ इनपुट आलःस सीत"</string>
+<string name="bluetooth_pan_user_profile_summary_connected">"जोडिथ छु आलःस सीत इन्टरनेट रसाई खात्र"</string>
+<string name="bluetooth_pan_nap_profile_summary_connected">""बंटान मकामी इन्टरनेट कनेक्शन आलः सीत" "</string>
+<string name="bluetooth_pan_profile_summary_use_for">"इस्तेमाल करान इन्टरनेट रसाई खात्र"</string>
+<string name="bluetooth_map_profile_summary_use_for">"इस्तेमाल कर्यिव नक्शह खात्र"</string>
+<string name="bluetooth_sap_profile_summary_use_for">"इस्तेमाल कर्यिव SIM खात्र"</string>
+<string name="bluetooth_a2dp_profile_summary_use_for">"इस्तेमाल कर्यिव  मीडिया आवाज़ खात्र"</string>
+<string name="bluetooth_headset_profile_summary_use_for">"इस्तेमाल कर्यिव फ़ोन आवाज़ खात्र"</string>
+<string name="bluetooth_opp_profile_summary_use_for">"इस्तेमाल कर्यिव फाइल तब्दीली खात्र"</string>
+<string name="bluetooth_hid_profile_summary_use_for">"इस्तेमाल कर्यिव इनपुट खात्र"</string>
+<string name="bluetooth_pairing_accept">"पैर"</string>
+<string name="bluetooth_pairing_accept_all_caps">"पैर"</string>
+<string name="bluetooth_pairing_decline">"ख़ारिज"</string>
+<string name="bluetooth_pairing_will_share_phonebook">"पैरिंग छे ज़रूरत रसाई तुहुन्दें राबितः सीत तः कॉल हिस्ट्री यिम्सात जोडिथ आसि."</string>
+<string name="bluetooth_pairing_error_message">"हकि नः रलिथ येथ सीत <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_pin_error_message">"हकि नः रलिथ येथ सीत <xliff:g id="device_name">%1$s</xliff:g> अकि गलत PIN या पासकी मोजूब."</string>
+<string name="bluetooth_pairing_device_down_error_message">"हकि नः राबितः करिथ  येथ सीत <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_rejected_error_message">"रालावुन आव रद्द करनाः येमी <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="wifi_secured_first_item">"महफूज़ येम सीत <xliff:g>%1$s</xliff:g>"</string>
+<string name="wifi_secured_second_item">",महफूज़ येम सीत <xliff:g>%1$s</xliff:g>"</string>
+<string name="wifi_wps_available_first_item">"WPS दस्तियाब"</string>
+<string name="wifi_wps_available_second_item">"\u0020(WPS दस्तियाब)"</string>
+</resources>

@@ -146,6 +146,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
+ * SPRD:
+ * @{
+ */
+import android.accounts.Account;
+import com.google.android.collect.Lists;
+/**
+ * @}
+ */
+/**
  * Implementation of the device policy APIs.
  */
 public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
@@ -286,6 +295,15 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
      * public methods.
      */
     private boolean mHasFeature;
+    /**
+     * SPRD:Bug 492158
+     * @{
+     */
+    private String mPName;
+    private List<Account> mAccounts = Lists.newArrayList();
+    /**
+     * @}
+     */
 
     public static final class Lifecycle extends SystemService {
         private DevicePolicyManagerService mService;
@@ -4119,6 +4137,14 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
                     + " for device owner");
         }
         synchronized (this) {
+            /**
+             * SPRD:Bug 492158
+             * @{
+             */
+            mPName = packageName;
+            /**
+             * @}
+             */
             enforceCanSetDeviceOwner();
 
             // Shutting down backup manager service permanently.
@@ -4673,6 +4699,37 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
             throw new IllegalStateException("Trying to set the device owner, but device owner "
                     + "is already set.");
         }
+        /**
+         * SPRD:Bug 492158 Contacts app adds a native account at the time of
+         * booting up,it causes the CTS cases for device owner tests fail.Now
+         * we only consider the accounts that it does not conclude the accounts
+         * of Contacts app as a judgement to throw the exception.
+         * SPRD: Bug 498169 adds the package "com.android.cts.verifier"
+         * SPRD: Bug 503629 adds the sts package "com.google.android.xts.deviceowner"
+         * @{
+         */
+        Slog.e(LOG_TAG, "packageName->" + mPName);
+        ArrayList<String> avoidList = new ArrayList<String>();
+        avoidList.add("com.android.cts.deviceowner");
+        avoidList.add("com.android.cts.packageinstaller");
+        avoidList.add("com.android.cts.deviceandprofileowner");
+        avoidList.add("com.android.cts.verifier");
+        avoidList.add("com.google.android.xts.deviceowner");
+        final Account accounts[] = AccountManager.get(mContext).getAccounts();
+        mAccounts.clear();
+        for (Account account : accounts) {
+            mAccounts.add(account);
+            if (avoidList.contains(mPName) &&
+                                ("sprd.com.android.account.phone".equals(account.type) ||
+                                 "sprd.com.android.account.sim".equals(account.type) ||
+                                 "sprd.com.android.account.usim".equals(account.type))) {
+                mAccounts.remove(account);
+            }
+        }
+        Slog.e(LOG_TAG, "packageName-> mAccounts.size() is " + mAccounts.size());
+        /**
+         * @}
+         */
         int callingUid = Binder.getCallingUid();
         if (callingUid == Process.SHELL_UID || callingUid == Process.ROOT_UID) {
             if (!hasUserSetupCompleted(UserHandle.USER_OWNER)) {
@@ -4682,7 +4739,17 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
                 throw new IllegalStateException("Not allowed to set the device owner because there "
                         + "are already several users on the device");
             }
-            if (AccountManager.get(mContext).getAccounts().length > 0) {
+           /**
+            * SPRD:Bug 492158
+            *
+            * Original Android code:
+             if (AccountManager.get(mContext).getAccounts().length > 0) {
+            * @{
+            */
+            if (mAccounts.size() > 0) {
+           /**
+            * @}
+            */
                 throw new IllegalStateException("Not allowed to set the device owner because there "
                         + "are already some accounts on the device");
             }

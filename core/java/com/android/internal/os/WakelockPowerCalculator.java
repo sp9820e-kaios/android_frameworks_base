@@ -16,6 +16,7 @@
 package com.android.internal.os;
 
 import android.os.BatteryStats;
+import android.os.SystemProperties;
 import android.util.ArrayMap;
 import android.util.Log;
 
@@ -51,7 +52,7 @@ public class WakelockPowerCalculator extends PowerCalculator {
 
         // Add cost of holding a wake lock.
         app.wakeLockPowerMah = (app.wakeLockTimeMs * mPowerWakelock) / (1000*60*60);
-        if (DEBUG && app.wakeLockPowerMah != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && app.wakeLockPowerMah != 0) {
             Log.d(TAG, "UID " + u.getUid() + ": wake " + app.wakeLockTimeMs
                     + " power=" + BatteryStatsHelper.makemAh(app.wakeLockPowerMah));
         }
@@ -65,7 +66,7 @@ public class WakelockPowerCalculator extends PowerCalculator {
                 + (stats.getScreenOnTime(rawRealtimeUs, statsType) / 1000);
         if (wakeTimeMillis > 0) {
             final double power = (wakeTimeMillis * mPowerWakelock) / (1000*60*60);
-            if (DEBUG) {
+            if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog()) {
                 Log.d(TAG, "OS wakeLockTime " + wakeTimeMillis + " power "
                         + BatteryStatsHelper.makemAh(power));
             }

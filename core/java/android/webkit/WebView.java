@@ -20,6 +20,7 @@ import android.annotation.NonNull;
 import android.annotation.SystemApi;
 import android.annotation.Widget;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,6 +29,7 @@ import android.graphics.Picture;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.http.SslCertificate;
+import android.net.http.SslError;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,6 +59,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.util.Map;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 /**
  * <p>A View that displays web pages. This class is the basis upon which you
  * can roll your own web browser or simply display some online content within your Activity.
@@ -64,7 +71,7 @@ import java.util.Map;
  * web pages and includes methods to navigate forward and backward
  * through a history, zoom in and out, perform text searches and more.</p>
  * <p>Note that, in order for your Activity to access the Internet and load web pages
- * in a WebView, you must add the {@code INTERNET} permissions to your
+ * in a WebViewn, you must add the {@code INTERNET} permissions to your
  * Android Manifest file:</p>
  * <pre>&lt;uses-permission android:name="android.permission.INTERNET" /></pre>
  *
@@ -333,6 +340,7 @@ public class WebView extends AbsoluteLayout
         }
     }
 
+    private static final int SOCKET_TIMEOUT_MS = 10000;
     /**
      * URI scheme for telephone number.
      */
@@ -2588,6 +2596,83 @@ public class WebView extends AbsoluteLayout
     public void onFinishTemporaryDetach() {
         super.onFinishTemporaryDetach();
         mProvider.getViewDelegate().onFinishTemporaryDetach();
+    }
+   public boolean isPasswordSavedForUrl(String url, Message message){
+        Log.d(LOGTAG, "isPasswordSavedForUrl url=" + url);
+        return mProvider.isPasswordSavedForUrl(url, message);
+    }
+
+    public boolean doAutoAuthentication (String url){
+        Log.d(LOGTAG, "doAutoAuthentication url=" + url);
+        final String authUrl = url;
+        setWebViewClient(new WebViewClient() {
+
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler,
+            SslError error) {
+                Log.d(LOGTAG, "onReceivedSslError");
+                handler.proceed();
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                Log.d(LOGTAG, "onPageFinished url=" + url);
+                //if (url.equals(authUrl)){
+                    testForCaptivePortal();
+                //}
+            }
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                Log.d(LOGTAG, "onPageStarted url=" + url);
+            }
+        });
+        boolean result = mProvider.doAutoAuthentication(url);
+        Log.d(LOGTAG, "result=" + result);
+        return result;
+    }
+
+    private int getResponseCodeforCaptivePortal(){
+        int httpResponseCode = 204;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL testurl = new URL("http", "connectivitycheck.gstatic.com", "/generate_204");
+            urlConnection = (HttpURLConnection) testurl.openConnection();
+            urlConnection.setInstanceFollowRedirects(false);
+            urlConnection.setConnectTimeout(SOCKET_TIMEOUT_MS);
+            urlConnection.setReadTimeout(SOCKET_TIMEOUT_MS);
+            urlConnection.setUseCaches(false);
+            urlConnection.getInputStream();
+            httpResponseCode = urlConnection.getResponseCode();
+        } catch (IOException|NumberFormatException e) {
+        } finally {
+            if (urlConnection != null) urlConnection.disconnect();
+            Log.d(LOGTAG, "getResponseCodeforCaptivePortal httpResponseCode="
+            + httpResponseCode);
+        }
+        return httpResponseCode;
+    }
+    private void testForCaptivePortal() {
+        new Thread(new Runnable() {
+            public void run() {
+                // Give time for captive portal to open.
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+                int httpResponseCode = getResponseCodeforCaptivePortal();
+                if (httpResponseCode != 204) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                httpResponseCode = getResponseCodeforCaptivePortal();
+                }
+                if (httpResponseCode == 204) {
+                    getContext().sendBroadcast(new Intent(
+                        "sprd.net.wifi.PORTAL_AUTO_AUTHENTICATION_DONE"));
+                }
+            }
+        }).start();
     }
 
     /** @hide */

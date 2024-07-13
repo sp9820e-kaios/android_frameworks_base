@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ਪੋਰਟੇਬਲ Wi-Fi ਹੌਟਸਪੌਟ ਨੂੰ ਮੋਬਾਈਲ ਡੇਟਾ ਕਨੈਕਟ ਦੀ ਲੋੜ ਹੈ, ਇਸ ਨਾਲ ਵਾਧੂ ਖਰਚਾ ਪੈ ਸਕਦਾ ਹੈ।"</string>
+<string name="softap_bt_cannot_coexist">"ਜਦੋਂ ਬਲੂਟੁੱਥ ਸਮਰਥਿਤ ਜਾਂ ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਸੌਫਟਐਪ ਕੰਮ ਨਹੀਂ ਕਰ ਸਕਦਾ, ਜੇਕਰ ਤੁਸੀਂ ਸੌਫਟਐਪ ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਬਲੂਟੁੱਥ ਅਸਮਰਥਿਤ ਹੈ।"</string>
+<string name="bt_softap_cannot_coexist">"ਜਦੋਂ ਸੌਫਟਐਪ ਸਮਰਥਿਤ ਜਾਂ ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਬਲੂਟੁੱਥ ਕੰਮ ਨਹੀਂ ਕਰ ਸਕਦਾ, ਜੇਕਰ ਤੁਸੀਂ ਬਲੂਟੁੱਥ  ਵਰਤਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਕਿਰਪਾ ਕਰਕੇ ਯਕੀਨੀ ਬਣਾਓ ਕਿ ਸੌਫਟਐਪ ਅਸਮਰਥਿਤ ਹੈ।"</string>
+<string name="lte_service_error_airplane">"ਜਦੋਂ ਫੋਨ ਏਅਰਪਲੇਨ ਮੋਡ ਵਿੱਚ ਹੋਵੇ ਤਾਂ ਤੁਸੀਂ LTE ਨਹੀਂ ਵਰਤ ਸਕਦੇ।"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ਚਾਲੂ ਕੀਤਾ"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ਬੰਦ ਕੀਤਾ"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ਚਾਲੂ"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ਬੰਦ"</string>
+<string name="toggle_data_error_airplane">ਜਦੋਂ ਮੋਬਾਈਲ ਏਅਰਪਲੇਨ ਮੋਡ ਵਿੱਚ ਹੋਵੇ ਤਾਂ ਤੁਸੀਂ ਮੋਬਾਈਲ ਡੇਟਾ ਪ੍ਰਯੋਗ ਨਹੀਂ ਕਰ ਸਕਦੇ।</string>
+<string name="quick_settings_data_connection_label">"ਡੇਟਾ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ਡੇਟਾ ਚਾਲੂ ਕੀਤਾ"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ਡੇਟਾ ਬੰਦ ਕੀਤਾ"</string>
+<string name="accessibility_quick_settings_data_on">"ਡੇਟਾ ਚਾਲੂ"</string>
+<string name="accessibility_quick_settings_data_off">"ਡੇਟਾ ਬੰਦ"</string>
+<string name="missing_sim_message">"ਕੋਈ SIM ਨਹੀਂ"</string>
+    <string name="lte_service_error_incall">"ਤੁਸੀਂ ਕਾੱਲ ਦੇ ਦੌਰਾਨ LTE ਸੇਵਾ ਸਵਿਚ ਨਹੀਂ ਕਰ ਸਕਦੇ।"</string>
+
+</resources>

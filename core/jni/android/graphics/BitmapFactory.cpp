@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <drm/DrmManagerClient.h>
 
 jfieldID gOptions_justBoundsFieldID;
 jfieldID gOptions_sampleSizeFieldID;
@@ -303,8 +304,10 @@ static jobject doDecode(JNIEnv* env, SkStreamRewindable* stream, jobject padding
     }
 
     SkBitmap decodingBitmap;
+
+    /*SPRD: change kPartialSuccess from false to true */
     if (decoder->decode(stream, &decodingBitmap, prefColorType, decodeMode)
-                != SkImageDecoder::kSuccess) {
+                == SkImageDecoder::kFailure/*!= SkImageDecoder::kSuccess*/) {
         return nullObjectReturn("decoder->decode returned false");
     }
 
@@ -464,6 +467,30 @@ static jobject nativeDecodeStream(JNIEnv* env, jobject clazz, jobject is, jbyteA
     return bitmap;
 }
 
+static jobject nativeDecodeDrmStream(JNIEnv* env, jobject clazz, jobject client, jobject handle,
+				     jobject opts, jboolean applyScale, jfloat scale) {
+
+    jobject bitmap = NULL;
+
+    jclass tmpClazz = env->FindClass("android/drm/DrmManagerClient");
+    jfieldID fieldId = env->GetFieldID(tmpClazz, "mNativeContext", "J");
+    DrmManagerClientImpl* nativeClient = (DrmManagerClientImpl*)env->GetLongField(client, fieldId);
+    fieldId = env->GetFieldID(tmpClazz, "mUniqueId", "I");
+    int uniqueId = env->GetIntField(client, fieldId);
+
+    tmpClazz = env->FindClass("android/drm/DecryptHandle");
+    fieldId = env->GetFieldID(tmpClazz, "mNativeContext", "J");
+    DecryptHandleWrapper* nativeHandleWrapper = (DecryptHandleWrapper*)env->GetLongField(handle, fieldId);
+
+    SkStreamRewindable* stream = new SkDrmStream(uniqueId, nativeClient, nativeHandleWrapper);
+
+    if (stream) {
+        bitmap = doDecode(env, stream, NULL, opts);
+//        stream->unref();
+        delete stream;
+    }
+    return bitmap;
+}
 static jobject nativeDecodeFileDescriptor(JNIEnv* env, jobject clazz, jobject fileDescriptor,
         jobject padding, jobject bitmapFactoryOptions) {
 
@@ -543,6 +570,10 @@ jobject decodeBitmap(JNIEnv* env, void* data, size_t size) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static JNINativeMethod gMethods[] = {
+    {   "nativeDecodeDrmStream",
+        "(Landroid/drm/DrmManagerClient;Landroid/drm/DecryptHandle;Landroid/graphics/BitmapFactory$Options;ZF)Landroid/graphics/Bitmap;",
+        (void*)nativeDecodeDrmStream
+    },
     {   "nativeDecodeStream",
         "(Ljava/io/InputStream;[BLandroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;",
         (void*)nativeDecodeStream

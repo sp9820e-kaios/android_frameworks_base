@@ -33,6 +33,7 @@ import dalvik.system.VMRuntime;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.TimeZone;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.LogManager;
 import org.apache.harmony.luni.internal.util.TimezoneGetter;
 
@@ -72,8 +73,16 @@ public class RuntimeInit {
                 // Don't re-enter -- avoid infinite loops if crash-reporting crashes.
                 if (mCrashing) return;
                 mCrashing = true;
-
+                /* SPRD: add for bug 495208, add log to dump trace when TimeoutException happen @{ */
+                dumpTraceWhenException(e);
+                /* @} */
                 if (mApplicationObject == null) {
+
+                    Slog.e(TAG, "Start dump trace in system exception");
+                    Process.sendSignal(Process.myPid(), Process.SIGNAL_QUIT); // SPRD: Send signal 3 to process, and dump trace
+
+                    dumpHProfile("system_process", e);// SPRD: Dump hprofile when OOM
+
                     Clog_e(TAG, "*** FATAL EXCEPTION IN SYSTEM PROCESS: " + t.getName(), e);
                 } else {
                     StringBuilder message = new StringBuilder();
@@ -84,6 +93,13 @@ public class RuntimeInit {
                     }
                     message.append("PID: ").append(Process.myPid());
                     Clog_e(TAG, message.toString(), e);
+                    /* SPRD: Dump hprofile when OOM @{ */
+                    if (processName != null) {
+                        dumpHProfile(processName, e);
+                    } else {
+                        dumpHProfile("process_name_null", e);
+                    }
+                    /* @} */
                 }
 
                 // Bring up crash dialog, wait for it to be dismissed
@@ -101,6 +117,45 @@ public class RuntimeInit {
                 System.exit(10);
             }
         }
+
+        /**
+         * SPRD: Dump hprofile when OOM. @{
+         *
+         * @param: name The name of process
+         * @param: e The exception
+         */
+        private void dumpHProfile(String name, Throwable e) {
+            if (e instanceof OutOfMemoryError) {
+                if (android.os.Debug.shouldDumpHProfile()) {
+                    android.os.Debug.dumpHprof(name);
+                } else {
+                    Slog.d(TAG,"There is a OOM , but did not dumped, because of the present version is not USERDEBUG or did not tested by MONKEY.");
+                }
+            } else if (e instanceof RuntimeException) {
+                String cause = Log.getStackTraceString(e.getCause());
+                if (null != cause && cause.contains("OutOfMemoryError")) {
+                    if (android.os.Debug.shouldDumpHProfile()) {
+                        android.os.Debug.dumpHprof(name);
+                    } else {
+                        Slog.d(TAG,"There is a OOM , but did not dumped, because of the present version is not USERDEBUG or did not tested by MONKEY.");
+                    }
+                }
+            }
+        }
+        /* @} */
+        /* SPRD: add for bug 495208, add log to dump trace when TimeoutException happen @{ */
+        private void dumpTraceWhenException(Throwable e){
+            if(e instanceof TimeoutException){
+                int pid = Process.myPid();
+                String msg = "TimeoutException";
+                try {
+                    ActivityManagerNative.getDefault().dumpProcessTrace(pid, msg);
+                } catch (Throwable e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+        /* @} */
     }
 
     private static final void commonInit() {

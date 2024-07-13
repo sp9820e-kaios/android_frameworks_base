@@ -182,6 +182,13 @@ public final class PdfManipulationService extends Service {
             }
         }
 
+        /* SPRD: Fix bug 508729 @{ */
+        @Override
+        public boolean isAlive() {
+            return mRenderer != null;
+        }
+        /* @} */
+
         private Bitmap getBitmapForSize(int width, int height) {
             if (mBitmap != null) {
                 if (mBitmap.getWidth() == width && mBitmap.getHeight() == height) {

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Taşınabilir Wi-Fi bağlantı noktaları mobil veri bağlantısı gerektirir, ek maliyetler çıkartabilir."</string>
+<string name="softap_bt_cannot_coexist">"Bluetooth etkinleştirilince veya açılırken, softap çalışamaz, softapı kullanmak istiyorsanız, lütfen bluetooth\'un devre dışı bırakıldığından emin olun."</string>
+<string name="bt_softap_cannot_coexist">"Softap etkinleştirilince veya açılırken, bluetooth çalışamaz, bluetooth\'u kullanmak istiyorsanız, lütfen softap\'ın devre dışı bırakıldığından emin olun."</string>
+<string name="lte_service_error_airplane">"Telefon uçak modunda olduğunda LTE kullanamazsınız."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G açıldı"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G kapandı"</string>
+<string name="accessibility_quick_settings_lte_on">"4G etkin"</string>
+<string name="accessibility_quick_settings_lte_off">"4G devre dışı"</string>
+<string name="toggle_data_error_airplane">Telefon uçak madundayken Mobil veriyi kullanamazsınız.</string>
+<string name="quick_settings_data_connection_label">"VERİ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Açılan veri"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Kapatılan veri"</string>
+<string name="accessibility_quick_settings_data_on">"Veri açık"</string>
+<string name="accessibility_quick_settings_data_off">"Veri kapalı"</string>
+<string name="missing_sim_message">"SIM Yok"</string>
+    <string name="lte_service_error_incall">"Görüşme sırasında LTE hizmetine geçiş yapamazsınız."</string>
+
+</resources>

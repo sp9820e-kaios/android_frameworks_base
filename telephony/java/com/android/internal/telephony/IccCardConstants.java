@@ -52,8 +52,33 @@ public class IccCardConstants {
     public static final String INTENT_VALUE_LOCKED_ON_PUK = "PUK";
     /* NETWORK means ICC is locked on NETWORK PERSONALIZATION */
     public static final String INTENT_VALUE_LOCKED_NETWORK = "NETWORK";
+    /* NETWORK means ICC is locked on NETWORK SUBSET PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_NS = "NS";
+    /* NETWORK means ICC is locked on SERVICE PROVIDER PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_SP = "SP";
+    /* NETWORK means ICC is locked on CORPRATE PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_CP = "CP";
+    /* NETWORK means ICC is locked on SIM PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_SIM = "SIM";
+    /* NETWORK means ICC is locked on NETWORK PUK PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_NETWORK_PUK = "NETWORK_PUK";
+    /* NETWORK means ICC is locked on NETWORK SUBSET PUK PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_NS_PUK = "NS_PUK";
+    /* NETWORK means ICC is locked on SERVICE PROVIDER PUK PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_SP_PUK = "SP_PUK";
+    /* NETWORK means ICC is locked on CORPRATE PUK PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_CP_PUK = "CP_PUK";
+    /* NETWORK means ICC is locked on SIM PUK PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_SIM_PUK = "SIM_PUK";
+    /* NETWORK means ICC is locked on FOREVER PERSONALIZATION */
+    public static final String INTENT_VALUE_LOCKED_FOREVER = "FOREVER";
+
     /* PERM_DISABLED means ICC is permanently disabled due to puk fails */
     public static final String INTENT_VALUE_ABSENT_ON_PERM_DISABLED = "PERM_DISABLED";
+
+    /* SPRD: BUG 510153 Add for FDN @{ */
+    public static final String INTENT_KEY_FDN_STATUS = "fdn_status";
+    /* @} */
 
     /**
      * This is combination of IccCardStatus.CardState and IccCardApplicationStatus.AppState
@@ -74,7 +99,19 @@ public class IccCardConstants {
         READY,          /** ordinal(5) == {@See TelephonyManager#SIM_STATE_READY} */
         NOT_READY,      /** ordinal(6) == {@See TelephonyManager#SIM_STATE_NOT_READY} */
         PERM_DISABLED,  /** ordinal(7) == {@See TelephonyManager#SIM_STATE_PERM_DISABLED} */
-        CARD_IO_ERROR;  /** ordinal(8) == {@See TelephonyManager#SIM_STATE_CARD_IO_ERROR} */
+        CARD_IO_ERROR,  /** ordinal(8) == {@See TelephonyManager#SIM_STATE_CARD_IO_ERROR} */
+        /** Add for sim lock @{ */
+        NETWORK_SUBSET_LOCKED,
+        SERVICE_PROVIDER_LOCKED,
+        CORPORATE_LOCKED,
+        SIM_LOCKED,
+        NETWORK_LOCKED_PUK,
+        NETWORK_SUBSET_LOCKED_PUK,
+        SERVICE_PROVIDER_LOCKED_PUK,
+        CORPORATE_LOCKED_PUK,
+        SIM_LOCKED_PUK,
+        SIM_LOCKED_FOREVER;
+        /** @} */
 
         public boolean isPinLocked() {
             return ((this == PIN_REQUIRED) || (this == PUK_REQUIRED));
@@ -83,6 +120,11 @@ public class IccCardConstants {
         public boolean iccCardExist() {
             return ((this == PIN_REQUIRED) || (this == PUK_REQUIRED)
                     || (this == NETWORK_LOCKED) || (this == READY)
+                    || (this == NETWORK_SUBSET_LOCKED) || (this == SERVICE_PROVIDER_LOCKED)
+                    || (this == CORPORATE_LOCKED) || (this == SIM_LOCKED)
+                    || (this == NETWORK_LOCKED_PUK) || (this == NETWORK_SUBSET_LOCKED_PUK)
+                    || (this == SERVICE_PROVIDER_LOCKED_PUK) || (this == CORPORATE_LOCKED_PUK)
+                    || (this == SIM_LOCKED_PUK) || (this == SIM_LOCKED_FOREVER)
                     || (this == PERM_DISABLED) || (this == CARD_IO_ERROR));
         }
 
@@ -97,6 +139,16 @@ public class IccCardConstants {
                 case 6: return NOT_READY;
                 case 7: return PERM_DISABLED;
                 case 8: return CARD_IO_ERROR;
+                case 9: return NETWORK_SUBSET_LOCKED;
+                case 10: return SERVICE_PROVIDER_LOCKED;
+                case 11: return CORPORATE_LOCKED;
+                case 12: return SIM_LOCKED;
+                case 13: return NETWORK_LOCKED_PUK;
+                case 14: return NETWORK_SUBSET_LOCKED_PUK;
+                case 15: return SERVICE_PROVIDER_LOCKED_PUK;
+                case 16: return CORPORATE_LOCKED_PUK;
+                case 17: return SIM_LOCKED_PUK;
+                case 18: return SIM_LOCKED_FOREVER;
                 default:
                     throw new IllegalArgumentException();
             }

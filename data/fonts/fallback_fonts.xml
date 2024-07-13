@@ -223,6 +223,16 @@
     </family>
     <family>
         <fileset>
+            <file variant="elegant">Spreadtrum_SansSerifMyanmarZWG-6-24-03.ttf</file>
+        </fileset>
+    </family>
+    <family>
+        <fileset>
+            <file variant="compact">Spreadtrum_SansSerifMyanmarZWG-6-24-03.ttf</file>
+        </fileset>
+    </family>
+    <family>
+        <fileset>
             <file variant="elegant">NotoSansMyanmar-Regular.ttf</file>
             <file variant="elegant">NotoSansMyanmar-Bold.ttf</file>
         </fileset>

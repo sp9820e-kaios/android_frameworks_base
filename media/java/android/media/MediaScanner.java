@@ -24,6 +24,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.IContentProvider;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.drm.DrmManagerClient;
@@ -33,12 +34,16 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.RemoteException;
 import android.os.SystemProperties;
+import android.preference.PreferenceManager;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Audio.Playlists;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Images;
+import android.provider.MediaStore.Images.ImageColumns;
 import android.provider.MediaStore.Video;
 import android.provider.Settings;
 import android.sax.Element;
@@ -62,6 +67,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 
+import android.telephony.TelephonyManager;
+import com.android.internal.telephony.TelephonyProperties;
+
+import libcore.io.Libcore;
+import android.drm.DecryptHandle;
+import android.drm.DrmManagerClient;
 /**
  * Internal service helper that no-one should use directly.
  *
@@ -321,19 +332,25 @@ public class MediaScanner
     /** whether to use bulk inserts or individual inserts for each item */
     private static final boolean ENABLE_BULK_INSERTS = true;
 
+    /** SPRD : add mulcard support. */
+    private int mPhoneCount;
     // used when scanning the image database so we know whether we have to prune
     // old thumbnail files
     private int mOriginalCount;
     /** Whether the database had any entries in it before the scan started */
     private boolean mWasEmptyPriorToScan = false;
     /** Whether the scanner has set a default sound for the ringer ringtone. */
-    private boolean mDefaultRingtoneSet;
+    /* SPRD: replace by boolean[] mDefaultRingtoneSet */
+    //private boolean mDefaultRingtoneSet;
+    private boolean[] mDefaultRingtoneSet;
     /** Whether the scanner has set a default sound for the notification ringtone. */
     private boolean mDefaultNotificationSet;
     /** Whether the scanner has set a default sound for the alarm ringtone. */
     private boolean mDefaultAlarmSet;
     /** The filename for the default sound for the ringer ringtone. */
-    private String mDefaultRingtoneFilename;
+    /* SPRD: replace by String[] mDefaultRingtoneFilename */
+    //private String mDefaultRingtoneFilename;
+    private String[] mDefaultRingtoneFilename;
     /** The filename for the default sound for the notification ringtone. */
     private String mDefaultNotificationFilename;
     /** The filename for the default sound for the alarm ringtone. */
@@ -344,10 +361,17 @@ public class MediaScanner
      * to get the full system property.
      */
     private static final String DEFAULT_RINGTONE_PROPERTY_PREFIX = "ro.config.";
+    // SPRD: Add this for bug 563826.
+    private final SharedPreferences mDefaultPreferences;
 
     // set to true if file path comparisons should be case insensitive.
     // this should be set when scanning files on a case insensitive file system.
     private boolean mCaseInsensitivePaths;
+    private boolean mSet = true;
+    /* SPRD: add for OTA upgrade */
+    private String mPathInDatabase;
+    private boolean mInternalIsEmulated = Environment.internalIsEmulated();
+    private static final String EMULATE_EXTERNAL_PATH = "/storage/sdcard0";
 
     private final BitmapFactory.Options mBitmapOptions = new BitmapFactory.Options();
 
@@ -393,20 +417,51 @@ public class MediaScanner
         mBitmapOptions.inSampleSize = 1;
         mBitmapOptions.inJustDecodeBounds = true;
 
+        /** SPRD : add mulcard support. */
+        mPhoneCount = TelephonyManager.getDefault().getPhoneCount();
+        mDefaultRingtoneSet = new boolean[mPhoneCount];
+        mDefaultRingtoneFilename = new String[mPhoneCount];
+        for(int i = 0;i < mPhoneCount; i++) {
+            mDefaultRingtoneSet[i] = false;
+            mDefaultRingtoneFilename[i] = "";
+        }
+
         setDefaultRingtoneFileNames();
 
         mExternalStoragePath = Environment.getExternalStorageDirectory().getAbsolutePath();
         mExternalIsEmulated = Environment.isExternalStorageEmulated();
         //mClient.testGenreNameConverter();
+        mDefaultPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     }
 
     private void setDefaultRingtoneFileNames() {
-        mDefaultRingtoneFilename = SystemProperties.get(DEFAULT_RINGTONE_PROPERTY_PREFIX
-                + Settings.System.RINGTONE);
+        for (int i = 0; i < mPhoneCount; i++) {
+        mDefaultRingtoneFilename[i] = SystemProperties.get(DEFAULT_RINGTONE_PROPERTY_PREFIX
+                + getSetting(Settings.System.RINGTONE,i));
+        if ("".equals(mDefaultRingtoneFilename[i])) {
+            mDefaultRingtoneFilename[i] = SystemProperties.get(DEFAULT_RINGTONE_PROPERTY_PREFIX
+                    + Settings.System.RINGTONE);
+            }
+        }
         mDefaultNotificationFilename = SystemProperties.get(DEFAULT_RINGTONE_PROPERTY_PREFIX
                 + Settings.System.NOTIFICATION_SOUND);
         mDefaultAlarmAlertFilename = SystemProperties.get(DEFAULT_RINGTONE_PROPERTY_PREFIX
                 + Settings.System.ALARM_ALERT);
+    }
+
+    public static String getSetting(String defaultSetting, int phoneId) {
+        if (isMultiSimEnabledEx()) {
+            return defaultSetting + phoneId;
+        } else {
+            return defaultSetting;
+        }
+    }
+
+    private static boolean isMultiSimEnabledEx() {
+        String multiSimConfig =
+                SystemProperties.get(TelephonyProperties.PROPERTY_MULTI_SIM_CONFIG);
+        return (multiSimConfig.equals("dsds") || multiSimConfig.equals("dsda") ||
+                multiSimConfig.equals("tsts"));
     }
 
     private final MyMediaScannerClient mClient = new MyMediaScannerClient();
@@ -563,7 +618,14 @@ public class MediaScanner
                         }
 
                         if (isimage) {
-                            processImageFile(path);
+                            if (isDrmEnabled()
+                                    && MediaFile
+                                            .isDrmFileType(MediaFile.getFileType(path).fileType)) {
+                                mIsDrm = true;
+                                processDrmImageFile(path);
+                            } else {
+                                processImageFile(path);
+                            }
                         }
 
                         result = endFile(entry, ringtones, notifications, alarms, music, podcasts);
@@ -723,6 +785,25 @@ public class MediaScanner
             return genreTagValue;
         }
 
+        private void processDrmImageFile(String path) {
+            try {
+                mBitmapOptions.outWidth = 0;
+                mBitmapOptions.outHeight = 0;
+                DrmManagerClient client = new DrmManagerClient(mContext);
+                DecryptHandle handle = client.openDecryptSession(path);
+                if (handle != null) {
+                    BitmapFactory.decodeDrmStream(client, handle, mBitmapOptions);
+                    client.closeDecryptSession(handle);
+                } else {
+                    BitmapFactory.decodeFile(path, mBitmapOptions);
+                }
+                mWidth = mBitmapOptions.outWidth;
+                mHeight = mBitmapOptions.outHeight;
+            } catch (Throwable th) {
+                // ignore;
+            }
+        }
+
         private void processImageFile(String path) {
             try {
                 mBitmapOptions.outWidth = 0;
@@ -839,7 +920,8 @@ public class MediaScanner
                 }
             }
             long rowId = entry.mRowId;
-            if (MediaFile.isAudioFileType(mFileType) && (rowId == 0 || mMtpObjectHandle != 0)) {
+            /*add mSet for bug 393987 ,we can replace them while find better methods*/
+            if (MediaFile.isAudioFileType(mFileType) && (rowId == 0 || mMtpObjectHandle != 0 || mSet == true)) {
                 // Only set these for new entries. For existing entries, they
                 // may have been modified later, and we want to keep the current
                 // values so that custom ringtones still show up in the ringtone
@@ -849,6 +931,7 @@ public class MediaScanner
                 values.put(Audio.Media.IS_ALARM, alarms);
                 values.put(Audio.Media.IS_MUSIC, music);
                 values.put(Audio.Media.IS_PODCAST, podcasts);
+                mSet = false;
             } else if (mFileType == MediaFile.FILE_TYPE_JPEG && !mNoMedia) {
                 ExifInterface exif = null;
                 try {
@@ -934,10 +1017,13 @@ public class MediaScanner
                                 doesPathHaveFilename(entry.mPath, mDefaultNotificationFilename)) {
                             needToSetSettings = true;
                         }
-                    } else if (ringtones && !mDefaultRingtoneSet) {
-                        if (TextUtils.isEmpty(mDefaultRingtoneFilename) ||
-                                doesPathHaveFilename(entry.mPath, mDefaultRingtoneFilename)) {
-                            needToSetSettings = true;
+                    } else if (ringtones) {
+                        for(int i = 0; i< mPhoneCount; i++) {
+                            if ((!mDefaultRingtoneSet[i]) && TextUtils.isEmpty(mDefaultRingtoneFilename[i]) ||
+                                doesPathHaveFilename(entry.mPath, mDefaultRingtoneFilename[i])) {
+                                needToSetSettings = true;
+                                break;
+                            }
                         }
                     } else if (alarms && !mDefaultAlarmSet) {
                         if (TextUtils.isEmpty(mDefaultAlarmAlertFilename) ||
@@ -973,6 +1059,16 @@ public class MediaScanner
                 // path should never change, and we want to avoid replacing mixed cased paths
                 // with squashed lower case paths
                 values.remove(MediaStore.MediaColumns.DATA);
+                /* SPRD: add for OTA upgrade @{ */
+                if(mInternalIsEmulated && mPathInDatabase != null && mPathInDatabase.startsWith(getOldPath())){
+                    String externalPath = Environment.getExternalStoragePath().getPath();
+                    String newPath = mPathInDatabase.replace(getOldPath(),externalPath);
+                    values.put(MediaStore.MediaColumns.DATA,newPath);
+                    computeBucketValues(newPath, values);
+                    int storageId = getStorageId(newPath);
+                    values.put(FileColumns.STORAGE_ID, storageId);
+                }
+                /* @} */
 
                 int mediaType = 0;
                 if (!MediaScanner.isNoMediaPath(entry.mPath)) {
@@ -994,12 +1090,31 @@ public class MediaScanner
             if(needToSetSettings) {
                 if (notifications) {
                     setSettingIfNotSet(Settings.System.NOTIFICATION_SOUND, tableUri, rowId);
+                    // SPRD: save notification default uri to system dataBase when scanner media file
+                    Settings.System.putString(mContext.getContentResolver(), Settings.System.DEFAULT_NOTIFICATION,
+                            ContentUris.withAppendedId(tableUri, rowId).toString());
+
                     mDefaultNotificationSet = true;
                 } else if (ringtones) {
-                    setSettingIfNotSet(Settings.System.RINGTONE, tableUri, rowId);
-                    mDefaultRingtoneSet = true;
+                    /** SPRD: save ringtones default uri to system dataBase when scanner media file
+                     *  Because of the Friends of dual card here may seem strange, but how to do it,
+                     *  and then deal with it later in encounter problems
+                     */
+                    Settings.System.putString(mContext.getContentResolver(), Settings.System.DEFAULT_RINGTONE,
+                            ContentUris.withAppendedId(tableUri, rowId).toString());
+                    for (int i = 0; i < mPhoneCount; i++) {
+                        if (!mDefaultRingtoneSet[i] && (TextUtils.isEmpty(mDefaultRingtoneFilename[i])
+                                || doesPathHaveFilename(entry.mPath, mDefaultRingtoneFilename[i]))) {
+                            setSettingIfNotSet(getSetting(Settings.System.RINGTONE, i), tableUri, rowId);
+                            mDefaultRingtoneSet[i] = true;
+                        }
+                    }
                 } else if (alarms) {
                     setSettingIfNotSet(Settings.System.ALARM_ALERT, tableUri, rowId);
+                    // SPRD: save alarms default uri to system dataBase when scanner media file
+                    Settings.System.putString(mContext.getContentResolver(), Settings.System.DEFAULT_ALARM,
+                            ContentUris.withAppendedId(tableUri, rowId).toString());
+
                     mDefaultAlarmSet = true;
                 }
             }
@@ -1021,6 +1136,7 @@ public class MediaScanner
 
             if (TextUtils.isEmpty(existingSettingValue)) {
                 // Set the setting to the given URI
+                Log.d(TAG, "settingName = " + settingName + ", uri = " + uri.toString() + ",rowId = " + rowId);
                 Settings.System.putString(mContext.getContentResolver(), settingName,
                         ContentUris.withAppendedId(uri, rowId).toString());
             }
@@ -1049,6 +1165,47 @@ public class MediaScanner
         }
 
     }; // end of anonymous MediaScannerClient instance
+
+    /* SPRD: add this method for OTA upgrade @{ */
+    private int getStorageId(String path) {
+        final StorageManager storage = mContext.getSystemService(StorageManager.class);
+        final StorageVolume vol = storage.getStorageVolume(new File(path));
+        if (vol != null) {
+            return vol.getStorageId();
+        } else {
+            Log.w(TAG, "Missing volume for " + path + "; assuming invalid");
+            return StorageVolume.STORAGE_ID_INVALID;
+        }
+    }
+    /* @} */
+
+    /* SPRD: add this method for OTA upgrade @{ */
+    private void computeBucketValues(String data, ContentValues values) {
+        File parentFile = new File(data).getParentFile();
+        if (parentFile == null) {
+            parentFile = new File("/");
+        }
+
+        // Lowercase the path for hashing. This avoids duplicate buckets if the
+        // filepath case is changed externally.
+        // Keep the original case for display.
+        String path = parentFile.toString().toLowerCase();
+        String name = parentFile.getName();
+
+        // Note: the BUCKET_ID and BUCKET_DISPLAY_NAME attributes are spelled the
+        // same for both images and video. However, for backwards-compatibility reasons
+        // there is no common base class. We use the ImageColumns version here
+        values.put(ImageColumns.BUCKET_ID, path.hashCode());
+        values.put(ImageColumns.BUCKET_DISPLAY_NAME, name);
+    }
+    /* @} */
+
+    /* SPRD: add this method for OTA upgrade @{ */
+    private String getOldPath(){
+        String path = EMULATE_EXTERNAL_PATH;
+        return path;
+    }
+    /* @} */
 
     private void prescan(String filePath, boolean prescanFiles) throws RemoteException {
         Cursor c = null;
@@ -1090,6 +1247,22 @@ public class MediaScanner
                 long lastId = Long.MIN_VALUE;
                 Uri limitUri = mFilesUri.buildUpon().appendQueryParameter("limit", "1000").build();
                 mWasEmptyPriorToScan = true;
+
+                /* SPRD:Add this to fix bug 563826 @{ */
+                boolean mInScanEnd = true;
+                if (mFilesUri != null)
+                {
+                    String mFilesString = mFilesUri.toString();
+                    if (mFilesString != null && mFilesString.contains("internal"))
+                    {
+                        if (checkInscanEnd() == false)
+                        {
+                            Log.d(TAG,"checkInscanEnd() == false");
+                            mInScanEnd = false;
+                        }
+                    }
+                }
+                /* @} */
 
                 while (true) {
                     selectionArgs[0] = "" + lastId;
@@ -1145,6 +1318,10 @@ public class MediaScanner
                             }
                         }
                     }
+                }
+                if (mInScanEnd == false)
+                {
+                    mWasEmptyPriorToScan = true;
                 }
             }
         }
@@ -1303,6 +1480,12 @@ public class MediaScanner
         }
     }
 
+    /* SPRD: add this to fix bug 563826 @{ */
+    private boolean checkInscanEnd() {
+        return mDefaultPreferences.getBoolean("isScanEnd", false);
+    }
+    /* @} */
+
     public void scanDirectories(String[] directories, String volumeName) {
         try {
             long start = System.currentTimeMillis();
@@ -1328,6 +1511,50 @@ public class MediaScanner
             long scan = System.currentTimeMillis();
             postscan(directories);
             long end = System.currentTimeMillis();
+
+            /* SPRD : add this to fix bug 563826 @{ */
+            if (volumeName != null && volumeName.equals("internal") && checkInscanEnd() == false)
+            {
+                boolean setEnd = true;
+                String notification_sound = Settings.System.getString(
+                        mContext.getContentResolver(),
+                        Settings.System.NOTIFICATION_SOUND);
+
+                if (TextUtils.isEmpty(notification_sound))
+                {
+                    Log.d(TAG, "notification_sound is null ");
+                    setEnd = false;
+                }
+
+                String alarm_sound = Settings.System.getString(mContext.getContentResolver(),
+                        Settings.System.ALARM_ALERT);
+
+                if (TextUtils.isEmpty(alarm_sound))
+                {
+                    Log.d(TAG, "alarm_sound is null ");
+                    setEnd = false;
+                }
+
+                for (int i = 0; i < mPhoneCount; i++) {
+
+                    String ringtone_sound = Settings.System.getString(
+                            mContext.getContentResolver(),
+                            getSetting(Settings.System.RINGTONE, i));
+
+                    if (TextUtils.isEmpty(ringtone_sound))
+                    {
+                        Log.d(TAG, "ringtone_sound  " + i + " is null ");
+                        setEnd = false;
+                    }
+
+                }
+                Log.d(TAG, "setEnd =  " + setEnd);
+                if (setEnd == true)
+                {
+                    mDefaultPreferences.edit().putBoolean("isScanEnd", true).commit();
+                }
+            }
+            /* @} */
 
             if (false) {
                 Log.d(TAG, " prescan time: " + (prescan - start) + "ms\n");
@@ -1361,10 +1588,15 @@ public class MediaScanner
 
             // lastModified is in milliseconds on Files.
             long lastModifiedSeconds = file.lastModified() / 1000;
-
+            /*
+             * SPRD: FileExplorer will scan an empty directory via MediaScannerConnection maybe
+             * add isDirectory for bug 489369
+             * there is a better modification ?
+             */
+             boolean isDirectory = new File(path).isDirectory();
             // always scan the file, so we can return the content://media Uri for existing files
             return mClient.doScanFile(path, mimeType, lastModifiedSeconds, file.length(),
-                    false, true, MediaScanner.isNoMediaPath(path));
+                    isDirectory, true, MediaScanner.isNoMediaPath(path));
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException in MediaScanner.scanFile()", e);
             return null;
@@ -1527,15 +1759,37 @@ public class MediaScanner
 
         Cursor c = null;
         try {
-            where = Files.FileColumns.DATA + "=?";
-            selectionArgs = new String[] { path };
-            c = mMediaProvider.query(mPackageName, mFilesUriNoNotify, FILES_PRESCAN_PROJECTION,
-                    where, selectionArgs, null, null);
-            if (c.moveToFirst()) {
-                long rowId = c.getLong(FILES_PRESCAN_ID_COLUMN_INDEX);
-                int format = c.getInt(FILES_PRESCAN_FORMAT_COLUMN_INDEX);
-                long lastModified = c.getLong(FILES_PRESCAN_DATE_MODIFIED_COLUMN_INDEX);
-                return new FileEntry(rowId, path, lastModified, format);
+            /* SPRD: update path when OTA upgrade @{ */
+            String externalPath = Environment.getExternalStoragePath().getPath();
+            if (mInternalIsEmulated && path != null && path.startsWith(externalPath)) {
+                where = Files.FileColumns.DATA + "=?" + " or " + Files.FileColumns.DATA + "=?";
+                String oldPath = path.replace(externalPath, getOldPath());
+                selectionArgs = new String[] {path, oldPath};
+                c = mMediaProvider.query(mPackageName, mFilesUriNoNotify, FILES_PRESCAN_PROJECTION,
+                        where, selectionArgs, null, null);
+                if (c.moveToFirst()) {
+                    long rowId = c.getLong(FILES_PRESCAN_ID_COLUMN_INDEX);
+                    mPathInDatabase = c.getString(FILES_PRESCAN_PATH_COLUMN_INDEX);
+                    int format = c.getInt(FILES_PRESCAN_FORMAT_COLUMN_INDEX);
+                    long lastModified = c.getLong(FILES_PRESCAN_DATE_MODIFIED_COLUMN_INDEX);
+                    FileEntry entry  = new FileEntry(rowId, path, lastModified, format);
+                    if(mPathInDatabase != null && mPathInDatabase.startsWith(getOldPath()))
+                        entry.mLastModifiedChanged = true;
+                    return entry;
+                }
+            }else{
+            /* @} */
+                where = Files.FileColumns.DATA + "=?";
+                selectionArgs = new String[] {path};
+                c = mMediaProvider.query(mPackageName, mFilesUriNoNotify, FILES_PRESCAN_PROJECTION,
+                        where, selectionArgs, null, null);
+                if (c.moveToFirst()) {
+                    long rowId = c.getLong(FILES_PRESCAN_ID_COLUMN_INDEX);
+                    mPathInDatabase = c.getString(FILES_PRESCAN_PATH_COLUMN_INDEX);
+                    int format = c.getInt(FILES_PRESCAN_FORMAT_COLUMN_INDEX);
+                    long lastModified = c.getLong(FILES_PRESCAN_DATE_MODIFIED_COLUMN_INDEX);
+                    return new FileEntry(rowId, path, lastModified, format);
+                }
             }
         } catch (RemoteException e) {
         } finally {

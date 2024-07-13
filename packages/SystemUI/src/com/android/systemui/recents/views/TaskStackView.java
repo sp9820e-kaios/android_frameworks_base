@@ -597,7 +597,11 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
 
         Task t = mStack.getTasks().get(mFocusedTaskIndex);
         TaskView tv = getChildViewForTask(t);
-        tv.dismissTask();
+        /* SPRD: fixbug505291 @{ */
+        if (tv != null) {
+            tv.dismissTask();
+        }
+        /* @} */
     }
 
     /** Resets the focused task. */
@@ -679,12 +683,28 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return mTouchHandler.onInterceptTouchEvent(ev);
+        /* SPRD: bug528490, catch IllegalArgumentException in MotionEvent @{ */
+        try {
+            return mTouchHandler.onInterceptTouchEvent(ev);
+        } catch (IllegalArgumentException e) {
+            android.util.Log.d("TaskStackView","IllegalArgumentException in onInterceptTouchEvent");
+            e.printStackTrace();
+            return false;
+        }
+        /* @} */
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        return mTouchHandler.onTouchEvent(ev);
+        /* SPRD: bug528490, catch IllegalArgumentException in MotionEvent @{ */
+        try {
+            return mTouchHandler.onTouchEvent(ev);
+        } catch (IllegalArgumentException e) {
+            android.util.Log.d("TaskStackView","IllegalArgumentException in onTouchEvent");
+            e.printStackTrace();
+            return false;
+        }
+        /* @} */
     }
 
     @Override
@@ -1006,9 +1026,14 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                 t.setClipViewInStack(false);
                 t.startLaunchTaskAnimation(r, true, true, lockToTask);
             } else {
-                boolean occludesLaunchTarget = launchTargetTask.group.isTaskAboveTask(t.getTask(),
-                        launchTargetTask);
-                t.startLaunchTaskAnimation(null, false, occludesLaunchTarget, lockToTask);
+                /* SPRD: fixbug 500004 NPE:isTaskAboveTask()' on a null object reference.@{ */
+                if (launchTargetTask != null && launchTargetTask.group != null) {
+                    boolean occludesLaunchTarget = launchTargetTask.group.isTaskAboveTask(
+                            t.getTask(),
+                            launchTargetTask);
+                    t.startLaunchTaskAnimation(null, false, occludesLaunchTarget, lockToTask);
+                }
+                /* SPRD: fixbug 500004 NPE:isTaskAboveTask()' on a null object reference.@} */
             }
         }
     }

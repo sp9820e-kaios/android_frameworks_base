@@ -247,6 +247,8 @@ interface IPackageManager {
 
     String getInstallerPackageName(in String packageName);
 
+    List<String> getOemPackageList();
+
     void addPackageToPreferred(String packageName);
 
     void removePackageFromPreferred(String packageName);
@@ -302,6 +304,21 @@ interface IPackageManager {
      */
     void setComponentEnabledSetting(in ComponentName componentName,
             in int newState, in int flags, int userId);
+
+    /**
+     * As per {@link android.content.pm.PackageManager#setComponentEnabledSetting}.
+     * SPRD: update label and icon for app @{
+     */
+    void setComponentEnabledSettingForSetupMenu(in ComponentName componentName,in int flags, int userId, in Intent attr);
+    /* @} */
+
+    /**
+     * As per {@link android.content.pm.PackageManager#setComponentEnabledSetting}.
+     * SPRD: update label and icon for app @{
+     */
+    void setComponentEnabledSettingForSpecific(in ComponentName componentName,
+            in int newState, in int flags, int userId, in Intent attr);
+     /* @} */
 
     /**
      * As per {@link android.content.pm.PackageManager#getComponentEnabledSetting}.
@@ -455,6 +472,8 @@ interface IPackageManager {
 
     int movePackage(in String packageName, in String volumeUuid);
     int movePrimaryStorage(in String volumeUuid);
+    /* SPRD: add for emulated storage */
+    int movePrimaryEmulatedStorage(in String volumeUuid);
 
     boolean addPermissionAsync(in PermissionInfo info);
 
@@ -507,4 +526,16 @@ interface IPackageManager {
     boolean isPermissionRevokedByPolicy(String permission, String packageName, int userId);
 
     String getPermissionControllerPackageName();
+
+   /*
+    * SPRD: implement cpoy data/data/pkgName files to destDir
+    * @{
+    */
+    int backupAppData(String pkgName, String destDir);
+
+   /*
+    * implement restore files from sourceDir to data/data/pkgName
+    */
+    int restoreAppData(String sourceDir, String pkgName);
+   /* @} */
 }

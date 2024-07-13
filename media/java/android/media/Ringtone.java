@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Binder;
@@ -69,6 +70,15 @@ public class Ringtone {
     private final boolean mAllowRemote;
     private final IRingtonePlayer mRemotePlayer;
     private final Binder mRemoteToken;
+
+    /**
+     * SPRD: bug493123, if can not create MediaPlayer for the uri, reset it for this ringtone.
+     * @{
+     */
+    private Uri mDefaultRingtoneUri;
+    /**
+     * @}
+     */
 
     private MediaPlayer mLocalPlayer;
     private final MyOnCompletionListener mCompletionListener = new MyOnCompletionListener();
@@ -214,8 +224,15 @@ public class Ringtone {
 
             if (Settings.AUTHORITY.equals(authority)) {
                 if (followSettingsUri) {
+                    /* android original code
+                     *
                     Uri actualUri = RingtoneManager.getActualDefaultRingtoneUri(context,
                             RingtoneManager.getDefaultType(uri));
+                    * {@
+                    */
+                    Uri actualUri = RingtoneManager.getActualDefaultRingtoneUri(context,
+                            RingtoneManager.getDefaultType(uri),RingtoneManager.getRingtonePhoneId(uri));
+                    /** @} */
                     String actualTitle = getTitle(
                             context, actualUri, false /*followSettingsUri*/, allowRemote);
                     title = context

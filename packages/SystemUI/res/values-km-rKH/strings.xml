@@ -426,4 +426,15 @@
     <string name="tuner_toast" msgid="603429811084428439">"សូមអបអរសាទរ! កម្មវិធីសម្រួល UI ប្រព័ន្ធត្រូវបានបន្ថែមទៅការកំណត់ហើយ"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"យកចេញពីការកំណត់"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"យកកម្មវិធីសម្រួល UI ប្រព័ន្ធចេញពីការកំណត់ ហើយឈប់ប្រើលក្ខណៈពិសេសរបស់វាទាំងអស់?"</string>
+    <string name="quick_settings_volume_label">"ទម្រង់សម្លេង"</string>
+     <string name="assistant_key_home">"ដើម"</string>
+     <string name="assistant_key_search">"ស្វែងរក"</string>
+     <string name="assistant_key_menu">"មឺនុយ"</string>
+     <string name="assistant_key_back">"ថយក្រោយ"</string>
+     <string name="vibrate_hint">អូសទៅឆ្វេងដើម្បីដាក់ជាម៉ូដញ័រ</string>
+     <string name="battery_overtage_title">"ការព្រមានពីសុវត្ថិភាព"</string>
+     <string name="battery_overtage_content">"តង់ស្យុងប្រើសម្រាប់សាកថ្មមានទំហំធំពេកហើយ!"</string>
+     <string name="battery_overtage_back">"ថយក្រោយ"</string>
+     <string name="recent_app_clean_finished_toast">"បានសម្អាតអង្គចងចាំចេញបាន<xliff:g id="count">%1$s</xliff:g>ពេលនេះ ទំហំអង្គចងចាំដែលអាចប្រើបានមានទំហំ <xliff:g id="count">%2$s</xliff:g> ។"</string>
+
 </resources>

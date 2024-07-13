@@ -1,0 +1,111 @@
+<resources>
+  <!-- We don't want to publish private symbols in android.R as part of the
+       SDK.  Instead, put them here. -->
+  <private-symbols package="com.android.internal" />
+  <!-- SPRD: Add for dealing with SS notification @{ -->
+  <java-symbol type="string" name="ActiveUnconCf" />
+  <java-symbol type="string" name="ActiveConCf" />
+  <java-symbol type="string" name="CallForwarded" />
+  <java-symbol type="string" name="CallWaiting" />
+  <java-symbol type="string" name="OutCallBarred" />
+  <java-symbol type="string" name="InCallBarred" />
+  <java-symbol type="string" name="ForwardedCall" />
+  <java-symbol type="string" name="CallHold" />
+  <java-symbol type="string" name="CallRetrieved" />
+  <java-symbol type="string" name="IncomingCallForwarded" />
+  <!-- SPRD: Bug#474251 -->
+  <java-symbol type="xml" name="default_time_zone_by_country" />
+  <!-- SPRD: @} -->
+  <!-- SPRD: modify for bug479433 @{ -->
+  <java-symbol name="videophone_fallback_menu" type="array" />
+  <java-symbol name="videophone_fallback_title" type="string" />
+  <java-symbol name="videophone_never_fallback" type="string" />
+  <java-symbol name="videophone_always_fallback" type="string" />
+  <java-symbol name="videophone_notin3g_never_fallback" type="string" />
+  <java-symbol name="videophone_notin3g_always_fallback" type="string" />
+  <java-symbol name="videophone_fallback_menu_videocall" type="string" />
+  <java-symbol name="videophone_fallback_menu_voicecall" type="string" />
+  <java-symbol name="videophone_fallback_menu_cancel" type="string" />
+  <java-symbol name="videophone_fallback_question" type="string" />
+  <java-symbol name="videophone_failcause_1000" type="string" />
+  <java-symbol name="videophone_failcause_1" type="string" />
+  <java-symbol name="videophone_failcause_3" type="string" />
+  <java-symbol name="videophone_failcause_8" type="string" />
+  <java-symbol name="videophone_failcause_17" type="string" />
+  <java-symbol name="videophone_failcause_19" type="string" />
+  <java-symbol name="videophone_failcause_27" type="string" />
+  <java-symbol name="videophone_failcause_34" type="string" />
+  <java-symbol name="videophone_failcause_63_modify" type="string" />
+  <java-symbol name="videophone_failcause_79" type="string" />
+  <java-symbol name="videophone_failcause_default" type="string" />
+  <java-symbol name="videophone_failcause_47" type="string" />
+  <java-symbol name="videophone_failcause_50" type="string" />
+  <java-symbol name="videophone_failcause_57_remote" type="string" />
+  <java-symbol name="videophone_failcause_58" type="string" />
+  <java-symbol name="videophone_failcause_157" type="string" />
+  <java-symbol name="videophone_failcause_88" type="string" />
+  <java-symbol name="videophone_failcause_minus_1" type="string" />
+  <java-symbol name="net_connection_disconnect" type="string" />
+  <java-symbol name="no_vt_service" type="string" />
+  <java-symbol name="telecom_plugin_name" type="string" />
+  <java-symbol name="remote_request_change" type="string" />
+  <java-symbol name="choose_accept_reject" type="string" />
+  <java-symbol name="remote_request_change_accept" type="string" />
+  <java-symbol name="remote_request_change_reject" type="string" />
+  <java-symbol name="reject_remote_audio_to_video" type="string" />
+  <java-symbol name="accept_remote_audio_to_video" type="string" />
+  <java-symbol name="video_fall_to_audio_automatic" type="string" />
+  <java-symbol name="vt_fallback_dialog_ex" type="xml" />
+  <java-symbol name="FallBackList" type="id" />
+  <java-symbol name="FallBackCause" type="id" />
+  <!-- SPRD: @} -->
+  <!-- SPRD: Bug#474988 ADD for operator lte level plugin @{ -->
+  <java-symbol type="string" name="feature_signalstrength"/>
+  <!-- @} -->
+    <!-- SPRD: Bug#522864&522865 ADD for reliance plugin @{ -->
+  <java-symbol type="string" name="feature_AddonEmergencyAndLowBattaryCallUtils"/>
+  <!-- @} -->
+  <!-- SPRD: add pin2/puk2 string @{-->
+  <java-symbol type="string" name="Pin2Mmi" />
+  <java-symbol type="string" name="PukMmi" />
+  <java-symbol type="string" name="Puk2Mmi" />
+  <java-symbol type="string" name="badPin2" />
+  <java-symbol type="string" name="badPuk2" />
+  <java-symbol type="string" name="mismatchPin2" />
+  <java-symbol type="string" name="mismatchPuk" />
+  <java-symbol type="string" name="mismatchPuk2" />
+  <!-- @}-->
+  <java-symbol type="plurals" name="shutdown_after_seconds_plurals" />
+  <!-- SPRD: Add for SignalCluster colorful. @{ -->
+  <java-symbol type="array" name="sim_colors_light" />
+  <!-- @} -->
+  <java-symbol type="string" name="feature_plugin_for_telephony"/>
+  <!-- SPRD: modify for bug 514467 @{ -->
+  <java-symbol type="string" name="puklengthlimit" />
+  <!-- @} -->
+  <!-- SPRD: Add trafficClass when activate pdp. @{ -->
+  <java-symbol type="string" name="feature_add_trafficClass"/>
+  <!-- SPRD: add USSD dialog for bug 490252 @{ -->
+  <java-symbol type="string" name="ussd_feature_for_orange" />
+  <!-- @} -->
+  <!-- SPRD: telephony for orange @{ -->
+  <java-symbol type="string" name="feature_for_orange" />
+  <!-- @} -->
+
+  <!-- SPRD： Add to clear code. @{ -->
+  <java-symbol type="string" name="feature_clearcode_and_rau" />
+  <java-symbol type="string" name="failcause_user_authentication" />
+  <java-symbol type="string" name="failcause_service_option_not_subscribed" />
+  <!-- @} -->
+  <!-- SPRD: Add for bug544051 @{ -->
+  <java-symbol type="bool" name="config_enableDtmfLocalTone" />
+  <!-- @} -->
+  <java-symbol type="string" name="data_unavailable" />
+  <!-- SPRD: modity for bug 581248 @{ -->
+  <java-symbol type="string" name="feature_ecc_list_customized_by_operator" />
+  <!-- @} -->
+
+  <java-symbol type="array" name="config_bringupProcesses" />
+  <java-symbol type="integer" name="config_maxCachedApps" />
+  <java-symbol type="string" name="feature_for_plmn_match" />
+</resources>

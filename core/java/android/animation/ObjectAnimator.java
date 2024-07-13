@@ -23,6 +23,7 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.util.Log;
 import android.util.Property;
+import android.app.ActivityManager;
 
 import java.lang.ref.WeakReference;
 
@@ -975,6 +976,12 @@ public final class ObjectAnimator extends ValueAnimator {
             return;
         }
 
+        //SPRD:Bug #524965 Deskclock happens ANR.@{
+        if(target == null && ActivityManager.isUserAMonkey()){
+            Log.d(LOG_TAG,"target is null ,so return ",new Exception());
+            return;
+        }
+        //@}
         super.animateValue(fraction);
         int numValues = mValues.length;
         for (int i = 0; i < numValues; ++i) {

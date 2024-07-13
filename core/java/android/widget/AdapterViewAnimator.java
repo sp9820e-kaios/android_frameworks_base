@@ -502,6 +502,9 @@ public abstract class AdapterViewAnimator extends AdapterView<Adapter>
                 remove = true;
             } else if (wrap && (index > rangeEnd && index < rangeStart)) {
                 remove = true;
+                // SPRD: Bug 389207 - Widget shows wrong when deleting photos.
+            } else if (wrap && index >= getWindowSize()) {
+                remove = true;
             }
 
             if (remove) {
@@ -740,15 +743,21 @@ public abstract class AdapterViewAnimator extends AdapterView<Adapter>
             post(new Runnable() {
                 public void run() {
                     handleDataChanged();
+                    // SPRD: Bug 389207 - Widget shows wrong when deleting photos.
                     // if the data changes, mWhichChild might be out of the bounds of the adapter
                     // in this case, we reset mWhichChild to the beginning
+                    // if (mWhichChild >= getWindowSize()) {
+                    // mWhichChild = 0;
+                    //
+                    // showOnly(mWhichChild, false);
+                    // } else if (mOldItemCount != getCount()) {
+                    // showOnly(mWhichChild, false);
+                    // }
                     if (mWhichChild >= getWindowSize()) {
                         mWhichChild = 0;
-
-                        showOnly(mWhichChild, false);
-                    } else if (mOldItemCount != getCount()) {
-                        showOnly(mWhichChild, false);
                     }
+                    showOnly(mWhichChild, false);
+
                     refreshChildren();
                     requestLayout();
                 }

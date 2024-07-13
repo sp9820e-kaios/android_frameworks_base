@@ -606,10 +606,19 @@ public class ZenModeHelper {
                     break;
                 case AudioManager.RINGER_MODE_VIBRATE:
                 case AudioManager.RINGER_MODE_NORMAL:
+                /**
+                 * SPRD: bug
+                 * @{
+                 */
+                case AudioManager.RINGER_MODE_OUTDOOR:
+                /**
+                 * @}
+                 */
                     if (isChange && ringerModeOld == AudioManager.RINGER_MODE_SILENT
                             && (mZenMode == Global.ZEN_MODE_NO_INTERRUPTIONS
                                     || mZenMode == Global.ZEN_MODE_ALARMS)) {
                         newZen = Global.ZEN_MODE_OFF;
+                        Log.d(TAG, "ringerModeNew=" + ringerModeNew + ", newZen=" + newZen);
                     } else if (mZenMode != Global.ZEN_MODE_OFF) {
                         ringerModeExternalOut = AudioManager.RINGER_MODE_SILENT;
                     }
@@ -648,6 +657,8 @@ public class ZenModeHelper {
                     break;
                 case AudioManager.RINGER_MODE_VIBRATE:
                 case AudioManager.RINGER_MODE_NORMAL:
+                // SPRD: bug619588 OUTDOOR doesn't set zen mode
+                case AudioManager.RINGER_MODE_OUTDOOR:
                     if (mZenMode != Global.ZEN_MODE_OFF) {
                         newZen = Global.ZEN_MODE_OFF;
                     }

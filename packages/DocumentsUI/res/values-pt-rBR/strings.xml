@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"Documentos"</string>
+<string name="title_open">"Abrir de"</string>
+<string name="title_save">"Guardar para"</string>
+<string name="menu_create_dir">"Criar pasta"</string>
+<string name="menu_grid">"Vista de grade"</string>
+<string name="menu_list">"Vista de lista"</string>
+<string name="menu_sort">"Classificar por"</string>
+<string name="menu_search">"Pesquisar"</string>
+<string name="menu_settings">"Configurações"</string>
+<string name="menu_open">"Abrir"</string>
+<string name="menu_save">"Salvar"</string>
+<string name="menu_share">"Compartilhar"</string>
+<string name="menu_delete">"Apagar"</string>
+<string name="menu_select_all">"Selecionar tudo"</string>
+<string name="menu_copy">"Copiar para\u2026"</string>
+<string name="menu_advanced_show" product="nosdcard">"Mostrar a guarda internal"</string>
+<string name="menu_advanced_show" product="default">"Mostrar SD cartão"</string>
+<string name="menu_advanced_hide" product="nosdcard">"Esconder a guarda internal"</string>
+<string name="menu_advanced_hide" product="default">"Esconder o SD cartão"</string>
+<string name="menu_file_size_show">"Mostrar o tamanho de arquivo"</string>
+<string name="menu_file_size_hide">"Esconder o tamanho de arquivo"</string>
+<string name="button_select">"Selecionar"</string>
+<string name="button_copy">"Copiar"</string>
+<string name="sort_name">"Por nome"</string>
+<string name="sort_date">"Por data modificada"</string>
+<string name="sort_size">"Por tamanho"</string>
+<string name="drawer_open">"Mostrar os fontes"</string>
+<string name="drawer_close">"Esconder os fontes"</string>
+<string name="save_error">"Falha guardar o documento"</string>
+<string name="create_error">"Falha criar a pasta"</string>
+<string name="query_error">"Falha perguntar os documentos"</string>
+<string name="root_recent">"Recente"</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g> livre"</string>
+<string name="root_type_service">"Serviços de guarda"</string>
+<string name="root_type_shortcut">"Atalho:"</string>
+<string name="root_type_device">"Aparelhos"</string>
+<string name="root_type_apps">"Mais aplicações"</string>
+<string name="empty">"Sem itens"</string>
+<string name="toast_no_application">"Não pode abrir o arquivo"</string>
+<string name="toast_failed_delete">"Não pode deletar alguns documentos"</string>
+<string name="share_via">"Compartilhar via"</string>
+<string name="copy_notification_title">"Copiando arquivos"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> deixado"</string>
+<string name="copy_preparing">"Preparando para copiar\u2026"</string>
+<string name="notification_touch_for_details">"Tocar para ver os detalhes"</string>
+<string name="retry">"Tentar novamente"</string>
+<string name="copy_failure_alert_content">"Estes arquivos foram copiados: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"Não pode compartilhar arquivo"</string>
+<string name="documents_deleting">"Deletando documentos"</string>
+<string name="cannot_copyfolder_itself">"Você não pode copiar pasta no si próprio"</string>
+    <string name="error_permissions">"A aplicação não tem permissões criticais necessárias para rodar. Favor verifique os ajustes das suas permissões."</string>
+     <string name="cannot_copy_drm">"Impossível copiar arquivos DRM"</string>
+     <string name="cannot_copy_downloading">"Impossível baixar arquivos DRM"</string>
+
+</resources>

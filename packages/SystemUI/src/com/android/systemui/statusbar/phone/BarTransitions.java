@@ -36,9 +36,8 @@ import com.android.systemui.R;
 public class BarTransitions {
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_COLORS = false;
-
-    public static final boolean HIGH_END = ActivityManager.isHighEndGfx();
-
+    // SPRD: Bug 474763 support transition on low-ram device.
+    public static boolean HIGH_END = ActivityManager.isHighEndGfx();
     public static final int MODE_OPAQUE = 0;
     public static final int MODE_SEMI_TRANSPARENT = 1;
     public static final int MODE_TRANSLUCENT = 2;
@@ -60,6 +59,14 @@ public class BarTransitions {
     public BarTransitions(View view, int gradientResourceId) {
         mTag = "BarTransitions." + view.getClass().getSimpleName();
         mView = view;
+        /* SPRD: Bug 474763 support transition on low-ram device. @{ */
+        try {
+            HIGH_END = view.getContext().getResources()
+                    .getBoolean(com.android.internal.R.bool.config_force_use_color_view);
+        } catch (Resources.NotFoundException ex) {
+            Log.w(mTag, "com.android.internal.R.bool.config_force_use_color_view not found.");
+        }
+        /* @} */
         mBarBackground = new BarBackgroundDrawable(mView.getContext(), gradientResourceId);
         if (HIGH_END) {
             mView.setBackground(mBarBackground);

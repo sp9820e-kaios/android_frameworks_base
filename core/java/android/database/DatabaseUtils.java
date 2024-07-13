@@ -40,7 +40,15 @@ import java.text.Collator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
+/*
+* SPRD:
+*    bug 255240 stable sim importing,dd phonebook exception.
+*/
+import com.android.internal.telephony.IccPBForMimetypeException;
+import com.android.internal.telephony.IccPBForRecordException;
+/*
+*
+*/
 /**
  * Static utility methods for dealing with databases and {@link Cursor}s.
  */
@@ -82,6 +90,14 @@ public class DatabaseUtils {
     public static final void writeExceptionToParcel(Parcel reply, Exception e) {
         int code = 0;
         boolean logException = true;
+        /*
+         * SPRD: bug 255240 stable sim importing,add phonebook exception.
+         */
+        int errorCode = 0;
+        String mimeType = null;
+        /*
+        *
+        */
         if (e instanceof FileNotFoundException) {
             code = 1;
             logException = false;
@@ -106,6 +122,22 @@ public class DatabaseUtils {
         } else if (e instanceof OperationCanceledException) {
             code = 11;
             logException = false;
+            /*
+             * SPRD: bug 255240 stable sim importing,add phonebook exception.
+             */
+        } else if (e instanceof IccPBForRecordException) {
+            IccPBForRecordException exception = (IccPBForRecordException) e;
+            Log.d(TAG, "IccPBForRecordException error code= " + exception.mErrorCode);
+            errorCode = exception.mErrorCode;
+            code = 12;
+        } else if (e instanceof IccPBForMimetypeException) {
+            IccPBForMimetypeException exception = (IccPBForMimetypeException) e;
+            errorCode = exception.mErrorCode;
+            mimeType = exception.mMimeType;
+            code = 13;
+            /*
+             *
+             */
         } else {
             reply.writeException(e);
             Log.e(TAG, "Writing exception to parcel", e);
@@ -113,7 +145,16 @@ public class DatabaseUtils {
         }
         reply.writeInt(code);
         reply.writeString(e.getMessage());
-
+        /*
+         * SPRD: bug 255240 stable sim importing,add phonebook exception.
+         */
+        reply.writeInt(errorCode);
+        if (null != mimeType) {
+            reply.writeString(mimeType);
+        }
+        /*
+         *
+         */
         if (logException) {
             Log.e(TAG, "Writing exception to parcel", e);
         }
@@ -179,6 +220,17 @@ public class DatabaseUtils {
                 throw new SQLiteException(msg);
             case 11:
                 throw new OperationCanceledException(msg);
+                /*
+                 * SPRD: bug 255240 stable sim importing,add phonebook
+                 * exception.
+                 */
+            case 12:
+                throw new IccPBForRecordException(reply.readInt(), msg);
+            case 13:
+                throw new IccPBForMimetypeException(reply.readInt(), reply.readString(), msg);
+                /*
+                 *
+                 */
             default:
                 reply.readException(code, msg);
         }
@@ -413,8 +465,13 @@ public class DatabaseUtils {
      * @param name
      * @return the collation key in hex format
      */
+    /*
+    * SPRD: Modify for bug 494304, application cannot be searched after locale change
+    */
     public static String getHexCollationKey(String name) {
-        byte[] arr = getCollationKeyInBytes(name);
+        mColl = Collator.getInstance();
+        mColl.setStrength(Collator.PRIMARY);
+        byte[] arr = mColl.getCollationKey(name).toByteArray();
         char[] keys = encodeHex(arr);
         return new String(keys, 0, getKeyLen(arr) * 2);
     }

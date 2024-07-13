@@ -258,6 +258,8 @@ public class WifiTracker {
         mScanId++;
         final List<ScanResult> newResults = mWifiManager.getScanResults();
         for (ScanResult newResult : newResults) {
+            if (newResult.SSID == null || newResult.SSID.length() == 0)
+                continue;
             mScanResultCache.put(newResult.BSSID, newResult);
             mSeenBssids.put(newResult.BSSID, mScanId);
         }
@@ -299,11 +301,6 @@ public class WifiTracker {
         List<AccessPoint> cachedAccessPoints = getAccessPoints();
         ArrayList<AccessPoint> accessPoints = new ArrayList<>();
 
-        // Clear out the configs so we don't think something is saved when it isn't.
-        for (AccessPoint accessPoint : cachedAccessPoints) {
-            accessPoint.clearConfig();
-        }
-
         /** Lookup table to more quickly update AccessPoints by only considering objects with the
          * correct SSID.  Maps SSID -> List of AccessPoints with the given SSID.  */
         Multimap<String, AccessPoint> apMap = new Multimap<String, AccessPoint>();
@@ -313,6 +310,11 @@ public class WifiTracker {
         }
 
         final List<WifiConfiguration> configs = mWifiManager.getConfiguredNetworks();
+        final Collection<ScanResult> results = fetchScanResults();
+        // Clear out the configs so we don't think something is saved when it isn't.
+        for (AccessPoint accessPoint : cachedAccessPoints) {
+            accessPoint.clearConfig();
+        }
         if (configs != null) {
             mSavedNetworksExist = configs.size() != 0;
             for (WifiConfiguration config : configs) {
@@ -324,6 +326,8 @@ public class WifiTracker {
                     if (config.isPasspoint() == false) {
                         accessPoint.update(connectionConfig, mLastInfo, mLastNetworkInfo);
                     }
+                } else {
+                    accessPoint.update(config);
                 }
                 if (mIncludeSaved) {
                     if (!config.isPasspoint() || mIncludePasspoints)
@@ -331,6 +335,19 @@ public class WifiTracker {
 
                     if (config.isPasspoint() == false) {
                         apMap.put(accessPoint.getSsidStr(), accessPoint);
+
+                        if (results != null) {
+                            boolean inScanResults = false;
+                            for (ScanResult result : results) {
+                                if (accessPoint.matches(result)) {
+                                    inScanResults = true;
+                                    break;
+                                }
+                            }
+                            if (!inScanResults) { // If the ap is not in scan results, clear its rssi
+                                accessPoint.clearRssi();
+                            }
+                        }
                     }
                 } else {
                     // If we aren't using saved networks, drop them into the cache so that
@@ -340,7 +357,6 @@ public class WifiTracker {
             }
         }
 
-        final Collection<ScanResult> results = fetchScanResults();
         if (results != null) {
             for (ScanResult result : results) {
                 // Ignore hidden and ad-hoc networks.
@@ -387,22 +403,23 @@ public class WifiTracker {
         Collections.sort(accessPoints);
 
         // Log accesspoints that were deleted
-        if (DBG) Log.d(TAG, "------ Dumping SSIDs that were not seen on this scan ------");
-        for (AccessPoint prevAccessPoint : mAccessPoints) {
-            if (prevAccessPoint.getSsid() == null) continue;
-            String prevSsid = prevAccessPoint.getSsidStr();
-            boolean found = false;
-            for (AccessPoint newAccessPoint : accessPoints) {
-                if (newAccessPoint.getSsid() != null && newAccessPoint.getSsid().equals(prevSsid)) {
-                    found = true;
-                    break;
+        if (DBG) { // Code is useful only when DBG is true.
+            Log.d(TAG, "------ Dumping SSIDs that were not seen on this scan ------");
+            for (AccessPoint prevAccessPoint : mAccessPoints) {
+                if (prevAccessPoint.getSsid() == null) continue;
+                String prevSsid = prevAccessPoint.getSsidStr();
+                boolean found = false;
+                for (AccessPoint newAccessPoint : accessPoints) {
+                    if (newAccessPoint.getSsid() != null && newAccessPoint.getSsid().equals(prevSsid)) {
+                        found = true;
+                        break;
+                    }
                 }
+                if (!found)
+                    if (DBG) Log.d(TAG, "Did not find " + prevSsid + " in this scan");
             }
-            if (!found)
-                if (DBG) Log.d(TAG, "Did not find " + prevSsid + " in this scan");
+            Log.d(TAG, "---- Done dumping SSIDs that were not seen on this scan ----");
         }
-        if (DBG)  Log.d(TAG, "---- Done dumping SSIDs that were not seen on this scan ----");
-
         mAccessPoints = accessPoints;
         mMainHandler.sendEmptyMessage(MainHandler.MSG_ACCESS_POINT_CHANGED);
     }
@@ -456,9 +473,11 @@ public class WifiTracker {
         }
 
         boolean reorder = false;
-        for (int i = mAccessPoints.size() - 1; i >= 0; --i) {
-            if (mAccessPoints.get(i).update(connectionConfig, mLastInfo, mLastNetworkInfo)) {
-                reorder = true;
+        synchronized (mAccessPoints) {
+            for (int i = mAccessPoints.size() - 1; i >= 0; --i) {
+                if (mAccessPoints.get(i).update(connectionConfig, mLastInfo, mLastNetworkInfo)) {
+                    reorder = true;
+                }
             }
         }
         if (reorder) {
@@ -479,8 +498,14 @@ public class WifiTracker {
         } else {
             mLastInfo = null;
             mLastNetworkInfo = null;
+            synchronized (mAccessPoints) {
+                mAccessPoints = new ArrayList<>();
+            }
             if (mScanner != null) {
                 mScanner.pause();
+            }
+            if (state == WifiManager.WIFI_STATE_DISABLED) {
+                mWorkHandler.sendEmptyMessage(WorkHandler.MSG_RESUME);
             }
         }
         mMainHandler.obtainMessage(MainHandler.MSG_WIFI_STATE_CHANGED, state, 0).sendToTarget();

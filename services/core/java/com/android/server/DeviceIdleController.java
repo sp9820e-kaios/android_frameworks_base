@@ -55,6 +55,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.ArrayMap;
@@ -604,14 +605,14 @@ public class DeviceIdleController extends SystemService
 
     @Override
     public void onAnyMotionResult(int result) {
-        if (DEBUG) Slog.d(TAG, "onAnyMotionResult(" + result + ")");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "onAnyMotionResult(" + result + ")");
         if (result == AnyMotionDetector.RESULT_MOVED) {
-            if (DEBUG) Slog.d(TAG, "RESULT_MOVED received.");
+            if (DEBUG || isDebugDoze()) Slog.d(TAG, "RESULT_MOVED received.");
             synchronized (this) {
                 handleMotionDetectedLocked(mConstants.INACTIVE_TIMEOUT, "sense_motion");
             }
         } else if (result == AnyMotionDetector.RESULT_STATIONARY) {
-            if (DEBUG) Slog.d(TAG, "RESULT_STATIONARY received.");
+            if (DEBUG || isDebugDoze()) Slog.d(TAG, "RESULT_STATIONARY received.");
             if (mState == STATE_SENSING) {
                 // If we are currently sensing, it is time to move to locating.
                 synchronized (this) {
@@ -643,7 +644,7 @@ public class DeviceIdleController extends SystemService
         }
 
         @Override public void handleMessage(Message msg) {
-            if (DEBUG) Slog.d(TAG, "handleMessage(" + msg.what + ")");
+            if (DEBUG || isDebugDoze()) Slog.d(TAG, "handleMessage(" + msg.what + ")");
             switch (msg.what) {
                 case MSG_WRITE_CONFIG: {
                     handleWriteConfigFile();
@@ -1076,7 +1077,7 @@ public class DeviceIdleController extends SystemService
                 mTempWhitelistAppIdEndTimes.put(appId, entry);
             }
             entry.first.value = timeNow + duration;
-            if (DEBUG) {
+            if (DEBUG || isDebugDoze()) {
                 Slog.d(TAG, "Adding AppId " + appId + " to temp whitelist");
             }
             if (newEntry) {
@@ -1124,7 +1125,7 @@ public class DeviceIdleController extends SystemService
             }
             if (timeNow >= entry.first.value) {
                 mTempWhitelistAppIdEndTimes.delete(uid);
-                if (DEBUG) {
+                if (DEBUG || isDebugDoze()) {
                     Slog.d(TAG, "Removing UID " + uid + " from temp whitelist");
                 }
                 updateTempWhitelistAppIdsLocked();
@@ -1156,7 +1157,7 @@ public class DeviceIdleController extends SystemService
         // because if there is anything shown we are going to be updating it at some
         // frequency so can't be allowed to go into deep sleeps.
         boolean screenOn = mCurDisplay.getState() == Display.STATE_ON;
-        if (DEBUG) Slog.d(TAG, "updateDisplayLocked: screenOn=" + screenOn);
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "updateDisplayLocked: screenOn=" + screenOn);
         if (!screenOn && mScreenOn) {
             mScreenOn = false;
             if (!mForceIdle) {
@@ -1171,7 +1172,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void updateChargingLocked(boolean charging) {
-        if (DEBUG) Slog.i(TAG, "updateChargingLocked: charging=" + charging);
+        if (DEBUG || isDebugDoze()) Slog.i(TAG, "updateChargingLocked: charging=" + charging);
         if (!charging && mCharging) {
             mCharging = false;
             if (!mForceIdle) {
@@ -1192,7 +1193,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void becomeActiveLocked(String activeReason, int activeUid) {
-        if (DEBUG) Slog.i(TAG, "becomeActiveLocked, reason = " + activeReason);
+        if (DEBUG || isDebugDoze()) Slog.i(TAG, "becomeActiveLocked, reason = " + activeReason);
         if (mState != STATE_ACTIVE) {
             EventLogTags.writeDeviceIdle(STATE_ACTIVE, activeReason);
             scheduleReportActiveLocked(activeReason, activeUid);
@@ -1203,12 +1204,12 @@ public class DeviceIdleController extends SystemService
     }
 
     void becomeInactiveIfAppropriateLocked() {
-        if (DEBUG) Slog.d(TAG, "becomeInactiveIfAppropriateLocked()");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "becomeInactiveIfAppropriateLocked()");
         if (((!mScreenOn && !mCharging) || mForceIdle) && mEnabled && mState == STATE_ACTIVE) {
             // Screen has turned off; we are now going to become inactive and start
             // waiting to see if we will ultimately go idle.
             mState = STATE_INACTIVE;
-            if (DEBUG) Slog.d(TAG, "Moved from STATE_ACTIVE to STATE_INACTIVE");
+            if (DEBUG || isDebugDoze()) Slog.d(TAG, "Moved from STATE_ACTIVE to STATE_INACTIVE");
             resetIdleManagementLocked();
             scheduleAlarmLocked(mInactiveTimeout, false);
             EventLogTags.writeDeviceIdle(mState, "no activity");
@@ -1235,7 +1236,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void stepIdleStateLocked() {
-        if (DEBUG) Slog.d(TAG, "stepIdleStateLocked: mState=" + mState);
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "stepIdleStateLocked: mState=" + mState);
         EventLogTags.writeDeviceIdleStep();
 
         final long now = SystemClock.elapsedRealtime();
@@ -1257,12 +1258,12 @@ public class DeviceIdleController extends SystemService
                 mNextIdlePendingDelay = mConstants.IDLE_PENDING_TIMEOUT;
                 mNextIdleDelay = mConstants.IDLE_TIMEOUT;
                 mState = STATE_IDLE_PENDING;
-                if (DEBUG) Slog.d(TAG, "Moved from STATE_INACTIVE to STATE_IDLE_PENDING.");
+                if (DEBUG || isDebugDoze()) Slog.d(TAG, "Moved from STATE_INACTIVE to STATE_IDLE_PENDING.");
                 EventLogTags.writeDeviceIdle(mState, "step");
                 break;
             case STATE_IDLE_PENDING:
                 mState = STATE_SENSING;
-                if (DEBUG) Slog.d(TAG, "Moved from STATE_IDLE_PENDING to STATE_SENSING.");
+                if (DEBUG || isDebugDoze()) Slog.d(TAG, "Moved from STATE_IDLE_PENDING to STATE_SENSING.");
                 EventLogTags.writeDeviceIdle(mState, "step");
                 scheduleSensingAlarmLocked(mConstants.SENSING_TIMEOUT);
                 cancelSensingAlarmLocked();
@@ -1275,7 +1276,7 @@ public class DeviceIdleController extends SystemService
                 break;
             case STATE_SENSING:
                 mState = STATE_LOCATING;
-                if (DEBUG) Slog.d(TAG, "Moved from STATE_SENSING to STATE_LOCATING.");
+                if (DEBUG || isDebugDoze()) Slog.d(TAG, "Moved from STATE_SENSING to STATE_LOCATING.");
                 EventLogTags.writeDeviceIdle(mState, "step");
                 cancelSensingAlarmLocked();
                 scheduleSensingAlarmLocked(mConstants.LOCATING_TIMEOUT);
@@ -1296,10 +1297,10 @@ public class DeviceIdleController extends SystemService
                 mAnyMotionDetector.stop();
             case STATE_IDLE_MAINTENANCE:
                 scheduleAlarmLocked(mNextIdleDelay, true);
-                if (DEBUG) Slog.d(TAG, "Moved to STATE_IDLE. Next alarm in " + mNextIdleDelay +
+                if (DEBUG || isDebugDoze()) Slog.d(TAG, "Moved to STATE_IDLE. Next alarm in " + mNextIdleDelay +
                         " ms.");
                 mNextIdleDelay = (long)(mNextIdleDelay * mConstants.IDLE_FACTOR);
-                if (DEBUG) Slog.d(TAG, "Setting mNextIdleDelay = " + mNextIdleDelay);
+                if (DEBUG || isDebugDoze()) Slog.d(TAG, "Setting mNextIdleDelay = " + mNextIdleDelay);
                 mNextIdleDelay = Math.min(mNextIdleDelay, mConstants.MAX_IDLE_TIMEOUT);
                 mState = STATE_IDLE;
                 EventLogTags.writeDeviceIdle(mState, "step");
@@ -1308,7 +1309,7 @@ public class DeviceIdleController extends SystemService
             case STATE_IDLE:
                 // We have been idling long enough, now it is time to do some work.
                 scheduleAlarmLocked(mNextIdlePendingDelay, false);
-                if (DEBUG) Slog.d(TAG, "Moved from STATE_IDLE to STATE_IDLE_MAINTENANCE. " +
+                if (DEBUG || isDebugDoze()) Slog.d(TAG, "Moved from STATE_IDLE to STATE_IDLE_MAINTENANCE. " +
                         "Next alarm in " + mNextIdlePendingDelay + " ms.");
                 mNextIdlePendingDelay = Math.min(mConstants.MAX_IDLE_PENDING_TIMEOUT,
                         (long)(mNextIdlePendingDelay * mConstants.IDLE_PENDING_FACTOR));
@@ -1320,7 +1321,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void significantMotionLocked() {
-        if (DEBUG) Slog.d(TAG, "significantMotionLocked()");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "significantMotionLocked()");
         // When the sensor goes off, its trigger is automatically removed.
         mSigMotionActive = false;
         handleMotionDetectedLocked(mConstants.MOTION_INACTIVE_TIMEOUT, "motion");
@@ -1344,7 +1345,7 @@ public class DeviceIdleController extends SystemService
             cancelLocatingLocked();
             return;
         }
-        if (DEBUG) Slog.d(TAG, "Generic location: " + location);
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "Generic location: " + location);
         mLastGenericLocation = new Location(location);
         if (location.getAccuracy() > mConstants.LOCATION_ACCURACY && mHaveGps) {
             return;
@@ -1360,7 +1361,7 @@ public class DeviceIdleController extends SystemService
             cancelLocatingLocked();
             return;
         }
-        if (DEBUG) Slog.d(TAG, "GPS location: " + location);
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "GPS location: " + location);
         mLastGpsLocation = new Location(location);
         if (location.getAccuracy() > mConstants.LOCATION_ACCURACY) {
             return;
@@ -1372,7 +1373,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void startMonitoringSignificantMotion() {
-        if (DEBUG) Slog.d(TAG, "startMonitoringSignificantMotion()");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "startMonitoringSignificantMotion()");
         if (mSigMotionSensor != null && !mSigMotionActive) {
             mSensorManager.requestTriggerSensor(mSigMotionListener, mSigMotionSensor);
             mSigMotionActive = true;
@@ -1380,7 +1381,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void stopMonitoringSignificantMotion() {
-        if (DEBUG) Slog.d(TAG, "stopMonitoringSignificantMotion()");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "stopMonitoringSignificantMotion()");
         if (mSigMotionActive) {
             mSensorManager.cancelTriggerSensor(mSigMotionListener, mSigMotionSensor);
             mSigMotionActive = false;
@@ -1396,7 +1397,7 @@ public class DeviceIdleController extends SystemService
 
     void cancelSensingAlarmLocked() {
         if (mSensing) {
-            if (DEBUG) Slog.d(TAG, "cancelSensingAlarmLocked()");
+            if (DEBUG || isDebugDoze()) Slog.d(TAG, "cancelSensingAlarmLocked()");
             mAlarmManager.cancel(mSensingAlarmIntent);
             mSensing = false;
         }
@@ -1411,7 +1412,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void scheduleAlarmLocked(long delay, boolean idleUntil) {
-        if (DEBUG) Slog.d(TAG, "scheduleAlarmLocked(" + delay + ", " + idleUntil + ")");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "scheduleAlarmLocked(" + delay + ", " + idleUntil + ")");
         if (mSigMotionSensor == null) {
             // If there is no significant motion sensor on this device, then we won't schedule
             // alarms, because we can't determine if the device is not moving.  This effectively
@@ -1430,7 +1431,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void scheduleSensingAlarmLocked(long delay) {
-        if (DEBUG) Slog.d(TAG, "scheduleSensingAlarmLocked(" + delay + ")");
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "scheduleSensingAlarmLocked(" + delay + ")");
         cancelSensingAlarmLocked();
         mNextAlarmTime = SystemClock.elapsedRealtime() + delay;
         mAlarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -1461,7 +1462,7 @@ public class DeviceIdleController extends SystemService
         mPowerSaveWhitelistAllAppIdArray = buildAppIdArray(mPowerSaveWhitelistApps,
                 mPowerSaveWhitelistUserApps, mPowerSaveWhitelistAllAppIds);
         if (mLocalPowerManager != null) {
-            if (DEBUG) {
+            if (DEBUG || isDebugDoze()) {
                 Slog.d(TAG, "Setting wakelock whitelist to "
                         + Arrays.toString(mPowerSaveWhitelistAllAppIdArray));
             }
@@ -1478,7 +1479,7 @@ public class DeviceIdleController extends SystemService
             mTempWhitelistAppIdArray[i] = mTempWhitelistAppIdEndTimes.keyAt(i);
         }
         if (mLocalPowerManager != null) {
-            if (DEBUG) {
+            if (DEBUG || isDebugDoze()) {
                 Slog.d(TAG, "Setting wakelock temp whitelist to "
                         + Arrays.toString(mTempWhitelistAppIdArray));
             }
@@ -1499,7 +1500,7 @@ public class DeviceIdleController extends SystemService
     }
 
     void readConfigFileLocked() {
-        if (DEBUG) Slog.d(TAG, "Reading config from " + mConfigFile.getBaseFile());
+        if (DEBUG || isDebugDoze()) Slog.d(TAG, "Reading config from " + mConfigFile.getBaseFile());
         mPowerSaveWhitelistUserApps.clear();
         FileInputStream stream;
         try {
@@ -1929,5 +1930,10 @@ public class DeviceIdleController extends SystemService
                 pw.println();
             }
         }
+    }
+
+    private boolean isDebugDoze(){
+        return SystemProperties.getBoolean("debug.power.doze",false)
+                || SystemProperties.getBoolean("debug.power.all", false);
     }
 }

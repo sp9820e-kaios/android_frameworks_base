@@ -78,8 +78,10 @@ public class MediaSessions {
         writer.print("  mInit: "); writer.println(mInit);
         writer.print("  mRecords.size: "); writer.println(mRecords.size());
         int i = 0;
-        for (MediaControllerRecord r : mRecords.values()) {
-            dump(++i, writer, r.controller);
+        synchronized(mRecords){
+            for (MediaControllerRecord r : mRecords.values()) {
+                dump(++i, writer, r.controller);
+            }
         }
     }
 

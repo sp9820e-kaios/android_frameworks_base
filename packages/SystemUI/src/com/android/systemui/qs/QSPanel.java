@@ -26,12 +26,17 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.os.SystemProperties;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.FontSizeUtils;
@@ -79,7 +84,19 @@ public class QSPanel extends ViewGroup {
 
     private QSFooter mFooter;
     private boolean mGridContentVisible = true;
-
+    //SPRD controller click of bluetooth && hotspot
+    private long mTimeStart = 0;
+    private long mAirTimeStart = 0;
+    private static final int BLUETOOTH_VIEW_ID = 3;
+    private static final int HOTSPOT_VIEW_ID = 20;
+    private static final int AIRPLANE_VIEW_ID = 12;
+    private static String sSupportBtWifiSoftApCoexist = SystemProperties.get("ro.btwifisoftap.coexist", "true");
+    /* SPRD: Bug 585904 QP width {@ */
+    private int mQSPanelWidth;
+    /* @} */
+    /*SPRD:bugfix 596961 @{*/
+    private TextView mDiaplayText;
+    /*SPRD:bugfix 596961 @{*/
     public QSPanel(Context context) {
         this(context, null);
     }
@@ -97,11 +114,21 @@ public class QSPanel extends ViewGroup {
         mDetail.setClickable(true);
         mBrightnessView = LayoutInflater.from(context).inflate(
                 R.layout.quick_settings_brightness_dialog, this, false);
+        /*SPRD:bugfix 596961 @{*/
+        mDiaplayText = (TextView)mBrightnessView.findViewById(R.id.tab_switch_container_display);
+        /*SPRD:bugfix 596961 @{*/
         mFooter = new QSFooter(this, context);
         addView(mDetail);
         addView(mBrightnessView);
         addView(mFooter.getView());
         mClipper = new QSDetailClipper(mDetail);
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        DisplayMetrics dm = new DisplayMetrics();
+        Display display = ((WindowManager)context.getSystemService(
+                Context.WINDOW_SERVICE)).getDefaultDisplay();
+        display.getMetrics(dm);
+        mQSPanelWidth = dm.widthPixels;
+        /* @} */
         updateResources();
 
         mBrightnessController = new BrightnessController(getContext(),
@@ -147,10 +174,14 @@ public class QSPanel extends ViewGroup {
     public void updateResources() {
         final Resources res = mContext.getResources();
         final int columns = Math.max(1, res.getInteger(R.integer.quick_settings_num_columns));
-        mCellHeight = res.getDimensionPixelSize(R.dimen.qs_tile_height);
-        mCellWidth = (int)(mCellHeight * TILE_ASPECT);
-        mLargeCellHeight = res.getDimensionPixelSize(R.dimen.qs_dual_tile_height);
-        mLargeCellWidth = (int)(mLargeCellHeight * TILE_ASPECT);
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        mCellWidth = (int)(mQSPanelWidth/3);
+        mCellHeight = mCellWidth;
+        mCellHeight = /*res.getDimensionPixelSize(R.dimen.qs_tile_height)*/mCellWidth;
+        //mCellWidth = (int)(mCellHeight * TILE_ASPECT);
+        mLargeCellHeight = /*res.getDimensionPixelSize(R.dimen.qs_dual_tile_height)*/mCellWidth;
+        mLargeCellWidth = /*(int)(mLargeCellHeight * TILE_ASPECT)*/mCellWidth;
+        /* @} */
         mPanelPaddingBottom = res.getDimensionPixelSize(R.dimen.qs_panel_padding_bottom);
         mDualTileUnderlap = res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding_vertical);
         mBrightnessPaddingTop = res.getDimensionPixelSize(R.dimen.qs_brightness_padding_top);
@@ -170,6 +201,9 @@ public class QSPanel extends ViewGroup {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        /*SPRD:bugfix 596961 @{*/
+        mDiaplayText.setText(R.string.label_screen_brightness);
+        /*SPRD:bugfix 596961 @{*/
         FontSizeUtils.updateFontSize(mDetailDoneButton, R.dimen.qs_detail_button_text_size);
         FontSizeUtils.updateFontSize(mDetailSettingsButton, R.dimen.qs_detail_button_text_size);
 
@@ -310,6 +344,22 @@ public class QSPanel extends ViewGroup {
         final View.OnClickListener click = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //SPRD controller click of bluetooth && hotspot
+                if(sSupportBtWifiSoftApCoexist.equals("false")){
+                    if(v.getId() == BLUETOOTH_VIEW_ID){
+                        mTimeStart = System.currentTimeMillis();
+                    }
+                    if(v.getId() == HOTSPOT_VIEW_ID && (System.currentTimeMillis() - mTimeStart) < 500){
+                        return;
+                    }
+                    //SPRD:524883 controller click of AirplaneMode && hotspot
+                    if(v.getId() == AIRPLANE_VIEW_ID){
+                        mAirTimeStart = System.currentTimeMillis();
+                    }
+                    if(v.getId() == HOTSPOT_VIEW_ID && (System.currentTimeMillis() - mAirTimeStart) < 800){
+                        return;
+                    }
+                }
                 r.tile.click();
             }
         };
@@ -486,7 +536,9 @@ public class QSPanel extends ViewGroup {
             record.tileView.measure(exactly(cw), exactly(ch));
             previousView = record.tileView.updateAccessibilityOrder(previousView);
         }
-        int h = rows == 0 ? brightnessHeight : (getRowTop(rows) + mPanelPaddingBottom);
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        int h = rows == 0 ? brightnessHeight : (getRowTop(rows) + mPanelPaddingBottom + brightnessHeight);
+        /* @} */
         if (mFooter.hasFooter()) {
             h += mFooter.getView().getMeasuredHeight();
         }
@@ -505,17 +557,28 @@ public class QSPanel extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         final int w = getWidth();
-        mBrightnessView.layout(0, mBrightnessPaddingTop,
-                mBrightnessView.getMeasuredWidth(),
-                mBrightnessPaddingTop + mBrightnessView.getMeasuredHeight());
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        //mBrightnessView.layout(0, mBrightnessPaddingTop,
+        //        mBrightnessView.getMeasuredWidth(),
+        //        mBrightnessPaddingTop + mBrightnessView.getMeasuredHeight());
+        /* @} */
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
+        int maxRow = 0;
         for (TileRecord record : mRecords) {
             if (record.tileView.getVisibility() == GONE) continue;
-            final int cols = getColumnCount(record.row);
-            final int cw = record.row == 0 ? mLargeCellWidth : mCellWidth;
-            final int extra = (w - cw * cols) / (cols + 1);
+            /* SPRD: Bug 583693 ensure direction key work normally {@ */
+            /*final int cols = getColumnCount(record.row);*/
+            final int cols = mContext.getResources().getInteger(R.integer.quick_settings_num_columns);
+            /* @} */
+            /* SPRD: Bug 585904 Switch panel component adjust {@ */
+            final int cw = /*record.row == 0 ? mLargeCellWidth : */mCellWidth;
+            final int extra = /*(w - cw * cols) / (cols + 1)*/0;
+            /* @} */
             int left = record.col * cw + (record.col + 1) * extra;
             final int top = getRowTop(record.row);
+            if(record.row > maxRow) {
+                maxRow = record.row;
+            }
             int right;
             int tileWith = record.tileView.getMeasuredWidth();
             if (isRtl) {
@@ -526,6 +589,11 @@ public class QSPanel extends ViewGroup {
             }
             record.tileView.layout(left, top, right, top + record.tileView.getMeasuredHeight());
         }
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        mBrightnessView.layout(0, mBrightnessPaddingTop + (maxRow+1)*mCellWidth,
+                mBrightnessView.getMeasuredWidth(),
+                mBrightnessPaddingTop + mBrightnessView.getMeasuredHeight() + (maxRow+1)*mCellWidth);
+        /* @} */
         final int dh = Math.max(mDetail.getMeasuredHeight(), getMeasuredHeight());
         mDetail.layout(0, 0, mDetail.getMeasuredWidth(), dh);
         if (mFooter.hasFooter()) {
@@ -536,9 +604,11 @@ public class QSPanel extends ViewGroup {
     }
 
     private int getRowTop(int row) {
-        if (row <= 0) return mBrightnessView.getMeasuredHeight() + mBrightnessPaddingTop;
-        return mBrightnessView.getMeasuredHeight() + mBrightnessPaddingTop
-                + mLargeCellHeight - mDualTileUnderlap + (row - 1) * mCellHeight;
+        /* SPRD: Bug 585904 Switch panel component adjust {@ */
+        if (row <= 0) return /*mBrightnessView.getMeasuredHeight() + mBrightnessPaddingTop*/0;
+        return /*mBrightnessView.getMeasuredHeight() + mBrightnessPaddingTop*/0
+                + mLargeCellHeight/* - mDualTileUnderlap*/ + (row - 1) * mCellHeight;
+        /* @} */
     }
 
     private int getColumnCount(int row) {
@@ -643,5 +713,14 @@ public class QSPanel extends ViewGroup {
         void onShowingDetail(QSTile.DetailAdapter detail);
         void onToggleStateChanged(boolean state);
         void onScanStateChanged(boolean state);
+    }
+
+    /**
+     * SPRD:ADD bug 499802 update user when user switched.
+     */
+    public void switchUser(int newUserId) {
+        for (TileRecord record : mRecords) {
+            record.tile.handleUserSwitch(newUserId);
+        }
     }
 }

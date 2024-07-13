@@ -93,6 +93,8 @@ public class PasswordTextView extends View {
     private Interpolator mFastOutSlowInInterpolator;
     private boolean mShowPassword;
     private UserActivityListener mUserActivityListener;
+    // SPRD:add for bug 597244 for limit 8 numbers
+    private boolean mLimit = false;
 
     public interface UserActivityListener {
         void onUserActivity();
@@ -186,6 +188,11 @@ public class PasswordTextView extends View {
 
 
     public void append(char c) {
+        /* SPRD:add for bug 597244 for limit 8 numbers @{ */
+        if (mLimit && mText.length() > 7) {
+            return;
+        }
+        /* @} */
         int visibleChars = mTextChars.size();
         String textbefore = mText;
         mText = mText + c;
@@ -210,6 +217,12 @@ public class PasswordTextView extends View {
         userActivity();
         sendAccessibilityEventTypeViewTextChanged(textbefore, textbefore.length(), 0, 1);
     }
+
+    /* SPRD:add for bug 597244 for limit 8 numbers @{ */
+    public void setLimit(Boolean limit) {
+        mLimit = limit;
+    }
+    /* @} */
 
     public void setUserActivityListener(UserActivityListener userActivitiListener) {
         mUserActivityListener = userActivitiListener;

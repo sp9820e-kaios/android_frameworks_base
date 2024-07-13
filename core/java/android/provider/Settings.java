@@ -1534,6 +1534,11 @@ public final class Settings {
             MOVED_TO_GLOBAL.add(Settings.Global.AIRPLANE_MODE_TOGGLEABLE_RADIOS);
             MOVED_TO_GLOBAL.add(Settings.Global.AUTO_TIME);
             MOVED_TO_GLOBAL.add(Settings.Global.AUTO_TIME_ZONE);
+            /* SPRD:support GPS automatic update time @{ */
+            if (LocationManager.SUPPORT_CMCC) {
+                MOVED_TO_GLOBAL.add(Settings.Global.AUTO_TIME_GPS);
+            }
+            /* @} */
             MOVED_TO_GLOBAL.add(Settings.Global.CAR_DOCK_SOUND);
             MOVED_TO_GLOBAL.add(Settings.Global.CAR_UNDOCK_SOUND);
             MOVED_TO_GLOBAL.add(Settings.Global.DESK_DOCK_SOUND);
@@ -2429,6 +2434,12 @@ public final class Settings {
          */
         public static final String SCREEN_BRIGHTNESS_MODE = "screen_brightness_mode";
 
+        /**
+        * the timeout last for touch light
+        * @hide
+        */
+        public static final String BUTTON_LIGHT_OFF_TIMEOUT = "button_light_off_timeout";
+
         private static final Validator SCREEN_BRIGHTNESS_MODE_VALIDATOR = sBooleanValidator;
 
         /**
@@ -2437,6 +2448,16 @@ public final class Settings {
          * @hide
          */
         public static final String SCREEN_AUTO_BRIGHTNESS_ADJ = "screen_auto_brightness_adj";
+
+        /**
+         * Values for voice broadcast in pikeL
+         */
+        public static final String VOICE_FOR_MENU = "voice_for_menu";
+        public static final String VOICE_FOR_DATE = "voice_for_date";
+        public static final String VOICE_FOR_CALL = "voice_for_call";
+        public static final String VOICE_FOR_CONTACTS = "voice_for_contacts";
+        public static final String VOICE_FOR_INCALL = "voice_for_incall";
+        public static final String VOICE_FOR_MESSAGE = "voice_for_message";
 
         private static final Validator SCREEN_AUTO_BRIGHTNESS_ADJ_VALIDATOR =
                 new InclusiveFloatRangeValidator(-1, 1);
@@ -2546,6 +2567,23 @@ public final class Settings {
         public static final String VOLUME_MUSIC = "volume_music";
 
         /**
+         * SPRD: bug492835, FM audio route change.
+         * FM volume. This is used internally, changing this value will not
+         * change the volume. See AudioManager.
+         */
+        public static final String VOLUME_FM = "volume_fm";
+
+        public static final String VOLUME_RESERVED_1 = "volume_reserved_1";
+
+        public static final String VOLUME_RESERVED_2 = "volume_reserved_2";
+
+        public static final String VOLUME_RESERVED_3 = "volume_reserved_3";
+        /**
+         * @}
+         */
+
+
+        /**
          * Alarm volume. This is used internally, changing this
          * value will not change the volume. See AudioManager.
          *
@@ -2638,6 +2676,7 @@ public final class Settings {
         public static final String[] VOLUME_SETTINGS = {
             VOLUME_VOICE, VOLUME_SYSTEM, VOLUME_RING, VOLUME_MUSIC,
             VOLUME_ALARM, VOLUME_NOTIFICATION, VOLUME_BLUETOOTH_SCO
+            ,VOLUME_RESERVED_1, VOLUME_RESERVED_2, VOLUME_RESERVED_3, VOLUME_FM
         };
 
         /**
@@ -2659,6 +2698,12 @@ public final class Settings {
          * @see #DEFAULT_RINGTONE_URI
          */
         public static final String RINGTONE = "ringtone";
+
+        /** SPRD: add default ringtone uriString to system dataBase @{ */
+        public static final String DEFAULT_RINGTONE = "default_ringtone";
+        public static final String DEFAULT_NOTIFICATION = "default_notification";
+        public static final String DEFAULT_ALARM = "default_alarm";
+        /** @} */
 
         private static final Validator RINGTONE_VALIDATOR = sUriValidator;
 
@@ -3209,6 +3254,14 @@ public final class Settings {
 
         /** @hide */
         public static final Validator LOCK_TO_APP_ENABLED_VALIDATOR = sBooleanValidator;
+        /**
+         * Add for modify Browser UA through EM
+         *@
+        */
+        public static final String USER_AGENT_CHOICE = "user_agent_choice";
+        public static final String CUSTOM_USER_AGENT_STRING = "custom_user_agent_string";
+        public static final String OTHER_USER_AGENT_STRING = "other_user_agent_string";
+        /*@}*/
 
         /**
          * I am the lolrus.
@@ -3326,6 +3379,15 @@ public final class Settings {
             PUBLIC_SETTINGS.add(VOLUME_NOTIFICATION);
             PUBLIC_SETTINGS.add(VOLUME_BLUETOOTH_SCO);
             PUBLIC_SETTINGS.add(RINGTONE);
+            /**
+             * SPRD: bug496376, android.media.cts.RingtoneManagerTest fail
+             * @{
+             */
+            PUBLIC_SETTINGS.add(RINGTONE+ "0");
+            PUBLIC_SETTINGS.add(RINGTONE+ "1");
+            /**
+             * @}
+             */
             PUBLIC_SETTINGS.add(NOTIFICATION_SOUND);
             PUBLIC_SETTINGS.add(ALARM_ALERT);
             PUBLIC_SETTINGS.add(TEXT_AUTO_REPLACE);
@@ -3343,6 +3405,12 @@ public final class Settings {
             PUBLIC_SETTINGS.add(SOUND_EFFECTS_ENABLED);
             PUBLIC_SETTINGS.add(HAPTIC_FEEDBACK_ENABLED);
             PUBLIC_SETTINGS.add(SHOW_WEB_SUGGESTIONS);
+            PUBLIC_SETTINGS.add(VOICE_FOR_MENU);
+            PUBLIC_SETTINGS.add(VOICE_FOR_DATE);
+            PUBLIC_SETTINGS.add(VOICE_FOR_CALL);
+            PUBLIC_SETTINGS.add(VOICE_FOR_CONTACTS);
+            PUBLIC_SETTINGS.add(VOICE_FOR_INCALL);
+            PUBLIC_SETTINGS.add(VOICE_FOR_MESSAGE);
         }
 
         /**
@@ -5696,6 +5764,45 @@ public final class Settings {
          */
         public static final String SLEEP_TIMEOUT = "sleep_timeout";
 
+        // SPRD: add for assistant touch @{
+        /**
+        * @hide
+        */
+        public static final String ASSISTANT_ON = "assistant_on";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_SHORTCUT_TOP = "assistant_shortcut_top";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_SHORTCUT_BOTTOM = "assistant_shortcut_bottom";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_SHORTCUT_LEFT = "assistant_shortcut_left";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_SHORTCUT_RIGHT = "assistant_shortcut_right";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_APP_TOP = "assistant_app_top";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_APP_BOTTOM = "assistant_app_bottom";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_APP_LEFT = "assistant_app_left";
+        /**
+         * @hide
+         */
+        public static final String ASSISTANT_APP_RIGHT = "assistant_app_right";
+        // @}
+
         /**
          * Controls whether double tap to wake is enabled.
          * @hide
@@ -5962,6 +6069,18 @@ public final class Settings {
         public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/global");
 
         /**
+         * SPRD: add for bug473877
+         * Value to specify if the user prefers the flipping to silence to be active. 1=yes,0=no
+         */
+        public static final String FLIPPING_SILENCE_DATA = "flipping_silence_data";
+
+        /**
+         * Sprd: add for mouse control
+         * Value to contain all the apps which can support mouse control.
+         */
+        public static final String MOUSE_SUPPORT_LIST = "mouse_support_list";
+
+        /**
          * Whether users are allowed to add more users or guest from lockscreen.
          * <p>
          * Type: int
@@ -6074,6 +6193,14 @@ public final class Settings {
         public static final String AUTO_TIME_ZONE = "auto_time_zone";
 
         /**
+         * Value to specify if the user prefers the date, time and time zone to be automatically
+         * fetched from the GPS. 1=yes, 0=no global table
+         *
+         * @hide
+         */
+        public static final String AUTO_TIME_GPS = "auto_time_gps";
+
+        /**
          * URI for the car dock "in" event sound.
          * @hide
          */
@@ -6161,6 +6288,35 @@ public final class Settings {
         public static final String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
 
         /**
+         * Value to specify if the user prefers the usb active, 1=enable, 0=disable
+         * global table
+         * @hide
+         */
+        public static final String SWITCH_FOR_USB_ACTIVE = "switch_for_usb_active";
+
+        /**
+         * Used to indicate the current usb function - defaults to 0
+         * @hide
+         */
+        public static final String USB_CURRENT_FUNCTION = "current_function";
+
+        /**
+         * Used to indicate the remember function - defaults to 0
+         * @hide
+         */
+        public static final String USB_REMEMBER_CHOICE = "remember_usb_choice";
+
+        /**
+         * SPRD: add for usb functions
+         * Name of the cdrom USB function.
+         * Used in extras for the {@link #ACTION_USB_STATE} broadcast
+         *
+         * {@hide}
+         */
+        public static final String USB_FUNCTION_CDROM = "cdrom";
+        /** @} */
+
+        /**
          * When the user has enable the option to have a "bug report" command
          * in the power menu.
          * @hide
@@ -6171,6 +6327,18 @@ public final class Settings {
          * Whether ADB is enabled.
          */
         public static final String ADB_ENABLED = "adb_enabled";
+
+        /**
+         *SPRD:  1 is enabling or enabled, 0 is disabling or disabled.
+         *@hide
+         */
+        public static final String SOFTAP_ENABLING_OR_ENABLED = "softap_enabling_or_enabled";
+
+        /**
+         * SPRD: 1 is wifiap reenableing, 0 is not reenableing.
+         * @hide
+         */
+        public static final String SOFTAP_REENABLING = "softap_reenabling";
 
         /**
          * Whether Views are allowed to save their attribute data.
@@ -6239,6 +6407,7 @@ public final class Settings {
 
        /**
         * Whether or not data roaming is enabled. (0 = false, 1 = true)
+        * In National Data Roaming version, it means (0 = false, 1 = national only, 2 = all network)
         */
        public static final String DATA_ROAMING = "data_roaming";
 
@@ -7313,6 +7482,51 @@ public final class Settings {
          */
         public static final String ALARM_MANAGER_CONSTANTS = "alarm_manager_constants";
 
+        /* SPRD: Bug 511228,569813 Smart Controls in Settings @{ */
+        public static final String SMART_WAKE = "smart_wake";
+        public static final String SMART_MOTION_ENABLED = "smart_motion_enabled";
+        public static final String EASY_DIAL = "easy_dial";
+        public static final String EASY_ANSWER = "easy_answer";
+        public static final String HANDSFREE_SWITCH = "handsfree_switch";
+        public static final String SMART_CALL_RECORDER = "smart_call_recorder";
+        public static final String EASY_BELL = "easy_bell";
+        public static final String MUTE_INCOMING_CALLS = "mute_incoming_calls";
+        public static final String PLAY_CONTROL = "play_control";
+        public static final String MUSIC_SWITCH = "music_switch";
+        public static final String LOCK_MUSIC_SWITCH = "lock_music_switch";
+        public static final String EASY_START = "easy_start";
+        public static final String MUTE_ALARMS = "mute_alarms";
+        public static final String SHAKE_TO_SWITCH = "shake_to_switch";
+        public static final String QUICK_BROWSE = "quick_browse";
+        public static final String EASY_CLEAR_MEMORY = "easy_clear_memory";
+        public static final String POCKET_MODE_ENABLED = "pocket_mode_enabled";
+        public static final String TOUCH_DISABLE = "touch_disable";
+        public static final String SMART_BELL = "smart_bell";
+        public static final String POWER_SAVING = "power_saving";
+
+        public static final String EASY_DIAL_SWITCH = "easy_dial_switch";
+        public static final String EASY_ANSWER_SWITCH = "easy_answer_switch";
+        public static final String HANDSFREE_SWITCH_SWITCH = "handsfree_switch_switch";
+        public static final String SMART_CALL_RECORDER_SWITCH = "smart_call_recorder_switch";
+        public static final String EASY_BELL_SWITCH = "easy_bell_switch";
+        public static final String MUTE_INCOMING_CALLS_SWITCH = "mute_incoming_calls_switch";
+        public static final String PLAY_CONTROL_SWITCH = "play_control_switch";
+        public static final String MUSIC_SWITCH_SWITCH = "music_switch_switch";
+        public static final String LOCK_MUSIC_SWITCH_SWITCH = "lock_music_switch_switch";
+        public static final String EASY_START_SWITCH = "easy_start_switch";
+        public static final String MUTE_ALARMS_SWITCH = "mute_alarms_switch";
+        public static final String SHAKE_TO_SWITCH_SWITCH = "shake_to_switch_switch";
+        public static final String QUICK_BROWSE_SWITCH = "quick_browse_switch";
+        public static final String EASY_CLEAR_MEMORY_SWITCH = "easy_clear_memory_switch";
+        public static final String TOUCH_DISABLE_SWITCH = "touch_disable_switch";
+        public static final String SMART_BELL_SWITCH = "smart_bell_switch";
+        public static final String POWER_SAVING_SWITCH = "power_saving_switch";
+        /* @} */
+
+        // SPRD: Add Apps Inter Start management in settings
+        public static final String OPTIMIZATION_DELAY_DAY = "optimization_delay_day";
+        public static final String APP_START_RESTRICT_ENABLED = "app_start_restrict_enabled";
+
         /**
          * Get the key that retrieves a bluetooth headset's priority.
          * @hide
@@ -8080,6 +8294,54 @@ public final class Settings {
          * @hide
          */
         public static final String CONTACT_METADATA_SYNC = "contact_metadata_sync";
+
+        /* SPRD: add by EXT @{ */
+
+        /**
+         * Whether sim stand by.
+         * @hide
+         */
+        public static final String SIM_STANDBY = "sim_standby";
+
+        /**
+         * Whether radio operation busy.
+         * @hide
+         */
+        public static final String RADIO_OPERATION = "radio_operation";
+
+        /**
+         * service primary card.
+         * @hide
+         */
+        public static final String SERVICE_PRIMARY_CARD = "service_primary_card";
+
+        /**
+         * preferred network mode.
+         * @hide
+         */
+        public static final String PREFERRED_NETWORK_MODE_TYPE = "preferred_network_mode_type";
+
+        /**
+         * Whether data switch on.
+         * @hide
+         */
+        public static final String DATA_REMAIN_UNCHANGED = "data_remain_unchanged";
+        /* @} */
+
+        /* SPRD: Add for always online feature @{ */
+        /**
+         * Whether the mobile data is always online
+         * @hide
+         */
+        public static final String MOBILE_DATA_ALWAYS_ONLINE = "mobile_data_always_online";
+        /* @} */
+
+        /* SPRD: Add for fade-in feature @{ */
+        /**
+         * Whether fade-in feature is on.
+         */
+        public static final String FADE_IN_ON = "fade_in_on";
+        /* @} */
     }
 
     /**

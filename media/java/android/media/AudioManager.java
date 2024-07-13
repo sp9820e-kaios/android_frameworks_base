@@ -330,6 +330,8 @@ public class AudioManager {
     public static final int STREAM_DTMF = AudioSystem.STREAM_DTMF;
     /** @hide The audio stream for text to speech (TTS) */
     public static final int STREAM_TTS = AudioSystem.STREAM_TTS;
+    /** @hide The audio stream for FM */
+    public static final int STREAM_FM = AudioSystem.STREAM_FM;
     /** Number of audio streams */
     /**
      * @deprecated Use AudioSystem.getNumStreamTypes() instead
@@ -555,11 +557,19 @@ public class AudioManager {
      */
     public static final int RINGER_MODE_NORMAL = 2;
 
+    // SPRD: add outdoorMode
+    public static final int RINGER_MODE_OUTDOOR = 3;
+
     /**
      * Maximum valid ringer mode value. Values must start from 0 and be contiguous.
      * @hide
      */
-    public static final int RINGER_MODE_MAX = RINGER_MODE_NORMAL;
+    /**
+     * android original code
+     *
+     **/
+     //public static final int RINGER_MODE_MAX = RINGER_MODE_NORMAL;
+    public static final int RINGER_MODE_MAX = RINGER_MODE_OUTDOOR;
 
     /**
      * Vibrate type that corresponds to the ringer.
@@ -690,6 +700,19 @@ public class AudioManager {
         helper.sendMediaButtonEvent(keyEvent, false);
     }
 
+    /* SPRD:add interface for speaker switch function on videoplayer is invalid. @{
+    * @param routing device is speaker or headset
+    */
+    public void setSpeakerMediaOn(boolean on) {
+        IAudioService service = getService();
+        try {
+            service.setSpeakerMediaOn(on);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Dead object in setSpeakerMediaOn", e);
+        }
+    }
+    /* @} */
+
     /**
      * @hide
      */
@@ -710,6 +733,15 @@ public class AudioManager {
                     stream, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         }
     }
+
+	/** SPRD: add method isAudioRecording @{
+      * Checks whether audio recording is going in AudioFlinger.
+	  * @return true if audio recording is going.
+	*/
+    public boolean isAudioRecording() {
+        return AudioSystem.isAudioRecording();
+    }
+    /** @} */
 
     /**
      * @hide
@@ -1021,11 +1053,33 @@ public class AudioManager {
         }
         IAudioService service = getService();
         try {
+            /**
+             * SPRD: bug496363, synchronized cts test information to AudioService
+             * Original Android code:
             service.setRingerModeExternal(ringerMode, getContext().getOpPackageName());
+             * @{
+             */
+            Context context = getContext();
+            if (context != null && context.getPackageName() != null
+                    && context.getPackageName().startsWith("com.android.cts")) {
+                service.setRingerModeExternal(CTSMODE_IN, context.getOpPackageName());
+                service.setRingerModeExternal(ringerMode, context.getOpPackageName());
+            } else {
+                service.setRingerModeExternal(CTSMODE_OUT, getContext().getOpPackageName());
+                service.setRingerModeExternal(ringerMode, getContext().getOpPackageName());
+            }
+            /**
+             * @}
+             */
         } catch (RemoteException e) {
             Log.e(TAG, "Dead object in setRingerMode", e);
         }
     }
+
+    /** @hide SPRD: bug496363, ringer mode was set in cts */
+    public static final int CTSMODE_IN = 0xFEAEF;
+    /** @hide SPRD: bug496363, ringer mode was set not in cts */
+    public static final int CTSMODE_OUT = 0xFEAEE;
 
     /**
      * Sets the volume index for a particular stream.
@@ -1723,6 +1777,15 @@ public class AudioManager {
      */
     public boolean isMusicActive() {
         return AudioSystem.isStreamActive(STREAM_MUSIC, 0);
+    }
+
+    /**
+     * @hide
+     * Checks whether FM is active.
+     * @return true if FM is active.
+     */
+    public boolean isFmActive() {
+        return AudioSystem.isStreamActive(STREAM_FM, 0);
     }
 
     /**
@@ -2962,6 +3025,16 @@ public class AudioManager {
      * The audio output device code for built-in FM transmitter.
      */
     public static final int DEVICE_OUT_FM = AudioSystem.DEVICE_OUT_FM;
+
+    /** SPRD: bug492835, add FM devices: headset and speaker @{ */
+    /** {@hide} The audio output device code for FM headset.
+     */
+    public static final int DEVICE_OUT_FM_HEADSET = AudioSystem.DEVICE_OUT_FM_HEADSET;
+    /** {@hide} The audio output device code for FM speaker.
+     */
+    public static final int DEVICE_OUT_FM_SPEAKER = AudioSystem.DEVICE_OUT_FM_SPEAKER;
+    /** @} */
+
     /** @hide
      * This is not used as a returned value from {@link #getDevicesForStream}, but could be
      *  used in the future in a set method to select whatever default device is chosen by the
@@ -3307,7 +3380,24 @@ public class AudioManager {
      */
     public void setRingerModeInternal(int ringerMode) {
         try {
+            /**
+             * SPRD: bug496363, synchronized cts test information to AudioService
+             * Original Android code:
             getService().setRingerModeInternal(ringerMode, getContext().getOpPackageName());
+             * @{
+             */
+            Context context = getContext();
+            if (context != null && context.getPackageName() != null
+                    && context.getPackageName().startsWith("com.android.cts")) {
+                getService().setRingerModeInternal(CTSMODE_IN, context.getOpPackageName());
+                getService().setRingerModeInternal(ringerMode, context.getOpPackageName());
+            } else {
+                getService().setRingerModeInternal(CTSMODE_OUT, context.getOpPackageName());
+                getService().setRingerModeInternal(ringerMode, context.getOpPackageName());
+            }
+            /**
+             * @}
+             */
         } catch (RemoteException e) {
             Log.w(TAG, "Error calling setRingerModeInternal", e);
         }

@@ -26,6 +26,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.media.session.MediaSessionLegacyHelper;
 import android.os.IBinder;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -34,6 +35,7 @@ import android.view.ViewRootImpl;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.widget.FrameLayout;
+import java.util.Date;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
@@ -165,6 +167,11 @@ public class StatusBarWindowView extends FrameLayout {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        /** Fix bug 592327, Disabled menu keyevent {@ **/
+        if(event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
+            return true;
+        }
+        /** @} **/
         boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
         switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_BACK:
@@ -174,12 +181,15 @@ public class StatusBarWindowView extends FrameLayout {
                 return true;
             case KeyEvent.KEYCODE_MENU:
                 if (!down) {
-                    return mService.onMenuPressed();
+                    //return mService.onMenuPressed(); //Fix bug 592327, Disabled menu keyevent
                 }
             case KeyEvent.KEYCODE_SPACE:
                 if (!down) {
                     return mService.onSpacePressed();
                 }
+                break;
+            case KeyEvent.KEYCODE_STAR:
+                authLongClick(event);
                 break;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
@@ -194,6 +204,22 @@ public class StatusBarWindowView extends FrameLayout {
         }
         return super.dispatchKeyEvent(event);
     }
+
+    /** fix bug 591152 Unlock screen when click shortly  {@ **/
+    private long preClickTime = 0;
+    private static final int DURATION_TIME = 1000;
+    private void authLongClick(KeyEvent event) {
+        int count = event.getRepeatCount();
+        if (count == 0) {
+            preClickTime = new Date().getTime();
+        }
+        long curTimes = new Date().getTime();
+        if(preClickTime > 0 && (curTimes - preClickTime) > DURATION_TIME ){
+            mService.onMenuPressed();
+            preClickTime = new Date().getTime();
+        }
+    }
+    /** @} **/
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {

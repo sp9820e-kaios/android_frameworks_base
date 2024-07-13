@@ -26,7 +26,6 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
     >
-
     <include
         layout="@layout/keyguard_status_view"
         android:layout_height="wrap_content"
@@ -49,38 +48,53 @@
             android:overScrollMode="never"
             android:fillViewport="true">
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/qs_panel_container"
+                android:layout_width="match_parent" android:background="@drawable/qs_background_primary"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/switch_buttons_height"
                 android:orientation="vertical">
                 <include
                     layout="@layout/qs_panel"
-                    android:layout_marginTop="@dimen/status_bar_header_height_expanded"
+                    android:layout_marginTop="0dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/notification_side_padding"
-                    android:layout_marginRight="@dimen/notification_side_padding"/>
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"/>
 
                 <!-- A view to reserve space for the collapsed stack -->
                 <!-- Layout height: notification_min_height + bottom_stack_peek_amount -->
                 <View
-                    android:id="@+id/reserve_notification_space"
+                    android:id="@+id/reserve_notification_space" 
                     android:layout_height="@dimen/min_stack_height"
                     android:layout_width="match_parent"
+                    android:visibility="gone"
                     android:layout_marginTop="@dimen/notifications_top_padding" />
 
                 <View
                     android:layout_height="@dimen/notification_side_padding"
+                    android:visibility="gone"
                     android:layout_width="match_parent" />
             </LinearLayout>
         </com.android.systemui.statusbar.phone.ObservableScrollView>
 
-        <com.android.systemui.statusbar.stack.NotificationStackScrollLayout
-            android:id="@+id/notification_stack_scroller"
-            android:layout_width="@dimen/notification_panel_width"
-            android:layout_height="match_parent"
-            android:layout_gravity="@integer/notification_panel_layout_gravity"
-            android:layout_marginBottom="@dimen/close_handle_underlap"
-            android:importantForAccessibility="no" />
+        <!-- android:layout_width="@dimen/notification_panel_width" -->
+        <ScrollView
+            android:id="@+id/notification_views"
+            android:fillViewport="true"
+            android:layout_marginTop="@dimen/switch_buttons_height"
+            android:background="@drawable/qs_background_primary"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.android.systemui.statusbar.stack.NotificationStackScrollLayout
+                android:id="@+id/notification_stack_scroller"
+                android:paddingTop="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="@integer/notification_panel_layout_gravity"
+                android:orientation="vertical"
+                android:layout_marginBottom="0dp"
+                android:importantForAccessibility="no" />
+        </ScrollView>
 
         <ViewStub
             android:id="@+id/keyguard_user_switcher"
@@ -93,19 +107,70 @@
             android:visibility="invisible" />
 
     </com.android.systemui.statusbar.phone.NotificationsQuickSettingsContainer>
-
+    <!-- SPRD: modify for bug 474973 @{ -->
+    <include
+            layout="@layout/carrier_label_group_ex"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+     />
+    <!-- @} -->
     <include
             layout="@layout/keyguard_bottom_area"
             android:visibility="gone" />
 
-    <include layout="@layout/status_bar_expanded_header" />
+    <!-- SPRD: Bug 583693 PikeL Feature, this must be "gone", otherwise header view can't be hided -->
+    <include layout="@layout/status_bar_expanded_header"
+            android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/tab_switch_container"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/tab_switch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/switch_buttons_height"
+            android:orientation="horizontal"
+            android:weightSum="2" >
+           <Button android:background="@drawable/bg_btn"
+                android:id="@+id/notification_btn"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="@string/label_tab_notifications"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/switch_bg_button_height"
+                android:focusable="true"/>
+           <ImageView
+               android:layout_width="1dp"
+               android:layout_height="match_parent"
+               android:background="#6a6a6a"
+               android:paddingTop="3dp"
+               />
+           <Button android:background="@drawable/bg_btn"
+                android:id="@+id/qs_btn"
+                android:layout_width="0dp"
+                android:textSize="@dimen/switch_bg_button_height"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:text="@string/label_tab_qs"
+                android:textColor="@android:color/white"
+                android:focusable="true"/>
+        </LinearLayout>
+        <View android:background="#6a6a6a"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+    </LinearLayout>
 
     <com.android.systemui.statusbar.AlphaOptimizedView
         android:id="@+id/qs_navbar_scrim"
-        android:layout_height="96dp"
+        android:layout_height="0dp"
         android:layout_width="match_parent"
         android:layout_gravity="bottom"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:background="@drawable/qs_navbar_scrim" />
 
 </com.android.systemui.statusbar.phone.NotificationPanelView><!-- end of sliding panel -->

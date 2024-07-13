@@ -237,8 +237,10 @@ public class AppOpsManager {
     public static final int OP_TURN_SCREEN_ON = 61;
     /** @hide Get device accounts. */
     public static final int OP_GET_ACCOUNTS = 62;
+    /** @hide disable 3rd app auto run*/
+    public static final int OP_POST_AUTORUN = 63;
     /** @hide */
-    public static final int _NUM_OP = 63;
+    public static final int _NUM_OP = 64;
 
     /** Access to coarse location information. */
     public static final String OPSTR_COARSE_LOCATION = "android:coarse_location";
@@ -336,6 +338,9 @@ public class AppOpsManager {
     /** @hide Get device accounts. */
     public static final String OPSTR_GET_ACCOUNTS
             = "android:get_accounts";
+    /** @hide post autorun. */
+    public static final String OPSTR_POST_AUTORUN
+            = "android:post_autorun";
 
     /**
      * This maps each operation to the operation that serves as the
@@ -915,6 +920,15 @@ public class AppOpsManager {
     private static HashMap<String, Integer> sPermToOp = new HashMap<>();
 
     static {
+        sOpToSwitch = AppOpsManagerWrapper.addItem(sOpToSwitch, OP_POST_AUTORUN);
+        sOpToString = AppOpsManagerWrapper.addItem(sOpToString, null);
+        sOpNames = AppOpsManagerWrapper.addItem(sOpNames, "POST_AUTORUN");
+        sOpPerms = AppOpsManagerWrapper.addItem(sOpPerms, null);
+        sOpRestrictions = AppOpsManagerWrapper.addItem(sOpRestrictions, null);
+        sOpAllowSystemRestrictionBypass = AppOpsManagerWrapper.addItem(sOpAllowSystemRestrictionBypass, false);
+        sOpDefaultMode = AppOpsManagerWrapper.addItem(sOpDefaultMode, MODE_ALLOWED);
+        sOpDisableReset = AppOpsManagerWrapper.addItem(sOpDisableReset, false);
+
         if (sOpToSwitch.length != _NUM_OP) {
             throw new IllegalStateException("sOpToSwitch length " + sOpToSwitch.length
                     + " should be " + _NUM_OP);

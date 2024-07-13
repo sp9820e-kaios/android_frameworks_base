@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Portabel Wi-Fi-hotspot behöver mobil dataanslutning vilket kan medföra extra kostnader."</string>
+<string name="softap_bt_cannot_coexist">"När Bluetooth aktiveras eller sätts på fungerar inte softap. Om du vill använda softap, se till att Bluetooth är inaktiverad."</string>
+<string name="bt_softap_cannot_coexist">"När softap aktiveras eller sätts på fungerar inte Bluetooth. Om du vill använda Bluetooth måste du se till att softap är inaktiverad."</string>
+<string name="lte_service_error_airplane">"Du kan inte använda LTE när telefonen är i flygplansläge."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G påslagen"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G avstängd"</string>
+<string name="accessibility_quick_settings_lte_on">"4G på"</string>
+<string name="accessibility_quick_settings_lte_off">"4G av"</string>
+<string name="toggle_data_error_airplane">"Du kan inte använda mobil data när telefonen är i flygplansläge."</string>
+<string name="quick_settings_data_connection_label">"Data"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Data är på"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Data är avstängd"</string>
+<string name="accessibility_quick_settings_data_on">"Data på"</string>
+<string name="accessibility_quick_settings_data_off">"Data av"</string>
+<string name="missing_sim_message">"Inget SIM-kort"</string>
+    <string name="lte_service_error_incall">"Du kan inte växla LTE-service under samtalet."</string>
+
+</resources>

@@ -44,6 +44,7 @@ import com.android.systemui.R;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class SecurityControllerImpl implements SecurityController {
 
@@ -202,8 +203,10 @@ public class SecurityControllerImpl implements SecurityController {
     }
 
     private void fireCallbacks() {
-        for (SecurityControllerCallback callback : mCallbacks) {
-            callback.onStateChanged();
+        synchronized(mCallbacks){
+            for (SecurityControllerCallback callback : mCallbacks) {
+                callback.onStateChanged();
+            }
         }
     }
 

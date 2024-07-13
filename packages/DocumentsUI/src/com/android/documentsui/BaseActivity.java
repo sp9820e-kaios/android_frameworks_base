@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 import libcore.io.IoUtils;
@@ -42,6 +43,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.SystemProperties;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Root;
 import android.util.Log;
@@ -66,15 +68,36 @@ import com.android.documentsui.model.DocumentStack;
 import com.android.documentsui.model.DurableUtils;
 import com.android.documentsui.model.RootInfo;
 import com.google.common.collect.Maps;
+import android.Manifest;
+import android.widget.Toast;
+import com.android.documentsui.PlugInDrm.DocumentsUIPlugInDrm;
+import android.content.res.Configuration;
+import android.view.KeyEvent;
+import android.os.SystemProperties;
 
 abstract class BaseActivity extends Activity {
 
     static final String EXTRA_STATE = "state";
+    static final String CHECKING_STATE = "checking";
+    static final int PERMISSIONS_REQUEST_STORAGE_READ_WRITE = 1;
 
     RootsCache mRoots;
     SearchManager mSearchManager;
 
     private final String mTag;
+    /*
+     * for documentui_DRM
+     *@{
+     */
+    private boolean mChecking = false;
+    /*@}*/
+
+    /**
+    *Add for barphone support
+    *@{
+    */
+    protected final boolean PRODUCT_BARPHONE = SystemProperties.getBoolean("ro.product.barphone",false);
+    /*@}*/
 
     public abstract State getDisplayState();
     public abstract void onDocumentPicked(DocumentInfo doc);
@@ -92,8 +115,34 @@ abstract class BaseActivity extends Activity {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         mRoots = DocumentsApplication.getRootsCache(this);
+        /*SPRD: add for bug 572595 @{*/
+        mRoots.updateAsync();
+        /*@}*/
         mSearchManager = new SearchManager();
     }
+
+    /*Bug 514037 happen exception when onConfigurationChanged*/
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        try {
+            final State state = getDisplayState();
+            final RootInfo root = getCurrentRoot();
+
+            // If we're browsing a specific root, and that root went away, then we
+            // have no reason to hang around
+            if (state.action == State.ACTION_BROWSE && root != null) {
+                if (mRoots.getRootBlocking(root.authority, root.rootId) == null) {
+                    Log.i(mTag, "onConfigurationChanged, finish");
+                    finish();
+                }
+            }
+        } catch (Exception e) {
+            Log.e(mTag, "onConfigurationChanged: " + e.toString());
+        }
+    }
+    /*Bug 514037 happen exception when onConfigurationChanged*/
 
     @Override
     public void onResume() {
@@ -106,10 +155,58 @@ abstract class BaseActivity extends Activity {
         // have no reason to hang around
         if (state.action == State.ACTION_BROWSE && root != null) {
             if (mRoots.getRootBlocking(root.authority, root.rootId) == null) {
+                Log.i(mTag, "onResume, finish");
                 finish();
             }
         }
+
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        String packageName = getCallingPackage();
+        if (DocumentsUIPlugInDrm.getInstance().isDrmEnabled()){
+            Log.i(mTag, "Drm enable, check the storage permission, mChecking = " + mChecking);
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED && !mChecking) {
+                Log.i(mTag, "no storage permission, request it");
+                if (packageName != null && packageName.startsWith("com.android.cts")) {
+                    Log.i(mTag, "in cts test, return");
+                } else {
+                    mChecking = true;
+                    requestPermissions(
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                            PERMISSIONS_REQUEST_STORAGE_READ_WRITE);
+                }
+            }
+        }
+        /*@}*/
     }
+
+    /*
+     * for documentui_DRM
+     *@{
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+            String permissions[], int[] grantResults) {
+        if(requestCode == PERMISSIONS_REQUEST_STORAGE_READ_WRITE) {
+            if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i(mTag, "storage permission granted");
+                DocumentsApplication.clearThumbnailsCache(BaseActivity.this);
+                DirectoryFragment fragment = DirectoryFragment.get(getFragmentManager());
+                if (fragment != null)
+                    fragment.onUserSortOrderChanged();
+            } else {
+                Log.i(mTag, "storage permission denied");
+                Toast.makeText(this, R.string.error_permissions, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+            mChecking = false;
+        }
+    }
+    /*@}*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,6 +237,14 @@ abstract class BaseActivity extends Activity {
 
         // Search uses backend ranking; no sorting
         sort.setVisible(cwd != null && !mSearchManager.isSearching());
+        /**
+        *Add for barphone support
+        *@{
+        */
+        if (PRODUCT_BARPHONE){
+            sort.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        }
+        /*@}*/
 
         State state = getDisplayState();
         grid.setVisible(state.derivedMode != State.MODE_GRID);
@@ -152,6 +257,15 @@ abstract class BaseActivity extends Activity {
                 ? R.string.menu_advanced_hide : R.string.menu_advanced_show);
         fileSize.setTitle(LocalPreferences.getDisplayFileSize(this)
                 ? R.string.menu_file_size_hide : R.string.menu_file_size_show);
+        /**
+         * Add for BarPhone
+         *@{
+         */
+        if (PRODUCT_BARPHONE) {
+            final MenuItem drawer = menu.findItem(R.id.menu_drawer);
+            drawer.setVisible(!(state.action == State.ACTION_MANAGE || state.action == State.ACTION_BROWSE));
+        }
+        /*@}*/
 
         return shown;
     }
@@ -300,6 +414,7 @@ abstract class BaseActivity extends Activity {
          * specifies if the destination directory needs to create new directory or not.
          */
         public static String EXTRA_DIRECTORY_COPY = "com.android.documentsui.DIRECTORY_COPY";
+        public static String EXTRA_DIRECTORY_COPY_URIS = "com.android.documentsui.DIRECTORY_COPY_URIS";
     }
 
     public static class State implements android.os.Parcelable {
@@ -324,6 +439,8 @@ abstract class BaseActivity extends Activity {
         public boolean stackTouched = false;
         public boolean restored = false;
         public boolean directoryCopy = false;
+
+        public Locale locale = null;
 
         /** Current user navigation stack; empty implies recents. */
         public DocumentStack stack = new DocumentStack();
@@ -400,7 +517,9 @@ abstract class BaseActivity extends Activity {
                 DurableUtils.readFromParcel(in, state.stack);
                 state.currentSearch = in.readString();
                 in.readMap(state.dirState, null);
-                in.readList(state.selectedDocumentsForCopy, null);
+                /* SPRD:504976 add classloader to avoid ClassNotFoundException@{ */
+                in.readList(state.selectedDocumentsForCopy, getClass().getClassLoader());
+                /* }@ */
                 in.readList(state.excludedAuthorities, null);
                 return state;
             }
@@ -416,14 +535,20 @@ abstract class BaseActivity extends Activity {
         State state = getDisplayState();
         LocalPreferences.setDisplayAdvancedDevices(this, display);
         state.showAdvanced = state.forceAdvanced | display;
-        RootsFragment.get(getFragmentManager()).onDisplayStateChanged();
+        /* SPRD:522786 check if fragment is null*/
+        RootsFragment fragment = RootsFragment.get(getFragmentManager());
+        if (fragment != null)
+            fragment.onDisplayStateChanged();
+        /*@}*/
         invalidateOptionsMenu();
     }
 
     void setDisplayFileSize(boolean display) {
         LocalPreferences.setDisplayFileSize(this, display);
         getDisplayState().showSize = display;
-        DirectoryFragment.get(getFragmentManager()).onDisplayStateChanged();
+        DirectoryFragment fragment = DirectoryFragment.get(getFragmentManager());
+        if (fragment != null)
+            fragment.onDisplayStateChanged();
         invalidateOptionsMenu();
     }
 
@@ -436,7 +561,9 @@ abstract class BaseActivity extends Activity {
      */
     void setUserSortOrder(int sortOrder) {
         getDisplayState().userSortOrder = sortOrder;
-        DirectoryFragment.get(getFragmentManager()).onUserSortOrderChanged();
+        DirectoryFragment fragment = DirectoryFragment.get(getFragmentManager());
+        if (fragment != null)
+            fragment.onUserSortOrderChanged();
     }
 
     /**
@@ -444,7 +571,9 @@ abstract class BaseActivity extends Activity {
      */
     void setUserMode(int mode) {
         getDisplayState().userMode = mode;
-        DirectoryFragment.get(getFragmentManager()).onUserModeChanged();
+        DirectoryFragment fragment = DirectoryFragment.get(getFragmentManager());
+        if (fragment != null)
+            fragment.onUserModeChanged();
     }
 
     void setPending(boolean pending) {
@@ -458,11 +587,23 @@ abstract class BaseActivity extends Activity {
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putParcelable(EXTRA_STATE, getDisplayState());
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        state.putBoolean(CHECKING_STATE, mChecking);
+        /*@}*/
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
         super.onRestoreInstanceState(state);
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        mChecking = state.getBoolean(CHECKING_STATE, false);
+        /*@}*/
     }
 
     RootInfo getCurrentRoot() {
@@ -523,6 +664,7 @@ abstract class BaseActivity extends Activity {
 
         @Override
         protected void onPostExecute(DocumentInfo result) {
+            if (isDestroyed()) return;
             if (result != null) {
                 State state = getDisplayState();
                 state.stack.push(result);
@@ -546,7 +688,7 @@ abstract class BaseActivity extends Activity {
             final Cursor cursor = getContentResolver()
                     .query(RecentsProvider.buildResume(packageName), null, null, null, null);
             try {
-                if (cursor.moveToFirst()) {
+                if (cursor != null && cursor.moveToFirst()) {
                     mExternal = cursor.getInt(cursor.getColumnIndex(ResumeColumns.EXTERNAL)) != 0;
                     final byte[] rawStack = cursor.getBlob(
                             cursor.getColumnIndex(ResumeColumns.STACK));
@@ -625,6 +767,10 @@ abstract class BaseActivity extends Activity {
         @Override
         public DocumentInfo getItem(int position) {
             State state = getDisplayState();
+            if ((state.stack.size() - position - 1) < 0){
+                Log.i(mTag, "getItem return null ");
+                return null;
+            }
             return state.stack.get(state.stack.size() - position - 1);
         }
 
@@ -647,7 +793,9 @@ abstract class BaseActivity extends Activity {
                 final RootInfo root = getCurrentRoot();
                 title.setText(root.title);
             } else {
-                title.setText(doc.displayName);
+                if (doc != null) {
+                    title.setText(doc.displayName);
+                }
             }
 
             return convertView;
@@ -696,6 +844,7 @@ abstract class BaseActivity extends Activity {
             assert(mActionBar == null);
             mActionBar = actionBar;
             mMenu = actionBar.getSearchMenu();
+
             mView = (SearchView) mMenu.getActionView();
 
             mActionBar.setOnActionViewCollapsedListener(this);
@@ -743,6 +892,15 @@ abstract class BaseActivity extends Activity {
                 return;
             }
 
+            /**
+             * Add for BarPhone
+             *@{
+             */
+            if (PRODUCT_BARPHONE) {
+                mMenu.setVisible(false);
+                return;
+            }
+
             mMenu.setVisible(visible);
             if (!visible) {
                 getDisplayState().currentSearch = null;
@@ -755,7 +913,7 @@ abstract class BaseActivity extends Activity {
          *     search currently.
          */
         boolean cancelSearch() {
-            if (mActionBar.hasExpandedActionView()) {
+            if (mActionBar != null && mActionBar.hasExpandedActionView()) {
                 mActionBar.collapseActionView();
                 return true;
             }
@@ -821,4 +979,34 @@ abstract class BaseActivity extends Activity {
             updateActionBar();
         }
     }
+
+    /* SPRD 563457 @{ */
+    @Override
+    public boolean onKeyDown(int keycode,KeyEvent keyevent){
+        if (keyevent.getAction() == KeyEvent.ACTION_DOWN && keycode == KeyEvent.KEYCODE_SEARCH) {
+            if (mSearchManager.mMenu != null&& mSearchManager.mMenu.isVisible()) {
+                mSearchManager.mMenu.expandActionView();
+            }
+            return true;
+        }
+        return super.onKeyDown(keycode, keyevent);
+    }
+    /* @} */
+
+    /**
+    *Add for barphone support
+    *@{
+    */
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        DirectoryFragment fragment = DirectoryFragment.get(getFragmentManager());
+        if(PRODUCT_BARPHONE &&
+            event.getKeyCode() == KeyEvent.KEYCODE_MENU && event.getAction() == KeyEvent.ACTION_UP &&
+            (fragment != null) && fragment.onMenuKeyUp()){
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+    /*@}*/
+
 }

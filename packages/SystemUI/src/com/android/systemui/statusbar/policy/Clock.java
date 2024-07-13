@@ -56,7 +56,10 @@ public class Clock extends TextView implements DemoMode {
     private static final int AM_PM_STYLE_SMALL   = 1;
     private static final int AM_PM_STYLE_GONE    = 2;
 
-    private final int mAmPmStyle;
+    /* SPRD: Bug 474767 To support am/pm show in statusbar @{ */
+    // private final int mAmPmStyle;
+    private int mAmPmStyle;
+    /* @} */
 
     public Clock(Context context) {
         this(context, null);
@@ -190,6 +193,11 @@ public class Clock extends TextView implements DemoMode {
             sdf = mClockFormat;
         }
         String result = sdf.format(mCalendar.getTime());
+        /* SPRD: Bug 474767 To support am/pm show in statusbar {@ */
+        if (!is24) {
+            mAmPmStyle = AM_PM_STYLE_SMALL;
+        }
+        /* @} */
 
         if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
             int magic1 = result.indexOf(MAGIC1);

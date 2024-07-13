@@ -73,4 +73,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Pieskarieties, lai skatītu informāciju"</string>
     <string name="retry" msgid="7564024179122207376">"Mēģināt vēlreiz"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Netika nokopēti šādi faili: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Nevar kopīgot failu"</string>
+     <string name="documents_deleting">"Dzēš dokumentus"</string>
+     <string name="cannot_copyfolder_itself">"Nevar kopēt mapi sevī"</string>
+
+    <string name="error_permissions">"Lietotnei nav būtisku atļauju, kas nepieciešamas, lai tā darbotos. Lūdzu, pārbaudiet atļauju iestatījumus."</string>
+     <string name="cannot_copy_drm">"Nevar kopēt DRM failus"</string>
+     <string name="cannot_copy_downloading">"Nevar kopēt failus, kuri tiek lejupielādēti"</string>
 </resources>

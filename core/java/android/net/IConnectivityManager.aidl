@@ -160,4 +160,8 @@ interface IConnectivityManager
     boolean setUnderlyingNetworksForVpn(in Network[] networks);
 
     void factoryReset();
+
+    int enableTetherPCInternet(String hostAddress);
+    int disableTetherPCInternet();
+    boolean getPCNetTether();
 }

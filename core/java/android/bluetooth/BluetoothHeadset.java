@@ -402,7 +402,7 @@ public final class BluetoothHeadset implements BluetoothProfile {
         if (mService != null && isEnabled()) {
             try {
                 return mService.getConnectedDevices();
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 Log.e(TAG, Log.getStackTraceString(new Throwable()));
                 return new ArrayList<BluetoothDevice>();
             }
@@ -433,13 +433,14 @@ public final class BluetoothHeadset implements BluetoothProfile {
      */
     public int getConnectionState(BluetoothDevice device) {
         if (VDBG) log("getConnectionState(" + device + ")");
-        if (mService != null && isEnabled() &&
-            isValidDevice(device)) {
-            try {
-                return mService.getConnectionState(device);
-            } catch (RemoteException e) {
-                Log.e(TAG, Log.getStackTraceString(new Throwable()));
-                return BluetoothProfile.STATE_DISCONNECTED;
+        synchronized (mConnection) {
+            if (mService != null && isEnabled() && isValidDevice(device)) {
+                try {
+                    return mService.getConnectionState(device);
+                } catch (RemoteException e) {
+                    Log.e(TAG, Log.getStackTraceString(new Throwable()));
+                    return BluetoothProfile.STATE_DISCONNECTED;
+                }
             }
         }
         if (mService == null) Log.w(TAG, "Proxy not attached to service");
@@ -939,7 +940,9 @@ public final class BluetoothHeadset implements BluetoothProfile {
         @Override
         public void onServiceDisconnected(ComponentName className) {
             if (DBG) Log.d(TAG, "Proxy object disconnected");
-            mService = null;
+            synchronized (mConnection) {
+                mService = null;
+            }
             mHandler.sendMessage(mHandler.obtainMessage(
                     MESSAGE_HEADSET_SERVICE_DISCONNECTED));
         }

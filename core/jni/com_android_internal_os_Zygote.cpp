@@ -40,6 +40,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+/* SPRD: make sure the secondary storage is read only @{ */
+#include <cutils/properties.h>
+/* @} */
 #include <cutils/fs.h>
 #include <cutils/multiuser.h>
 #include <cutils/sched_policy.h>
@@ -109,6 +112,22 @@ static void SigChldHandler(int /*signal_number*/) {
     // from there.
     if (pid == gSystemServerPid) {
       ALOGE("Exit zygote because system server (%d) has terminated", pid);
+
+      // SPRD: send SIGTERM to slog, and slog will stop and sync
+      system("kill -15 `ps | grep -w slog | busybox awk '{print $2}'`");
+      ALOGE("Sent SIGTERM to slog, and system will reboot after 5s");
+      sleep(5);
+
+      int iFwcTimes= -1;
+      char cFwcTimes[PROPERTY_VALUE_MAX];
+      property_get("sys.debug.fwc", cFwcTimes, "0");
+      iFwcTimes = atoi(cFwcTimes);
+      iFwcTimes++;
+      //memset(cFwcTimes, 0, PROPERTY_VALUE_MAX);
+      snprintf(cFwcTimes, PROPERTY_VALUE_MAX, "%d", iFwcTimes);
+      iFwcTimes = property_set("sys.debug.fwc", cFwcTimes);
+      ALOGD("SprdDebug set prop ret = %d", iFwcTimes);
+
       kill(getpid(), SIGKILL);
     }
   }
@@ -283,8 +302,13 @@ static int UnmountTree(const char* path) {
 
 // Create a private mount namespace and bind mount appropriate emulated
 // storage for the given user.
+/* SPRD: make sure the secondary storage is read only
+ * @orig static bool MountEmulatedStorage(uid_t uid, jint mount_mode,
+ * bool force_mount_namespace) {
+ * @{ */
 static bool MountEmulatedStorage(uid_t uid, jint mount_mode,
-        bool force_mount_namespace) {
+        bool force_mount_namespace, bool is_system_server, const char* pkg_name) {
+/* @ }*/
     // See storage config details at http://source.android.com/tech/storage/
 
     // Create a second private mount namespace for our process
@@ -292,7 +316,6 @@ static bool MountEmulatedStorage(uid_t uid, jint mount_mode,
         ALOGW("Failed to unshare(): %s", strerror(errno));
         return false;
     }
-
     // Unmount storage provided by root namespace and mount requested view
     UnmountTree("/storage");
 
@@ -312,7 +335,40 @@ static bool MountEmulatedStorage(uid_t uid, jint mount_mode,
         ALOGW("Failed to mount %s to /storage: %s", storageSource.string(), strerror(errno));
         return false;
     }
-
+/* SPRD: make sure the secondary storage is read only @{ */
+    if(!is_system_server && (pkg_name != NULL && !strcmp(pkg_name,"com.android.cts.writeexternalstorageapp"))){
+        int sIsInternalEmulated = -1, sIsStorageType = -1;
+        char internalType[PROPERTY_VALUE_MAX], primaryType[PROPERTY_VALUE_MAX];
+        property_get("sys.internal.emulated", internalType, "1");
+        property_get("persist.storage.type", primaryType, "2");
+        sIsInternalEmulated = atoi(internalType);
+        sIsStorageType = atoi(primaryType);
+        ALOGE("sIsInternalEmulated is %d ,sIsStorageType is %d",sIsInternalEmulated, sIsStorageType);
+        if(sIsInternalEmulated == 1 && sIsStorageType == 2){
+           char sdcardPath[PROPERTY_VALUE_MAX];
+           property_get("vold.sdcard0.path", sdcardPath, "/storage/sdcard0");
+           char* fsuuid = strrchr(sdcardPath, '/');
+           ALOGE("sdcardPath is %s, fsuuid is %s",sdcardPath, fsuuid);
+           if(fsuuid != NULL && strncmp(fsuuid,"/sdcard0",8)){
+               char sdcardReadPath[30] = "/mnt/runtime/read";
+               char* sdcardSource = strcat(sdcardReadPath,fsuuid);
+               ALOGE("sdcardSource is %s", sdcardSource);
+               if (TEMP_FAILURE_RETRY(mount(sdcardSource, sdcardPath,
+                    NULL, MS_BIND | MS_REC | MS_SLAVE, NULL)) == -1) {
+                 ALOGW("Failed to mount %s to %s: %s", sdcardSource, sdcardPath, strerror(errno));
+               }
+           }
+        }else if(sIsInternalEmulated == 1 && sIsStorageType == 1){
+           setenv("EXTERNAL_STORAGE","/storage/self/primary",1);
+           char emulatedStoragePath[PROPERTY_VALUE_MAX]="/storage/emulated";
+           char emulatedStorageSourcePath[PROPERTY_VALUE_MAX]="/mnt/runtime/read/emulated";
+           if (TEMP_FAILURE_RETRY(mount(emulatedStorageSourcePath, emulatedStoragePath,
+              NULL, MS_BIND | MS_REC | MS_SLAVE, NULL)) == -1) {
+              ALOGW("Failed to mount %s to %s: %s!", emulatedStorageSourcePath, emulatedStoragePath, strerror(errno));
+           }
+        }
+    }
+/* @} */
     // Mount user-specific symlink helper into place
     userid_t user_id = multiuser_get_user_id(uid);
     const String8 userSource(String8::format("/mnt/user/%d", user_id));
@@ -449,7 +505,17 @@ static pid_t ForkAndSpecializeCommon(JNIEnv* env, uid_t uid, gid_t gid, jintArra
       ALOGW("Native bridge will not be used because dataDir == NULL.");
     }
 
-    if (!MountEmulatedStorage(uid, mount_external, use_native_bridge)) {
+/* SPRD: make sure the secondary storage is read only @{ */
+    const char* pkg_name_c_str = NULL;
+    ScopedUtfChars* pkg_name = NULL;
+    if (!is_system_server && java_se_name != NULL) {
+        pkg_name = new ScopedUtfChars(env, java_se_name);
+        pkg_name_c_str = pkg_name->c_str();
+        if (pkg_name_c_str == NULL) {
+           ALOGE("pkg_name_c_str == NULL");
+        }
+    }
+    if (!MountEmulatedStorage(uid, mount_external, use_native_bridge, is_system_server, pkg_name_c_str)) {
       ALOGW("Failed to mount emulated storage: %s", strerror(errno));
       if (errno == ENOTCONN || errno == EROFS) {
         // When device is actively encrypting, we get ENOTCONN here
@@ -458,11 +524,13 @@ static pid_t ForkAndSpecializeCommon(JNIEnv* env, uid_t uid, gid_t gid, jintArra
         // FUSE hasn't been created yet by init.
         // In either case, continue without external storage.
       } else {
+        delete pkg_name;
         ALOGE("Cannot continue without emulated storage");
         RuntimeAbort(env);
       }
     }
-
+    delete pkg_name;
+/* @} */
     if (!is_system_server) {
         int rc = createProcessGroup(uid, getpid());
         if (rc != 0) {

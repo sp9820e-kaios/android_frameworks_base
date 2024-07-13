@@ -139,7 +139,7 @@ public final class BluetoothGatt implements BluetoothProfile {
              */
             public void onClientRegistered(int status, int clientIf) {
                 if (DBG) Log.d(TAG, "onClientRegistered() - status=" + status
-                    + " clientIf=" + clientIf);
+                    + " clientIf=" + clientIf + " auto= " + mAutoConnect);
                 if (VDBG) {
                     synchronized(mStateLock) {
                         if (mConnState != CONN_STATE_CONNECTING) {
@@ -727,6 +727,9 @@ public final class BluetoothGatt implements BluetoothProfile {
             }
             mConnState = CONN_STATE_CONNECTING;
         }
+
+        // the connection will continue after successful callback registration
+        mAutoConnect = autoConnect;
         if (!registerApp(callback)) {
             synchronized(mStateLock) {
                 mConnState = CONN_STATE_IDLE;
@@ -735,8 +738,6 @@ public final class BluetoothGatt implements BluetoothProfile {
             return false;
         }
 
-        // the connection will continue after successful callback registration
-        mAutoConnect = autoConnect;
         return true;
     }
 

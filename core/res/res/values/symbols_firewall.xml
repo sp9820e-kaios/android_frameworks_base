@@ -1,0 +1,9 @@
+<resources>
+  <!-- We don't want to publish private symbols in android.R as part of the
+       SDK.  Instead, put them here. -->
+  <private-symbols package="com.android.internal" />
+  <!-- SPRD add callFirewall @{ -->
+  <java-symbol type="string" name="feature_Firewall_sms"/>
+  <java-symbol type="string" name="feature_Firewall_phone_intercept"/>
+  <!-- @} -->
+</resources>

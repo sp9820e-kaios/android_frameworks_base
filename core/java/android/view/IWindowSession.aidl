@@ -211,4 +211,10 @@ interface IWindowSession {
      * The assumption is that this method will be called rather infrequently.
      */
     void pokeDrawLock(IBinder window);
+
+    /* SPRD: add for dynamic navigationbar @{ */
+    boolean isKeyguardShowingAndNotOccluded();
+
+    boolean hasNavigationBar();
+    /* @} */
 }

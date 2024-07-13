@@ -426,4 +426,15 @@
     <string name="tuner_toast" msgid="603429811084428439">"ຍິນດີດ້ວຍ! System UI Tuner ໄດ້ຖືກເພີ່ມໃສ່ການຕັ້ງຄ່າແລ້ວ"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"ເອົາອອກ​ຈາກ​ການ​ຕັ້ງ​ຄ່າ"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"ເອົາ System UI Tuner ອອກຈາກການຕັ້ງຄ່າ ແລະຢຸດການໃຊ້ທຸກຄຸນສົມບັດໃຊ້ງານຂອງມັນ?"</string>
+    <string name="quick_settings_volume_label">"ສຽງ​ໂປຼ​ໄຟ​ລ໌"</string>
+     <string name="assistant_key_home">"ໜ້າຫຼັກ"</string>
+     <string name="assistant_key_search">"ຊອກຫາ"</string>
+     <string name="assistant_key_menu">"ເມນູ"</string>
+     <string name="assistant_key_back">"ກັບຄືນ"</string>
+     <string name="vibrate_hint">"ເລື່ອນ​ຊ້າຍ​ເພື່ອ​ເປີດ​ໂໝດ​ສັ່ນ"</string>
+     <string name="battery_overtage_title">"ການ​ເຕືອນ​ຄວາມ​ປອດ​ໄພ"</string>
+     <string name="battery_overtage_content">"ຄແຮງ​ດັນ​ໄຟ້​າ​ການ​ສາກ​ແບັດ​ສູງ​ເກີນ​ໄປ"</string>
+     <string name="battery_overtage_back">"ກັບຄືນ"</string>
+     <string name="recent_app_clean_finished_toast">"ສຳ​ເລັດ​ການ​ປ່ອຍໜ້ວຍ​ຄວາມ​ຈຳ <xliff:g id="count">%1$s</xliff:g> ​ຂະ​ນະ​ນີ້,<xliff:g id="count">%2$s</xliff:g> ​ສາ​ມາດ​ໃຊ້​ງານ​ໄດ້."</string>
+
 </resources>

@@ -472,6 +472,18 @@ final class Session extends IWindowSession.Stub
         }
     }
 
+    /* SPRD: add for dynamic navigationbar @{ */
+    @Override
+    public boolean isKeyguardShowingAndNotOccluded() {
+        return mService.isKeyguardShowingAndNotOccluded();
+    }
+
+    @Override
+    public boolean hasNavigationBar() {
+        return mService.hasNavigationBar();
+    }
+    /* @} */
+
     void windowAddedLocked() {
         if (mSurfaceSession == null) {
             if (WindowManagerService.localLOGV) Slog.v(

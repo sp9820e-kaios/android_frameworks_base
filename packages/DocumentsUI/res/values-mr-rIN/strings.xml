@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"तपशील पाहण्यासाठी स्पर्श करा"</string>
     <string name="retry" msgid="7564024179122207376">"पुन्हा प्रयत्न करा"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"या फायली कॉपी झाल्या नाहीत: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"फाईल शेअर करू शकत नाही"</string>
+     <string name="documents_deleting">"दस्तऐवज हटवत आहे"</string>
+     <string name="cannot_copyfolder_itself">"आपण फोल्डरमध्येच ते कॉपी करू शकत नाही"</string>
+    <string name="menu_deselect_all">"सर्वांची निवड रद्द करा"</string>
+    <string name="error_permissions">"अॅपला चालविण्यासाठी आवश्यक गंभीर परवानग्या नाहीत. कृपया आपल्या परवानग्या सेटिंग्ज तपासा."</string>
+     <string name="cannot_copy_drm">"DRM फाइल्स कॉपी करू शकत नाही."</string>
+     <string name="cannot_copy_downloading">"डाऊनलोड केल्या जाणा-या फाइल्स कॉपी करू शकत नाही."</string>
 </resources>

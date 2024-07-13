@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Hotspot Wi-Fi memerlukan sambungan data mudah alih, boleh dikenakan kos tambahan."</string>
+<string name="softap_bt_cannot_coexist">"Apabila bluetooth didayakan atau dihidupkan, softap tidak boleh berfungsi, jika anda ingin menggunakan softap, sila pastikan bluetooth dinyahdayakan."</string>
+<string name="bt_softap_cannot_coexist">"Apabila softap didayakan atau dihidupkan, bluetooth tidak boleh berfungsi, jika anda ingin menggunakan bluetooth, sila pastikan softap dinyahdayakan."</string>
+<string name="lte_service_error_airplane">"Anda boleh tidak boleh gunakan LTE semasa telefon dalam mod pesawat."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G dihidupkan"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G dimatikan"</string>
+<string name="accessibility_quick_settings_lte_on">"4G hidup"</string>
+<string name="accessibility_quick_settings_lte_off">"4G mati"</string>
+<string name="toggle_data_error_airplane">"Anda tidak boleh menggunakan data Mudah Alih semasa telefon berada dalam mod pesawat."</string>
+<string name="quick_settings_data_connection_label">"DATA"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Data dihidupkan"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Data dimatikan"</string>
+<string name="accessibility_quick_settings_data_on">"Data hidup"</string>
+<string name="accessibility_quick_settings_data_off">"Data mati"</string>
+<string name="missing_sim_message">"Tiada SIM"</string>
+    <string name="lte_service_error_incall">"Anda tidak boleh menukar perkhidmatan LTE semasa panggilan."</string>
+
+</resources>

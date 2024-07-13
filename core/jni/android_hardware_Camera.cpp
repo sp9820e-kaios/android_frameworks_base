@@ -131,7 +131,7 @@ sp<Camera> get_native_camera(JNIEnv *env, jobject thiz, JNICameraContext** pCont
     if (context != NULL) {
         camera = context->getCamera();
     }
-    ALOGV("get_native_camera: context=%p, camera=%p", context, camera.get());
+    ALOGI("get_native_camera: context=%p, camera=%p", context, camera.get());
     if (camera == 0) {
         jniThrowRuntimeException(env,
                 "Camera is being used after Camera.release() was called");
@@ -162,7 +162,7 @@ JNICameraContext::JNICameraContext(JNIEnv* env, jobject weak_this, jclass clazz,
 
 void JNICameraContext::release()
 {
-    ALOGV("release");
+    ALOGI("release");
     Mutex::Autolock _l(mLock);
     JNIEnv *env = AndroidRuntime::getJNIEnv();
 
@@ -490,7 +490,35 @@ void JNICameraContext::clearCallbackBuffers_l(JNIEnv *env, Vector<jbyteArray> *b
 
 static jint android_hardware_Camera_getNumberOfCameras(JNIEnv *env, jobject thiz)
 {
-    return Camera::getNumberOfCameras();
+    /*
+     * SPRD Bug:For cts & 3rd party app. Hide the private cameras. @{
+     */
+    jint privCameraNum = 0;
+
+#ifdef ANDROID_HAVE_ONE_PRIVATE_CAMERA
+    privCameraNum = 1;
+#endif
+
+#ifdef ANDROID_HAVE_TWO_PRIVATE_CAMERA
+    privCameraNum = 2;
+#endif
+
+    char acBuf[256];
+    sprintf(acBuf, "/proc/%d/cmdline", getpid());
+    FILE *fp = fopen(acBuf, "r");
+    if (fp) {
+        fread(acBuf, 1, sizeof(acBuf), fp);
+        fclose(fp);
+        if (strncmp(acBuf, "com.android.camera2", 19) == 0
+                || strncmp(acBuf, "com.sprd.validationtools", 24) == 0) {
+            ALOGI("getNumberOfCameras():%d", Camera::getNumberOfCameras());
+            return Camera::getNumberOfCameras();
+        }
+    }
+    ALOGI("getNumberOfCameras() - privCameraNum:%d",
+            Camera::getNumberOfCameras() - privCameraNum);
+    return Camera::getNumberOfCameras() - privCameraNum;
+    /* @} */
 }
 
 static void android_hardware_Camera_getCameraInfo(JNIEnv *env, jobject thiz,
@@ -529,7 +557,7 @@ static jint android_hardware_Camera_native_setup(JNIEnv *env, jobject thiz,
     String16 clientName(rawClientName, rawClientNameLen);
     env->ReleaseStringChars(clientPackageName,
                             reinterpret_cast<const jchar*>(rawClientName));
-
+	ALOGI("setup camera");
     sp<Camera> camera;
     if (halVersion == CAMERA_HAL_API_VERSION_NORMAL_CONNECT) {
         // Default path: hal version is don't care, do normal camera connect.
@@ -564,7 +592,7 @@ static jint android_hardware_Camera_native_setup(JNIEnv *env, jobject thiz,
     sp<JNICameraContext> context = new JNICameraContext(env, weak_this, clazz, camera);
     context->incStrong((void*)android_hardware_Camera_native_setup);
     camera->setListener(context);
-
+	ALOGI("setup_native_camera:  camera=%p",camera.get());
     // save context in opaque field
     env->SetLongField(thiz, fields.context, (jlong)context.get());
     return NO_ERROR;
@@ -576,7 +604,7 @@ static jint android_hardware_Camera_native_setup(JNIEnv *env, jobject thiz,
 // finalizer is invoked later.
 static void android_hardware_Camera_release(JNIEnv *env, jobject thiz)
 {
-    ALOGV("release camera");
+    ALOGI("release camera");
     JNICameraContext* context = NULL;
     sp<Camera> camera;
     {

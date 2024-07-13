@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸ್ಪರ್ಶಿಸಿ"</string>
     <string name="retry" msgid="7564024179122207376">"ಮರುಪ್ರಯತ್ನಿಸು"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"ಈ ಫೈಲ್‌ಗಳನ್ನು ನಕಲು ಮಾಡಿಲ್ಲ: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">ಕಡತವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಅಸಾಧ್ಯ</string>
+     <string name="documents_deleting">"ದಾಖಲೆಗಳನ್ನು ಅಳಿಸಲಗುತ್ತಿದೆ"</string>
+     <string name="cannot_copyfolder_itself">"ನೀವು ಫೋಲ್ಡರನ್ನು ತಾನಾಗಿಯೇ ನಕಲಿಸುವಂತೆ ಬಿಡಲು ಸಾಧ್ಯವಿಲ್ಲ"</string>
+    <string name="menu_deselect_all">"ಎಲ್ಲವನ್ನೂ ಡಿಸೆಲೆಕ್ಟ್ ಮಾಡಿ"</string>
+    <string name="error_permissions">"ಅಪ್ಲಿಕೇಶನ್ ರನ್ ಮಾಡಲು ಅಗತ್ಯವಿರುವ ನಿರ್ಣಾಯಕ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಅನುಮತಿಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ."</string>
+     <string name="cannot_copy_drm">"DRM ಕಡತಗಳನ್ನು ನಕಲು ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ"</string>
+     <string name="cannot_copy_downloading">"ಡೌನ್ ಲೋಡ್ ಆಗುತ್ತಿರುವ ಕಡತಗಳನ್ನು ನಕಲು ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ"</string>
 </resources>

@@ -255,6 +255,16 @@ public final class Call {
         private final Bundle mExtras;
         private final Bundle mIntentExtras;
 
+        /* SPRD: Use cpu time instead of system time when user dialing {@ */
+        private long mConnectRealTimeMillis;
+        public long getConnectRealTimeMillis() {
+            return mConnectRealTimeMillis;
+        }
+        public void setConnectRealTimeMillis(long connectRealTimeMillis) {
+            mConnectRealTimeMillis = connectRealTimeMillis;
+        }
+        /* @} */
+
         /**
          * Whether the supplied capabilities  supports the specified capability.
          *
@@ -508,7 +518,12 @@ public final class Call {
                         Objects.equals(mCallCapabilities, d.mCallCapabilities) &&
                         Objects.equals(mCallProperties, d.mCallProperties) &&
                         Objects.equals(mDisconnectCause, d.mDisconnectCause) &&
-                        Objects.equals(mConnectTimeMillis, d.mConnectTimeMillis) &&
+                        /* SPRD: Use cpu time instead of system time when user dialing @{
+                        * @orig
+                        Objects.equals(mConnectTimeMillis, d.mConnectTimeMillis) && */
+                        (Objects.equals(mConnectTimeMillis, d.mConnectTimeMillis) ||
+                        Objects.equals(mConnectRealTimeMillis, d.mConnectRealTimeMillis)) &&
+                        /* @} */
                         Objects.equals(mGatewayInfo, d.mGatewayInfo) &&
                         Objects.equals(mVideoState, d.mVideoState) &&
                         Objects.equals(mStatusHints, d.mStatusHints) &&
@@ -697,6 +712,17 @@ public final class Call {
      */
     public void answer(int videoState) {
         mInCallAdapter.answerCall(mTelecomCallId, videoState);
+    }
+
+    /**
+     * SPRD: Add for multi-part-call mode.
+     *
+     * Instructs this {@link #STATE_RINGING} {@code Call} to answer.
+     * @param videoState The video state in which to answer the call.
+     * @param mpcMode The way to answer the call.
+     */
+    public void answer(int videoState, int mpcMode) {
+        mInCallAdapter.answerCall(mTelecomCallId, videoState, mpcMode);
     }
 
     /**
@@ -1002,12 +1028,19 @@ public final class Call {
                 parcelableCall.getStatusHints(),
                 parcelableCall.getExtras(),
                 parcelableCall.getIntentExtras());
+        /* SPRD: Use cpu time instead of system time when user dialing {@ */
+        details.setConnectRealTimeMillis(parcelableCall.getConnectRealTimeMillis());
+        /* @} */
         boolean detailsChanged = !Objects.equals(mDetails, details);
         if (detailsChanged) {
             mDetails = details;
         }
 
-        boolean cannedTextResponsesChanged = false;
+        /** SPRD: add for bug500479. @{ */
+        //boolean cannedTextResponsesChanged = false;
+        boolean cannedTextResponsesChanged = !Objects.equals(parcelableCall.getCannedSmsResponses(), mCannedTextResponses);
+        /** @} */
+
         if (mCannedTextResponses == null && parcelableCall.getCannedSmsResponses() != null
                 && !parcelableCall.getCannedSmsResponses().isEmpty()) {
             mCannedTextResponses =
@@ -1272,5 +1305,13 @@ public final class Call {
             }
         }
         return true;
+    }
+
+    // ------------------------------------ SPRD ------------------------------------
+    /**
+     * SPRD: Porting Explicit Transfer Call
+     */
+    public void explicitCallTransfer() {
+        mInCallAdapter.explicitCallTransfer(mTelecomCallId);
     }
 }

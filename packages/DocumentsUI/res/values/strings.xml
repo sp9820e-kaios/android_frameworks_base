@@ -46,6 +46,8 @@
     <string name="menu_delete">Delete</string>
     <!-- Menu item title that selects all documents in the current directory [CHAR LIMIT=24] -->
     <string name="menu_select_all">Select all</string>
+    <!-- Menu item title that deselects all documents in the current directory [CHAR LIMIT=24] -->
+    <string name="menu_deselect_all">Deselect all</string>
     <!-- Menu item title that copies the selected documents [CHAR LIMIT=24] -->
     <string name="menu_copy">Copy to\u2026</string>
 
@@ -134,4 +136,12 @@
     <string name="retry">Retry</string>
     <!-- Contents of the copying failure alert dialog. [CHAR LIMIT=48] -->
     <string name="copy_failure_alert_content">These files weren\'t copied: <xliff:g id="list">%1$s</xliff:g></string>
+
+    <string name="shared_error">Can\'t shared file</string>
+    <string name="documents_deleting">Deleting documents</string>
+    <string name="error_permissions">The app does not have critical permissions needed to run. Please check your permissions settings.</string>
+    <!-- SPRD: Add for bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR. { -->
+    <string name="cannot_copyfolder_itself">You can\'t copy folder into itself</string>
+    <string name="cannot_copy_drm">Can not copy DRM files</string>
+    <string name="cannot_copy_downloading">Can not copy downloading files</string>
 </resources>

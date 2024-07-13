@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="keyguard_password_enter_pin_code">"PIN କୋଡ ଟାଇପ କରନ୍ତୁ"</string>
+<string name="keyguard_password_enter_puk_code">"SIM PUK ଏବଂ ନୂତନ PIN କୋଡ ଟାଇପ କରନ୍ତୁ"</string>
+<string name="keyguard_password_enter_puk_prompt">"SIM PUK କୋଡ/ସଂକେତ"</string>
+<string name="keyguard_password_enter_pin_prompt">"ନୂତନ SIM PIN କୋଡ/ସଂକେତ"</string>
+<string name="keyguard_password_entry_touch_hint">"<font size="17">ପାସୱର୍ଡ ଟାଇପ କରିବା ପାଇଁ ସ୍ପର୍ଶ କରନ୍ତୁ</font>"</string>
+<string name="keyguard_password_enter_password_code">"ସଚଳ କରିବା ପାଇଁ ପାସୱର୍ଡ ଟାଇପ କରନ୍ତୁ"</string>
+<string name="keyguard_password_enter_pin_password_code">"ସଚଳ କରିବା ପାଇଁ PIN ଟାଇପ କରନ୍ତୁ"</string>
+<string name="keyguard_password_wrong_pin_code">"ବେଠିକ PIN କୋଡ"</string>
+<string name="keyguard_charged">"ଚାର୍ଜ ହୋଇଯାଇଛି"</string>
+<string name="keyguard_plugged_in">"ଚାର୍ଜ କରୁଛି"</string>
+<string name="keyguard_low_battery">"ଆପଣଙ୍କ ଚାର୍ଜର ସଂଯୋଗ କରନ୍ତୁ ।"</string>
+<string name="keyguard_instructions_when_pattern_disabled">"ତାଲା ଖୋଲିବା ପାଇଁ ମେନ୍ୟୁ ଦବାନ୍ତୁ ।"</string>
+<string name="keyguard_network_locked_message">"ନେଟୱର୍କରେ ତାଲା ପଡିଛି"</string>
+<string name="keyguard_missing_sim_message_short">"ସୀମ କାର୍ଡ ନାହିଁ"</string>
+<string name="keyguard_missing_sim_message" product="tablet">"ଟେବ୍ଲଟରେ ସୀମ କାର୍ଡ ନାହିଁ ।"</string>
+<string name="keyguard_missing_sim_message" product="default">"ଫୋନରେ ସୀମ କାର୍ଡ ନାହିଁ ।"</string>
+<string name="keyguard_missing_sim_instructions">"SIM କାର୍ଡ ପୁରାନ୍ତୁ ।"</string>
+<string name="keyguard_missing_sim_instructions_long">"SIM କାର୍ଡ ମିଳୁନାହିଁ କିମ୍ବା ପଠନୀୟ ନାହିଁ । ଏକ SIM କାର୍ଡ ପୁରାନ୍ତୁ ।"</string>
+<string name="keyguard_permanent_disabled_sim_message_short">"ବ୍ୟବହାର ଅଯୋଗ୍ୟ SIM କାର୍ଡ ।"</string>
+<string name="keyguard_permanent_disabled_sim_instructions">"ଆପଣଙ୍କ ସିମ କାର୍ଡ ସ୍ଥାୟୀ ଭାବେ ଅଚଳ ହୋଇଯାଇଛି । \nଅନ୍ୟ ଏକ ସିମ କାର୍ଡ ପାଇଁ ଆପଣଙ୍କ ୱାଇରଲେସ ସେବା ପ୍ରଦାନକାରୀ ସହ ସମ୍ପର୍କ କରନ୍ତୁ ।"</string>
+<string name="keyguard_sim_locked_message">"SIM କାର୍ଡ ଅଚଳ ହୋଇଯାଇଛି ।"</string>
+<string name="keyguard_sim_puk_locked_message">"SIM କାର୍ଡ PUK-ଅଚଳ ହୋଇଯାଇଛି ।"</string>
+<string name="keyguard_sim_unlock_progress_dialog_message">"SIM କାର୍ଡ ସଚଳ ହୋଊଛି...""</string>
+<string name="keyguard_accessibility_pattern_unlock">"ଢାଞ୍ଚା ତାଲା ଖୋଲ ।"</string>
+<string name="keyguard_accessibility_pin_unlock">"PIN ତାଲା ଖୋଲ ।"</string>
+<string name="keyguard_accessibility_password_unlock">"ପାସୱର୍ଡ଼ ତାଲା ଖୋଲ ।"</string>
+<string name="keyguard_accessibility_pattern_area">"ଢାଞ୍ଚା ଅଞ୍ଚଳ"</string>
+<string name="keyguard_accessibility_slide_area">"ସ୍ଲାଇଡ ଅଞ୍ଚଳ ।"</string>
+<string name="keyguard_accessibility_pin_area">"PIN ଅଞ୍ଚଳ"</string>
+<string name="keyguard_accessibility_sim_pin_area">"SIM PIN ଅଞ୍ଚଳ"</string>
+<string name="keyguard_accessibility_sim_puk_area">"SIM PUK ଅଞ୍ଚଳ"</string>
+<string name="keyguard_accessibility_next_alarm">"ପାଇଁ ପରବର୍ତ୍ତୀ ଆର୍ଲାମ ସ୍ଥାପନ କରନ୍ତୁ <xliff:g id="alarm" example="Fri 8:30 AM">%1$s</xliff:g>"</string>
+<string name="kg_forgot_pattern_button_text">"ଢାଞ୍ଚା ଭୁଲି ହୋଇଯାଇଛି"</string>
+<string name="kg_wrong_pattern">"ଭୁଲ ଢାଞ୍ଚା"</string>
+<string name="kg_wrong_password">"ଭୁଲ ପାସୱର୍ଡ"</string>
+<string name="kg_wrong_pin">"ଭୁଲ PIN"</string>
+<string name="kg_too_many_failed_attempts_countdown">"<xliff:g id="number">%d</xliff:g> ସେକଣ୍ଡ ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ ।"</string>
+<string name="kg_pattern_instructions">"ଆପଣଙ୍କ ଢାଞ୍ଚା ଟାଣନ୍ତୁ"</string>
+<string name="kg_sim_pin_instructions">"SIM PIN ଏଣ୍ଟର କରନ୍ତୁ"</string>
+<string name="kg_sim_pin_instructions_multi">"ଏଣ୍ଟର <xliff:g id="carrier" example="CARD 1">%1$s</xliff:g> PIN। ଥର ବଳକା ଅଛି (<xliff:g id="number">%2$d</xliff:g>)।""</string>
+<string name="kg_pin_instructions">"PIN ଏଣ୍ଟର କରନ୍ତୁ"</string>
+<string name="kg_password_instructions">"ପାସୱର୍ଡ ଏଣ୍ଟର କରନ୍ତୁ"</string>
+<string name="kg_puk_enter_puk_hint">""ବର୍ତ୍ତମାନ SIM ନିଷ୍କ୍ରିୟ ହୋଇଯାଇଛି । ଚାଲୁରଖିବା ପାଇଁ PUK କୋଡ/ସଙ୍କେତ ଏଣ୍ଟର କରନ୍ତୁ । ସବିଶେଷ ପାଇଁ ବାହାକଙ୍କୁ ସମ୍ପର୍କ କରନ୍ତୁ ।" "</string>
+<string name="kg_puk_enter_puk_hint_multi">"<xliff:g id="carrier" example="CARD 1">%1$s</xliff:g> ବର୍ତ୍ତମାନ ନିଷ୍କ୍ରିୟ ଅଛି । ଚାଲୁ ରଖିବା ପାଇଁ  PUK କୋଡ ଏଣ୍ଟର କରନ୍ତୁ । ଥର ବଳକା ଅଛି (<xliff:g id="number">%2$d</xliff:g>).ସବିଶେଷ ପାଇଁ ବାହାକଙ୍କୁ ସମ୍ପର୍କ କରନ୍ତୁ ।"</string>
+<string name="kg_puk_enter_pin_hint">"ଅଭିଳଷିତ କୋଡ/ସଙ୍କେତ ଏଣ୍ଟର କରନ୍ତୁ"</string>
+<string name="kg_enter_confirm_pin_hint">"ଅଭିଳଷିତ କୋଡ/ସଙ୍କେତ ନିଶ୍ଚିତ କରନ୍ତୁ"</string>
+<string name="kg_sim_unlock_progress_dialog_message">"SIM କାର୍ଡ ସଚଳ ହୋଊଛି...""</string>
+<string name="kg_invalid_sim_pin_hint">""4 ରୁ 8 ସଂଖ୍ୟା ଥିବା ଏକ PIN ଟାଇପ କରନ୍ତୁ ।" "</string>
+<string name="kg_invalid_sim_puk_hint">"PUK କୋଡ/ସଙ୍କେତ 8 କିମ୍ବା ଅଧିକ ନମ୍ବର ବିଶିଷ୍ଟ ହେବା ଆବଶ୍ୟକ ।"</string>
+<string name="kg_invalid_puk">""ସଠିକ PUK କୋଡ/ସଙ୍କେତ ପୁନ-ଏଣ୍ଟର କରନ୍ତୁ । ବାରମ୍ବାର ଉଦ୍ୟମ ସିମଟିକୁ ସ୍ଥାୟୀ ରୂପେ ଅକ୍ଷମ କରିଦେବ ।" "</string>
+<string name="kg_invalid_confirm_pin_hint" product="default">"PIN କୋଡ/ସଂକେତ ଗୁଡିକ ମିଶୁ ନାହିଁ"</string>
+<string name="kg_login_too_many_attempts">"ଅତ୍ୟଧିକ ଢାଞ୍ଚା ଉଦ୍ୟମ ହେଇଛି"</string>
+<string name="kg_too_many_failed_pin_attempts_dialog_message">" ଆପଣ ବେଠିକ ଭାବେ ଆପଣଙ୍କ ପିନ  ଟାଇପ କରିଛନ୍ତି   <xliff:g id="number">%d</xliff:g> ଥର । \n\nରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ <xliff:g id="number">%d</xliff:g> ସେକଣ୍ଡ ।"</string>
+<string name="kg_too_many_failed_password_attempts_dialog_message">" ଆପଣ ବେଠିକ ଭାବେ ଆପଣଙ୍କ ପାସୱର୍ଡ ଟାଇପ କରିଛନ୍ତି  <xliff:g id="number">%d</xliff:g> ଥର । \n\nରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ <xliff:g id="number">%d</xliff:g> ସେକଣ୍ଡ ।"</string>
+<string name="kg_too_many_failed_pattern_attempts_dialog_message">" ଆପଣ ବେଠିକ ଭାବେ ଆପଣଙ୍କ ତାଲା ଖୋଲିବା ଢାଞ୍ଚା ଟାଣିଛନ୍ତିY <xliff:g id="number">%d</xliff:g> ଥର । \n\nରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ <xliff:g id="number">%d</xliff:g> ସେକଣ୍ଡ ।"</string>
+<string name="kg_failed_attempts_almost_at_wipe" product="tablet">" ଆପଣ ବେଠିକ ଭାବେ ଟେବ୍ଲଟ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକ ଅସଫଳ ଉଦ୍ୟମ କଲେ, ଏହି ଟେବ୍ଲଟକୁ ପୁନ-ସ୍ଥାପିତ କରାଯିବ, ଯାହା ଏହାର ସମସ୍ତ ତଥ୍ୟ କାଟିଦେବା ।"</string>
+<string name="kg_failed_attempts_almost_at_wipe" product="default">"  ଆପଣ ବେଠିକ ଭାବେ ଫୋନ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି  <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକ ଅସଫଳ ଉଦ୍ୟମ କଲେ, ଏହି ଫୋନକୁ ପୁନ-ସ୍ଥାପିତ କରାଯିବ, ଯାହା ଏହାର ସମସ୍ତ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_now_wiping" product="tablet">" ଆପଣ ବେଠିକ ଭାବେ ଟେବ୍ଲଟ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ଏହି ଟେବ୍ଲଟକୁ ପୁନ-ସ୍ଥାପିତ କରାଯିବ, ଯାହା ଏହାର ସମସ୍ତ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_now_wiping" product="default">" ଆପଣ ବେଠିକ ଭାବେ ଫୋନ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ଏହି ଫୋନକୁ ପୁନ-ସ୍ଥାପିତ କରାଯିବ, ଯାହା ଏହାର ସମସ୍ତ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_almost_at_erase_user" product="tablet">"" ଆପଣ ବେଠିକ ଭାବେ ଟେବ୍ଲଟ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକ ଅସଫଳ ଉଦ୍ୟମ କଲେ, ଏହି ବ୍ୟବହାରକାରୀକୁ ବାହାର କରିଦିଆଯିବ, ଯାହା ସମସ୍ତ ବ୍ୟବହାରକାରୀ ତଥ୍ୟ କାଟିଦେବ ।" "</string>
+<string name="kg_failed_attempts_almost_at_erase_user" product="default">"" ଆପଣ ବେଠିକ ଭାବେ ଫୋନ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକ ଅସଫଳ ଉଦ୍ୟମ କଲେ, ଏହି ବ୍ୟବହାରକାରୀକୁ ବାହାର କରିଦିଆଯିବ, ଯାହା ସମସ୍ତ ବ୍ୟବହାରକାରୀ ତଥ୍ୟ କାଟିଦେବ ।" "</string>
+<string name="kg_failed_attempts_now_erasing_user" product="tablet">" ଆପଣ ବେଠିକ ଭାବେ ଟେବ୍ଲଟ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ଏହି ବ୍ୟବହାରକାରୀକୁ ବାହାର କରିଦିଆଯିବ, ଯାହା ସମସ୍ତ ବ୍ୟବହାରକାରୀ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_now_erasing_user" product="default">" ଆପଣ ବେଠିକ ଭାବେ ଫୋନ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ଏହି ବ୍ୟବହାରକାରୀକୁ ବାହାର କରିଦିଆଯିବ, ଯାହା ସମସ୍ତ ବ୍ୟବହାରକାରୀ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_almost_at_erase_profile" product="tablet">" ଆପଣ ବେଠିକ ଭାବେ ଟେବ୍ଲଟ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକ ଅସଫଳ ଉଦ୍ୟମ କଲେ, କାର୍ଯ୍ୟ ବୃତାନ୍ତ କାଟିଦିଆଯିବା ଯାହା ସମସ୍ତ ବୃତାନ୍ତ ତଥ୍ୟ କାଟିଦେବା ।"</string>
+<string name="kg_failed_attempts_almost_at_erase_profile" product="default">" ଆପଣ ବେଠିକ ଭାବେ ଫୋନ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକ ଅସଫଳ ଉଦ୍ୟମ କଲେ, କାର୍ଯ୍ୟ ବୃତାନ୍ତ କାଟିଦିଆଯିବା ଯାହା ସମସ୍ତ ବୃତାନ୍ତ ତଥ୍ୟ କାଟିଦେବା ।"</string>
+<string name="kg_failed_attempts_now_erasing_profile" product="tablet">"ଆପଣ ବେଠିକ ଭାବେ ଟେବ୍ଲଟ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । କାର୍ଯ୍ୟ ବୃତାନ୍ତକୁ ବାହାର କରିଦିଆଯିବ ଯାହା ସମସ୍ତ ବୃତାନ୍ତ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_now_erasing_profile" product="default">" ଆପଣ ବେଠିକ ଭାବେ ଫୋନ ତାଲା ଖୋଲିବାକୁ ଉଦ୍ୟମ କରିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । କାର୍ଯ୍ୟ ବୃତାନ୍ତକୁ ବାହାର କରିଦିଆଯିବ ଯାହା ସମସ୍ତ ବୃତାନ୍ତ ତଥ୍ୟ କାଟିଦେବ ।"</string>
+<string name="kg_failed_attempts_almost_at_login" product="tablet">" ଆପଣ ବେଠିକ ଭାବେ ଆପଣଙ୍କ ତାଲା ଖୋଲିବା ଢାଞ୍ଚା ଟାଣିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକା ଅସଫଳ ଉଦ୍ୟମ କଲେ, ଏକ ଇମେଇଲ ଅକାଉଣ୍ଟ  ବ୍ୟବହାର କରି ଆପଣଙ୍କ ଟେବ୍ଲଟର ତାଲା ଖୋଲିବା ପାଇଁ କୁହାଯିବ । \n\n ରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ <xliff:g id="number">%d</xliff:g> ସେକଣ୍ଡ ।"</string>
+<string name="kg_failed_attempts_almost_at_login" product="default">" ଆପଣ ବେଠିକ ଭାବେ ଆପଣଙ୍କ ତାଲା ଖୋଲିବା ଢାଞ୍ଚା ଟାଣିଛନ୍ତି <xliff:g id="number">%d</xliff:g> ଥର । ପରେ <xliff:g id="number">%d</xliff:g> ଅଧିକା ଅସଫଳ ଉଦ୍ୟମ କଲେ, ଏକ ଇମେଇଲ ଅକାଉଣ୍ଟ  ବ୍ୟବହାର କରି ଆପଣଙ୍କ ଫୋନର ତାଲା ଖୋଲିବା ପାଇଁ କୁହାଯିବ । \n\n ରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ <xliff:g id="number">%d</xliff:g> ସେକଣ୍ଡ ।"</string>
+<string name="kg_password_wrong_pin_code_pukked">"ବେଠିକ SIM PUK କୋଡ, ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଉପକରଣର ତାଲା ଖୋଲିବା ପାଇଁ ନିଜର ବାହାକଙ୍କ ସହ ସମ୍ପର୍କ କରିବା ଦରକାର ।"</string>
+<plurals name="kg_password_wrong_pin_code">
+<item quantity="one">"ବେଠିକ SIM PUK କୋଡ, ଆପଣଙ୍କର ଅଛି <xliff:g id="number">%d</xliff:g> ଆପଣ ନିଜର ଉପକରଣର ତାଲା ଖୋଲିବା ପାଇଁ ଆପଣଙ୍କ ବାହାକ ସହ ସମ୍ପର୍କ କରିବା ଦରକାର ହେବା  ପୂର୍ବରୁ ବଳକା ଥିବା ଉଦ୍ୟମ ।"</item>
+<item quantity="other">"ବେଠିକ SIM PIN କୋଡ, ଆପଣଙ୍କର ଅଛି <xliff:g id="number">%d</xliff:g> ବଳକା ଥିବା ଉଦ୍ୟମ ।"</item>
+</plurals>
+<string name="kg_password_wrong_puk_code_dead">"SIM ବ୍ୟବହାର ଅନୁପଯୋଗୀ ଅଟେ । ଆପଣଙ୍କ ବାହାକଙ୍କ ସହ ସମ୍ପର୍କ କରନ୍ତୁ ।"</string>
+<plurals name="kg_password_wrong_puk_code">
+<item quantity="one">"ବେଠିକ SIM PUK କୋଡ, ଆପଣଙ୍କର ଅଛି <xliff:g id="number">%d</xliff:g> SIM ସ୍ଥାୟୀ ରୂପେ ବ୍ୟବହାର ଅନୁପଯୋଗୀ ହେବା ପୂର୍ବରୁ ବଳକା ଥିବା ଉଦ୍ୟମ ।"</item>
+<item quantity="other">"ବେଠିକ SIM PUK କୋଡ, ଆପଙ୍କର ଅଛି <xliff:g id="number">%d</xliff:g> SIM ସ୍ଥାୟୀ ରୂପେ ବ୍ୟବହାର ଅନୁପଯୋଗୀ ହେବା ପୂର୍ବରୁ ବଳକା ଥିବା ଉଦ୍ୟମ ।"</item>
+</plurals>
+<string name="kg_password_pin_failed">"SIM PIN କାର୍ଯ୍ୟ-ସମ୍ପାଦନ ବିଫଳ ହୋଇଛି!"</string>
+<string name="kg_password_puk_failed">"SIM PUK କାର୍ଯ୍ୟ-ସମ୍ପାଦନ ବିଫଳ ହୋଇଛି!"</string>
+<string name="kg_pin_accepted">"କୋଡ ଗୃହିତ ହୋଇଛି!"</string>
+<string name="keyguard_carrier_default">"କୌଣସି ସେବା ନାହିଁ ।"</string>
+<string name="accessibility_ime_switch_button">"ଇନପୁଟ ପଦ୍ଧତି ବଟନ ସ୍ଵିଚ/ଅଦଳବଦଳ କରନ୍ତୁ ।"</string>
+<string name="airplane_mode">"ଏଇରପ୍ଲେଇନ ରୀତି"</string>
+<string name="kg_prompt_reason_restart_pattern">"ଆପଣ ଉପକରଣ ପୁନ-ଆରମ୍ଭ କଲାବେଳେ ଆବଶ୍ୟକ ହେବା ଢାଞ୍ଚା ।"</string>
+<string name="kg_prompt_reason_restart_pin">"ଆପଣ ଉପକରଣ ପୁନ-ଆରମ୍ଭ କଲାବେଳେ ଆବଶ୍ୟକ ହେବା PIN ।"</string>
+<string name="kg_prompt_reason_restart_password">"ଆପଣ ଉପକରଣ ପୁନ-ଆରମ୍ଭ କଲାବେଳେ ଆବଶ୍ୟକ ହେବା ପାସୱର୍ଡ ।"</string>
+<string name="kg_prompt_reason_switch_profiles_pattern">"ଆପଣ ବୃତାନ୍ତ ସ୍ଵିଚ/ଅଦଳବଦଳ  କଲାବେଳେ ଆବଶ୍ୟକ ହେବା ଢାଞ୍ଚା ।"</string>
+<string name="kg_prompt_reason_switch_profiles_pin">"ଆପଣ ବୃତାନ୍ତ ସ୍ଵିଚ/ଅଦଳବଦଳ  କଲାବେଳେ ଆବଶ୍ୟକ ହେବା PIN ।"</string>
+<string name="kg_prompt_reason_switch_profiles_password">"ଆପଣ ବୃତାନ୍ତ ସ୍ଵିଚ/ଅଦଳବଦଳ  କଲାବେଳେ ଆବଶ୍ୟକ ହେବା ପାସୱର୍ଡ ।"</string>
+<plurals name="kg_prompt_reason_time_pattern">
+<item quantity="one">"ପାଇଁ ଉପକରଣଟିର ତାଲା ଖୋଲା ଯାଇ ନାହିଁ <xliff:g id="number">%d</xliff:g> ଘଣ୍ଟା । ଢାଞ୍ଚା ନିଶ୍ଚିତ କରନ୍ତୁ ।"</item>
+<item quantity="other">"ପାଇଁ ଉପକରଣଟିର ତାଲା ଖୋଲା ଯାଇ ନାହିଁ  <xliff:g id="number">%d</xliff:g> ଘଣ୍ଟା । ଢାଞ୍ଚା ନିଶ୍ଚିତ କରନ୍ତୁ ।"</item>
+</plurals>
+<plurals name="kg_prompt_reason_time_pin">
+<item quantity="one">"ପାଇଁ ଉପକରଣଟିର ତାଲା ଖୋଲା ଯାଇ ନାହିଁ  <xliff:g id="number">%d</xliff:g> ଘଣ୍ଟା । PIN ନିଶ୍ଚିତ କରନ୍ତୁ ।"</item>
+<item quantity="other">"ପାଇଁ ଉପକରଣଟିର ତାଲା ଖୋଲା ଯାଇ ନାହିଁ  <xliff:g id="number">%d</xliff:g> ଘଣ୍ଟା । PIN ନିଶ୍ଚିତ କରନ୍ତୁ ।"</item>
+</plurals>
+<plurals name="kg_prompt_reason_time_password">
+<item quantity="one">"ପାଇଁ ଉପକରଣଟିର ତାଲା ଖୋଲା ଯାଇ ନାହିଁ  <xliff:g id="number">%d</xliff:g> ଘଣ୍ଟା । ପାସୱର୍ଡ ନିଶ୍ଚିତ କରନ୍ତୁ ।"</item>
+<item quantity="other">"ପାଇଁ ଉପକରଣଟିର ତାଲା ଖୋଲା ଯାଇ ନାହିଁ  <xliff:g id="number">%d</xliff:g> ଘଣ୍ଟା । ପାସୱର୍ଡ ନିଶ୍ଚିତ କରନ୍ତୁ ।"</item>
+</plurals>
+<string name="fingerprint_not_recognized">"ଚିହ୍ନା ଯାଇପାରୁନି"</string>
+</resources>

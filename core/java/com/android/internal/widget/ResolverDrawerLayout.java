@@ -507,7 +507,9 @@ public class ResolverDrawerLayout extends ViewGroup {
             }
             clipEdge = Math.min(clipEdge, nextChild.getTop());
         }
-        return mTempRect.bottom > clipEdge;
+        /* 2015.12.31 SPRD: Bug 519290 - For connot be clicked. @{ */
+        return mTempRect.top > clipEdge;
+        /* @} */
     }
 
     private static boolean isChildUnder(View child, float x, float y) {

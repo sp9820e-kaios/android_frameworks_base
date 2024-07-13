@@ -2067,7 +2067,10 @@ public class NumberPicker extends LinearLayout {
             , '\u09ef',
             // Kannada
             '\u0ce6', '\u0ce7', '\u0ce8', '\u0ce9', '\u0cea', '\u0ceb', '\u0cec', '\u0ced', '\u0cee'
-            , '\u0cef'
+            , '\u0cef',
+            // SPRD: 6.0 Porting Bug 371782 - Myanmar
+            '\u1040', '\u1041', '\u1042', '\u1043', '\u1044', '\u1045', '\u1046', '\u1047', '\u1048'
+            , '\u1049'
     };
 
     /**

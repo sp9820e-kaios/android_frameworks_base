@@ -41,6 +41,8 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.Choreographer;
 
+import android.os.SystemClock;
+
 import com.android.server.wm.WindowManagerService.LayoutFields;
 
 import java.io.PrintWriter;
@@ -55,6 +57,8 @@ public class WindowAnimator {
 
     /** How long to give statusbar to clear the private keyguard flag when animating out */
     private static final long KEYGUARD_ANIM_TIMEOUT_MS = 1000;
+    /** How long to start doFrame after it was posted in Choregrapher */
+    private static final long DO_FRAME_POST_TIMEOUT_MS = 60;
 
     final WindowManagerService mService;
     final Context mContext;
@@ -70,6 +74,9 @@ public class WindowAnimator {
 
     /** Time of current animation step. Reset on each iteration */
     long mCurrentTime;
+
+    /** Time of doFrame Callback posted. */
+    long mDoFramePostedTime;
 
     /** Skip repeated AppWindowTokens initialization. Note that AppWindowsToken's version of this
      * is a long initialized to Long.MIN_VALUE so that it doesn't match this value on startup. */
@@ -118,6 +125,10 @@ public class WindowAnimator {
 
         mAnimationFrameCallback = new Choreographer.FrameCallback() {
             public void doFrame(long frameTimeNs) {
+                long waitTime = SystemClock.uptimeMillis() - mDoFramePostedTime;
+                if (waitTime > DO_FRAME_POST_TIMEOUT_MS) {
+                    Slog.d(TAG, "doFrame trace --- before doFrame Post cost:" + waitTime);
+                }
                 synchronized (mService.mWindowMap) {
                     mService.mAnimationScheduled = false;
                     animateLocked(frameTimeNs);
@@ -289,7 +300,7 @@ public class WindowAnimator {
                     Slog.w(TAG, "Failed to dispatch window animation state change.", e);
                 }
 
-                if (WindowManagerService.DEBUG_WALLPAPER) {
+                if (WindowManagerService.DEBUG_WALLPAPER || WindowManagerService.mIsPrintLogs) {
                     Slog.v(TAG, win + ": wasAnimating=" + wasAnimating +
                             ", nowAnimating=" + nowAnimating);
                 }
@@ -532,7 +543,7 @@ public class WindowAnimator {
             // If this window is animating, make a note that we have
             // an animating window and take care of a request to run
             // a detached wallpaper animation.
-            if (winAnimator.mAnimating) {
+            if (winAnimator.mAnimating && !winAnimator.isDummyAnimation()) {
                 if (winAnimator.mAnimation != null) {
                     if ((flags & FLAG_SHOW_WALLPAPER) != 0
                             && winAnimator.mAnimation.getDetachWallpaper()) {
@@ -571,7 +582,7 @@ public class WindowAnimator {
         } // end forall windows
 
         if (mWindowDetachedWallpaper != detachedWallpaper) {
-            if (WindowManagerService.DEBUG_WALLPAPER) Slog.v(TAG,
+            if (WindowManagerService.DEBUG_WALLPAPER || WindowManagerService.mIsPrintLogs) Slog.v(TAG,
                     "Detached wallpaper changed from " + mWindowDetachedWallpaper
                     + " to " + detachedWallpaper);
             mWindowDetachedWallpaper = detachedWallpaper;

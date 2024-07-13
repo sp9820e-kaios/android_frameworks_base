@@ -28,7 +28,8 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.LinkedList;
-
+//SPRD add
+import android.media.AudioManager.OnAudioFocusChangeListener;
 /**
  * @hide
  * This class is provides the same interface and functionality as android.media.AsyncPlayer
@@ -58,6 +59,21 @@ public class NotificationPlayer implements OnCompletionListener {
     private LinkedList<Command> mCmdQueue = new LinkedList();
 
     private Looper mLooper;
+    /**
+     * SPRD:Bug504867 Ringtone rings while notification is ringing.
+     * @{
+     */
+    OnAudioFocusChangeListener mAudioFocuslistener = new OnAudioFocusChangeListener() {
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange < 0) {
+                Log.d(mTag, "audio lose focus, stop");
+                stop();
+            }
+        }
+    };
+    /**
+     * @}
+     */
 
     /*
      * Besides the use of audio focus, the only implementation difference between AsyncPlayer and
@@ -91,11 +107,11 @@ public class NotificationPlayer implements OnCompletionListener {
                                 if (mAudioManagerWithAudioFocus == null) {
                                     if (mDebug) Log.d(mTag, "requesting AudioFocus");
                                     if (mCmd.looping) {
-                                        audioManager.requestAudioFocus(null,
+                                        audioManager.requestAudioFocus(mAudioFocuslistener,
                                                 AudioAttributes.toLegacyStreamType(mCmd.attributes),
                                                 AudioManager.AUDIOFOCUS_GAIN);
                                     } else {
-                                        audioManager.requestAudioFocus(null,
+                                        audioManager.requestAudioFocus(mAudioFocuslistener,
                                                 AudioAttributes.toLegacyStreamType(mCmd.attributes),
                                                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
                                     }
@@ -193,7 +209,7 @@ public class NotificationPlayer implements OnCompletionListener {
                         mPlayer = null;
                         synchronized(mQueueAudioFocusLock) {
                             if (mAudioManagerWithAudioFocus != null) {
-                                mAudioManagerWithAudioFocus.abandonAudioFocus(null);
+                                mAudioManagerWithAudioFocus.abandonAudioFocus(mAudioFocuslistener);
                                 mAudioManagerWithAudioFocus = null;
                             }
                         }
@@ -226,7 +242,7 @@ public class NotificationPlayer implements OnCompletionListener {
         synchronized(mQueueAudioFocusLock) {
             if (mAudioManagerWithAudioFocus != null) {
                 if (mDebug) Log.d(mTag, "onCompletion() abandonning AudioFocus");
-                mAudioManagerWithAudioFocus.abandonAudioFocus(null);
+                mAudioManagerWithAudioFocus.abandonAudioFocus(mAudioFocuslistener);
                 mAudioManagerWithAudioFocus = null;
             } else {
                 if (mDebug) Log.d(mTag, "onCompletion() no need to abandon AudioFocus");

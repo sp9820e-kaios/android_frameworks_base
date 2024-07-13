@@ -64,8 +64,10 @@ public class DialogTitle extends TextView {
                     final int textSize = a.getDimensionPixelSize(
                             android.R.styleable.TextAppearance_textSize, 0);
                     if (textSize != 0) {
+                        /* SPRD: modify 20161103 Spreadtrum of 609072, change text titleSize 27px@{ */
                         // textSize is already expressed in pixels
-                        setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+                        setTextSize(TypedValue.COMPLEX_UNIT_PX, 27);
+                        /* @} */
                     }
                     a.recycle();
 

@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Grattis! Inställningar för systemgränssnitt har lagts till i inställningarna."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Ta bort från inställningarna"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Vill du ta bort inställningar för systemgränssnitt från inställningarna och sluta använda alla tillhörande funktioner?"</string>
+    <string name="quick_settings_volume_label">"Ljudprofil"</string>
+     <string name="assistant_key_home">"Startskärm"</string>
+     <string name="assistant_key_search">"Sök"</string>
+     <string name="assistant_key_menu">"Meny"</string>
+     <string name="assistant_key_back">"Tillbaka"</string>
+
+    <string name="vibrate_hint">"Svep vänster för vibration"</string>
+     <string name="battery_overtage_title">"Säkerhetsvarning"</string>
+     <string name="battery_overtage_content">"Laddningsspänningen är för hög!"</string>
+     <string name="battery_overtage_back">"Tillbaka"</string>
 </resources>

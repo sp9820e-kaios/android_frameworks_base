@@ -655,4 +655,15 @@ public class CameraDeviceUserShim implements ICameraDeviceUser {
         // This is solely intended to be used for in-process binding.
         return null;
     }
+
+    /**
+     * SPRD:fix bug 473462 add for burst capture
+     */
+    @Override
+    public int cancelPicture() {
+        if (DEBUG) {
+            Log.d(TAG, "cancelPictrue CameraDeviceUserShim.");
+        }
+        return -1;
+    }
 }

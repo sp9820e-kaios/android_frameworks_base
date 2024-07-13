@@ -58,6 +58,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -947,6 +948,10 @@ public class AccountManagerService
                 logRecord(db, DebugDbHelper.ACTION_ACCOUNT_ADD, TABLE_ACCOUNTS, accountId,
                         accounts, callingUid);
 
+                /* SPRD: remove account cache when add account. bug 535199 @{ */
+                removeAccountFromCacheLocked(accounts, account);
+                /* @} */
+
                 insertAccountIntoCacheLocked(accounts, account);
             } finally {
                 db.endTransaction();
@@ -1270,7 +1275,13 @@ public class AccountManagerService
             }
         }
 
-        logRecord(accounts, DebugDbHelper.ACTION_CALLED_ACCOUNT_REMOVE, TABLE_ACCOUNTS);
+        /* SPRD: work around NOT NULL constraint. 496555 @{ */
+        try {
+            logRecord(accounts, DebugDbHelper.ACTION_CALLED_ACCOUNT_REMOVE, TABLE_ACCOUNTS);
+        } catch (SQLiteConstraintException e) {
+            Log.d(TAG, "NOT NULL constraint failed", e);
+        }
+        /* @} */
 
         try {
             new RemoveAccountSession(accounts, response, account, expectActivityLaunch).bind();

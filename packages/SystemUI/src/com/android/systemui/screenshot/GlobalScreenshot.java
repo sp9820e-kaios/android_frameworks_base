@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -45,6 +46,7 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Process;
 import android.provider.MediaStore;
+import android.provider.Settings.Global;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -110,6 +112,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
     private final BigPictureStyle mNotificationStyle;
     private final int mImageWidth;
     private final int mImageHeight;
+    private Config mConfig;
 
     // WORKAROUND: We want the same notification across screenshots that we update so that we don't
     // spam a user's notification drawer.  However, we only show the ticker for the saving state
@@ -127,13 +130,22 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
         String imageDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date(mImageTime));
         mImageFileName = String.format(SCREENSHOT_FILE_NAME_TEMPLATE, imageDate);
 
+        /*SPRD :fix bug 440402,modify save path for a screenshot@{
         mScreenshotDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), SCREENSHOTS_DIR_NAME);
+                Environment.DIRECTORY_PICTURES), SCREENSHOTS_DIR_NAME);*/
+        mScreenshotDir = new File(getStorePath(), SCREENSHOTS_DIR_NAME);
+        /*SPRD :fix bug 440402,modify save path for a screenshot@} */
         mImageFilePath = new File(mScreenshotDir, mImageFileName).getAbsolutePath();
-
+        /*SPRD :fix bug 570468@} */
         // Create the large notification icon
-        mImageWidth = data.image.getWidth();
-        mImageHeight = data.image.getHeight();
+        if(data.image != null){
+            mImageWidth = data.image.getWidth();
+            mImageHeight = data.image.getHeight();
+            mConfig = data.image.getConfig();
+        }else{
+            mImageWidth = 0;
+            mImageHeight = 0;
+        }
         int iconSize = data.iconSize;
         int previewWidth = data.previewWidth;
         int previewHeight = data.previewheight;
@@ -146,7 +158,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
         Matrix matrix = new Matrix();
         int overlayColor = 0x40FFFFFF;
 
-        Bitmap picture = Bitmap.createBitmap(previewWidth, previewHeight, data.image.getConfig());
+        Bitmap picture = Bitmap.createBitmap(previewWidth, previewHeight, mConfig);
         matrix.setTranslate((previewWidth - mImageWidth) / 2, (previewHeight - mImageHeight) / 2);
         c.setBitmap(picture);
         c.drawBitmap(data.image, matrix, paint);
@@ -155,7 +167,7 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
 
         // Note, we can't use the preview for the small icon, since it is non-square
         float scale = (float) iconSize / Math.min(mImageWidth, mImageHeight);
-        Bitmap icon = Bitmap.createBitmap(iconSize, iconSize, data.image.getConfig());
+        Bitmap icon = Bitmap.createBitmap(iconSize, iconSize, mConfig);
         matrix.setScale(scale, scale);
         matrix.postTranslate((iconSize - (scale * mImageWidth)) / 2,
                 (iconSize - (scale * mImageHeight)) / 2);
@@ -312,7 +324,8 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
             return;
         }
 
-        if (params.result > 0) {
+        //SPRD 511808
+        if (params.result > 0 || new File(mImageFilePath).length() <= 0) {
             // Show a message that we've failed to save the image to disk
             GlobalScreenshot.notifyScreenshotError(params.context, mNotificationManager);
         } else {
@@ -354,6 +367,19 @@ class SaveImageInBackgroundTask extends AsyncTask<SaveImageInBackgroundData, Voi
         params.finisher.run();
         params.clearContext();
     }
+
+    /* SPRD :fix bug 440402,modify save path for a screenshot@{ */
+    public File getStorePath() {
+        File pathDir = null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment
+                .getExternalStoragePathState())) {
+            pathDir = Environment.getExternalStoragePath();
+        } else {
+            pathDir = Environment.getInternalStoragePath();
+        }
+        return new File(pathDir, Environment.DIRECTORY_PICTURES);
+    }
+    /* SPRD :fix bug 440402,modify save path for a screenshot@} */
 }
 
 /**
@@ -403,6 +429,7 @@ class GlobalScreenshot {
     private static final float SCREENSHOT_DROP_OUT_MIN_SCALE = SCREENSHOT_SCALE * 0.45f;
     private static final float SCREENSHOT_FAST_DROP_OUT_MIN_SCALE = SCREENSHOT_SCALE * 0.6f;
     private static final float SCREENSHOT_DROP_OUT_MIN_SCALE_OFFSET = 0f;
+    protected static final String SCREENSHOTS_GLOBAL_ZEN_MODE = "zen_mode";
     private final int mPreviewWidth;
     private final int mPreviewHeight;
 
@@ -430,7 +457,8 @@ class GlobalScreenshot {
 
     private MediaActionSound mCameraSound;
 
-
+    //SPRD BUG#547751
+    private boolean zenScreenshotVoice;
     /**
      * @param context everything needs a context :(
      */
@@ -496,6 +524,9 @@ class GlobalScreenshot {
         // Setup the Camera shutter sound
         mCameraSound = new MediaActionSound();
         mCameraSound.load(MediaActionSound.SHUTTER_CLICK);
+        // SPRD BUG#547751
+        zenScreenshotVoice = Global.getInt(mContext.getContentResolver(),
+                SCREENSHOTS_GLOBAL_ZEN_MODE, 0) != Global.ZEN_MODE_NO_INTERRUPTIONS;
     }
 
     /**
@@ -620,7 +651,11 @@ class GlobalScreenshot {
             @Override
             public void run() {
                 // Play the shutter sound to notify that we've taken a screenshot
-                mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
+                /* SPRD: Bug 541515 .the one mode of mute mode to capture a voice @{ */
+                if (zenScreenshotVoice) {
+                    mCameraSound.play(MediaActionSound.SHUTTER_CLICK);
+                }
+                /* @} */
 
                 mScreenshotView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
                 mScreenshotView.buildLayer();

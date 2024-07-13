@@ -44,6 +44,12 @@ public class CarrierIdentifier implements Parcelable {
     private String mImsi;
     private String mGid1;
     private String mGid2;
+    // SPRD: [bug475223] add mvno match type PNN
+    private String mPnn;
+    // SPRD: [bug475223] add network preferred config variable
+    private String mIsNetworkPreferred;
+    // SPRD: [bug475223] add feature config variable
+    private String mFeature;
 
     public CarrierIdentifier(String mcc, String mnc, String spn, String imsi, String gid1,
             String gid2) {
@@ -54,6 +60,23 @@ public class CarrierIdentifier implements Parcelable {
         mGid1 = gid1;
         mGid2 = gid2;
     }
+
+    /* SPRD: [bug475223] add for mvno match type PNN @{ */
+    public CarrierIdentifier(String mcc, String mnc, String spn, String imsi, String gid1,
+            String gid2, String pnn) {
+        this(mcc, mnc, spn, imsi, gid1, gid2);
+        mPnn = pnn;
+    }
+    /* @} */
+
+    /* SPRD: [bug475223] add for network preferred config and feature configs @{ */
+    public CarrierIdentifier(String mcc, String mnc, String isNetworkPreferred, String feature) {
+        mMcc = mcc;
+        mMnc = mnc;
+        mIsNetworkPreferred = isNetworkPreferred;
+        mFeature = feature;
+    }
+    /* @} */
 
     /** @hide */
     public CarrierIdentifier(Parcel parcel) {
@@ -90,6 +113,22 @@ public class CarrierIdentifier implements Parcelable {
         return mGid2;
     }
 
+    /* SPRD: [bug475223] add mvno match type,net config,feature config @{ */
+    /** Get the home pnn name. */
+    public String getPnn() {
+        return mPnn;
+    }
+
+    public boolean isNetworkPreferred() {
+        return "true".equals(mIsNetworkPreferred);
+    }
+
+    /** Get the feature config info. */
+    public String getFeature() {
+        return mFeature;
+    }
+    /* @} */
+
     @Override
     public int describeContents() {
         return 0;
@@ -103,6 +142,9 @@ public class CarrierIdentifier implements Parcelable {
         out.writeString(mImsi);
         out.writeString(mGid1);
         out.writeString(mGid2);
+        out.writeString(mPnn);
+        out.writeString(mIsNetworkPreferred);
+        out.writeString(mFeature);
     }
 
     /** @hide */
@@ -113,5 +155,8 @@ public class CarrierIdentifier implements Parcelable {
         mImsi = in.readString();
         mGid1 = in.readString();
         mGid2 = in.readString();
+        mPnn = in.readString();
+        mIsNetworkPreferred = in.readString();
+        mFeature = in.readString();
     }
 }

@@ -17,6 +17,8 @@
 package com.android.systemui.statusbar.policy;
 
 import static android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED;
+import static android.net.NetworkCapabilities.TRANSPORT_BLUETOOTH;
+import static android.net.NetworkCapabilities.TRANSPORT_ETHERNET;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,15 +38,20 @@ import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.SubscriptionManager.OnSubscriptionsChangedListener;
 import android.telephony.TelephonyManager;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.MathUtils;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.TelephonyIntents;
+import com.android.internal.telephony.IccCardConstants;
 import com.android.systemui.DemoMode;
 import com.android.systemui.R;
+import com.android.systemui.SystemUiConfig;
+import com.android.systemui.statusbar.policy.SystemUIPluginsHelper;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -109,7 +116,13 @@ public class NetworkControllerImpl extends BroadcastReceiver
     private Locale mLocale = null;
     // This list holds our ordering.
     private List<SubscriptionInfo> mCurrentSubscriptions = new ArrayList<>();
-
+    /* SPRD: modify by bug 474973 @{ */
+    private ArrayList<CarrierLabelListener> mCarrierListeners =
+            new ArrayList<CarrierLabelListener>();
+    private boolean mConnected = false;
+    private boolean mBluetoothTethered = false;
+    private boolean mEthernetConnected = false;
+    /* @} */
     @VisibleForTesting
     boolean mListening;
 
@@ -125,10 +138,16 @@ public class NetworkControllerImpl extends BroadcastReceiver
 
     private int mEmergencySource;
     private boolean mIsEmergency;
+    // SPRD: display systemui with sim color.
+    private boolean mShowSystemUIWithSimColor;
+    // SPRD: Bug 532196 modify for flight mode name display in reliance.
+    private boolean isShowFlightMode = SystemUIPluginsHelper.getInstance().showFlightMode();
 
     @VisibleForTesting
     ServiceState mLastServiceState;
 
+    // SPRD: display systemui with sim color.
+    private SystemUiConfig mSystemUiConfig;
     /**
      * Construct this controller object and register for updates.
      */
@@ -187,6 +206,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
 
         // AIRPLANE_MODE_CHANGED is sent at boot; we've probably already missed it
         updateAirplaneMode(true /* force callback */);
+        // SPRD: display systemui with sim color.
+        mSystemUiConfig = SystemUiConfig.getInstance(context);
     }
 
     private void registerListeners() {
@@ -211,6 +232,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(ConnectivityManager.INET_CONDITION_ACTION);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        // SPRD: Add HD audio icon in cucc for bug 536924.
+        filter.addAction(TelephonyIntents.ACTION_HIGH_DEF_AUDIO_SUPPORT);
         mContext.registerReceiver(this, filter, null, mReceiverHandler);
         mListening = true;
 
@@ -239,6 +262,87 @@ public class NetworkControllerImpl extends BroadcastReceiver
     public MobileDataController getMobileDataController() {
         return mMobileDataController;
     }
+
+    /* SPRD: modify by bug 474973 @{ */
+    public void addCarrierLabel(CarrierLabelListener listener) {
+        mCarrierListeners.add(listener);
+        refreshCarrierLabel();
+    }
+
+    void refreshCarrierLabel() {
+        /* SPRD: Bug 532196 modify for flight mode name display in reliance in reliance. @{ */
+        if (isShowFlightMode && mAirplaneMode) {
+            refreshCarrierLabelIfAirplaneMode();
+            return;
+        }
+
+        if (mHasNoSims) {
+            refreshCarrierLabelIfNoSim();
+            return;
+        }
+        /* @} */
+        Context context = mContext;
+
+        WifiSignalController.WifiState wifiState = mWifiSignalController.getState();
+        SpannableStringBuilder label = new SpannableStringBuilder("");
+
+        /* SPRD: build carrierLabel by slot sequence. See bug #495447. {@ */
+        int phoneCount = mPhone.getPhoneCount();
+        for (int i = 0; i < phoneCount; i++) {
+            int[] subIds = SubscriptionManager.getSubId(i);
+            if (subIds != null && subIds.length > 0 && mMobileSignalControllers.containsKey(subIds[0])) {
+                MobileSignalController msc = mMobileSignalControllers.get(subIds[0]);
+                label = msc.getLabel(label, mConnected, mHasMobileDataFeature);
+            }
+        }
+        //for (MobileSignalController controller : mMobileSignalControllers.values()) {
+        //    label = controller.getLabel(label, mConnected, mHasMobileDataFeature);
+        //}
+        /* @} */
+
+        // TODO Simplify this ugliness, some of the flows below shouldn't be possible anymore
+        // but stay for the sake of history.
+        if (mBluetoothTethered && !mHasMobileDataFeature) {
+            label = new SpannableStringBuilder(context.getString(R.string.bluetooth_tethered));
+        }
+
+        if (mEthernetConnected && !mHasMobileDataFeature) {
+            label = new SpannableStringBuilder(context.getString(R.string.ethernet_label));
+        }
+
+        if (mAirplaneMode && !isEmergencyOnly()) {
+            // combined values from connected wifi take precedence over airplane mode
+            if (wifiState.connected && mHasMobileDataFeature) {
+                // Suppress "No internet connection." from mobile if wifi connected.
+                label = new SpannableStringBuilder("");
+            } else {
+                 if (!mHasMobileDataFeature) {
+                      label = new SpannableStringBuilder(context.getString(
+                              R.string.status_bar_settings_signal_meter_disconnected));
+                 }
+            }
+        } else if (!isMobileDataConnected() && !wifiState.connected && !mBluetoothTethered &&
+                 !mEthernetConnected && !mHasMobileDataFeature) {
+            // Pretty much no connection.
+            label = new SpannableStringBuilder(context.getString(
+                    R.string.status_bar_settings_signal_meter_disconnected));
+        }
+
+        // for mobile devices, we always show mobile connection info here (SPN/PLMN)
+        // for other devices, we show whatever network is connected
+        // This is determined above by references to mHasMobileDataFeature.
+        int length = mCarrierListeners.size();
+        for (int i = 0; i < length; i++) {
+            mCarrierListeners.get(i).setCarrierLabel(label);
+        }
+
+    }
+
+    private boolean isMobileDataConnected() {
+        MobileSignalController controller = getDataController();
+        return controller != null ? controller.getState().dataConnected : false;
+    }
+    /* @} */
 
     public void addEmergencyListener(EmergencyListener listener) {
         mCallbackHandler.setListening(listener, true);
@@ -279,7 +383,10 @@ public class NetworkControllerImpl extends BroadcastReceiver
             return mLastServiceState != null && mLastServiceState.isEmergencyOnly();
         }
         int voiceSubId = mSubDefaults.getDefaultVoiceSubId();
-        if (!SubscriptionManager.isValidSubscriptionId(voiceSubId)) {
+        /* SPRD: modify by BUG 493378 @{ */
+        if (!SubscriptionManager.isValidSubscriptionId(voiceSubId) ||
+                voiceSubId == SubscriptionManager.MAX_SUBSCRIPTION_ID_VALUE) {
+            /* @} */
             for (MobileSignalController mobileSignalController :
                                             mMobileSignalControllers.values()) {
                 if (!mobileSignalController.getState().isEmergency) {
@@ -351,6 +458,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
         mCurrentUserId = newUserId;
         mAccessPoints.onUserSwitched(newUserId);
         updateConnectivity();
+        // SPRD: modify by bug 474973
+        refreshCarrierLabel();
     }
 
     @Override
@@ -362,9 +471,13 @@ public class NetworkControllerImpl extends BroadcastReceiver
         if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION) ||
                 action.equals(ConnectivityManager.INET_CONDITION_ACTION)) {
             updateConnectivity();
+            // SPRD: modify by bug 474973
+            refreshCarrierLabel();
         } else if (action.equals(Intent.ACTION_AIRPLANE_MODE_CHANGED)) {
             refreshLocale();
             updateAirplaneMode(false);
+            // SPRD: modify by bug 474973
+            refreshCarrierLabel();
         } else if (action.equals(TelephonyIntents.ACTION_DEFAULT_VOICE_SUBSCRIPTION_CHANGED)) {
             // We are using different subs now, we might be able to make calls.
             recalculateEmergency();
@@ -375,6 +488,15 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 controller.handleBroadcast(intent);
             }
         } else if (action.equals(TelephonyIntents.ACTION_SIM_STATE_CHANGED)) {
+            /* SPRD: modify by BUG 549167 @{ */
+            String simState = intent.getStringExtra(IccCardConstants.INTENT_KEY_ICC_STATE);
+            boolean isSimAbsent = IccCardConstants.INTENT_VALUE_ICC_ABSENT.equals(simState);
+            int phoneId = intent.getIntExtra(PhoneConstants.PHONE_KEY,
+                    SubscriptionManager.DEFAULT_PHONE_INDEX);
+            if (isSimAbsent) {
+                mCallbackHandler.refreshIconsIfSimAbsent(phoneId);
+            }
+            /* @} */
             // Might have different subscriptions now.
             updateMobileControllers();
         } else if (action.equals(TelephonyIntents.ACTION_SERVICE_STATE_CHANGED)) {
@@ -384,6 +506,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 // emergency state.
                 recalculateEmergency();
             }
+        /* SPRD: Add HD audio icon for bug 536924. @{ */
+        } else if (action.equals(TelephonyIntents.ACTION_HIGH_DEF_AUDIO_SUPPORT)) {
+            boolean isHdVoiceSupport = intent.getBooleanExtra("isHdVoiceSupport", false);
+            Log.d(TAG, "HIGH_DEF_AUDIO_SUPPORT = " + isHdVoiceSupport);
+            mCallbackHandler.setHdVoiceIndicators(isHdVoiceSupport);
+        /* @} */
         } else {
             int subId = intent.getIntExtra(PhoneConstants.SUBSCRIPTION_KEY,
                     SubscriptionManager.INVALID_SUBSCRIPTION_ID);
@@ -416,7 +544,11 @@ public class NetworkControllerImpl extends BroadcastReceiver
         for (MobileSignalController mobileSignalController : mMobileSignalControllers.values()) {
             mobileSignalController.setConfiguration(mConfig);
         }
+        /* SPRD: modify by bug 474973 @{ */
+        updateNoSims();
         refreshLocale();
+        refreshCarrierLabel();
+        /* @} */
     }
 
     private void updateMobileControllers() {
@@ -434,6 +566,23 @@ public class NetworkControllerImpl extends BroadcastReceiver
         }
         // If there have been no relevant changes to any of the subscriptions, we can leave as is.
         if (hasCorrectMobileControllers(subscriptions)) {
+            /* SPRD: update icon tint for current subscriptioins. {@ */
+            if (mShowSystemUIWithSimColor) {
+                for (SubscriptionInfo info : subscriptions) {
+                    int subId = info.getSubscriptionId();
+                    int preIconTint = mMobileSignalControllers.get(subId).getIconTint();
+                    if (info.getIconTint() != preIconTint) {
+                        Log.d(TAG, String.format("sub%d's icon tint updated, 0x%08x -> 0x%08x",
+                                subId, preIconTint, info.getIconTint()));
+                        mCallbackHandler.setSimSignalColor(subId, info.getIconTint());
+                        mMobileSignalControllers.get(subId).setIconTint(info.getIconTint());
+                        // SPRD: modify by bug 474973
+                        refreshCarrierLabel();
+                    }
+
+                }
+            }
+            /* @} */
             // Even if the controllers are correct, make sure we have the right no sims state.
             // Such as on boot, don't need any controllers, because there are no sims,
             // but we still need to update the no sim state.
@@ -454,6 +603,34 @@ public class NetworkControllerImpl extends BroadcastReceiver
         }
     }
 
+    /* SPRD: modify by bug 474973 @{ */
+    protected void refreshCarrierLabelIfNoSim() {
+        SpannableStringBuilder noSimLabel = new SpannableStringBuilder(
+                mContext.getResources().getString(R.string.missing_sim_message));
+        int color = SystemUIPluginsHelper.ABSENT_SIM_COLOR;
+        noSimLabel.setSpan(new ForegroundColorSpan(color),
+                0, noSimLabel.length(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int length = mCarrierListeners.size();
+        for (int i = 0; i < length; i++) {
+            mCarrierListeners.get(i).setCarrierLabel(noSimLabel);
+        }
+    }
+    /* @} */
+
+    /* SPRD: Bug 532196 modify for flight mode name display in reliance @{ */
+    protected void refreshCarrierLabelIfAirplaneMode() {
+        SpannableStringBuilder airplaneLabel = new SpannableStringBuilder(
+                mContext.getResources().getString(R.string.carriers_text_flight_mode));
+        int color = SystemUIPluginsHelper.ABSENT_SIM_COLOR;
+        airplaneLabel.setSpan(new ForegroundColorSpan(color),
+                0, airplaneLabel.length(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int length = mCarrierListeners.size();
+        for (int i = 0; i < length; i++) {
+            mCarrierListeners.get(i).setCarrierLabel(airplaneLabel);
+        }
+    }
+    /* @} */
+
     @VisibleForTesting
     void setCurrentSubscriptions(List<SubscriptionInfo> subscriptions) {
         Collections.sort(subscriptions, new Comparator<SubscriptionInfo>() {
@@ -465,6 +642,11 @@ public class NetworkControllerImpl extends BroadcastReceiver
             }
         });
         mCurrentSubscriptions = subscriptions;
+
+        /* SPRD: display systemui with sim color. {@ */
+        mShowSystemUIWithSimColor = mSystemUiConfig.shouldShowColorfulSystemUI();
+        Log.d(TAG, "setCurrentSubscriptions, showSimColor: " + mShowSystemUIWithSimColor);
+        /* @} */
 
         HashMap<Integer, MobileSignalController> cachedControllers =
                 new HashMap<Integer, MobileSignalController>(mMobileSignalControllers);
@@ -527,6 +709,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 mobileSignalController.setAirplaneMode(mAirplaneMode);
             }
             notifyListeners();
+            // SPRD: modify by bug 474973
+            refreshCarrierLabel();
         }
     }
 
@@ -582,9 +766,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
             Log.d(TAG, "updateConnectivity: mConnectedTransports=" + mConnectedTransports);
             Log.d(TAG, "updateConnectivity: mValidatedTransports=" + mValidatedTransports);
         }
-
         mInetCondition = !mValidatedTransports.isEmpty();
-
+        /* SPRD: modify by bug 474973 @{ */
+        mConnected = !mConnectedTransports.isEmpty();
+        mBluetoothTethered = mConnectedTransports.get(TRANSPORT_BLUETOOTH);
+        mEthernetConnected = mConnectedTransports.get(TRANSPORT_ETHERNET);
+        /* @} */
         pushConnectivityToSignals();
     }
 
@@ -672,6 +859,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
             mWifiSignalController.resetLastState();
             mReceiverHandler.post(mRegisterListeners);
             notifyAllListeners();
+            // SPRD: modify by bug 474973
+            refreshCarrierLabel();
+            /* SPRD: bug 503653 Wifi icon always displayed in statebar although exited demo mode @{ */
+            mDemoWifiState.enabled = false;
+            mWifiSignalController.notifyListeners();
+            /* @} */
         } else if (mDemoMode && command.equals(COMMAND_NETWORK)) {
             String airplane = args.getString("airplane");
             if (airplane != null) {
@@ -751,6 +944,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
                             datatype.equals("1x") ? TelephonyIcons.ONE_X :
                             datatype.equals("3g") ? TelephonyIcons.THREE_G :
                             datatype.equals("4g") ? TelephonyIcons.FOUR_G :
+                            datatype.equals("4g+") ? TelephonyIcons.FOUR_G_PLUS:
                             datatype.equals("e") ? TelephonyIcons.E :
                             datatype.equals("g") ? TelephonyIcons.G :
                             datatype.equals("h") ? TelephonyIcons.H :
@@ -768,6 +962,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 controller.getState().enabled = show;
                 controller.notifyListeners();
             }
+            // SPRD: modify by bug 474973
+            refreshCarrierLabel();
             String carrierNetworkChange = args.getString("carriernetworkchange");
             if (carrierNetworkChange != null) {
                 boolean show = carrierNetworkChange.equals("show");
@@ -808,6 +1004,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
     public interface EmergencyListener {
         void setEmergencyCallsOnly(boolean emergencyOnly);
     }
+
+    /* SPRD: modify by bug 474973 @{ */
+    public interface CarrierLabelListener {
+        void setCarrierLabel(SpannableStringBuilder label);
+    }
+    /* @} */
 
     public static class SubscriptionDefaults {
         public int getDefaultVoiceSubId() {

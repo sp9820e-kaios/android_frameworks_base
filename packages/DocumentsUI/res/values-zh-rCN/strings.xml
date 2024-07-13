@@ -30,6 +30,7 @@
     <string name="menu_share" msgid="3075149983979628146">"分享"</string>
     <string name="menu_delete" msgid="8138799623850614177">"删除"</string>
     <string name="menu_select_all" msgid="8323579667348729928">"全选"</string>
+    <string name="menu_deselect_all">"取消全选"</string>
     <string name="menu_copy" msgid="3612326052677229148">"复制到…"</string>
     <string name="menu_advanced_show" product="nosdcard" msgid="4693652895715631401">"显示内部存储设备"</string>
     <string name="menu_advanced_show" product="default" msgid="5792182900084144261">"显示SD卡"</string>
@@ -71,4 +72,12 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"触摸可查看详情"</string>
     <string name="retry" msgid="7564024179122207376">"重试"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"以下文件无法复制：<xliff:g id="LIST">%1$s</xliff:g>"</string>
+
+    <string name="shared_error">无法分享文件</string>
+    <string name="documents_deleting">正在删除文档</string>
+    <string name="error_permissions">"此应用缺少运行所需的必要权限。请检查您的权限设置。"</string>
+    <!-- SPRD: Add for bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR. { -->
+    <string name="cannot_copyfolder_itself">你无法将文件夹复制到自身</string>
+    <string name="cannot_copy_drm">无法复制DRM文件</string>
+    <string name="cannot_copy_downloading">无法复制下载中的文件</string>
 </resources>

@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Urime! Sintonizuesi i Sistemit të Ndërfaqes së Përdoruesit u shtua te Cilësimet"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Hiqe nga Cilësimet"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Të hiqet Sintonizuesi i Sistemit të Ndërfaqes së Përdoruesit nga Cilësimet dhe të ndërpritet përdorimi i të gjitha funksioneve të tij?"</string>
+    <string name="quick_settings_volume_label">Profil Audio</string>
+     <string name="assistant_key_home">Ekrani kryesor</string>
+     <string name="assistant_key_search">Kërko</string>
+     <string name="assistant_key_menu">Menu</string>
+     <string name="assistant_key_back">Kthehu</string>
+
+    <string name="vibrate_hint">"Lëviz majtas për Dridhje"</string>
+     <string name="battery_overtage_title">Paralajmërim sigurie</string>
+     <string name="battery_overtage_content">"Tensioni i karikimit është shumë i lartë!"</string>
+     <string name="battery_overtage_back">Kthehu</string>
 </resources>

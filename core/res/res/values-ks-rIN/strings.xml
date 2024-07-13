@@ -1,0 +1,1394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="XXXX">"XXXX"</string>
+
+    <string name="fileSizeSuffix">"<xliff:g id="number" example="123">%1$s</xliff:g> <xliff:g id="unit" example="KB">%2$s</xliff:g>"</string>
+     <string name="durationDays">"<xliff:g id="days">%1$d</xliff:g> दोह"</string>
+     <string name="durationDayHours">"<xliff:g id="days">%1$d</xliff:g> दोह<xliff:g id="hours">%2$d</xliff:g> घंटह"</string>
+     <string name="durationDayHour">"<xliff:g id="days">%1$d</xliff:g> दोह<xliff:g id="hours">%2$d</xliff:g> घांट"</string>
+     <string name="durationHours">"<xliff:g id="hours">%1$d</xliff:g> घंटह"</string>
+     <string name="durationHourMinutes">"<xliff:g id="hours">%1$d</xliff:g> घांट<xliff:g id="minutes">%2$d</xliff:g>  मिनट"</string>
+     <string name="durationHourMinute">"<xliff:g id="hours">%1$d</xliff:g> घांट<xliff:g id="minutes">%2$d</xliff:g> मिनट"</string>
+     <string name="durationMinutes">"<xliff:g id="minutes">%1$d</xliff:g> मिनट"</string>
+     <string name="durationMinute">"<xliff:g id="minutes">%1$d</xliff:g> मिनट"</string>
+     <string name="durationMinuteSeconds">"<xliff:g id="minutes">%1$d</xliff:g> मिनट<xliff:g id="seconds">%2$d</xliff:g> सेकंड"</string>
+     <string name="durationMinuteSecond">"<xliff:g id="minutes">%1$d</xliff:g> मिनट<xliff:g id="seconds">%2$d</xliff:g> सेकंड"</string>
+     <string name="durationSeconds">"<xliff:g id="seconds">%1$d</xliff:g> सेकंड"</string>
+     <string name="durationSecond">"<xliff:g id="seconds">%1$d</xliff:g> सेकंड"</string>
+     <string name="untitled">"&lt;मौज़ूह बगैर&gt;"</string>
+     <string name="emptyPhoneNumber">"(कांह फ़ोन नंबर छु नः)"</string>
+     <string name="unknownName">"ना मोलूम"</string>
+     <string name="defaultVoiceMailAlphaTag">"आवाज़ मेल"</string>
+     <string name="mmiError">"कनेक्शन नुकुस या इनवैलिड MMI कोड."</string>
+     <string name="mmiFdnError">"ऑपरेशन छु महदूद थावनः आमुत खाली फिक्स्ड दिअलिंग नंबर्स खात्र."</string>
+     <string name="serviceEnabled">"सर्विस छे कारगर."</string>
+     <string name="serviceEnabledFor">"सर्विस आय कारगर करनः."</string>
+     <string name="serviceDisabled">"सर्विस आय नकार करनः."</string>
+     <string name="serviceRegistered">"रजिस्ट्रेशन गई कामयाबी सान."</string>
+     <string name="serviceErased">"एरासुअर गई कामयाबी सान."</string>
+     <string name="passwordIncorrect">"ग़लत पासवर्ड."</string>
+     <string name="mmiComplete">"MMI मुकमल."</string>
+     <string name="badPin">"प्रियोंन PIN युस तुहुय लियुख वुह छु न ठीक."</string>
+     <string name="badPuk">"PUK युस तुहुय लियुख वुह छु न ठीक."</string>
+     <string name="mismatchPin">"PIN युस तुहुय लियुख वुह छु न रलान."</string>
+     <string name="invalidPin">"लिखियेव अख PIN युस 4 पेठ 8 नम्बरन त्यान."</string>
+     <string name="invalidPuk">"लिखियेव अख PUK युस 8 नम्बर या ज़ियूठ आसि."</string>
+     <string name="needPuk">"तुहुंद SIM कार्ड छु PUK लॉक करिथ.लिखिव PUK कोड अनलॉक यः करनः खात्र."</string>
+     <string name="needPuk2">"लिखिव PUK2 कोड अनलॉक SIM कार्ड करनः खात्र."</string>
+     <string name="enablePin">"नाकाम, कारगर SIM/RUIM लॉक."</string>
+     <plurals name="pinpuk_attempts">
+<item quantity="one">"तुहुय छुव <xliff:g id="number">%d</xliff:g> बाकी कोशिश अमि ब्रोंठ ज़ि SIM गासि लॉक."</item>
+<item quantity="other">"तुहुय छुव <xliff:g id="number">%d</xliff:g> बाकी कोशिश अमि ब्रोंठ ज़ि SIM गासि लॉक.""</item>
+    </plurals>
+     <string name="ClipMmi">"इन्कोम्मिंग कॉलर ID"</string>
+     <string name="ClirMmi">"आउटगोइंग कॉलर ID"</string>
+     <string name="ColpMmi">"जोडिथ लाइन ID"</string>
+     <string name="ColrMmi">"जोडिथ लाइन ID हदस मंज़"</string>
+     <string name="CfMmi">"कॉल ब्रोंठगसेन"</string>
+     <string name="CwMmi">"कॉल इन्तेज़रस"</string>
+     <string name="BaMmi">"कॉल बर्रिंग"</string>
+     <string name="PwdMmi">"पासवर्ड बदलावुन"</string>
+     <string name="PinMmi">"PIN बद्लावुन"</string>
+     <string name="CnipMmi">"कॉल गसन वोल नंबर छु मौजूद"</string>
+     <string name="CnirMmi">"कॉल गसन वोल नंबर छु हदस मंज़"</string>
+     <string name="ThreeWCMmi">"तरे वत कालिंग"</string>
+     <string name="RuacMmi">"रद्द गस्निः नापसंद तंग करन वाजिनिः कॉलह"</string>
+     <string name="CndMmi">"कालिंग नंबर डिलीवरी"</string>
+     <string name="DndMmi">"मः कर्येव थोथ"</string>
+     <string name="CLIRDefaultOnNextCallOn">"कॉलर ID देफौल्ट्स छे आमच हदस मंज़. बियाख कॉल: हदस मंज़"</string>
+     <string name="CLIRDefaultOnNextCallOff">"कॉलर ID देफौल्ट्स छे आमच हदस मंज़. बियाख कॉल: छेनः हदस मंज़"</string>
+     <string name="CLIRDefaultOffNextCallOn">"कॉलर ID देफौल्ट्स छेनः आमच हदस मंज़. बियाख कॉल: हदस मंज़"</string>
+     <string name="CLIRDefaultOffNextCallOff">"कॉलर ID देफौल्ट्स छेनः आमच हदस मंज़. बियाख कॉल:छेनः हदस मंज़"</string>
+     <string name="serviceNotProvisioned">"सर्विस छे शर्तन मंज़."</string>
+     <string name="CLIRPermanent">"तुहुय हकियेव न बद्लायेथ कॉलर ID सेटिंग."</string>
+     <string name="RestrictedChangedTitle">"हदस मंज़ रसाई आय बदलावनः"</string>
+     <string name="RestrictedOnData">"डाटा सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnEmergency">"इमरजेंसी सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnNormal">"आवाज़ सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnAllVoice">"सारे आवाज़ सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnSms">"SMS सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnVoiceData">"आवाज़/डाटा सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnVoiceSms">"आवाज़/SMS सर्विस आय ब्लाक करनः."</string>
+     <string name="RestrictedOnAll">"सारे आवाज़/डाटा/SMS सर्विस आय ब्लाक करनः."</string>
+     <string name="peerTtyModeFull">"जमात गुजारिश TTY मोड छु बरिथ"</string>
+     <string name="peerTtyModeHco">"जमात गुजारिश TTY मोड छु HCO"</string>
+     <string name="peerTtyModeVco">"जमात गुजारिश TTY मोड छु VCO"</string>
+     <string name="peerTtyModeOff">"जमात गुजारिश TTY मोड छु बंद"</string>
+     <string name="serviceClassVoice">"आवाज़"</string>
+     <string name="serviceClassData">"डाटा"</string>
+     <string name="serviceClassFAX">"फैक्स"</string>
+     <string name="serviceClassSMS">"SMS"</string>
+     <string name="serviceClassDataAsync">"असिक्रोनाइजेशन"</string>
+     <string name="serviceClassDataSync">"सिंक्रोनाइजेशन"</string>
+     <string name="serviceClassPacket">"पैकेट"</string>
+     <string name="roamingText0">"रोमिंग इंडिकेटर छु येल"</string>
+     <string name="roamingText1">"रोमिंग इंडिकेटर छु बंद"</string>
+     <string name="roamingText2">"रोमिंग इंडिकेटर फ्लशिंग"</string>
+     <string name="roamingText3">"हमसायन नेबर"</string>
+     <string name="roamingText4">"ईमारत नेबर"</string>
+     <string name="roamingText5">"रोमिंग -पसंदीद सिस्टम"</string>
+     <string name="roamingText6">"रोमिंग -दस्तियाब सिस्टम"</string>
+     <string name="roamingText7">"रोमिंग - गठबंद शरीक "</string>
+     <string name="roamingText8">""रोमिंग - गोडनियुक शरीक" "</string>
+     <string name="roamingText9">"रोमिंग - पुरः सर्विस काम-कार"</string>
+     <string name="roamingText10">"रोमिंग - हिसवार सर्विस काम-कार"</string>
+     <string name="roamingText11">"रोमिंग बैनर येल"</string>
+     <string name="roamingText12">"रोमिंग बैनर बंद"</string>
+     <string name="roamingTextSearching">"छाडान सर्विस खात्र"</string>
+     <string name="wfcRegErrorTitle">"Wi-Fi कालिंग"</string>
+     <string name="wifi_calling_off_summary">"बंद"</string>
+     <string name="wfc_mode_wifi_preferred_summary">"Wi-Fi चुन्मुत"</string>
+     <string name="wfc_mode_cellular_preferred_summary">"सेलुलर चुन्मुत"</string>
+     <string name="wfc_mode_wifi_only_summary">"Wi-Fi खाली"</string>
+     <string name="cfTemplateNotForwarded">"<xliff:g id="bearer_service_code">{0}</xliff:g>: गासि नः ब्रोंठ"</string>
+     <string name="cfTemplateForwarded">"<xliff:g id="bearer_service_code">{0}</xliff:g>: <xliff:g id="dialing_number">{1}</xliff:g>"</string>
+     <string name="cfTemplateForwardedTime">""<xliff:g id="bearer_service_code">{0}</xliff:g>: <xliff:g id="dialing_number">{1}</xliff:g> अमि पत <xliff:g id="time_delay">{2}</xliff:g> सेकंड्स" "</string>
+     <string name="cfTemplateRegistered">"<xliff:g id="bearer_service_code">{0}</xliff:g>: गासि नः ब्रोंठ"</string>
+     <string name="cfTemplateRegisteredTime">"<xliff:g id="bearer_service_code">{0}</xliff:g>: गासि नः ब्रोंठ"</string>
+     <string name="fcComplete">"खसूसियत कोड मुकमल."</string>
+     <string name="fcError">"कनेक्शन नुक्स या ग़लत खसूसियत कोड."</string>
+     <string name="httpErrorOk">"ठीक"</string>
+     <string name="httpError">"अति छु अख नेटवर्क नुक्स."</string>
+     <string name="httpErrorLookup">"हेकान छु नः छाडीट URL"</string>
+     <string name="httpErrorUnsupportedAuthScheme">"जाय सही आसेन साबित करनच स्कीम छे न मददगार."</string>
+     <string name="httpErrorAuth">"हकि न सही साबित करित."</string>
+     <string name="httpErrorProxyAuth">"सही साबित करुण गलत सर्वर सीत गो नाकाम."</string>
+     <string name="httpErrorConnect">"हकि न जोडिथ सर्वर."</string>
+     <string name="httpErrorIO">"हकि न राबितः करिथ सर्वरस सीत.हना ठहरिथ करियेव बे कोशिश."</string>
+     <string name="httpErrorTimeout">"कनेक्शन सर्वरस सीथ मोक्लियो वक़्त."</string>
+     <string name="httpErrorRedirectLoop">"येथ सफहस छि वार्याह सर्वर हिदायात."</string>
+     <string name="httpErrorUnsupportedScheme">"प्रोटोकॉल छु नः मददगार."</string>
+     <string name="httpErrorFailedSslHandshake">"हकि नः बनाविथ अख महफूज़ कनेक्शन."</string>
+     <string name="httpErrorBadUrl">"हकि न सफ खुलाविथ तिक्याज़ी URL छु न वैलिड."</string>
+     <string name="httpErrorFile">"फाइल हकि नः रसाई करिथ."</string>
+     <string name="httpErrorFileNotFound">"हकि न गुजारिश करमच फाइल लबिथ."</string>
+     <string name="httpErrorTooManyRequests">"वार्याह गुजारिशन पेठ छे काम सप्दान.हना ठहरित कर्येव बे कोशिश."</string>
+     <string name="notification_title">"साइनइन उन्क्स खात्र <xliff:g id="account" example="foo@gmail.com">%1$s</xliff:g>"</string>
+     <string name="contentServiceSync">"सिंक्रोनाइजेशन"</string>
+     <string name="contentServiceSyncNotificationTitle">"सिंक्रोनाइजेशन"</string>
+     <string name="contentServiceTooManyDeletesNotificationDesc">"वार्याह <xliff:g id="content_type">%s</xliff:g> ख़ारिज."</string>
+     <string name="low_memory" product="tablet">"टेबलेट स्टोरेज छे बरिथ.केंह फाइलह करियेव ख़ारिज जाय येल तरावनः बापत."</string>
+     <string name="low_memory" product="watch">"वाच स्टोरेज छे बरिथ.केंह फाइलह करियेव ख़ारिज जाय येल तरावनः बापत."</string>
+     <string name="low_memory" product="tv">"TV स्टोरेज छे बरिथ. केंह फाइलह करियेव ख़ारिज जाय येल तरावनः बापत."</string>
+     <string name="low_memory" product="default">"फ़ोन स्टोरेज छे बरिथ.केंह फाइलह करियेव ख़ारिज जाय येल तरावनः बापत."</string>
+     <string name="ssl_ca_cert_warning">"नेटवर्क मः हकि निगरानी मंज़ आसीत."</string>
+     <string name="ssl_ca_cert_noti_by_unknown">"नामोलूम त्रयमिः पार्टी सीत."</string>
+     <string name="ssl_ca_cert_noti_by_administrator">"तुहुंदी वर्क प्रोफाइल नज़मात वाइल सिंद सीत."</string>
+     <string name="ssl_ca_cert_noti_managed">"सीत <xliff:g id="managing_domain">%s</xliff:g>"</string>
+     <string name="work_profile_deleted">"वर्क प्रोफाइल आय ख़ारिज करनः"</string>
+     <string name="work_profile_deleted_description">"वर्क प्रोफाइल आय ख़ारिज करनः नजामत वोअल एप्प न आसनः केन."</string>
+     <string name="work_profile_deleted_details">""वर्क प्रोफाइल नजामत वोअल एप्प छयीनः या छे खराब गामच. नतीजः हस मंज़,तुहुन्ज़ वर्क प्रोफाइल तः मुंसलिक डाटा आव ख़ारिज करनः.राबितः कर्येव पन्निस नजामत वालिस सीत मदद खात्र."   "</string>
+     <string name="work_profile_deleted_description_dpm_wipe">"तुहुन्ज़ वर्क प्रोफाइल छे न वोयन दस्तियाब येथ आलःस पेठ."</string>
+     <string name="factory_reset_warning">"तुहुंद आलः येयह मिटावनः"</string>
+     <string name="factory_reset_message">"नजामत एप्प छे न मौजूद या छे खराब, तः हकि न इस्तेमाल गसिथ. तुहुंद आलः येय वोयन मिटावनः.राबितः कर्येव पन्निस नजामत वालिस सीत मदद खात्र."</string>
+     <string name="me">"मेह"</string>
+     <string name="power_dialog" product="tablet">"टेबलेट मुत्बादिल"</string>
+     <string name="power_dialog" product="tv">"टीवी मुत्बादिल"</string>
+     <string name="power_dialog" product="default">"फ़ोन मुत्बादिल"</string>
+     <string name="silent_mode">"ख़ामोशी मोड"</string>
+     <string name="turn_on_radio">"वायरलेस त्रायेव येल"</string>
+     <string name="turn_off_radio">"वायरलेस कर्येव बंद"</string>
+     <string name="screen_lock">"स्क्रीन लॉक"</string>
+     <string name="power_off">"पॉवर बंद"</string>
+     <string name="silent_mode_silent">"रिन्गेर बंद"</string>
+     <string name="silent_mode_vibrate">"रिन्गेर वईब्रेट"</string>
+     <string name="silent_mode_ring">"रिन्गेर येल"</string>
+     <string name="reboot_to_update_title">"एंड्राइड सिस्टम अपडेट"</string>
+     <string name="reboot_to_update_prepare">"तैयार सप्दान अपडेट खात्र..."</string>
+     <string name="reboot_to_update_package">"तैयार करान अपडेट पकेज खात्र..."</string>
+     <string name="reboot_to_update_reboot">"बेशुरू सप्दान..."</string>
+     <string name="reboot_to_reset_title">"फैक्ट्री डाटा रिसेट"</string>
+     <string name="reboot_to_reset_message">"बेशुरू सप्दान..."</string>
+     <string name="shutdown_progress">"बंद सप्दान..."</string>
+     <string name="shutdown_confirm" product="tablet">"तुहुंद टेबलेट छु बंद गसान."</string>
+     <string name="shutdown_confirm" product="tv">"तुहुंद टीवी छु बंद गसान."</string>
+     <string name="shutdown_confirm" product="watch">"तुहुंज़ वाच छि बंद गसान."</string>
+     <string name="shutdown_confirm" product="default">"तुहुंद फ़ोन छु बंद गसान."</string>
+     <string name="shutdown_confirm_question">"क्या तुहुय छिवा यसान बंद करुण."</string>
+     <string name="reboot_safemode_title">"रिबूट कर्येव महफूज़ मोडस मंज़"</string>
+     <string name="reboot_safemode_confirm">"क्या तुहुय छिवा यसान रिबूट करुण महफूज़ मोड? यः गासि नाकार त्र्येयमिय पार्टी एप्लीकेशन यस तुहुय इनस्टॉल कारवः. तिम गसेन रिस्टोर येम्सात तुहुय रिबूट बेय कर्येव."</string>
+     <string name="recent_tasks_title">"तजः"</string>
+     <string name="no_recent_tasks">"कः तजः रिपोर्ट"</string>
+     <string name="global_actions" product="tablet">"टेबलेट मुत्बादिल"</string>
+     <string name="global_actions" product="tv">"टीवी मुत्बादिल"</string>
+     <string name="global_actions" product="default">"फ़ोन मुत्बादिल"</string>
+     <string name="global_action_lock">"स्क्रीन लॉक"</string>
+     <string name="global_action_power_off">"पॉवर बंद"</string>
+     <string name="global_action_bug_report">"बग रिपोर्ट"</string>
+     <string name="bugreport_title">"तुल्लियेव बग रिपोर्ट"</string>
+     <string name="bugreport_message">"यः करि जमा जानकरी तुहुंदिस मौजौद आलः स्टेटस मुतलिक,ईमेल मेसेज सोज़नः खात्र. अथ लगी थोडा वक़्त बग रिपोर्ट शुरू करनस यीतिसकालस यः गासि सोज़नः खात्र तयार; महरबानी करिथ कर्येव सबर."</string>
+     <string name="global_action_toggle_silent_mode">"ख़ामोशी मोड"</string>
+     <string name="global_action_silent_mode_on_status">"आवाज़ छे बंद"</string>
+     <string name="global_action_silent_mode_off_status">"आवाज़ छे येल"</string>
+     <string name="global_actions_toggle_airplane_mode">"एयरप्लेन मोड"</string>
+     <string name="global_actions_airplane_mode_on_status">"एयरप्लेन मोड छु येल"</string>
+     <string name="global_actions_airplane_mode_off_status">"एयरप्लेन मोड छु बंद"</string>
+     <string name="global_action_settings">"सेटिंग्स"</string>
+     <string name="global_action_assist">"असिस्ट"</string>
+     <string name="global_action_voice_assist">"आवाज़ मदद"</string>
+     <string name="global_action_lockdown">"लॉक विन्केन"</string>
+     <string name="safeMode">"सेफ मोड"</string>
+     <string name="android_system_label">"एंड्राइड सिस्टम"</string>
+     <string name="user_owner_label">"निजी"</string>
+     <string name="managed_profile_label">"वर्क"</string>
+     <string name="permgrouplab_contacts">"राबितः"</string>
+     <string name="permgroupdesc_contacts">"रसाई तुहुंद राबितः"</string>
+     <string name="permgrouplab_location">"जाय"</string>
+     <string name="permgroupdesc_location">"रसाई येथ आलः जाय"</string>
+     <string name="permgrouplab_calendar">"केलन्डर"</string>
+     <string name="permgroupdesc_calendar">"रसाई पन्निस कलंडरस"</string>
+     <string name="permgrouplab_sms">"SMS"</string>
+     <string name="permgroupdesc_sms">"सोज़ियेव तः विछेव SMS मेसेजस"</string>
+     <string name="permgrouplab_storage">"स्टोरेज"</string>
+     <string name="permgroupdesc_storage">"रसाई तस्वीर, मीडिया, तः फाइल्स तुहुंदिस आलःस पेठ"</string>
+     <string name="permgrouplab_microphone">"माइक्रोफोन"</string>
+     <string name="permgroupdesc_microphone">"रिकॉर्ड आवाज़"</string>
+     <string name="permgrouplab_camera">"कैमरा"</string>
+     <string name="permgroupdesc_camera">"तुलिव तस्वीरह तः रिकॉर्ड कर्येव विडियो"</string>
+     <string name="permgrouplab_phone">"फ़ोन"</string>
+     <string name="permgroupdesc_phone">"कर्येव तः मैनेज कर्येव फ़ोन कॉल्स"</string>
+     <string name="permgrouplab_sensors">"जिस्म सेंसर"</string>
+     <string name="permgroupdesc_sensors">"रसाई सेंसर डाटा तुहुन्जेन ख़ास साइनस खात्र"</string>
+     <string name="capability_title_canRetrieveWindowContent">"वापस रटीव विंडो मवाद"</string>
+     <string name="capability_desc_canRetrieveWindowContent">"जांच कर्येव विंडो कि मवाद दुक येथ सीत तुहुय रक्स करान छिव."</string>
+     <string name="capability_title_canRequestTouchExploration">"येल त्रविएव एक्स्प्लोर जीर करनः सीत"</string>
+     <string name="capability_desc_canRequestTouchExploration">"जीर कर्मितन आइटम्स वन्नेन ज़ोर्रह स्क्रीन खुली इशार इस्तेमाल करनाः सीत."</string>
+     <string name="capability_title_canRequestEnhancedWebAccessibility">"येल त्रविएव बडमिच वेब रसाई"</string>
+     <string name="capability_desc_canRequestEnhancedWebAccessibility">"बही गस आसेन इनस्टॉल करिथ एप्प मवाद वार्यह रसाई करनः खात्र."</string>
+     <string name="capability_title_canRequestFilterKeyEvents">"विछेव टेक्स्ट युस तुहुय लेखियेव"</string>
+     <string name="capability_desc_canRequestFilterKeyEvents">"मंज़ छु निजी डाटा मिसाल पंठ क्रेडिटकार्ड नंबर्स तः पासवर्डस."</string>
+     <string name="permlab_statusBar">"नाकार या मॉडिफाई स्टेटस बार"</string>
+     <string name="permdesc_statusBar">"मंजूरी दिवान एप्पपी ज़ि नाकार करि स्टेटस बार या जोड़ी ता नेबर कड़ी सिस्टम आइकॉनस.""</string>
+     <string name="permlab_statusBarService">"स्टेटस बार"</string>
+     <string name="permdesc_statusBarService">"मंजूरी दीय एप्प स्टेटस बार बनने खात्र."</string>
+     <string name="permlab_expandStatusBar">"बढायः/फडरायः स्टेटस बार"</string>
+     <string name="permdesc_expandStatusBar">"मंजूरी दिवान एप्पपी बडनः या फडरनः स्टेटस बार खात्र.""</string>
+     <string name="permlab_install_shortcut">"इनस्टॉल कर्येव शॉटकट्स"</string>
+     <string name="permdesc_install_shortcut">"मंजूरी दीय एप्लीकेशन होमस्क्रीन शॉटकट्स जोड्नस यूजर मुदाखलत बगैर."</string>
+     <string name="permlab_uninstall_shortcut">"अनइनस्टॉल कर्येव शॉटकट्स"</string>
+     <string name="permdesc_uninstall_shortcut">"मंजूरी दीय एप्लीकेशन होमस्क्रीन शॉटकट्स नेबर कडनस यूजर मुदाखलत बगैर."</string>
+     <string name="permlab_processOutgoingCalls">"योर गस्वेन कॉल करि बदल वती"</string>
+     <string name="permdesc_processOutgoingCalls">"मंजूरी दिय एप्पपी ज़ि विच्छे नंबर युस योर गस्वेन कॉल खात्र डाइल आसि गोमुत येमी मुत्बादिल सान येमी सीत बे वती कॉल गासि अकिस बदल नुम्बरस या मोक्लाई कॉल यिक्वाटय."</string>
+     <string name="permlab_receiveSms">"बरामद कर्येव टेक्स्ट मेसेजस (SMS)"</string>
+     <string name="permdesc_receiveSms">"मंजूरी दिय एप्पपी ज़ि बरामद तः चलायह SMS मेसेजस. अमियुक मतलब गो एप्प करि निगरानी या ख़ारिज करि मेसेज यिम तुहुंदिस आलःस आसेन सोज़नः आमित तुहुय हावनः बगैर."</string>
+     <string name="permlab_receiveMms">"बरामद कर्येव टेक्स्ट मेसेजस (MMS)"</string>
+     <string name="permdesc_receiveMms">"मंजूरी दिय एप्पपी ज़ि बरामद तः चलायह MMS मेसेजस. अमियुक मतलब गो एप्प करि निगरानी या ख़ारिज करि मेसेज यिम तुहुंदिस आलःस आसेन सोज़नः आमित तुहुय हावनः बगैर."</string>
+     <string name="permlab_readCellBroadcasts">"परियेव सेल नशर गमिच मेसेज"</string>
+     <string name="permdesc_readCellBroadcasts">""मंजूरी दिवान एप्प पर्री सेल नशर गमिच मेसेजस यस तुहुंदिस आलः मंज़ दिस्तियाब गमिच छे.सेल नशर गमित खबरदारी आय सोज्नह केंह आलकन मंज़ तुहुय इमरजेंसी हालातन मंज़ खबरदार करनः खात्र. मेलिशुवस एप्पस हकेन मुदाखलत करिथ तुहुंदिस आलः किस कमि कारस येमसात इमरजेंसी सेल नशरियात बरामद कर्येव."</string>
+     <string name="permlab_subscribedFeedsRead">"पर्रिव सब्सक्राइब करिमित फीड्स"</string>
+     <string name="permdesc_subscribedFeedsRead">"मंजूरी दिवान एप्पपी ज़ि रटी तफसील मौजौद सिंक्रोनाइज फीड्स मुतलिक."</string>
+     <string name="permlab_sendSms">"सोज़ियेव तः विछेव SMS मेसेजस"</string>
+     <string name="permdesc_sendSms">"मंजूरी दिवान एप्पपी ज़ि सोजिः SMS मेसेजस. अमुक नतीज हकि आसीथ बेबरुस चार्जस. मेलिशुवस एप्पस हकेन तुहुंद पोंस खर्च करिथ तुहुंदी इजाज़त बगैर मेसेज सोज्नः सीत."</string>
+     <string name="permlab_readSms">"पर्रियेव पन्नेन टेक्स्ट मेसेजस (SMS या MMS)"</string>
+     <string name="permdesc_readSms" product="tablet">"मंजूरी दिवान एप्प पर्री SMS मेसेजस तः जमा करि तुहुंदिस टेबलेट या SIM कार्डस मंज़.मंजूरी दिवान यथ एप्पपी सारे SMS मेसेजस पर्नह खात्र, मवाद तः निजीयात आसनः बावजूद."</string>
+     <string name="permdesc_readSms" product="tv">"मंजूरी दिवान एप्प पर्री SMS मेसेजस तः जमा करि तुहुंदिस TV या SIM कार्डस मंज़.मंजूरी दिवान यथ एप्पपी सारे SMS मेसेजस पर्नह खात्र, मवाद तः निजीयात आसनः बावजूद."</string>
+     <string name="permdesc_readSms" product="default">"मंजूरी दिवान एप्प पर्री SMS मेसेजस तः जमा करि तुहुंदिस फ़ोनस या SIM कार्डस मंज़.मंजूरी दिवान यथ एप्पपी सारे SMS मेसेजस पर्नह खात्र, मवाद तः निजीयात आसनः बावजूद."</string>
+     <string name="permlab_receiveWapPush">"बरामद कर्येव टेक्स्ट मेसेजस (WAP)"</string>
+     <string name="permdesc_receiveWapPush">"मंजूरी दिवान एप्पपी ज़ि सह करि बरामद तः चालवी WAP मेसेजस. येथ मंजूरी मंज़ छु विछुन कामि हिन्ज़ सलाहियत या ख़ारिज मेसेजस तुहुय सोज्नाह आमित  तुहुय हावनः बगैर."</string>
+     <string name="permlab_getTasks">""रटन चलन वाज्निः एप्पस" "</string>
+     <string name="permdesc_getTasks">""मंजूरी दिवान एप्पपी जानकरी रटनस मौजूद तः ताजः चल्वेन कॉमि हिन्ज़. यह मः हकि मंजूरी दिथ एप्पपी जानकरी ईजाद करनस येथ मुतलिक एप्लीकेशन गई इस्तेमाल येथ आलःस पेठ." "</string>
+     <string name="permlab_manageProfileAndDeviceOwners">"मैनेज करियेव प्रोफाइल तः आलः मालिक"</string>
+     <string name="permdesc_manageProfileAndDeviceOwners">"मंजूरी दिवान एप्पपी ज़ि सेट करि प्रोफाइल मालिक तः आलः मालिक."</string>
+     <string name="permlab_reorderTasks">"रिकॉर्डर चलान एप्पस"</string>
+     <string name="permdesc_reorderTasks">""दियिव इजाज़त ज़ि एप्प पकने कामि हियेरमि सतह पेठ बनिमी सतह त्यान. एप्प करि यः तुहुंद इनपुट दिन बगैर." "</string>
+     <string name="permlab_enableCarMode">"कारगर कार मोड "</string>
+     <string name="permdesc_enableCarMode">"दियिव इजाज़त एप्प ज़ि कारगर करि कार मोड."</string>
+     <string name="permlab_killBackgroundProcesses">"बंद कर्यिव बाकी अप्प्स"</string>
+     <string name="permdesc_killBackgroundProcesses">"दियिव इजाज़त एप्प ज़ि खत्म करि बैकग्राउंड काम बाकी एप्पस हियुन्द. यह हकि बाकी एप्पस हिन्ज़ काम बंद करिथ."</string>
+     <string name="permlab_systemAlertWindow">"बनाविव बाकी एप्पस पेठ"</string>
+     <string name="permdesc_systemAlertWindow">"दियिव इजाज़त एप्प ज़ि बनाय बाकी एप्लीकेशन पेठ केन या हिस यूजर इंटरफ़ेस सियिक. तिम हकेन मुदाखलत करिथ तुहुंदी इस्तेमाल सीत इंटरफ़ेस कुन्ति अप्लिकतिओन मंज़, या बद्लायिव क्या छिव तुह्य सोंचान बाकी एप्लीकेशन विछनस मंज़."</string>
+     <string name="permlab_persistentActivity">"कर्येव एप्प हमेश रन"</string>
+     <string name="permdesc_persistentActivity" product="tablet">"दियिव एप्प ज़ि बनाय हिससह पाने लगातार मेमोरी मंज़. यह करि कम मेमोरी दिस्तियाब बाकी अप्प्स कम करान टेबलेटस."</string>
+     <string name="permdesc_persistentActivity" product="tv">"दियिव एप्प ज़ि बनाय हिससह पाने लगातार मेमोरी मंज़. यह करि कम मेमोरी दिस्तियाब बाकी अप्प्स कम करान टीवी यस."</string>
+     <string name="permdesc_persistentActivity" product="default">"दियिव एप्प ज़ि बनाय हिससह पाने लगातार मेमोरी मंज़. यह करि कम मेमोरी दिस्तियाब बाकी अप्प्स कम करान फ़ोन नस."</string>
+     <string name="permlab_getPackageSize">"मीनिव एप्प कुशादगी जाय"</string>
+     <string name="permdesc_getPackageSize">"दियिव इजाज़त एप्प ज़ि वापस अन्नी अमियुक कोड, डाटा.,तः कैचे साइज़"</string>
+     <string name="permlab_writeSettings">"मॉडिफाई सिस्टम सेटिंग्स"</string>
+     <string name="permdesc_writeSettings">"दियिव इजाज़त एप्प मॉडिफाई करि सिस्टम सेटिंग्स डाटा. मेलिसुवस अप्प्स मः करेन कोर्रुप्त तुहुंद सिस्टममच कॉन्फ़िगरेशन."</string>
+     <string name="permlab_receiveBootCompleted">"चलायेव शुरू करंस पेठ"</string>
+     <string name="permdesc_receiveBootCompleted" product="tablet">"दियिव एप्प पायन पाने शुरू गस्नः युथुय सिस्टम करि ख़त्म बूटिंग.यः हकि जीयोठ निथ टेबलेट शुरू खात्र तः इजाज़त दियिः एप्प कम करि सारीय टेबलेट हमेश आसि चलान."</string>
+     <string name="permdesc_receiveBootCompleted" product="tv">"दियिव एप्प पायन पाने शुरू गस्नः युथुय सिस्टम करि ख़त्म बूटिंग.यः हकि जीयोठ निथ टीवी शुरू खात्र तः इजाज़त दियिः एप्प कम करि सारीय टेबलेट हमेश आसि चलान."</string>
+     <string name="permdesc_receiveBootCompleted" product="default">"दियिव एप्प पायन पाने शुरू गस्नः युथुय सिस्टम करि ख़त्म बूटिंग.यः हकि जीयोठ निथ फ़ोन शुरू खात्र तः इजाज़त दियिः एप्प कम करि सारीय टेबलेट हमेश आसि चलान."</string>
+     <string name="permlab_broadcastSticky">"सोजिव स्टिकी नशरियात"</string>
+     <string name="permdesc_broadcastSticky" product="tablet">"दियिव एप्प सोज्नः स्टिकी नशरियात, युस रोज़ान आसि नशरियात ख़त्म गसनः पत.वार्यह ज्याद इस्तमाल मः करि टेबलेट कम या अकिसय जाय रोज़ नः येम सीत गासि वार्याह मेमोरी इस्तेमाल."</string>
+     <string name="permdesc_broadcastSticky" product="tv">"दियिव एप्प सोज्नः स्टिकी नशरियात, युस रोज़ान आसि नशरियात ख़त्म गसनः पत.वार्यह ज्याद इस्तमाल मः करि टीवी कम या अकिसय जाय रोज़ नः येम सीत गासि वार्याह मेमोरी इस्तेमाल."</string>
+     <string name="permdesc_broadcastSticky" product="default">"दियिव एप्प सोज्नः स्टिकी नशरियात, युस रोज़ान आसि नशरियात ख़त्म गसनः पत.वार्यह ज्याद इस्तमाल मः करि फ़ोन कम या अकिसय जाय रोज़ नः येम सीत गासि वार्याह मेमोरी इस्तेमाल."</string>
+     <string name="permlab_readContacts">"परिव पानेन राबितः"</string>
+     <string name="permdesc_readContacts" product="tablet">"दियिव एप्प पर्नाह डाटा तुहुन्देन राबितन मुतलक यिम जमा छि करनः आमित टेबलेटस मंज़, येथ मंज़ फ्रीक्वेंसी येमी सीत तुहुय बुलाववुह, ईमेल कोर्वुह, या कथबाथ कारवः बाकी तरीकः ख़ास नफ़रन सीत. यह इजाज़त छु एप्पस मंजूरी दिवान राबितः डाटा महफूज़ करनस, तः मेलिशोवस एप्पस मः बांटेन राबितः डाटा तुहुन्ज़ी ज़ानकारी बगैर."</string>
+     <string name="permdesc_readContacts" product="tv">"दियिव एप्प पर्नाह डाटा तुहुन्देन राबितन मुतलक यिम जमा छि करनः आमित टीवी यस मंज़, येथ मंज़ फ्रीक्वेंसी येमी सीत तुहुय बुलाववुह, ईमेल कोर्वुह, या कथबाथ कारवः बाकी तरीकः ख़ास नफ़रन सीत. यह इजाज़त छु एप्पस मंजूरी दिवान राबितः डाटा महफूज़ करनस, तः मेलिशोवस एप्पस मः बांटेन राबितः डाटा तुहुन्ज़ी ज़ानकारी बगैर."</string>
+     <string name="permdesc_readContacts" product="default">"दियिव एप्प पर्नाह डाटा तुहुन्देन राबितन मुतलक यिम जमा छि करनः आमित फ़ोन नस मंज़, येथ मंज़ फ्रीक्वेंसी येमी सीत तुहुय बुलाववुह, ईमेल कोर्वुह, या कथबाथ कारवः बाकी तरीकः ख़ास नफ़रन सीत. यह इजाज़त छु एप्पस मंजूरी दिवान राबितः डाटा महफूज़ करनस, तः मेलिशोवस एप्पस मः बांटेन राबितः डाटा तुहुन्ज़ी ज़ानकारी बगैर."</string>
+     <string name="permlab_writeContacts">"मॉडिफाई तुहुंद राबितः"</string>
+     <string name="permdesc_writeContacts" product="tablet">"दियिव एप्प पर्नाह डाटा तुहुन्देन राबितन मुतलक यिम जमा छि करनः आमित टेबलेटस मंज़, येथ मंज़ फ्रीक्वेंसी येमी सीत तुहुय बुलाववुह, ईमेल कोर्वुह, या कथबाथ कारवः बाकी तरीकः ख़ास नफ़रन सीत. यह इजाज़त छु एप्पस मंजूरी दिवान राबितः डाटा ख़ारिज करनस."</string>
+     <string name="permdesc_writeContacts" product="tv">"दियिव एप्प पर्नाह डाटा तुहुन्देन राबितन मुतलक यिम जमा छि करनः आमित टीवी यस मंज़, येथ मंज़ फ्रीक्वेंसी येमी सीत तुहुय बुलाववुह, ईमेल कोर्वुह, या कथबाथ कारवः बाकी तरीकः ख़ास नफ़रन सीत. यह इजाज़त छु एप्पस मंजूरी दिवान राबितः डाटा ख़ारिज करनस."</string>
+     <string name="permdesc_writeContacts" product="default">"दियिव एप्प पर्नाह डाटा तुहुन्देन राबितन मुतलक यिम जमा छि करनः आमित फ़ोन  मंज़, येथ मंज़ फ्रीक्वेंसी येमी सीत तुहुय बुलाववुह, ईमेल कोर्वुह, या कथबाथ कारवः बाकी तरीकः ख़ास नफ़रन सीत. यह इजाज़त छु एप्पस मंजूरी दिवान राबितः डाटा ख़ारिज करनस."</string>
+     <string name="permlab_readCallLog">"पर्रियेव कॉल लाग"</string>
+     <string name="permdesc_readCallLog" product="tablet">"दियिव इजाज़त एप्प टेबलेट कॉल लाग पर्नाह खात्र,इन्कोम्मिंग तः आउटगोइंग कॉल लं हियुन्द डाटा सान.यह मंजूरी छि इजाज़त दिवान एप्प कॉल लाग डाटा महफूज़ करनः खात्र, तः मेलिशोउस अप्प्स मः बाँटेन कॉल लाग डाटा तुहुन्ज़ी ज़ानकारी बगैर.""</string>
+     <string name="permdesc_readCallLog" product="tv">"दियिव इजाज़त एप्प टीवी चह कॉल लाग  पर्नाह खात्र,इन्कोम्मिंग तः आउटगोइंग कॉल लं हियुन्द डाटा सान.यह मंजूरी छि इजाज़त दिवान एप्प कॉल लाग डाटा महफूज़ करनः खात्र, तः मेलिशोउस अप्प्स मः बाँटेन कॉल लाग डाटा तुहुन्ज़ी ज़ानकारी बगैर.""</string>
+     <string name="permdesc_readCallLog" product="default">"दियिव इजाज़त एप्प फ़ोन चह कॉल लाग पर्नाह खात्र,इन्कोम्मिंग तः आउटगोइंग कॉल लं हियुन्द डाटा सान.यह मंजूरी छि इजाज़त दिवान एप्प कॉल लाग डाटा महफूज़ करनः खात्र, तः मेलिशोउस अप्प्स मः बाँटेन कॉल लाग डाटा तुहुन्ज़ी ज़ानकारी बगैर.""</string>
+     <string name="permlab_writeCallLog">"लेखिव कॉल लाग"</string>
+     <string name="permdesc_writeCallLog" product="tablet">"दियिव इजाज़त एप्प टेबलेट कॉल लाग मॉडिफाई करनः खात्र,इन्कोम्मिंग तः आउटगोइंग कॉल हियुन्द डाटा सान. मेलिशोउस अप्प्स मः करेन यह इस्तेमाल मिटावनः या मॉडिफाई तुहुंद कॉल लाग खात्र."</string>
+     <string name="permdesc_writeCallLog" product="tv">"दियिव इजाज़त एप्प टीवी कॉल लाग मॉडिफाई करनः खात्र,इन्कोम्मिंग तः आउटगोइंग कॉल हियुन्द डाटा सान. मेलिशोउस अप्प्स मः करेन यह इस्तेमाल मिटावनः या मॉडिफाई तुहुंद कॉल लाग खात्र."</string>
+     <string name="permdesc_writeCallLog" product="default">"दियिव इजाज़त एप्प फ़ोन कॉल लाग मॉडिफाई करनः खात्र,इन्कोम्मिंग तः आउटगोइंग कॉल हियुन्द डाटा सान. मेलिशोउस अप्प्स मः करेन यह इस्तेमाल मिटावनः या मॉडिफाई तुहुंद कॉल लाग खात्र."</string>
+     <string name="permlab_bodySensors">"बॉडी सेंसर (मिसाल दिल निगरानी गंज्रान)"</string>
+     <string name="permdesc_bodySensors" product="default">"दियिव इजाज़त एप्प रसाई डाटा सेंसर पेठ युस निगरानी छु करान तुहुन्ज़ी जिस्मानी हाल्तन, मिसाल तुहुन्ज़ दिल दुब्राय रेट."</string>
+     <string name="permlab_readCalendar">"परियेव केलिन्डर अमल बे निजी जानकरी."</string>
+     <string name="permdesc_readCalendar" product="tablet">"दियिव इजाज़त एप्प केलिन्डर अमल परनः खात्र येम तुहुंदिस टेबलेटस मंज़ छि जमा करित,तिमति यिम दोस या बाकी कामि वअल.यह दियीय एप्प इजाज़त बांटनः या महफूज़ तुहुंद केलिन्डर डाटा करनः खात्र, बावजूद कि निजी मामलह या अह्सासियत.""</string>
+     <string name="permdesc_readCalendar" product="tv">"दियिव इजाज़त एप्प केलिन्डर अमल परनः खात्र येम तुहुंदिस टीवी यस मंज़ छि जमा करित,तिमति यिम दोस या बाकी कामि वअल.यह दियीय एप्प इजाज़त बांटनः या महफूज़ तुहुंद केलिन्डर डाटा करनः खात्र, बावजूद कि निजी मामलह या अह्सासियत.""</string>
+     <string name="permdesc_readCalendar" product="default">"दियिव इजाज़त एप्प केलिन्डर अमल परनः खात्र येम तुहुंदिस फ़ोन नस मंज़ छि जमा करित,तिमति यिम दोस या बाकी कामि वअल.यह दियीय एप्प इजाज़त बांटनः या महफूज़ तुहुंद केलिन्डर डाटा करनः खात्र, बावजूद कि निजी मामलह या अह्सासियत.""</string>
+     <string name="permlab_writeCalendar">"जोडिव तः मॉडिफाई कर्येव केलिन्डर अमल तः सोजिव ईमेल मेह्मानस मालिक बगैर"गैरज़ान मंज़"</string>
+     <string name="permdesc_writeCalendar" product="tablet">"इजाज़त दियेव एप्प जोड्नस, नेबर कडनस, बद्लायेव अमल युस तुहुय सही हकियेव करित पन्निस टेबलेटस पेठ, तिमति यिम दोस या बाकी कामि वअल. यः हकि इजाज़त दिथ एप्प मेसेज सोज़्नस येम लबनाह येन केलिन्डर मालिकअस पेठ, या मॉडिफाई अमल मालीकस बगैर"गैरज़ान मंज़"</string>
+     <string name="permdesc_writeCalendar" product="tv">"इजाज़त दियेव एप्प जोड्नस, नेबर कडनस, बद्लायेव अमल युस तुहुय सही हकियेव करित पन्निस टीवी यस पेठ, तिमति यिम दोस या बाकी कामि वअल. यः हकि इजाज़त दिथ एप्प मेसेज सोज़्नस येम लबनाह येन केलिन्डर मालिकअस पेठ, या मॉडिफाई अमल मालीकस बगैर"गैरज़ान मंज़"</string>
+     <string name="permdesc_writeCalendar" product="default">"इजाज़त दियेव एप्प जोड्नस, नेबर कडनस, बद्लायेव अमल युस तुहुय सही हकियेव करित पन्निस फ़ोनस पेठ, तिमति यिम दोस या बाकी कामि वअल. यः हकि इजाज़त दिथ एप्प मेसेज सोज़्नस येम लबनाह येन केलिन्डर मालिकअस पेठ, या मॉडिफाई अमल मालीकस बगैर"गैरज़ान मंज़"</string>
+     <string name="permlab_accessLocationExtraCommands">"रसाई अलावः जाय मुहय्या वोल कमांड्स"</string>
+     <string name="permdesc_accessLocationExtraCommands">"इजाज़त दियेव एप्प रसाई अलावः जाय मुहय्या कमांड्स.यः दियह इजाज़त एप्प मुदाखलत ओपेरातीओं सीत GPS या बदल आम आगुर.""</string>
+     <string name="permlab_accessFineLocation">"जाय कर्येव लोकेट (GPS तः नेटवर्क मुतलिक)"</string>
+     <string name="permdesc_accessFineLocation">"इजाज़त दियह एप्लीकेशन ज़ि रटी लोकुट जाय आलमी पोजिशनिंग सिस्टम (GPS) इस्तेमाल करनाः सीत या नेटवर्क लोकेशन आगुर मिसाल पंठ सेल टावर तः Wi-Fi. यिम जाय खिदमात गसेन ज़रूरी येल त्राव्नः येन तः दिस्तियाब आसेन तुहुंदिस आलःस पेठ तमि एप्प खात्र यस तुहुय इस्तेमाल कारवः.एप्पस मः करेन इस्तेमाल अथ येह विछ्नः खात्र ज़ि तुहुय कति छिव, तः मः खर्चे अलावः बैटरी पॉवर."</string>
+     <string name="permlab_accessCoarseLocation">""लगबग जाय (नेटवर्कस-मुतलिक)"</string>
+     <string name="permdesc_accessCoarseLocation">"इजाज़त दियह एप्लीकेशन ज़ि रटी तुहुन्ज़ लगबग जाय. यः जाय आय कडनः लोकेशन सर्विस सीत नेटवर्क लोकेशन सोर्स पेठ मिसाल पंठ सेल टावर तः Wi-Fi. यिम जाय खिदमात गसेन ज़रूरी येल त्राव्नः येन तः दिस्तियाब आसेन तुहुंदिस आलःस पेठ तमि एप्प खात्र यस तुहुय इस्तेमाल कारवः. एप्पस मः करेन इस्तेमाल अथ येह विछ्नः खात्र ज़ि लगबग तुहुय कति छिव.""</string>
+     <string name="permlab_modifyAudioSettings">"तब्दील कर्येव पन्नेन आवाज़ सेटिंग्स"</string>
+     <string name="permdesc_modifyAudioSettings">"दियिव इजाज़त एप्प ज़ि सही करि आलमी आवाज़ सेटिंग्स मिसाल पंठ वॉल्यूम तः कुस स्पीकर छु इस्तेमाल आमुत करनाः आउटपुट खात्र."</string>
+     <string name="permlab_recordAudio">"रिकॉर्ड आवाज़"</string>
+     <string name="permdesc_recordAudio">"दियिव इजाज़त  एप्प ज़ि रिकॉर्ड करि आवाज़ माइक्रोफोन सीत.यः मंजूरी छि एप्प इजाज़त दिवान आवाज़ रिकॉर्ड करनस कुन्ति वक़्तह तुहुंदी रजामंदी बगैर."</string>
+     <string name="permlab_sim_communication">"SIM कम्युनिकेशन"</string>
+     <string name="permdesc_sim_communication">"दियिव इजाज़त एप्प ज़ि सोजिः कमांड्स SIM कुन.यः छु वार्यह खरतनाक."</string>
+     <string name="permlab_camera">"तुलिव तस्वीर तः वीडियोस"</string>
+     <string name="permdesc_camera">"दियिव इजाज़त  एप्प ज़ि तुली तस्वीर तः विडियो कैमरा सीत.यः मंजूरी छि एप्प इजाज़त दिवान कैमरा इस्तेमाल करनस कुन्ति वक़्तह तुहुंदी रजामंदी बगैर."</string>
+     <string name="permlab_vibrate">"काबू वाइब्रेशन"</string>
+     <string name="permdesc_vibrate">"दियिव इजाज़त एप्प वाइब्रेटर काबू करनः खात्र."</string>
+     <string name="permlab_flashlight">"काबू फ़्लैशलाइट"</string>
+     <string name="permdesc_flashlight">"दियिव इजाज़त एप्प फ़्लैशलाइट काबू खात्र"</string>
+     <string name="permlab_callPhone">"सियोदय कॉल फ़ोन नंबर्स"</string>
+     <string name="permdesc_callPhone">"दियेव इजाज़त एप्प कॉल करनः खात्र फ़ोन नंबरन तुहुंदी मुदाखलत बगैर. अमियुक नतीज हकि आसीथ बे बरोस कीमत या कॉल्स. गोर कर्यिव यः दियनह एप्प इजाज़त इमरजेंसी नंबरन कॉल करनस. शाहरती अप्प्स मः आसि वार्यह कीमत कॉल करनः खात्र तुहुंदी जानकरी बगैर."</string>
+     <string name="permlab_accessImsCallService">"रसाई IMS कॉल सर्विस"</string>
+     <string name="permdesc_accessImsCallService">"मंजूरी दिवान एप्पपी ज़ि इस्तेमाल करि IMS सर्विस कॉल खात्र तुहुंदी कुन्ति मुदाखलत बगैर."</string>
+     <string name="permlab_readPhoneState">"पर्रिव फ़ोन स्टेटस तः आइडेंटिटी"</string>
+     <string name="permdesc_readPhoneState">"मंजूरी दिवान एप्पपी ज़ि रसाई करि आलःकेन फ़ोन खुस्सियात.यह मंजूरी छि एप्प ज़ि सु विछान फ़ोन नंबर तः आलः ID, यामे कॉल आसि चलान, तः रिमोट नंबर आसि जोडिथ अकिस कॉल सीत."</string>
+     <string name="permlab_wakeLock" product="tablet">"टेबलेटस शोंगनः निश परहेज़ करान"</string>
+     <string name="permlab_wakeLock" product="tv">"टीवी शोंगनः निश परहेज़ करान"</string>
+     <string name="permlab_wakeLock" product="default">"फ़ोन शोंगनः निश परहेज़ करान"</string>
+     <string name="permdesc_wakeLock" product="tablet">"मंजूरी दिवान एप्पपी ज़ि परहेज़ करि टेबलेटस शोंगनः निश."</string>
+     <string name="permdesc_wakeLock" product="tv">"मंजूरी दिवान एप्पपी ज़ि परहेज़ करि टीवी यस शोंगनः निश."</string>
+     <string name="permdesc_wakeLock" product="default">"मंजूरी दिवान एप्पपी ज़ि परहेज़ करि फ़ोनस  शोंगनः निश."</string>
+     <string name="permlab_transmitIr">"ट्रांसमिट इन्फ्रारेड"</string>
+     <string name="permdesc_transmitIr" product="tablet">"मंजूरी दिवान एप्पपी ज़ि इस्तेमाल करि टेबलेटस किस इन्फ्रारेड ट्रांसमीटर."</string>
+     <string name="permdesc_transmitIr" product="tv">"मंजूरी दिवान एप्पपी ज़ि इस्तेमाल करि टीवी किस इन्फ्रारेड ट्रांसमीटर."</string>
+     <string name="permdesc_transmitIr" product="default">"मंजूरी दिवान एप्पपी ज़ि इस्तेमाल करि फ़ोन किस इन्फ्रारेड ट्रांसमीटर."</string>
+     <string name="permlab_setWallpaper">"सेट कर्येव वॉलपेपर"</string>
+     <string name="permdesc_setWallpaper">"मंजूरी दिवान एप्पपी ज़ि सेट करि सिस्टम वॉलपेपर."</string>
+     <string name="permlab_setWallpaperHints">"सही कर्येव पन्नुन वॉलपेपर साइज़"</string>
+     <string name="permdesc_setWallpaperHints">"मंजूरी दिवान एप्पपी ज़ि सेट करि सिस्टम वॉलपेपर साइज़ हिंट्स."</string>
+     <string name="permlab_setTimeZone">"सेट कर्येव टाइम जोन"</string>
+     <string name="permdesc_setTimeZone" product="tablet">"मंजूरी दिवान एप्पपी ज़ि तब्दील करि टेबलेट किस टाइम जोन नस."</string>
+     <string name="permdesc_setTimeZone" product="tv">"मंजूरी दिवान एप्पपी ज़ि तब्दील करि टीवी किस टाइम जोन नस."</string>
+     <string name="permdesc_setTimeZone" product="default">"मंजूरी दिवान एप्पपी ज़ि तब्दील करि फ़ोन किस टाइम जोन नस."</string>
+     <string name="permlab_getAccounts">"छडिव एकाउंट्स आलःस पेठ"</string>
+     <string name="permdesc_getAccounts" product="tablet">"मंजूरी दिवान एप्पपी ज़ि दियेयः टेबलेट केन जानन वालेन एकाउंटसन हियुन्द फिहरिस्त.आथ मंज़ हकेन आसीथ एकाउंट्स बनावनः आमित एप्लीकेशन सीत यिम तुहुय इनस्टॉल करवः."</string>
+     <string name="permdesc_getAccounts" product="tv">"मंजूरी दिवान एप्पपी ज़ि दियेयः टीवी केन जानन वालेन एकाउंटसन हियुन्द फिहरिस्त.आथ मंज़ हकेन आसीथ एकाउंट्स बनावनः आमित एप्लीकेशन सीत यिम तुहुय इनस्टॉल करवः."</string>
+     <string name="permdesc_getAccounts" product="default">"मंजूरी दिवान एप्पपी ज़ि दियेयः फ़ोन केन जानन वालेन एकाउंटसन हियुन्द फिहरिस्त.आथ मंज़ हकेन आसीथ एकाउंट्स बनावनः आमित एप्लीकेशन सीत यिम तुहुय इनस्टॉल करवः."</string>
+     <string name="permlab_accessNetworkState">"विछेव नेटवर्क कनेक्शनस"</string>
+     <string name="permdesc_accessNetworkState">""मंजूरी दिवान एप्पपी ज़ि विछे जानकअरी नेटवर्क कनेक्शनस मुतलिक मिसाल पंठ कुम नेटवर्क छि मौजूद तः जोडिथ." "</string>
+     <string name="permlab_createNetworkSockets">"फुल नेटवर्क रसाई"</string>
+     <string name="permdesc_createNetworkSockets">"मंजूरी दिवान एप्पपी ज़ि बनायिह नेटवर्क सॉकेट्स तः इस्तेमाल करि कस्टम नेटवर्क प्रोटोकॉल्स.ब्राउज़र तः बाकी एप्लीकेशन छि मुहया थवान वतह इन्टरनेटस पेठ डाटा सोज्नाह खात्र, इसलिए यह मंजूरी छे न ज़रूरत डाटा सोज़ुं इन्टरनेट पेठ."</string>
+     <string name="permlab_changeNetworkState">"बद्लाविव नेटवर्क राबितः"</string>
+     <string name="permdesc_changeNetworkState">"मंजूरी दिवान एप्पपी ज़ि बदलाई नेटवर्क रबितुक किSIM."</string>
+     <string name="permlab_changeTetherState">"बद्लायिव टेठेरेड राबितः."</string>
+     <string name="permdesc_changeTetherState">"मंजूरी दिवान एप्पपी ज़ि बदलाई टेठेरेड नेटवर्क रबितुक किSIM."</string>
+     <string name="permlab_accessWifiState">"विछेव Wi-Fi कनेक्शन"</string>
+     <string name="permdesc_accessWifiState">"मंजूरी दिवान एप्पपी ज़ि विच्छे जानकरी Wi-Fi नेटवर्किंग मुतलक, मिसाल पंठ यामे Wi-Fi छु कारगर तः नाव जोडिथ Wi-Fi आलः लुक."</string>
+     <string name="permlab_changeWifiState">"जोडिव तः मुन्कता कर्येव Wi-Fi पेठ"</string>
+     <string name="permdesc_changeWifiState">"मंजूरी दिवान एप्पपी ज़ि जोडिव तः मुन्कता करि Wi-Fi रसाई पॉइंट्स तः करि तब्दील आलः कॉन्फ़िगरेशन Wi-Fi नेटवर्क खात्र."</string>
+     <string name="permlab_changeWifiMulticastState">"मंज़ूर कर्येव Wi-Fi मल्टीकास्ट रिसेप्शन"</string>
+     <string name="permdesc_changeWifiMulticastState" product="tablet">"मंजूरी दिवान एप्पपी ज़ि बरामद करि पैकेट्स यिम सोज्नह आय सारनी आलःन मल्टीकास्ट पता इस्तेमाल सीत Wi-Fi नेटवर्क पेठ, तुहुंदिस टेबलेट्स न केह. यह करान इस्तेमाल वार्यह पॉवर नॉन-मल्टीकास्ट मोड खोत."</string>
+     <string name="permdesc_changeWifiMulticastState" product="tv">"मंजूरी दिवान एप्पपी ज़ि बरामद करि पैकेट्स यिम सोज्नह आय सारनी आलःन मल्टीकास्ट पता इस्तेमाल सीत Wi-Fi नेटवर्क पेठ, तुहुंदिस टीवी यस न केह. यह करान इस्तेमाल वार्यह पॉवर नॉन-मल्टीकास्ट मोड खोत."</string>
+     <string name="permdesc_changeWifiMulticastState" product="default">"मंजूरी दिवान एप्पपी ज़ि बरामद करि पैकेट्स यिम सोज्नह आय सारनी आलःन मल्टीकास्ट पता इस्तेमाल सीत Wi-Fi नेटवर्क पेठ, तुहुंदिस फ़ोन नस न केह. यह करान इस्तेमाल वार्यह पॉवर नॉन-मल्टीकास्ट मोड खोत."</string>
+     <string name="permlab_bluetoothAdmin">"रसाई ब्लूटूथ सेटिंग्स"</string>
+     <string name="permdesc_bluetoothAdmin" product="tablet">"मंजूरी दिवान एप्पपी ज़ि कॉन्फ़िगर करि आम ब्लूटूथ टेबलेट, तः ईजाद करनाः खात्र तः पेअर करि रिमोट आलःस सीत."</string>
+     <string name="permdesc_bluetoothAdmin" product="tv">"मंजूरी दिवान एप्पपी ज़ि कॉन्फ़िगर करि आम ब्लूटूथ टीवी, तः ईजाद करनाः खात्र तः पेअर करि रिमोट आलःस सीत."</string>
+     <string name="permdesc_bluetoothAdmin" product="default">"मंजूरी दिवान एप्पपी ज़ि कॉन्फ़िगर करि आम ब्लूटूथ फ़ोन, तः ईजाद करनाः खात्र तः पेअर करि रिमोट आलःस सीत."</string>
+     <string name="permlab_accessWimaxState">"जोडुन तः मुन्कता करुण WiMAX पेठ"</string>
+     <string name="permdesc_accessWimaxState">"मंजूरी दिवान एप्पपी ज़ि विच्छे यामे WiMAX छु कारगर तः जानकरी कुन्ति WiMAX नेटवर्क खात्र यिम छि"</string>
+     <string name="permlab_changeWimaxState">"बद्लायेव WiMAX स्टेट"</string>
+     <string name="permdesc_changeWimaxState" product="tablet">"मंजूरी दिवान एप्पपी ज़ि जुडिः टेबलेट सीत तः मुन्कतः करि टेबलेट WiMAX नेटवर्क पेठ."</string>
+     <string name="permdesc_changeWimaxState" product="tv">"मंजूरी दिवान एप्पपी ज़ि जुडिः TV सीत तः मुन्कतः करि टीवी WiMAX नेटवर्क पेठ."</string>
+     <string name="permdesc_changeWimaxState" product="default">"मंजूरी दिवान एप्पपी ज़ि जुडिः फ़ोन सीत तः मुन्कतः करि फ़ोन WiMAX नेटवर्क पेठ."</string>
+     <string name="permlab_bluetooth">"पैर ब्लूटूथ नेटवर्कस सीत"</string>
+     <string name="permdesc_bluetooth" product="tablet">"मंजूरी दिवान एप्पपी ज़ि विच्छे टेबलेट पेठ ब्लूटूथ कॉन्फ़िगरेशन, तः बे बनायी तः मटी हय्यः कनेक्शन पैयार्ड आलः सीत."</string>
+     <string name="permdesc_bluetooth" product="tv">"मंजूरी दिवान एप्पपी ज़ि विच्छे टीवी पेठ ब्लूटूथ कॉन्फ़िगरेशन, तः बे बनायी तः मटी हय्यः कनेक्शन पैयार्ड आलः सीत."</string>
+     <string name="permdesc_bluetooth" product="default">"मंजूरी दिवान एप्पपी ज़ि विच्छे फ़ोन पेठ ब्लूटूथ कॉन्फ़िगरेशन, तः बे बनायी तः मटी हय्यः कनेक्शन पैयार्ड आलः सीत."</string>
+     <string name="permlab_nfc">"काबू फील्ड कम्युनिकेशन नज़दीक"</string>
+     <string name="permdesc_nfc">"मंजूरी करि एप्प ज़ि राबितः करि नज्दीकिक फील्ड कम्युनिकेशन (NFC) टैग्स, कार्ड्स, तः परन वअल."</string>
+     <string name="permlab_disableKeyguard">"नाकार तुहुंद स्क्रीन लॉक"</string>
+     <string name="permdesc_disableKeyguard">"मंजूरी दिवान एप्पपी ज़ि करि नाकार कीलॉक तः कः आथ सीत मुंसलिक पासवर्ड हिफाज़त. मिसाल पंठ, फ़ोन करि नाकार कीलॉक येम्सात बरामद आसि गसान येन वजेन कॉल, पतः कारगर सप्दान येम्सात कॉल आसि ख़त्म सप्दान." "</string>
+     <string name="permlab_manageFingerprint">"मैनेज कर्येव अँगूठनिशान हार्डवेयर"</string>
+     <string name="permdesc_manageFingerprint">"मंजूरी दिवान एप्पपी ज़ि लागू करि जोड्नुक तः ख़ारिज अँगूठनिशान तरीकः इस्तेमाल खात्र.""</string>
+     <string name="permlab_useFingerprint">"इस्तेमाल कर्येव अँगूठनिशान हार्डवेयर"</string>
+     <string name="permdesc_useFingerprint">"मंजूरी दिवान ज़ि एप्प करि इस्तेमाल अँगूठनिशान हार्डवेयर सबूत रअंग"</string>
+     <string name="fingerprint_acquired_partial">"अड़यहान अँगूठनिशान आव लबनह.महरबानी करिथ कर्रिव दुबारह कोशिश."</string>
+     <string name="fingerprint_acquired_insufficient">"हकि नः चलिथ अँगूठनिशान. महरबानी करिथ कर्रिव दुबारह कोशिश."</string>
+     <string name="fingerprint_acquired_imager_dirty">""अँगूठनिशान सेंसर छु वार्यह खराब.महरबानी करिथ कर्येव साफ़ तः दुबारह कोशिश." "</string>
+     <string name="fingerprint_acquired_too_fast">""अँगूठ पोक वार्यह तेज़.महरबानी करिथ कर्येव दुबारह कोशिश." "</string>
+     <string name="fingerprint_acquired_too_slow">""अँगूठ पोक वार्यह लोत.महरबानी करिथ कर्येव दुबारह कोशिश." "</string>
+     <string name="fingerprint_error_hw_not_available">"अँगूठनिशान हार्डवेयर छु नः दस्तियाब."</string>
+     <string name="fingerprint_error_no_space">"अँगूठनिशान आव नः जमा करनः. महरबानी करिथ मोक्लायेव मौजूद अँगूठनिशान."</string>
+     <string name="fingerprint_error_timeout">""अँगूठनिशान वक़्त सपदुन वोत.दुबारह कोशिश." "</string>
+     <string name="fingerprint_error_canceled">"अँगूठनिशान ऑपरेशन गो रद."</string>
+     <string name="fingerprint_error_lockout">"वार्यह ज्याद कोशिश. हना गसिथ कर्येव दुबाराह कोशिश."</string>
+     <string name="fingerprint_error_unable_to_process">"दुबारह कोशिश."</string>
+     <string name="fingerprint_name_template">"अँगूठ <xliff:g id="fingerId" example="1">%d</xliff:g>"</string>
+     <string name="fingerprint_icon_content_description">"अँगूठनिशान आइकॉन "</string>
+     <string name="permlab_readSyncSettings">"पर्रिव सिंक्रोनाइज सेटिंग्स"</string>
+     <string name="permdesc_readSyncSettings">""मंजूरी दिवान एप्पपी ज़ि पर्रिः सिंक्रोनाइज सेटिंग्स एकाउंट खात्र. मिसाल पंठ, यः हकि हाविथ कि लूख एप्प छा सिंक्रोनाइ एकाउंटस सीत." "</string>
+     <string name="permlab_writeSyncSettings">"टोगल सिंक्रोनिज़ यल त बंद"</string>
+     <string name="permdesc_writeSyncSettings">"दियिव इजाज़त एप्लीकेशन नि सिंक्रोनिज़ सेटिंग मॉडिफाई करनः  बापथ अकाउंट खात्र.मिसाल, यि  हेकव इस्तिमाल करिथ लुख एप्प सिंक्रोनिज़ इनेबल करनः  बापथ अकाउंटस  सीथ."</string>
+     <string name="permlab_readSyncStats">"पडिव सिंक्रोनिज़ स्टेटिस्टिक्स "</string>
+     <string name="permdesc_readSyncStats">"दियिव इजाज़त एप्लीकेशन नि पडनः खात्रसिंक्रोनिज़ स्टैट्स अकाउंट खात्र ,सिंक्रोनिज़ कामि हिन्ज़ हिस्ट्री सान बेयि कोतःडाटा छु सिंक्रोनिज़ गोमुत."</string>
+     <string name="permlab_sdcardRead" product="nosdcard">"पडिव कंटेंट्स पन्नी USB स्टोरजिक "</string>
+     <string name="permlab_sdcardRead" product="default">"पडिव कंटेन्ट्स पन्नी SD कार्डिक "</string>
+     <string name="permdesc_sdcardRead" product="nosdcard">"दियिव इजाज़त एप्लीकेशन नि कंटेंट्स पडनः खात्र तोहंज़ी USB सटोरेजिक."</string>
+     <string name="permdesc_sdcardRead" product="default">"दियिव इजाज़त एप्लीकेशन नि कंटेंट्स पडनः खात्र तोहंज़ी SD कार्डिक."</string>
+     <string name="permlab_sdcardWrite" product="nosdcard">"मॉडिफाई या हटायिव कंटेंट्स पन्नी USB सटोरेजुक"</string>
+     <string name="permlab_sdcardWrite" product="default">"मॉडिफाई या हटायिव कंटेंट्स पन्नी SD कार्डिक"</string>
+     <string name="permdesc_sdcardWrite" product="nosdcard">"दियिव इजाज़त एप्लीकेशन नि लेखनः खात्र USB स्टोरेज्स."</string>
+     <string name="permdesc_sdcardWrite" product="default">"दियिव इजाज़त एप्लीकेशन नि लेखनः खात्र SD कार्ड्स .""</string>
+     <string name="permlab_use_sip">"बनायिव/रटिव SIP काल्ज़"</string>
+     <string name="permdesc_use_sip">""दियिव इजाज़त एप्लीकेशन नि SIP काल्ज़ बनावनः त बेय रटनः खात्र."  "</string>
+     <string name="permlab_register_sim_subscription">"करिव दर्ज नोव टेलिकॉम SIM कनेक्शन"</string>
+     <string name="permdesc_register_sim_subscription">"दियिव इजाज़त एप्लीकेशन नि नोव टेलिकॉम SIM कनेक्शन दर्ज करनः बापथ"</string>
+     <string name="permlab_register_call_provider">"दर्ज करिव नोव टेलिकॉम कनेक्शन."</string>
+     <string name="permdesc_register_call_provider">"दियिव इजाज़त एप्लीकेशन नि नोव टेलिकॉम कनेक्शन दर्ज करनः खात्र."</string>
+     <string name="permlab_connection_manager">"सम्भालिव टेलिकॉम कनेक्शन"</string>
+     <string name="permdesc_connection_manager">"दियिव इजाज़त एप्लीकेशन नि टेलिकॉम कनेक्शन संभालनः खात्र"</string>
+     <string name="permlab_bind_incall_service">"जुडिव इन-कॉल स्क्रीन नस सीथ"</string>
+     <string name="permdesc_bind_incall_service">"दियिव इजाज़त एप्लीकेशन नि काबू करनस मंज़ कर त किथ्केथ छु ग्राख वुछन इन कॉल स्क्रीन."</string>
+     <string name="permlab_bind_connection_service">"जुडिव टेलीफोनी सहुलियातन सीथ "</string>
+     <string name="permdesc_bind_connection_service">"दियिव इजाज़त एप्लीकेशन नि जुड्नस मंज़ टेलीफोनी सोहुलियातन सीथ कॉल्स बनावनः /रटनः खात्र."</string>
+     <string name="permlab_control_incall_experience">"फराहम करिव इन-कॉल ग्राख तजरुब."</string>
+     <string name="permdesc_control_incall_experience">"दियिव इजाज़त एप्लीकेशन नि इन-कॉल ग्राख तजरुब फराहम करनस  मंज़."</string>
+     <string name="permlab_readNetworkUsageHistory">"पडिव पोत्काल नेटवर्क युज़ेज."</string>
+     <string name="permdesc_readNetworkUsageHistory">"इजाज़त दियिव एप्लीकेशन नि पड्नस पोत्काल नेटवर्क युज़ेज मखसूस नेटवर्क त एप्प्स."</string>
+     <string name="permlab_manageNetworkPolicy">"समभालिव नेटवर्क पालिसी ."</string>
+     <string name="permdesc_manageNetworkPolicy">"दियिव इजाज़त एप्लीकेशन नि संभालनस मंज़ नेटवर्क पालिसी बेय वाज़ेह करनस एप्प मखसूस तरीक."</string>
+     <string name="permlab_modifyNetworkAccounting">"बदलाव करिव नेटवर्क युज़ेज एकाउंटिंग"</string>
+     <string name="permdesc_modifyNetworkAccounting">"दियिव इजाज़त एप्लीकेशन नि बद्लाव्नस मंज़ किथ्केथ छु नेटवर्क युज़ेज जम्मः गसन अप्प्स खिलाफ.  आम अप्प्स देस इस्तिमाल न गसन वैल."</string>
+     <string name="permlab_accessNotifications">"दाखिल इश्तियार"</string>
+     <string name="permdesc_accessNotifications">"दियिव इजाज़त एप्लीकेशन नि वापस अननस, समज्नस बेय सेओद इश्तियार, तिमव सान यिम बाकियव एप्प्स ज़र्यी छापनः यिवन."</string>
+     <string name="permlab_bindNotificationListenerService">"रलिव इश्तियार बोज़न वालेन सोहुलियातन सीथ."</string>
+     <string name="permdesc_bindNotificationListenerService">"दियिव इजाज़त मालिकस कि सु माँनि थदि पायुक सम्खुन इश्तियार बोज़नवालेन  सहूलियातन हुन्द. पज़िनः ज़ंह ज़रूरत थावुन आम एप्प्स खात्र."</string>
+     <string name="permlab_bindConditionProviderService">"रलिव हालात फराहम करन वाजनेन सोहुलियातन सीथ"</string>
+     <string name="permdesc_bindConditionProviderService">""दियिव इजाजत मलिक्स कि  सु माँनि थदि पयुक सम्खुन शर्त फराहम करन  वालेन सहूलियातन हुन्द.पज़िनः ज़हं ज़रूरत थावुन आम एप्प्स खात्र." "</string>
+     <string name="permlab_bindDreamService">"रलिव खाब सहुलियातन सीथ"</string>
+     <string name="permdesc_bindDreamService">""दियिव इजाजत मलिक्स कि  सु माँनि थदि पयुक सम्खुन खाब सहुलियातन हुन्द. पज़िनः ज़हं ज़रूरत थावुन आम एप्प्स खात्र." "</string>
+     <string name="permlab_invokeCarrierSetup">"शुरू करिव पक्नाव्नुक-फराहम गमुत कॉन्फ़िगरेशन एप्प"</string>
+     <string name="permdesc_invokeCarrierSetup">""दियिव इजाजत मलिक्स कि  सु करि शुरू पक्नाव्नुक-फराहम गमुत कॉन्फ़िगरेशन एप्प..पज़िनः ज़हं ज़रूरत थावुन आम एप्प्स खात्र." "</string>
+     <string name="permlab_accessNetworkConditions">"बूज़िव मुशाहिदह नेटवर्क शर्तन पेठ."</string>
+     <string name="permdesc_accessNetworkConditions">"दियिव इजाज़त एप्लीकेशन नि बोज़्नस मुशाहिदह नेटवर्क शर्तन पेठ.पज़िनः ज़रुरथ थावुन आम अप्प्स खात्र."</string>
+     <string name="permlab_setInputCalibration">"बदलायिव इनपुट देवीचे सलाहियत."</string>
+     <string name="permdesc_setInputCalibration">"दियिव इजाज़त एप्लीकेशन नि संभालनस टच स्क्रीन नुक केलीब्रेशन पेरेमीटर टच स्क्रीन नुक.पज़िनः ज़रुरथ थावुन आम एप्प्स खात्र."</string>
+     <string name="permlab_accessDrmCertificates">"एक्सस DRM सर्टिफिकेट"</string>
+     <string name="permdesc_accessDrmCertificates">"दियिव इजाज़त एप्लीकेशन नि फराहम करनस बेय इस्तिमाल करनस DRM सर्टिफिकेट.पज़िनः ज़रुरथ थावुन आम एप्प्स खात्र."</string>
+     <string name="permlab_handoverStatus">"रटिव एंड्राइड बीम ट्रांसफर स्टेटस"</string>
+     <string name="permdesc_handoverStatus">"दियिव इजाज़त एप्लीकेशन नि खबर रटनः खात्र मोजूद एंड्राइड बीम ट्रांसफर मुतालिख "</string>
+     <string name="permlab_removeDrmCertificates">"हटायिव DRM सर्टिफिकेट्स"</string>
+     <string name="permdesc_removeDrmCertificates">"दियिव इजाज़त एप्लीकेशन नि हटावनः खात्र DRM सर्टिफिकेट्स.पज़िनः ज़रुरथ थावुन आम एप्प्स खात्र."</string>
+     <string name="permlab_bindCarrierMessagingService">"रलिव मुस्तकबिल मेसेजिंज सहुलियातन सीथ"</string>
+     <string name="permdesc_bindCarrierMessagingService">""दियिव इजाज़त रटनवालिस की सो मानिकस टॉप लेवल इंटरफ़ेस करियर मेसेजिंज सहूलियातन सीथ. ज़ह आसनः ज़रूरत आम एप्पस खात्र."  "</string>
+     <string name="permlab_bindCarrierServices">"रलिव मुस्तकबिल सहुलियातन सीथ"</string>
+     <string name="permdesc_bindCarrierServices">"दियिव इजाज़त मालीकस राल्नस मुस्तकबिल सहुलियातन सीथ.पज़िनः ज़रुरथ थावुन आम एप्प्स खात्र."</string>
+     <string name="permlab_access_notification_policy">"रसाई मः कर्यिव थोथ"</string>
+     <string name="permdesc_access_notification_policy">"दियिव इजाज़त एप्लीकेशन नि पड़नस त लेख्नस माँ करिव हर्जः कॉन्फ़िगरेशन."</string>
+     <string name="policylab_limitPassword">"थाविव पासवर्ड तरीक"</string>
+     <string name="policydesc_limitPassword">"काबू करिव ज़ेछर बेय निशान यिमन इजाज़त छु स्क्रीन बंद पासवर्ड त PIN मंज़."</string>
+     <string name="policylab_watchLogin">"पज़िनः ज़रुरथ थावुन आम एप्प्स खात्र.""</string>
+     <string name="policydesc_watchLogin" product="tablet">"नज़र थाविव गलत टाइप गसन वालेन पासवर्डअन हूँ तेदाद येलिः यल्लाह त्रावुन आसी स्क्रीन,बेय करिव बंद टेबलेट या हटायिव सोरुय टेबलेटउक मवाद अगर ज़्यादः गलत पासवर्ड आय टाइप करनह."</string>
+     <string name="policydesc_watchLogin" product="TV">"नज़र थाविव गलत टाइप गसन वालेन पासवर्डअन हूँ तेदाद येलिः यल्लाह त्रावुन आसी स्क्रीन,बेय करिव बंद टीवी  या हटायिव सोरुय टीवी युक मवाद अगर ज़्यादः गलत पासवर्ड आय टाइप करनह."</string>
+     <string name="policydesc_watchLogin" product="default">"नज़र थाविव गलत टाइप गसन वालेन पासवर्डअन हूँ तेदाद येलिः यल्लाह त्रावुन आसी स्क्रीन,बेय करिव बंद फ़ोन या हटायिव सोरुय फ़ोनउक  मवाद अगर ज़्यादः गलत पासवर्ड आय टाइप करनह."</string>
+     <string name="policydesc_watchLogin_secondaryUser" product="tablet">"नज़र थाविव गलत टाइप गसन वालेन पासवर्डअन हूँ तेदाद येलिः यल्लाह त्रावुन आसी स्क्रीन,बेय करिव बंद टेबलेट या हटायिव सोरुय ग्राख सुंद मवाद अगर ज़्यादः गलत पासवर्ड आय टाइप करनह."</string>
+     <string name="policydesc_watchLogin_secondaryUser" product="TV">"नज़र थाविव गलत टाइप गसन वालेन पासवर्डअन हूँ तेदाद येलिः यल्लाह त्रावुन आसी स्क्रीन,बेय करिव बंद टीवी या हटायिव सोरुय ग्राख सुंद मवाद अगर ज़्यादः गलत पासवर्ड आय टाइप करनह."</string>
+     <string name="policydesc_watchLogin_secondaryUser" product="default">"नज़र थाविव गलत टाइप गसन वालेन पासवर्डअन हूँ तेदाद येलिः यल्लाह त्रावुन आसी स्क्रीन,बेय करिव बंद फ़ोन या हटायिव सोरुय ग्राख सुंद मवाद अगर ज़्यादः गलत पासवर्ड आय टाइप करनह."</string>
+     <string name="policylab_resetPassword">"बदलायिव स्क्रीन लॉक"</string>
+     <string name="policydesc_resetPassword">"बदलायिव स्क्रीन लॉक."</string>
+     <string name="policylab_forceLock">"बंद करिव स्क्रीन"</string>
+     <string name="policydesc_forceLock">"काबुह कित्थ्केथ त कर छु स्क्रीन बंद गसन"</string>
+     <string name="policylab_wipeData">"हटायिव सोरुय मवाद"</string>
+     <string name="policydesc_wipeData" product="tablet">"हटायिव टेबलेटउक मवाद कांह ति धमकी दिननः वराय फैक्ट्री डाटा रिसेट करिथ."</string>
+     <string name="policydesc_wipeData" product="tv">"हटायिव टीवी युक मवाद कांह ति धमकी दिनः वराय फैक्ट्री रिसेट करिथ."</string>
+     <string name="policydesc_wipeData" product="default">"हटायिव फ़ोनउक मवाद कांह ति धमकी दिनः वराय फैक्ट्री रिसेट करिथ."</string>
+     <string name="policylab_wipeData_secondaryUser">"हटायिव ग्राख सुन्द मवाद"</string>
+     <string name="policydesc_wipeData_secondaryUser" product="tablet">"हटायिव यि ग्राख सुन्द मवाद येथ टेबलेट्स पेठ धमकी वराय."</string>
+     <string name="policydesc_wipeData_secondaryUser" product="tv">"हटायिव यि ग्राख सुन्द मवाद येथ टीवी पेठ धमकी वराय."</string>
+     <string name="policydesc_wipeData_secondaryUser" product="default">"हटायिव यि ग्राख सुन्द मवाद येथ फ़ोनअस  पेठ धमकी वराय.""</string>
+     <string name="policylab_setGlobalProxy">"थाविव डिवाइस ग्लोबल प्रॉक्सी"</string>
+     <string name="policydesc_setGlobalProxy">"थाविव डिवाइस ग्लोबल प्रॉक्सी इस्तिमाल करनः खात्र येलिः पालिसी आसि हाविथ.खाली हेकि मालिख थाविथ ग्लोबल प्रॉक्सी."</string>
+     <string name="policylab_expirePassword">"थाविव स्क्रीन बंद पासवर्ड एक्सपयरेशन"</string>
+     <string name="policydesc_expirePassword">"बदलायिव किथ्केथ हेकव स्क्रीनबंद पासवर्ड,PIN,या पैटर्न बद्लाविथ"</string>
+     <string name="policylab_encryptedStorage">"थायिव स्टोरेज महफूज़"</string>
+     <string name="policydesc_encryptedStorage">"ज़रूरत छु जमा गमुत मवाद महफूज़ थावुन."</string>
+     <string name="policylab_disableCamera">"कैमरा करिव  बंद"</string>
+     <string name="policydesc_disableCamera">"बचाईव इस्तमाल तमाम कैमराहन हुन्द"</string>
+     <string name="policylab_disableKeyguardFeatures">"बंद करिव केंह स्क्रीन बंद कामिह:"</string>
+     <string name="policydesc_disableKeyguardFeatures">"बचायिव इस्तमाल केंह स्क्रीन बंद कामिह."</string>
+     <string-array name="phoneTypes">
+        <item>"गर्रह"</item>
+        <item>"मोबाइल"</item>
+        <item>"वर्क"</item>
+        <item>"काम फैक्स"</item>
+        <item>"गर्रह फैक्स"</item>
+        <item>"पेजर"</item>
+        <item>"बाकि"</item>
+        <item>"रेवाज"</item>
+    </string-array>
+     <string-array name="emailAddressTypes">
+        <item>"गर्रह"</item>
+        <item>"वर्क"</item>
+        <item>"बाकि"</item>
+        <item>"रेवाज"</item>
+    </string-array>
+     <string-array name="postalAddressTypes">
+        <item>"गर्रह"</item>
+        <item>"वर्क"</item>
+        <item>"बाकि"</item>
+        <item>"रेवाज"</item>
+    </string-array>
+     <string-array name="imAddressTypes">
+        <item>"गर्रह"</item>
+        <item>"वर्क"</item>
+        <item>"बाकि"</item>
+        <item>"रेवाज"</item>
+    </string-array>
+     <string-array name="organizationTypes">
+        <item>"वर्क"</item>
+        <item>"बाकि"</item>
+        <item>"रेवाज"</item>
+    </string-array>
+     <string-array name="imProtocols">
+        <item>"AIM"</item>
+        <item>"Windows Live"</item>
+        <item>"याहू"</item>
+        <item>"Skype"</item>
+        <item>"QQ"</item>
+        <item>"Google Talk"</item>
+        <item>"ICQ"</item>
+        <item>"Jabber"</item>
+    </string-array>
+     <string name="phoneTypeCustom">"रेवाज"</string>
+     <string name="phoneTypeHome">"गर्रह"</string>
+     <string name="phoneTypeMobile">"मोबाइल"</string>
+     <string name="phoneTypeWork">"वर्क"</string>
+     <string name="phoneTypeFaxWork">"काम फैक्स"</string>
+     <string name="phoneTypeFaxHome">"गर्रह फैक्स"</string>
+     <string name="phoneTypePager">"पेजर"</string>
+     <string name="phoneTypeOther">"बाकि"</string>
+     <string name="phoneTypeCallback">"कॉल बेक"</string>
+     <string name="phoneTypeCar">""कार" "</string>
+     <string name="phoneTypeCompanyMain">"कोम्पनु मैंन"</string>
+     <string name="phoneTypeMain">"मैंन""</string>
+     <string name="phoneTypeOtherFax">"बाकि फैक्स"</string>
+     <string name="phoneTypeRadio">"रेडियो"</string>
+     <string name="phoneTypeTelex">"टेलेक्स"</string>
+     <string name="phoneTypeWorkMobile">"काम मोबाइल"</string>
+     <string name="phoneTypeWorkPager">"काम पेजर"</string>
+     <string name="phoneTypeAssistant">"मददगार"</string>
+     <string name="phoneTypeMms">"MMS"</string>
+     <string name="eventTypeCustom">"रेवाज"</string>
+     <string name="eventTypeBirthday">"ज़ादोह"</string>
+     <string name="eventTypeAnniversary">"एनिवर्सरी"</string>
+     <string name="eventTypeOther">"बाकि"</string>
+     <string name="emailTypeCustom">"रेवाज"</string>
+     <string name="emailTypeHome">"गर्रह"</string>
+     <string name="emailTypeWork">"वर्क"</string>
+     <string name="emailTypeOther">"बाकि"</string>
+     <string name="emailTypeMobile">"मोबाइल"</string>
+     <string name="postalTypeCustom">"रेवाज"</string>
+     <string name="postalTypeHome">"गर्रह"</string>
+     <string name="postalTypeWork">"वर्क"</string>
+     <string name="postalTypeOther">"बाकि"</string>
+     <string name="imTypeCustom">"रेवाज"</string>
+     <string name="imTypeHome">"गर्रह"</string>
+     <string name="imTypeWork">"वर्क"</string>
+     <string name="imTypeOther">"बाकि"</string>
+     <string name="imProtocolCustom">"रेवाज"</string>
+     <string name="imProtocolYahoo">"याहू"</string>
+     <string name="imProtocolGoogleTalk">"हेन्गोउट"</string>
+     <string name="orgTypeWork">"वर्क"</string>
+     <string name="orgTypeOther">"बाकि"</string>
+     <string name="orgTypeCustom">"रेवाज"</string>
+     <string name="relationTypeCustom">"रेवाज"</string>
+     <string name="relationTypeAssistant">"मददगार"</string>
+     <string name="relationTypeBrother">"बूय"</string>
+     <string name="relationTypeChild">"शुड"</string>
+     <string name="relationTypeDomesticPartner">"घरुक साथी"</string>
+     <string name="relationTypeFather">"मौल"</string>
+     <string name="relationTypeFriend">"दौस"</string>
+     <string name="relationTypeManager">"मेनेजर"</string>
+     <string name="relationTypeMother">"मौज"</string>
+     <string name="relationTypeParent">"मौल मौज"</string>
+     <string name="relationTypePartner">"साथी"</string>
+     <string name="relationTypeReferredBy">"सौज़्मुत केम"</string>
+     <string name="relationTypeRelative">"रिश्तदार"</string>
+     <string name="relationTypeSister">"बेन्नी"</string>
+     <string name="relationTypeSpouse">"शरीक"</string>
+     <string name="sipAddressTypeCustom">"रेवाज"</string>
+     <string name="sipAddressTypeHome">"गर्रह"</string>
+     <string name="sipAddressTypeWork">"वर्क"</string>
+     <string name="sipAddressTypeOther">"बाकि"</string>
+     <string name="quick_contacts_not_available">"कांह एप्लीकेशन टी आय न लबनः यी कंटेंट वुछनः खात्र"</string>
+     <string name="keyguard_password_enter_pin_code">"करिव टाइप PIN कोड"</string>
+     <string name="keyguard_password_enter_puk_code">"करिव टाइप PUK त नोव PIN कोड"</string>
+     <string name="keyguard_password_enter_puk_prompt">"PUK कोड"</string>
+     <string name="keyguard_password_enter_pin_prompt">"नोव PIN कोड"</string>
+     <string name="keyguard_password_entry_touch_hint">"<font size="17">करिव ज़ीर पासवर्ड टाइप करनः खात्र</font>"</string>
+     <string name="keyguard_password_enter_password_code">"टाइप करिव पासवर्ड येल्लह त्रावनः खात्र"</string>
+     <string name="keyguard_password_enter_pin_password_code">"टाइप करिव PIN येल्लह त्रावनः खात्र"</string>
+     <string name="keyguard_password_wrong_pin_code">"गलत PIN कोड"</string>
+     <string name="keyguard_label_text">"येल्लह त्रावबह खात्र दबयिव मेनु पततः O."</string>
+     <string name="emergency_call_dialog_number_for_display">"मजबूरी नंबर"</string>
+     <string name="lockscreen_carrier_default">"कहेंह नंबर न"</string>
+     <string name="lockscreen_screen_locked">"स्क्रीन बंद गोमुत"</string>
+     <string name="lockscreen_instructions_when_pattern_enabled">"दबयिव मेनू येल्लह त्रावनः खात्र या मजबूरी नंबर थावनः खात्र"</string>
+     <string name="lockscreen_instructions_when_pattern_disabled">"दबयिव मेनू येल्लह त्रावनः खात्र"</string>
+     <string name="lockscreen_pattern_instructions">"बनायिव पैटर्न येल्लह त्रावनः खात्र"</string>
+     <string name="lockscreen_emergency_call">"मजबूरी"</string>
+     <string name="lockscreen_return_to_call">"फीरिव वापस कॉललि पेठ"</string>
+     <string name="lockscreen_pattern_correct">"ठीक!"</string>
+     <string name="lockscreen_pattern_wrong">"बेय करिव कूशिश"</string>
+     <string name="lockscreen_password_wrong">"बेय करिव कूशिश"</string>
+     <string name="faceunlock_multiple_failures">"ज्याध्ह बुथ येल्लह कुशिशि गय ख़त्म"</string>
+     <string name="lockscreen_missing_sim_message_short">"कहेंह ति SIM कार्ड छु नः"</string>
+     <string name="lockscreen_missing_sim_message" product="tablet">"कहेंह ति SIM कार्ड छु नः टेबलेट्स मंज़"</string>
+     <string name="lockscreen_missing_sim_message" product="tv">"कहेंह ति SIM कार्ड छु नः टीवी यस मंज़""</string>
+     <string name="lockscreen_missing_sim_message" product="default">"कहेंह ति SIM कार्ड छु नः फ़ोन्स मंज़""</string>
+     <string name="lockscreen_missing_sim_instructions">"त्राविव SIM कार्ड"</string>
+     <string name="lockscreen_missing_sim_instructions_long">"SIM कार्ड छु रोमुत या छु न पडून लायख. त्रविव SIM कार्ड"</string>
+     <string name="lockscreen_permanent_disabled_sim_message_short">"बेफहिद SIM कार्ड"</string>
+     <string name="lockscreen_permanent_disabled_sim_instructions">"तुहुंद SIM कार्ड छु आमुत हमेश खात्र बंद करनः .\nकरिव राबतह पननिस वायरलेस सहूलियात फराहम करन वालिस सीथ बेयिस SIM कार्ड खात्र."</string>
+     <string name="lockscreen_transport_prev_description">"पतिम ट्रैक"</string>
+     <string name="lockscreen_transport_next_description">"ब्याख ट्रैक"</string>
+     <string name="lockscreen_transport_pause_description">"रुकिव"</string>
+     <string name="lockscreen_transport_play_description">"चलायिव"</string>
+     <string name="lockscreen_transport_stop_description">"रुकिव"</string>
+     <string name="lockscreen_transport_rew_description">"पथ फीरिव"</string>
+     <string name="lockscreen_transport_ffw_description">"त्येज़ ब्रोंठ पकुन"</string>
+     <string name="emergency_calls_only">"मजबूरी कॉल्स खाली"</string>
+     <string name="lockscreen_network_locked_message">"नेटवर्क बंद गोमुत"</string>
+     <string name="lockscreen_sim_puk_locked_message">"SIM कार्ड छु PUK -बंद गोमुत"</string>
+     <string name="lockscreen_sim_puk_locked_instructions">"वुछिव यूजर गाइड या करिव राब्तः कस्टमर केयर्स सीथ"</string>
+     <string name="lockscreen_sim_locked_message">"SIM कार्ड छु बंद गोमुत"</string>
+     <string name="lockscreen_sim_unlock_progress_dialog_message">"SIM कार्ड येल्लह गसन"</string>
+     <string name="lockscreen_too_many_failed_attempts_dialog_message">"तुही छुव येल्लह त्रावनुक पैटर्न गलत बनोवमुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\n कूशिश बेयि <xliff:g id="number">%d</xliff:g> सेकंड्स. "</string>
+     <string name="lockscreen_too_many_failed_password_attempts_dialog_message">"तुही छु पनुन पासवर्ड गलत टाइप कोर्मुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\n कूशिश बेय <xliff:g id="number">%d</xliff:g> सेकंड्स"</string>
+     <string name="lockscreen_too_many_failed_pin_attempts_dialog_message">"तुही छु पनुन PIN गलत टाइप कोर्मुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\nबेय कूशिश <xliff:g id="number">%d</xliff:g> सेकंड्स."</string>
+     <string name="lockscreen_failed_attempts_almost_glogin" product="tablet">"तुही छु पनुन येल्लह त्राव्नुक पैटर्न गलत बनोवमुत <xliff:g id="number">%d</xliff:g>वक़्त.पततः <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि,तुही यी वननः पनुन टेबलेट येल्लह त्रावुन इस्तिमाल करिथ गूगल साइन इन.\n\nबेय कूशिश <xliff:g id="number">%d</xliff:g> सेकंड्स."</string>
+     <string name="lockscreen_failed_attempts_almost_glogin" product="tv">"तुही छु गलत बनामुत पनुन येल्लह त्रव्नुक पैटर्न <xliff:g id="number">%d</xliff:g> वक़्त.पततः <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि,तुही यियी वननः त्रयिव येल्लह पनुन TV इस्तिमाल करिथ पनुन गूगल साइन इन. \n\nबेयि कूशिश <xliff:g id="number">%d</xliff:g>  सेकंड्स. "</string>
+     <string name="lockscreen_failed_attempts_almost_glogin" product="default">""तुही छु  गलत बनामुत पनुन येल्लह त्रव्नुक पैटर्न <xliff:g id="number">%d</xliff:g> वक़्त. पततः <xliff:g id="number">%d</xliff:g>  ज़्यादः नाकामयाब कूशिशि , तुही यियी वननः त्रयिव येल्लह पनुन फ़ोन इस्तिमाल करिथ गूगल साइन इन.\n\nबेय कूशिश <xliff:g id="number">%d</xliff:g>  सेकंड्स. " "</string>
+     <string name="lockscreen_failed_attempts_almost_at_wipe" product="tablet">"तुही छु  गलत कूशिश करमच टेबलेट खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. पततः  <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि ,टेबलेट यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन बेय सोरुय ग्राख सुन्द मवाद गसि ख़त्म."</string>
+     <string name="lockscreen_failed_attempts_almost_at_wipe" product="tv">"तुही छु  गलत कूशिश करमच TV खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. पततः <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि ,TV  यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन बेय सोरुय ग्राख सुन्द मवाद गसि ख़त्म."</string>
+     <string name="lockscreen_failed_attempts_almost_at_wipe" product="default">""तुही छु  गलत कूशिश करमच फ़ोन खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. पततः <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि ,फ़ोन  यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन बेय सोरुय ग्राख सुन्द मवाद गसि ख़त्म"</string>
+     <string name="lockscreen_failed_attempts_now_wiping" product="tablet">""तुही छु  गलत कूशिश करमच टेबलेट खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. टेबलेट यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन." "</string>
+     <string name="lockscreen_failed_attempts_now_wiping" product="tv">""तुही छु  गलत कूशिश करमच TV  खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. TV यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन." "</string>
+     <string name="lockscreen_failed_attempts_now_wiping" product="default">"तुही छु  गलत कूशिश करमच TV  खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. फ़ोन यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन."</string>
+     <string name="lockscreen_too_many_failed_attempts_countdown">"बेय करिव कूशिश <xliff:g id="number">%d</xliff:g> सेकंड्स."</string>
+     <string name="lockscreen_forgot_pattern_button_text">"मशिथ गोमुत पैटर्न?"</string>
+     <string name="lockscreen_glogin_forgot_pattern">"खातः यल्लह "</string>
+     <string name="lockscreen_glogin_too_many_attempts">"वार्या ज़्यादः पैटर्न कूशिशि "</string>
+     <string name="lockscreen_glogin_instructions">"येल्लह त्रावनः बापथ, करिव साइन पन्निस गूगल एकाउंट्स सीथ."</string>
+     <string name="lockscreen_glogin_username_hint">"ग्राख सुन्द नाव(ईमेल)"</string>
+     <string name="lockscreen_glogin_password_hint">"पासवर्ड"</string>
+     <string name="lockscreen_glogin_submit_button">"साइन इन"</string>
+     <string name="lockscreen_glogin_invalid_input">"गलत ग्राख सुन्द नाव या पासवर्ड."</string>
+     <string name="lockscreen_glogin_account_recovery_hint">"मशिथ गोमुत पनुन ग्राख सुन्द नाव बया पासवर्ड\?\n चक्रः       <b>google.com/accounts/recovery</b>."</string>
+     <string name="lockscreen_glogin_checking_password">"सानडून ..."</string>
+     <string name="lockscreen_unlock_label">"येल्लह"</string>
+     <string name="lockscreen_sound_on_label">"आवाज़ येल्लह"</string>
+     <string name="lockscreen_sound_off_label">"आवाज़ बंद"</string>
+     <string name="lockscreen_access_pattern_start">"पैटर्न शुरू"</string>
+     <string name="lockscreen_access_pattern_cleared">"पैटर्न हटोमुत"</string>
+     <string name="lockscreen_access_pattern_cell_added">"सेल हुर्रेमुत"</string>
+     <string name="lockscreen_access_pattern_cell_added_verbose">"सेल <xliff:g id="cell_index" example="3">%1$s</xliff:g> हुरेमुत"</string>
+     <string name="lockscreen_access_pattern_detected">"पैटर्न मुकम्मल"</string>
+     <string name="lockscreen_access_pattern_area">"पैटर्न जगह"</string>
+     <string name="keyguard_accessibility_widget_changed">"%1$s.विडगेट  %2$d ऑफ़  %3$d."</string>
+     <string name="keyguard_accessibility_add_widget">"जमह करिव विडगेट."</string>
+     <string name="keyguard_accessibility_widget_empty_slot">"खाली"</string>
+     <string name="keyguard_accessibility_unlock_area_expanded">"अनलॉक आलकः आव बडावनः."</string>
+     <string name="keyguard_accessibility_unlock_area_collapsed">"अनलॉक आलकः आव मोकलावनः."</string>
+     <string name="keyguard_accessibility_widget">"<xliff:g id="widget_index">%1$s</xliff:g> विडगेट."</string>
+     <string name="keyguard_accessibility_user_selector">"यूजर इस्तेमाल करन वोल"</string>
+     <string name="keyguard_accessibility_status">"स्टेटस"</string>
+     <string name="keyguard_accessibility_camera">"कैमरा"</string>
+     <string name="keygaurd_accessibility_media_controls">"मीडिया काबू"</string>
+     <string name="keyguard_accessibility_widget_reorder_start">"विडगेट दुबारह तरतीब देयेंन गई शुरू."</string>
+     <string name="keyguard_accessibility_widget_reorder_end">"विडगेट दुबारह तरतीब देयेंन गई खत्म."</string>
+     <string name="keyguard_accessibility_widget_deleted">"विडगेट <xliff:g id="widget_index">%1$s</xliff:g> गो ख़ारिज."</string>
+     <string name="keyguard_accessibility_expand_lock_area">"बडावव्यू अनलॉक आलकः."</string>
+     <string name="keyguard_accessibility_slide_unlock">"स्लाइड अनलॉक."</string>
+     <string name="keyguard_accessibility_pattern_unlock">"पैटर्न अनलॉक."</string>
+     <string name="keyguard_accessibility_face_unlock">"फेस अनलॉक."</string>
+     <string name="keyguard_accessibility_pin_unlock">"PIN अनलॉक."</string>
+     <string name="keyguard_accessibility_password_unlock">"पासवर्ड अनलॉक."</string>
+     <string name="keyguard_accessibility_pattern_area">"पैटर्न जगह"</string>
+     <string name="keyguard_accessibility_slide_area">"स्लाइड एरिया."</string>
+     <string name="password_keyboard_label_symbol_key">"\?123"</string>
+     <string name="granularity_label_character">"करैक्टर"</string>
+     <string name="granularity_label_word">"लफ्ज़"</string>
+     <string name="granularity_label_link">"लिंक"</string>
+     <string name="granularity_label_line">"लाइन"</string>
+     <string name="hour_ampm">"<xliff:g id="hour" example="3">%-l</xliff:g><xliff:g id="ampm" example="pm">%P</xliff:g>"</string>
+     <string name="hour_cap_ampm">"<xliff:g id="hour" example="3">%-l</xliff:g><xliff:g id="ampm" example="pm">%P</xliff:g>"</string>
+     <string name="factorytest_failed">"फैक्ट्री टेस्ट गो नाकाम"</string>
+     <string name="factorytest_not_system">"FACTORY_TEST अमल छे खाली मददगार पकैजेस खात्र यिम इनस्टॉल गअय /system/app."</string>
+     <string name="factorytest_no_action">"कः पैकेज आव न लबनह युस FACTORY_TEST अमल खात्र छु."</string>
+     <string name="factorytest_reboot">"रिबूट"</string>
+     <string name="js_dialog_title">"सफस पेठ \"<xliff:g id="title">%s</xliff:g>\" वनी:"</string>
+     <string name="js_dialog_before_unload_title">"कंफ़र्म नेविगेशन"</string>
+     <string name="js_dialog_before_unload_positive_button">"त्रायेव यह सफह"</string>
+     <string name="js_dialog_before_unload_negative_button">"येथ सफस पेठ रुजिव"</string>
+     <string name="js_dialog_before_unload">"<xliff:g id="message">%s</xliff:g>\n\n क्या तुहुय छिवा यकीन ज़ि तुहुय नीरिव दूर येमी सफह पेठ?"</string>
+     <string name="save_password_label">"कंफ़र्म"</string>
+     <string name="double_tap_toast">"टिप: दोयलटि जीर ज़ूम करनः खात्र."</string>
+     <string name="autofill_this_form">"पाने बरुन"</string>
+     <string name="setup_autofill">"सेट कर्येव पाने बरुन"</string>
+     <string name="autofill_address_name_separator">"\u0020"</string>
+     <string name="autofill_address_summary_separator">",\u0020"</string>
+     <string name="autofill_province">"इलाकः"</string>
+     <string name="autofill_postal_code">"डाक कोड"</string>
+     <string name="autofill_state">"रियासत"</string>
+     <string name="autofill_zip_code">"ज़िप कोड"</string>
+     <string name="autofill_county">"मुल्क"</string>
+     <string name="autofill_island">"थथुर"</string>
+     <string name="autofill_district">"जिल्लह"</string>
+     <string name="autofill_department">"शोबः"</string>
+     <string name="autofill_prefecture">"कानूनी आलाकः"</string>
+     <string name="autofill_parish">"चर्च"</string>
+     <string name="autofill_area">"आलकः"</string>
+     <string name="autofill_emirate">"अमीरी"</string>
+     <string name="permlab_readHistoryBookmarks">"पर्रिव पन्नेन वेब बुकमार्क्स तः हिस्ट्री"</string>
+     <string name="permdesc_readHistoryBookmarks">""दियिव इजाज़त एप्प पर्री हिस्ट्री तमाम यूआरअयल हिन्ज़ युस ब्राउज़रन आसि विछ्मुत, तः सारी ब्राउज़र बुकमार्क्स.गोर कर्येव: यह इजाज़त हकि न लागू गसिथ ट्रेयमि पार्टी ब्राउज़रस पेठ या बाकी एप्लीकेशनस वेब ब्राउज़िंग सलाहियतन सीत." "</string>
+     <string name="permlab_writeHistoryBookmarks">"लेखियेव वेब बुकमार्क्स तः हिस्ट्री"</string>
+     <string name="permdesc_writeHistoryBookmarks" product="tablet">""दियिव इजाज़त एप्प करि सही ब्राउज़र रच हिस्ट्री या बुकमार्क्स युस तुहुंदिस टेबलेटस मंज़ जमा छु. यह हकि इजाज़त दिथ एप्प मिटाय या सही करि ब्राउज़र डाटा. गोर कर्येव: यह इजाज़त हकि न लागू गसिथ ट्रेयमि पार्टी ब्राउज़रस पेठ या बाकी एप्लीकेशनस वेब ब्राउज़िंग सलाहियतन सीत." "</string>
+     <string name="permdesc_writeHistoryBookmarks" product="tv">""दियिव इजाज़त एप्प करि सही ब्राउज़र रच हिस्ट्री या बुकमार्क्स युस तुहुंदिस टीवी यस मंज़ जमा छु. यह हकि इजाज़त दिथ एप्प मिटाय या सही करि ब्राउज़र डाटा. गोर कर्येव: यह इजाज़त हकि न लागू गसिथ ट्रेयमि पार्टी ब्राउज़रस पेठ या बाकी एप्लीकेशनस वेब ब्राउज़िंग सलाहियतन सीत." "</string>
+     <string name="permdesc_writeHistoryBookmarks" product="default">""दियिव इजाज़त एप्प करि सही ब्राउज़र रच हिस्ट्री या बुकमार्क्स युस तुहुंदिस फ़ोन नस मंज़ जमा छु. यह हकि इजाज़त दिथ एप्प मिटाय या सही करि ब्राउज़र डाटा. गोर कर्येव: यह इजाज़त हकि न लागू गसिथ ट्रेयमि पार्टी ब्राउज़रस पेठ या बाकी एप्लीकेशनस वेब ब्राउज़िंग सलाहियतन सीत." "</string>
+     <string name="permlab_setAlarm">"सेट कर्येव अलार्म"</string>
+     <string name="permdesc_setAlarm">"दियिव इजाज़त एप्प ज़ि सेट करि अलार्म इनस्टॉल कर्मितिस अलार्म क्लॉक एप्प मंज़. केंह अलार्म क्लॉक एप्पस छेनः यह खसुसियात पूरह करान."</string>
+     <string name="permlab_addVoicemail">"जोडिव आवाज़मेल"</string>
+     <string name="permdesc_addVoicemail">"दियिव इजाज़त ज़ि एप्प जोड़ह मेसेज तुहुंदिस आवाज़मेल इनबॉक्सस मंज़."</string>
+     <string name="permlab_writeGeolocationPermissions">"सही कर्येव ब्राउज़र जिओलोकेशन मंजूरी"</string>
+     <string name="permdesc_writeGeolocationPermissions">"दियिव इज़ाज़त ज़ि एप्प करि सही ब्राउज़र जिओलोकेशन मंजूरी. मेलिशोउस एप्पस मः करि इस्तेमाल अथ तः दियस इजाज़त जाय जानकरी सोज़्नस मनमानी वेब साईटटी पेठ."</string>
+     <string name="save_password_message">"क्या तुहुय छिवा यसान ज़ि ब्राउज़र गोस थावुन यह पासवर्ड याद?"</string>
+     <string name="save_password_notnow">"विन्केन नः"</string>
+     <string name="save_password_remember">"याद थाविएव"</string>
+     <string name="save_password_never">"कतई नः"</string>
+     <string name="open_permission_deny">"तुहुय छुव नः इजाज़त ज़ि तुहुय खुलायिव यह सफह."</string>
+     <string name="text_copied">"टेक्स्ट आव क्लिपबोर्डस पेठ नकल करनाः."</string>
+     <string name="more_item_label">"वार्यह"</string>
+     <string name="menu_space_shortcut_label">"जाय"</string>
+     <string name="menu_enter_shortcut_label">"एन्टर"</string>
+     <string name="menu_delete_shortcut_label">"रद"</string>
+     <string name="search_go">"छाडिव"</string>
+     <string name="search_hint">"छाडिव..."</string>
+     <string name="searchview_description_search">"छाडिव"</string>
+     <string name="searchview_description_query">"छाडिव मसलह"</string>
+     <string name="searchview_description_clear">"मोक्लायेव मसलह"</string>
+     <string name="searchview_description_submit">"मसलह कर्येव दाखिल"</string>
+     <string name="searchview_description_voice">"आवाज़ छडिव"</string>
+     <string name="enable_explore_by_touch_warning_title">"कारगर कर्येव एक्स्प्लोर ज़ेर सीत?"</string>
+     <string name="enable_explore_by_touch_warning_message" product="tablet">"" <xliff:g id="accessibility_service_name">%1$s</xliff:g> यसान छु कारगर बनावुन एक्स्प्लोर ज़ेर सीत.येमसात एक्स्प्लोर ज़ेर सीत गासि येल, तुहुय हकेव बोज़िथ या विछेत तफसील ज़ि तुहुन्ज़ी अंजह तल या कार्यव इशार टेबलेट सीत ज़ान करनः खात्र."  "</string>
+     <string name="enable_explore_by_touch_warning_message" product="default">"" <xliff:g id="accessibility_service_name">%1$s</xliff:g> यसान छु कारगर बनावुन एक्स्प्लोर ज़ेर सीत.येमसात एक्स्प्लोर ज़ेर सीत गासि येल, तुहुय हकेव बोज़िथ या विछेत तफसील ज़ि तुहुन्ज़ी अंजह तल या कार्यव इशार फ़ोन सीत ज़ान करनः खात्र."  "</string>
+     <string name="oneMonthDurationPast">"1 रेथ ब्रोंठ"</string>
+     <string name="beforeOneMonthDurationPast">"पत्त 1 रेथ ब्रोंठ"</string>
+     <plurals name="last_num_days">
+<item quantity="one">"पतिम <xliff:g id="count">%d</xliff:g> दोह"</item>
+<item quantity="other">"पतिम <xliff:g id="count">%d</xliff:g> दोह"</item>
+    </plurals>
+     <string name="last_month">"पतिम रेथ"</string>
+     <string name="older">"प्रियोन"</string>
+     <string name="preposition_for_date">"अंदर <xliff:g id="date" example="May 29">%s</xliff:g>"</string>
+     <string name="preposition_for_time">"पेठ <xliff:g id="time" example="2:33 am">%s</xliff:g>"</string>
+     <string name="preposition_for_year">"मंज़ <xliff:g id="year" example="2003">%s</xliff:g>"</string>
+     <string name="day">"दोह"</string>
+     <string name="days">"दोह"</string>
+     <string name="hour">"घंट"</string>
+     <string name="hours">"घंटह"</string>
+     <string name="minute">"मिन"</string>
+     <string name="minutes">"मिन्स"</string>
+     <string name="second">"सेक"</string>
+     <string name="seconds">"सेकस"</string>
+     <string name="week">"हफ्त"</string>
+     <string name="weeks">"हफ्त"</string>
+     <string name="year">"वरी"</string>
+     <string name="years">"वरी"</string>
+     <plurals name="duration_seconds">
+<item quantity="one">"1 सेकंड"</item>
+<item quantity="other">"<xliff:g id="count">%d</xliff:g>  सेकंडस"</item>
+    </plurals>
+     <plurals name="duration_minutes">
+<item quantity="one">"1 मिनट"</item>
+<item quantity="other">"<xliff:g id="count">%d</xliff:g> मिनट"</item>
+    </plurals>
+     <plurals name="duration_hours">
+<item quantity="one">"1 घंट"</item>
+<item quantity="other">""<xliff:g id="count">%d</xliff:g> घंटह" "</item>
+    </plurals>
+     <string name="VideoView_error_title">"विडियो नुक्स"</string>
+     <string name="VideoView_error_text_invalid_progressive_playback">"येह विडियो छु न स्ट्रीमिंग खात्र सही येथ आलःस पेठ."</string>
+     <string name="VideoView_error_text_unknown">"हकि नः चलिथ येह विडियो."</string>
+     <string name="VideoView_error_button">"ठीक"</string>
+     <string name="relative_time">"<xliff:g id="date" example="4 hours ago">%1$s</xliff:g>, <xliff:g id="time" example="11:00 am">%2$s</xliff:g>"</string>
+     <string name="noon">"दोपहर"</string>
+     <string name="Noon">"दोपहर"</string>
+     <string name="midnight">"मंज़राथ"</string>
+     <string name="Midnight">"मंज़राथ"</string>
+     <string name="elapsed_time_short_format_mm_ss">"<xliff:g id="minutes" example="1">%1$02d</xliff:g>:<xliff:g id="seconds" example="23">%2$02d</xliff:g>"</string>
+     <string name="elapsed_time_short_format_h_mm_ss">"<xliff:g id="hours" example="1">%1$d</xliff:g>:<xliff:g id="minutes" example="43">%2$02d</xliff:g>:<xliff:g id="seconds" example="33">%3$02d</xliff:g>"</string>
+     <string name="selectAll">"चुनिव सारी"</string>
+     <string name="cut">"कट"</string>
+     <string name="copy">"नकल"</string>
+     <string name="paste">"पेस्ट"</string>
+     <string name="replace">"बद्लावुन..."</string>
+     <string name="delete">"रद"</string>
+     <string name="copyUrl">"नक़ल यूआरअयल"</string>
+     <string name="selectTextMode">"चुनिव टेक्स्ट"</string>
+     <string name="textSelectionCABTitle">"चुनिव पसंद"</string>
+     <string name="addToDictionary">"जुडिव डिक्शनरी सीत"</string>
+     <string name="deleteText">"रद"</string>
+     <string name="inputMethod">"इनपुट तरीकः"</string>
+     <string name="editTextMenuTitle">"टेक्स्ट अमल"</string>
+     <string name="low_internal_storage_view_title">"स्टोरेज जाय गई कम "</string>
+     <string name="low_internal_storage_view_text">"केंह सिस्टम कॉमि करेन नः काम"</string>
+     <string name="low_internal_storage_view_text_no_boot">"केंह छे वार्यह जाय सिस्टम खात्र. यकानी बनायेव ज़ि तुहुय छिव 250MB खाली जाय तः बेशुरू."</string>
+     <string name="app_running_notification_title">"<xliff:g id="app_name">%1$s</xliff:g> छे मोक्लान"</string>
+     <string name="app_running_notification_text">"ज़ेर कर्येव वार्यह जानकरी खात्र या बंद कर्येव एप्प."</string>
+     <string name="ok">"ठीक"</string>
+     <string name="cancel">"ख़ारिज"</string>
+     <string name="yes">"ठीक"</string>
+     <string name="no">"ख़ारिज"</string>
+     <string name="dialog_alert_title">"हुशियार"</string>
+     <string name="loading">"लोड गसान"</string>
+     <string name="capital_on">"येल"</string>
+     <string name="capital_off">"बंद"</string>
+     <string name="whichApplication">"मुकमल अमल इस्तेमाल गसेन"</string>
+     <string name="whichApplicationNamed">"मुकमल अमल इस्तेमाल गसेन %1$s"</string>
+     <string name="whichViewApplication">"येल येम्ह सीत"</string>
+     <string name="whichViewApplicationNamed">"येल येम्ह सीत %1$s"</string>
+     <string name="whichEditApplication">"दरुस्त येम्ह सीत"</string>
+     <string name="whichEditApplicationNamed">"दरुस्त येम्ह सीत %1$s"</string>
+     <string name="whichSendApplication">"बाँटिव येम्ह सीत"</string>
+     <string name="whichSendApplicationNamed">"बाँटिव येम्ह सीत %1$s"</string>
+     <string name="whichHomeApplication">"चुनिव अख होम एप्प"</string>
+     <string name="whichHomeApplicationNamed">""इस्तेमाल %1$s होम कियेन"  "</string>
+     <string name="alwaysUse">"येथ अमली खात्र आव पाने इस्तेमाल करनः"</string>
+     <string name="use_a_different_app">"इस्तेमाल कर्येव अख मुख्तलिफ एप्प"</string>
+     <string name="clearDefaultHintMsg">"साफ़ कर्येव डिफ़ॉल्ट सिस्टम सेटिंग्स मंज़ &gt; एप्पस &gt; डाउनलोड गोमुत."</string>
+     <string name="chooseActivity">"चुनिव अख अमल"</string>
+     <string name="chooseUsbActivity">"चुनिव अख एप्प यूअयसबी आलः खात्र"</string>
+     <string name="noApplications">"कः एप्प हकि न करिथ यः अमल."</string>
+     <string name="aerr_application">""बदकिस्मतीसान, <xliff:g id="application">%1$s</xliff:g> कर काम बंद." "</string>
+     <string name="aerr_process">"बदकिस्मतीसान,चलुन <xliff:g id="process">%1$s</xliff:g> आव बंद करनः."</string>
+     <string name="anr_activity_application">"<xliff:g id="application">%2$s</xliff:g> छुनः असरअनदाज़ सप्दान.\n\nक्या तुहुय छिवा यसान यह बंद करेन?"</string>
+     <string name="anr_activity_process">"काम <xliff:g id="activity">%1$s</xliff:g> छेनः असरअंदाज़ सप्दान.\n\nक्या तुहुय छिवा यसान यह बंद करेन?"</string>
+     <string name="anr_application_process">"<xliff:g id="application">%1$s</xliff:g> छेनः असरअंदाज़ सप्दान.क्या तुहुय छिवा यसान यह बंद करेन?"</string>
+     <string name="anr_process">"चलुन <xliff:g id="process">%1$s</xliff:g> छुनः असरअनदाज़ सप्दान.\n\n क्या तुहुय छिवा यसान यह बंद करेन?"</string>
+     <string name="force_close">"ठीक"</string>
+     <string name="report">"शिकायत"</string>
+     <string name="wait">"इन्तिज़ार"</string>
+     <string name="webpage_unresponsive">""सफह छु बनिय्मुत गाअरजिमवार. \n\n क्या तुहुय छिवा यसान यह बंद करेन?" "</string>
+     <string name="launch_warning_title">"एप्प आय बदल दिशा दिनः"</string>
+     <string name="launch_warning_replace">"<xliff:g id="app_name">%1$s</xliff:g> छु विन्केन चलान."</string>
+     <string name="launch_warning_original">"<xliff:g id="app_name">%1$s</xliff:g> आव असली पंठ चालवनः."</string>
+     <string name="screen_compat_mode_scale">"स्केल"</string>
+     <string name="screen_compat_mode_show">"हमेश हविएव"</string>
+     <string name="screen_compat_mode_hint">"बे सपदी कारगर येथ सिस्टम सेटिंग्स मंज़ &gt; एप्पस &gt; डाउनलोड गोमुत."</string>
+     <string name="smv_application">"यः एप्प <xliff:g id="application">%1$s</xliff:g>(चलान <xliff:g id="process">%2$s</xliff:g>)छि दरअंदाजी करमच पाने- जोर सख्त मोड पालिसी कियन."</string>
+     <string name="smv_process">"चलान <xliff:g id="process">%1$s</xliff:g> छि दरअंदाजी करमच पाने- जोर सख्त मोड पालिसी कियन."</string>
+     <string name="android_upgrading_title">"एंड्राइड छु अपग्रेड सप्दान..."</string>
+     <string name="android_start_title">"एंड्राइड छु शुरू सप्दान..."</string>
+     <string name="android_upgrading_fstrim">"बेहतर सप्दान स्टोरेज."</string>
+     <string name="android_upgrading_apk">"बेहतर सप्दान एप्प <xliff:g id="number" example="123">%1$d</xliff:g> येमियुक <xliff:g id="number" example="123">%2$d</xliff:g>."</string>
+     <string name="android_preparing_apk">"बनावान <xliff:g id="appname">%1$s</xliff:g>."</string>
+     <string name="android_upgrading_starting_apps">"एप्पस शुरू सप्दान."</string>
+     <string name="android_upgrading_complete">"बूट मोक्लियोव."</string>
+     <string name="heavy_weight_notification">"<xliff:g id="app">%1$s</xliff:g> छु चलान"</string>
+     <string name="heavy_weight_notification_detail">"एप्प बंद करनः खात्र करिव ज़ेर"</string>
+     <string name="heavy_weight_switcher_title">"बंद एप्पस?"</string>
+     <string name="heavy_weight_switcher_text">"बियाख एप्प छे गोडेय चलान सह छे ज़रूर बंद करेन अमि ब्रोंठ ज़ि तुहुय कर्येव बियाख चालू."</string>
+     <string name="old_app_action">"वापिस सुजीव येथ <xliff:g id="old_app">%1$s</xliff:g>"</string>
+     <string name="old_app_description">"नॉव एप्प मः कर्येव शुरू."</string>
+     <string name="new_app_action">"शुरू <xliff:g id="old_app">%1$s</xliff:g>"</string>
+     <string name="new_app_description">"बंद कर्येव प्रयेन एप्प महफूज़ करनः बगैर."</string>
+     <string name="dump_heap_notification">"<xliff:g id="proc">%1$s</xliff:g> मेमोरी हद खोत ज्याद"</string>
+     <string name="dump_heap_notification_detail">"हीप डंप आव जमा करनः; बाँटनः खात्र कर्येव ज़ेर"</string>
+     <string name="dump_heap_title">"बाँटिव हीप डंप?"</string>
+     <string name="dump_heap_text">"य्ह कअम <xliff:g id="proc">%1$s</xliff:g> गय ज्याद अमिचि चलान मेमोरी हद खोत <xliff:g id="size">%2$s</xliff:g>.  अख हीप डंप छे तुहुय दस्तियाब डेवलपररन बाँटनः खात्र. हुशियार रुजिव: यह हीप डंप मंज़ हकि आसीथ तुहुन्ज़ निजी जानकरी येथ एप्लीकेशन रसाई करि."</string>
+     <string name="sendText">"चुनिव अख अमल टेक्स्ट खात्र"</string>
+     <string name="volume_ringtone">"रिन्गर आवाज़"</string>
+     <string name="volume_music">"मीडिया आवाज़"</string>
+     <string name="volume_music_hint_playing_through_bluetooth">"ब्लूटूथ सीत चलान"</string>
+     <string name="volume_music_hint_silent_ringtone_selected">"खामोश रिंगटोन सेट"</string>
+     <string name="volume_call">"कॉलि मंज़ आवाज़"</string>
+     <string name="volume_bluetooth_call">"ब्लूटूथ कॉलि मंज़ आवाज़"</string>
+     <string name="volume_alarm">"अलार्म आवाज़"</string>
+     <string name="volume_notification">"नोटिफिकेशन आवाज़"</string>
+     <string name="volume_unknown">"आवाज़"</string>
+     <string name="volume_icon_description_bluetooth">"ब्लूटूथ आवाज़"</string>
+     <string name="volume_icon_description_ringer">"रिंगटोन आवाज़"</string>
+     <string name="volume_icon_description_incall">"कॉल आवाज़"</string>
+     <string name="volume_icon_description_media">"मीडिया आवाज़"</string>
+     <string name="volume_icon_description_notification">"नोटिफिकेशन आवाज़"</string>
+     <string name="ringtone_default">"कारगर रिंगटोन""</string>
+     <string name="ringtone_default_with_actual">"कारगर रिंगटोन (<xliff:g id="actual_ringtone">%1$s</xliff:g>)"</string>
+     <string name="ringtone_silent">"कहेंनः"</string>
+     <string name="ringtone_picker_title">"रिंगटोनस"</string>
+     <string name="ringtone_unknown">"नामालूम रिंगटोन"</string>
+     <plurals name="wifi_available">
+<item quantity="one">"Wi-Fi नेटवर्क मयस्सर"</item>
+<item quantity="other">"Wi-Fi नेटवर्क्स मयस्सर"</item>
+    </plurals>
+     <plurals name="wifi_available_detailed">
+<item quantity="one">"खोलीव Wi-Fi नेटवर्क मयस्सर"</item>
+<item quantity="other">"खोलीव Wi-Fi नेटवर्क्स मयस्सर"</item>
+    </plurals>
+     <string name="wifi_available_sign_in">"साइन Wi-Fi नेटवर्क कुन"</string>
+     <string name="network_available_sign_in">"साइन नेटवर्क कुन"</string>
+     <string name="wifi_no_internet">"Wi-Fi नेटवर्क्स छुनः कंह नेटवर्क एक्सेस"</string>
+     <string name="wifi_no_internet_detailed">"ज़ीर करिव"</string>
+     <string name="wifi_watchdog_network_disabled">"हेकि न जुडिथ Wi-Fi यस कुन"</string>
+     <string name="wifi_watchdog_network_disabled_detailed">"\u0020 हस छु वार्या कमज़ोर इन्टरनेट कनेक्शन."</string>
+     <string name="wifi_connect_alert_title">"दियिव इजाज़त कनेक्शन?"</string>
+     <string name="wifi_connect_alert_message">"एप्लीकेशन %1$s छु य्स्सन वाई-फाई नेटवर्क %2$s कुन जुडुन"</string>
+     <string name="wifi_connect_default_application">"अख एप्लीकेशन"</string>
+     <string name="wifi_p2p_dialog_title">"सेओध Wi-Fi"</string>
+     <string name="wifi_p2p_turnon_message">"शुरू करिव सेओध Wi-Fi.यि करि बंद Wi-Fi मोकिलस/हॉटस्पॉट."</string>
+     <string name="wifi_p2p_failed_message">"हेकि न करिथ शुरू Wi-Fi सेओध."</string>
+     <string name="wifi_p2p_enabled_notification_title">"सेओध Wi-Fi छु य्ल्लह"</string>
+     <string name="wifi_p2p_enabled_notification_message">"ज़ीर करिव सेटिंग बापथ"</string>
+     <string name="accept">"मंजूरी"</string>
+     <string name="decline">"ज़वाल"</string>
+     <string name="wifi_p2p_invitation_sent_title">"दावतनाम आव सोज़नः"</string>
+     <string name="wifi_p2p_invitation_to_connect_title">"दावतनाम जुड़नः बापथ"</string>
+     <string name="wifi_p2p_from_message">"पेठ:"</string>
+     <string name="wifi_p2p_to_message">"कोत:"</string>
+     <string name="wifi_p2p_enter_pin_message">"टाइप करिव बकार PIN:"</string>
+     <string name="wifi_p2p_show_pin_message">"PIN:"</string>
+     <string name="wifi_p2p_frequency_conflict_message" product="tablet">"टेबलेट गसि आर्ज़ितोर बेजोड़ Wi-Fi निश यीतिस काल्स यि जुडि <xliff:g id="device_name">%1$s</xliff:g>"</string>
+     <string name="wifi_p2p_frequency_conflict_message" product="tv">"टीवी गसि आर्ज़ितोर बेजोड़ वय-फय निश यीतिस काल्स यि जुडि <xliff:g id="device_name">%1$s</xliff:g>"</string>
+     <string name="wifi_p2p_frequency_conflict_message" product="default">"फ़ोन गसि आर्ज़ितोर बेजोड़ वय-फय निश यीतिस काल्स यि जुडि <xliff:g id="device_name">%1$s</xliff:g>"</string>
+     <string name="select_character">"बरिव करैक्टर"</string>
+     <string name="sms_control_title">"SMS मेसेज ची यिवन सोज़्नह"</string>
+     <string name="sms_control_message">"<b><xliff:g id="app_name">%1$s</xliff:g></b> छु सोज़न बडिस मेक्दार्स मंज़ SMS मेसेज.तुही छिवा य्स्सन इजाज़त दिउन यथ एप्प कि यि थावि मेसेज सोज़ुन जारी?"</string>
+     <string name="sms_control_yes">"इजाज़त"</string>
+     <string name="sms_control_no">"इनकार"</string>
+     <string name="sms_short_code_confirm_message">"<b><xliff:g id="app_name">%1$s</xliff:g></b> छु य्स्सन मेसेज सोज़ुन <b><xliff:g id="dest_address">%2$s</xliff:g></b>."</string>
+     <string name="sms_short_code_details">"यि <b>मः हकि खालित खर्चह</b>तुहुन्दिस मोबाइल एकाउंट्स पेठ."</string>
+     <string name="sms_premium_short_code_details">"<b>यि हेकि चार्जेज करिथ तुहुन्दिस मोबाइल एकाउंट्स पेठ.</b>"</string>
+     <string name="sms_short_code_confirm_allow">"सूज़िव"</string>
+     <string name="sms_short_code_confirm_deny">"ख़ारिज"</string>
+     <string name="sms_short_code_remember_choice">"याद थाविव मैंन पसंद"</string>
+     <string name="sms_short_code_remember_undo_instruction">"तुही हेकिव यि बद्लाविथ पततः सेटिंग\u00A0&gt;\u00A0एप्प्स""</string>
+     <string name="sms_short_code_confirm_always_allow">"हमेश इजाज़त"</string>
+     <string name="sms_short_code_confirm_never_allow">"ज़ंह न इजाज़त"</string>
+     <string name="sim_removed_title">"SIM कार्ड आव नेबर कडनह"</string>
+     <string name="sim_removed_message">"सेलुलर नेटवर्क आसि न मयस्सर यीतिस काल्स न तुही नोव शुरू करिव अख दरुस SIM कार्ड त्राविथ."</string>
+     <string name="sim_done_button">"पूरह"</string>
+     <string name="sim_added_title">"SIM कार्ड आव हुर्रावनह"</string>
+     <string name="sim_added_message">"नोव करिव शुरू पनुन आलः सेलुलर नेटवर्क हासिल करनः बापथ."</string>
+     <string name="sim_restart_button">"नोव शुरू"</string>
+     <string name="time_picker_dialog_title">"थाविव वक़्त"</string>
+     <string name="date_picker_dialog_title">"थाविव तारीख"</string>
+     <string name="date_time_set">"थाविव"</string>
+     <string name="date_time_done">"पूरह"</string>
+     <string name="perms_new_perm_prefix">"<font size="12" fgcolor="#ff33b5e5">नोव：</font>"</string>
+     <string name="perms_description_app">"फराहम गमुत <xliff:g id="app_name">%1$s</xliff:g>."</string>
+     <string name="no_permissions">"कंह ति इजाज़त छु न ज़रुरथ"</string>
+     <string name="perm_costs_money">"यि हेकिव्ह तुही रोप्यी खाडिथ"</string>
+     <string name="usb_storage_activity_title">"USB मास स्टोरेज"</string>
+     <string name="usb_storage_title">"USB छु जुडिथ"</string>
+     <string name="usb_storage_message" product="nosdcard">"तुही जुडेवः कंप्यूटरस सीथ USB ज़र्यः. ज़ीर करिव बोन्कन बटन्स अगर तुही य्स्सन छिव फाइल कॉपी करिन तुहुन्दिस कंप्यूटर त एंड्राइड किस USB स्टोरेज दरमियान."</string>
+     <string name="usb_storage_message" product="default">"तुही जुडेवः कंप्यूटरस सीथ USB ज़र्यः. ज़ीर करिव बोन्कन बटन्स अगर तुही य्स्सन छिव फाइल कॉपी करिन तुहुन्दिस कंप्यूटर त एंड्राइड किस SD कार्ड्स दरमियान."</string>
+     <string name="usb_storage_button_mount">"यल तत्रायिव USB स्टोरेज"</string>
+     <string name="usb_storage_error_message" product="nosdcard">"अत्ति छि मुश्किलात तुहुन्दिस USB स्टोरेज त USB मास स्टोरेज इस्तिमाल करनस मंज़."</string>
+     <string name="usb_storage_error_message" product="default">"अत्ति छि मुश्किलात तुहुन्दिस SD कार्ड त USB मास स्टोरेज इस्तिमाल करनस मंज़."</string>
+     <string name="usb_storage_notification_title">"USB छु जुडिथ"</string>
+     <string name="usb_storage_notification_message">"ज़ीर करिव फाइल कॉपी करनः खात्र कोत/पेठ तुहुंद कंप्यूटर."</string>
+     <string name="usb_storage_stop_notification_title">"बंद करिव USB स्टोरेज"</string>
+     <string name="usb_storage_stop_notification_message">"ज़ीर करिव USB स्टोरेज बंद करनः बापथ"</string>
+     <string name="usb_storage_stop_title">"USB स्टोरेज इस्तिमालस मंज़"</string>
+     <string name="usb_storage_stop_message" product="nosdcard">"USB स्टोरेज इस्तिमाल करनः ब्रोंठ,वसिव (\"कडिव\")पन्निः एंड्राइडहच USB स्टोरेज पन्निः कंप्यूटर मंज़."</string>
+     <string name="usb_storage_stop_message" product="default">"USB स्टोरेज इस्तिमाल करनः ब्रोंठ,वसिव (\"कडिव\")पन्निः एंड्राइडहच SD कार्ड पन्निः कंप्यूटर मंज़.""</string>
+     <string name="usb_storage_stop_button_mount">"बंद करिव USB स्टोरेज"</string>
+     <string name="usb_storage_stop_error_message">"अत्ति आस मुश्किलात USB स्टोरेज बंद करनस मंज़.नज़र दियिव कि तुही छिवा वोल्मुत USB होस्ट, पततः करिव बेय कूशिश."</string>
+     <string name="dlg_confirm_kill_storage_users_title">"यल तत्रायिव USB स्टोरेज"</string>
+     <string name="dlg_confirm_kill_storage_users_text">"अगर तुही य्ल्लह त्रायिव USB स्टोरेज,केंह एप्प यिम तुही इस्तिमाल छिव करन गस्सेन बंद त हेकेन न पततः मयस्सर आसिथ यीतिस काल्स न तुही य्ल्लह त्रायिव USB स्टोरेज."</string>
+     <string name="dlg_error_title">"USB ऑपरेशन नाकामयाब"</string>
+     <string name="dlg_ok">"ठीक"</string>
+     <string name="usb_charging_notification_title">"USB चार्जिंग खात्र"</string>
+     <string name="usb_mtp_notification_title">"USB फाइल तबदीली खात्र"</string>
+     <string name="usb_ptp_notification_title">"USB शक्ल तबदीली खात्र"</string>
+     <string name="usb_midi_notification_title">"USB एम् आय डी आय खात्र"</string>
+     <string name="usb_accessory_notification_title">"USB तानन कुन जुडिथ"</string>
+     <string name="usb_notification_message">"ज़ीर करिव बेयि आप्शन खात्र."</string>
+     <string name="adb_active_notification_title">"USB देबुग्गिंग जुडिथ"</string>
+     <string name="adb_active_notification_message">"ज़ीर करिव USB देबुग्गिंग हटावनः खात्र"</string>
+     <string name="select_input_method">"बद्लाविव कीबोर्ड"</string>
+     <string name="configure_input_methods">"चुनिव कीबोर्ड"</string>
+     <string name="show_ime">"हायिव इनपुट कीबोर्ड"</string>
+     <string name="hardware">"हार्डवेयर"</string>
+     <string name="select_keyboard_layout_notification_title">"चुनिव कीबोर्ड लेआउट"</string>
+     <string name="select_keyboard_layout_notification_message">"ज़ीर करिव कीबोर्ड लेआउट चुननः बापथ."</string>
+     <string name="fast_scroll_alphabet">"\u0020ABCDEFGHIJKLMNOPQRSTUVWXYZ"</string>
+     <string name="fast_scroll_numeric_alphabet">"\u00200123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"</string>
+     <string name="candidates_style">"<u>उमीदवार</u>"</string>
+     <string name="ext_media_checking_notification_title">"तैयार गसन <xliff:g id="name" example="SD card">%s</xliff:g>"</string>
+     <string name="ext_media_checking_notification_message">"नज़र दिवन गलतिय्न खात्र"</string>
+     <string name="ext_media_new_notification_message">"नोव <xliff:g id="name" example="SD card">%s</xliff:g> लबनः"</string>
+     <string name="ext_media_ready_notification_message">"शक्लः त मीडिया ताबद्ल्ह खात्र"</string>
+     <string name="ext_media_unmountable_notification_title">"खराब गमुत <xliff:g id="name" example="SD card">%s</xliff:g>"</string>
+     <string name="ext_media_unmountable_notification_message">"<xliff:g id="name" example="SD card">%s</xliff:g> छु खराब.ज़ीर करिव मुस्तःकिम करनः बापथ;"</string>
+     <string name="ext_media_unsupported_notification_title">"नाकअबिल <xliff:g id="name" example="SD card">%s</xliff:g>"</string>
+     <string name="ext_media_unsupported_notification_message">"यि आलः छु न मदद करन यथ <xliff:g id="name" example="SD card">%s</xliff:g>. ज़ीर करिव थावनः खात्र मददगार तरीक."</string>
+     <string name="ext_media_badremoval_notification_title">"<xliff:g id="name" example="SD card">%s</xliff:g> नाउमेदी सान कडनः"</string>
+     <string name="ext_media_badremoval_notification_message">"वालिव <xliff:g id="name" example="SD card">%s</xliff:g> कडनः ब्रोंठ बचावनः खात्र मवादुक नोख्सान"</string>
+     <string name="ext_media_nomedia_notification_title">"कोड्मुत <xliff:g id="name" example="SD card">%s</xliff:g>"</string>
+     <string name="ext_media_nomedia_notification_message">""<xliff:g id="name" example="SD card">%s</xliff:g> कोड्मुत;त्रायिव नोव अख" "</string>
+     <string name="ext_media_unmounting_notification_title">"वुनिः कडन <xliff:g id="name" example="SD card">%s</xliff:g>..."</string>
+     <string name="ext_media_unmounting_notification_message">"मः कडिव"</string>
+     <string name="ext_media_init_action">"थाविव"</string>
+     <string name="ext_media_unmount_action">"कड़व"</string>
+     <string name="ext_media_browse_action">"लबिव"</string>
+     <string name="ext_media_missing_title">"<xliff:g id="name" example="SD card">%s</xliff:g> रोमुत"</string>
+     <string name="ext_media_missing_message">"बेय त्रायिव यि आल्ह"</string>
+     <string name="ext_media_move_specific_title">"फेरन <xliff:g id="name" example="Calculator">%s</xliff:g>"</string>
+     <string name="ext_media_move_title">"फिरन मवाद"</string>
+     <string name="ext_media_move_success_title">"फिरून गो मुकमल"</string>
+     <string name="ext_media_move_success_message">"मवाद फिर्मुत कोत <xliff:g id="name" example="SD card">%s</xliff:g>"</string>
+     <string name="ext_media_move_failure_title">"हेकि न मवाद फिरिथ"</string>
+     <string name="ext_media_move_failure_message">"मवाद आव ज़अति ठीकानस पेठ थावनः"</string>
+     <string name="ext_media_status_removed">"हटोमुत"</string>
+     <string name="ext_media_status_unmounted">"कोड्मुत"</string>
+     <string name="ext_media_status_checking">"सानडून ..."</string>
+     <string name="ext_media_status_mounted">"तैयार"</string>
+     <string name="ext_media_status_mounted_ro">"पडिव-खअली"</string>
+     <string name="ext_media_status_bad_removal">"हटोमुत गअरमह्फुज़ी सान"</string>
+     <string name="ext_media_status_unmountable">"खराब गमुत"</string>
+     <string name="ext_media_status_unsupported">"मददगार नः केह"</string>
+     <string name="ext_media_status_ejecting">"कडन..."</string>
+     <string name="ext_media_status_formatting">"फॉर्मेट करन..."</string>
+     <string name="ext_media_status_missing">"न त्रोमुत"</string>
+     <string name="activity_list_empty">"कंह ति रल्विन काम आय नः लबनः"</string>
+     <string name="permlab_route_media_output">"वथ मीडिया आउटपुट"</string>
+     <string name="permdesc_route_media_output">"दियिव इजाज़त एप्लीकेशन नि वथ बनावनस मीडिया आउटपुटस बाकि नेब्रिमन आलन सीथ."</string>
+     <string name="permlab_readInstallSessions">"पडिव इनस्टॉल सेशंस"</string>
+     <string name="permdesc_readInstallSessions">"दियिव इजाज़त एप्लीकेशन नि पड़नस इनस्टॉल सेशंस.यि डी अथ इजाज़त तफ्सुर वुछ्न्स चल्विनेन पैकेज इंस्टालेशनस मुत्लिख."</string>
+     <string name="permlab_requestInstallPackages">"आज्ज़ी इनस्टॉल पेकेजिस"</string>
+     <string name="permdesc_requestInstallPackages">"दियिव इजाज़त एप्लीकेशन नि आज्ज़ी करनस पेकेजिस हिन्द इंस्टालेशन बापथ."</string>
+     <string name="tutorial_double_tap_to_zoom_message_short">"ज़ीर करिव दोय लटी ज़ूम काबू खात्र"</string>
+     <string name="gadget_host_error_inflating">"हेकि न हुर्र्रायिथ विजेट."</string>
+     <string name="ime_action_go">"गसिव"</string>
+     <string name="ime_action_search">"छाडिव"</string>
+     <string name="ime_action_send">"सूज़िव"</string>
+     <string name="ime_action_next">"ब्याख"</string>
+     <string name="ime_action_done">"पूरह"</string>
+     <string name="ime_action_previous">"पत्तिम"</string>
+     <string name="ime_action_default">"ख़त्म"</string>
+     <string name="dial_number_using">"रलायिव नंबर \nइस्तिमाल करिथ <xliff:g id="number" example="555">%s</xliff:g>"</string>
+     <string name="create_contact_using">"बनायिव राबितः\nइस्तिमाल करिथ <xliff:g id="number" example="555">%s</xliff:g>"</string>
+     <string name="grant_credentials_permission_message_header">"बनिम अख या ज़्यादः एप्प्स करन  आज्ज़ी इजाज़त बापथ तुहुन्दिस अकाउंटस कुन एक्सेस करनः खात्र, वुनिकेन त मुस्तकबिल खात्र."</string>
+     <string name="grant_credentials_permission_message_footer">"क्या तुही छिवा य्स्सन यथ आज्ज़ी इजाज़त द्युन?"</string>
+     <string name="grant_permissions_header_text">"एक्सेस आज्ज़ी"</string>
+     <string name="allow">"इजाज़त"</string>
+     <string name="deny">"इनकार"</string>
+     <string name="permission_request_notification_title">"इजाज़त आज्ज़ी"</string>
+     <string name="permission_request_notification_with_subtitle">"इजाज़त आज्ज़ी \nअकाउंट खात्र <xliff:g id="account" example="foo@gmail.com">%s</xliff:g>."</string>
+     <string name="forward_intent_to_owner">"तुही छिव यि एप्लीकेशन इस्तिमाल करन पन्नि कामि हिन्द तरीक नेबर"</string>
+     <string name="forward_intent_to_work">"तुही छिव यि एप्लीकेशन इस्तिमाल करन पन्नि कामि हिन्द दिस तरीकस मंज़"</string>
+     <string name="input_method_binding_label">"इनपुट तरीकः"</string>
+     <string name="sync_binding_label">"सिंक्रोनाइजेशन"</string>
+     <string name="accessibility_binding_label">"एक्सेसिबिलिटी"</string>
+     <string name="wallpaper_binding_label">"वॉलपेपर"</string>
+     <string name="chooser_wallpaper">"बद्लाविव वॉलपेपर"</string>
+     <string name="notification_listener_binding_label">"इश्तियार बोज़नवोल"</string>
+     <string name="condition_provider_service_binding_label">"हालात फराहम करनवोल"</string>
+     <string name="vpn_title">"वि पी एन एक्टिवेट गमुत"</string>
+     <string name="vpn_title_long">"वि पी एन छु एक्टिवेट गमुत <xliff:g id="app" example="FooVPN client">%s</xliff:g> दअस"</string>
+     <string name="vpn_text">"ज़ीर करिव नेटवर्क चलावनः बापथ"</string>
+     <string name="vpn_text_long">"जुडिथ छु <xliff:g id="session" example="office">%s</xliff:g>.ज़ीर करिव नेटवर्क चलावनः बापथ ."</string>
+     <string name="vpn_lockdown_connecting">"हमेश-येल  VPN जुडन..."</string>
+     <string name="vpn_lockdown_connected">"हमेश-येल VPN जुडिथ"</string>
+     <string name="vpn_lockdown_error">"हमेश -येल VPN गलती"</string>
+     <string name="vpn_lockdown_config">"ज़ीर करिव वज़ह करनः बापथ"</string>
+     <string name="upload_file">"चुनिव फाइल"</string>
+     <string name="no_file_chosen">"कंह ति फाइल आय न चुन्नः"</string>
+     <string name="reset">"नोवथावुन"</string>
+     <string name="submit">"जमह"</string>
+     <string name="car_mode_disable_notification_title">"कार तरीक आय थावनः"</string>
+     <string name="car_mode_disable_notification_message">"ज़ीर करिव कार तरीक नेबर कडनः बापथ"</string>
+     <string name="tethered_notification_title">"गंडिव या हॉटस्पॉट य्ल्लह"</string>
+     <string name="tetheredPC_notification_title">"USB - इन्टरनेट गंडिथ छि चल्लन"</string>
+     <string name="tethered_notification_message">"ज़ीर करिव थावनः बापथ"</string>
+     <string name="back_button_label">"पथ"</string>
+     <string name="next_button_label">"ब्याख"</string>
+     <string name="skip_button_label">"त्रायिव"</string>
+     <string name="find_on_page">"लबिव पेजस पेठ"</string>
+     <string name="action_mode_done">"पूरह"</string>
+     <string name="progress_erasing" product="nosdcard">"नह्नावन USB स्टोरेज..."</string>
+     <string name="progress_erasing" product="default">""नह्नावन SD कार्ड..." "</string>
+     <string name="share">"बागरायिव "</string>
+     <string name="find">"लबिव"</string>
+     <string name="websearch">"वेब सांडाव"</string>
+     <string name="find_next">"लबिव ब्याख"</string>
+     <string name="find_previous">"लबिव पत्तिम"</string>
+     <string name="gpsNotifTicker">"पततः आज्ज़ी <xliff:g id="name">%s</xliff:g> पेठ"</string>
+     <string name="gpsNotifTitle">"पततः आज्ज़ी"</string>
+     <string name="gpsNotifMessage">"गुज़ारिश कर्मिच <xliff:g id="name">%1$s</xliff:g> (<xliff:g id="service" example="SUPL-service">%2$s</xliff:g>)"</string>
+     <string name="gpsVerifYes">"अवा"</string>
+     <string name="gpsVerifNo">"न"</string>
+     <string name="sync_too_many_deletes">"मिटाईव हद्द गसुंन"</string>
+     <string name="sync_too_many_deletes_desc">"अत्ति छि <xliff:g id="number_of_deleted_items">%1$d</xliff:g> ख़ारिज कर्यिव आइटम्स खात्र <xliff:g id="type_of_sync">%2$s</xliff:g>, एकाउंट <xliff:g id="account_name">%3$s</xliff:g>, तुही क्या छिव य्स्सन करुन?"</string>
+     <string name="sync_really_delete">"मिटाईव चीज़"</string>
+     <string name="sync_undo_deletes">"ख़त्म करिव मिटामित"</string>
+     <string name="sync_do_nothing">"म करिव केंह वुनकेंहनस"</string>
+     <string name="choose_account_label">"चुन्निव अकाउंट"</string>
+     <string name="add_account_label">"हुर्रयिव अख अकाउंट"</string>
+     <string name="add_account_button_label">"हुर्रयिव अकाउंट"</string>
+     <string name="number_picker_increment_button">"बड़ायिव"</string>
+     <string name="number_picker_decrement_button">"कम करिव"</string>
+     <string name="number_picker_increment_scroll_mode">"<xliff:g id="value" example="3">%s</xliff:g> ज़ीर करिव त रटिव."</string>
+     <string name="number_picker_increment_scroll_action">"हेओर पकिव बडावनः खात्र त बोन कम करनः खात्र."</string>
+     <string name="time_picker_increment_minute_button">"बडा यिव मिनट"</string>
+     <string name="time_picker_decrement_minute_button">"कम करिव मिनट"</string>
+     <string name="time_picker_increment_hour_button">"बडा यिव घंट: "</string>
+     <string name="time_picker_decrement_hour_button">"कम करिव घंट: "</string>
+     <string name="time_picker_increment_set_pm_button">"थायिव पीएम"</string>
+     <string name="time_picker_decrement_set_am_button">"थायिव एएम"</string>
+     <string name="date_picker_increment_month_button">"बड़ायिव रेथ"</string>
+     <string name="date_picker_decrement_month_button">"कम करिव रेथ"</string>
+     <string name="date_picker_increment_day_button">"बड़ायिव दोह"</string>
+     <string name="date_picker_decrement_day_button">"दोह कर्येव कम"</string>
+     <string name="date_picker_increment_year_button">"बड़ायेव वर्रिय"</string>
+     <string name="date_picker_decrement_year_button">"वर्रिय कर्येव कम"</string>
+     <string name="date_picker_prev_month_button">"पतिम रेथ"</string>
+     <string name="date_picker_next_month_button">"ब्रोंथिम रेथ"</string>
+     <string name="keyboardview_keycode_cancel">"ख़ारिज"</string>
+     <string name="keyboardview_keycode_done">"पूरह"</string>
+     <string name="keyboardview_keycode_mode_change">"मोड बद्लायेव"</string>
+     <string name="activitychooserview_choose_application">"चुनिव अख एप्प"</string>
+     <string name="activitychooserview_choose_application_error">"हेकि न लांच करिथ <xliff:g id="application_name" example="Acme">%s</xliff:g>"</string>
+     <string name="shareactionprovider_share_with">"बाँटिव येम्ह सीत"</string>
+     <string name="shareactionprovider_share_with_application">"बागरायिव <xliff:g id="application_name" example="Bluetooth">%s</xliff:g> सीथ"</string>
+     <string name="content_description_sliding_handle">"पक्नावनिच थफ.ज़ीर &amp; रटिव."</string>
+     <string name="description_target_unlock_tablet">"लमिव य्ल्लह त्रावनः बापथ"</string>
+     <string name="keyboard_headset_required_to_hear_password">"हेडसेट लागिव बोज़नः खात्र वनिमच पासवर्ड कीज़."</string>
+     <string name="keyboard_password_character_no_headset">"डॉट."</string>
+     <string name="action_bar_home_description">"पक्नायिव होम"</string>
+     <string name="action_bar_up_description">"पक्नायिव हियोर"</string>
+     <string name="action_menu_overflow_description">"वार्यह मुत्बादिल"</string>
+     <string name="action_bar_home_description_format">"%1$s, %2$s"</string>
+     <string name="action_bar_home_subtitle_description_format">"%1$s, %2$s, %3$s"</string>
+     <string name="storage_internal">"अन्द्रेम स्टोरेज"</string>
+     <string name="storage_sd_card">"अस्यडी कार्ड"</string>
+     <string name="storage_sd_card_label">"<xliff:g id="manufacturer" example="SanDisk">%s</xliff:g> SD कार्ड"</string>
+     <string name="storage_usb_drive">"USB ड्राइव"</string>
+     <string name="storage_usb_drive_label">"<xliff:g id="manufacturer" example="Seagate">%s</xliff:g> USB ड्राइव"</string>
+     <string name="storage_usb">"USB स्टोरेज"</string>
+     <string name="data_usage_warning_title">""डाटा खर्चः खबरदारी" "</string>
+     <string name="data_usage_warning_body">"ज़ेर कर्येव खर्चः तः सेटिंग्स विछनः खात्र"</string>
+     <string name="data_usage_3g_limit_title">"2G-3G डाटा हद वाछ"</string>
+     <string name="data_usage_4g_limit_title">"4G डाटा हद वाछ"</string>
+     <string name="data_usage_mobile_limit_title">"सेल्लुलर डाटा हद वाछ"</string>
+     <string name="data_usage_wifi_limit_title">"Wi-Fi डाटा हद वाछ"</string>
+     <string name="data_usage_limit_body">"डाटा आव रुकावनः साइकिल बगैर"</string>
+     <string name="data_usage_3g_limit_snoozed_title">"2G-3G डाटा हद गय ज्याद"</string>
+     <string name="data_usage_4g_limit_snoozed_title">"4G डाटा हद गय ज्याद"</string>
+     <string name="data_usage_mobile_limit_snoozed_title">"सेल्लुलर डाटा हद गय ज्याद"</string>
+     <string name="data_usage_wifi_limit_snoozed_title">"Wi-Fi डाटा हद गय ज्याद"</string>
+     <string name="data_usage_limit_snoozed_body">"<xliff:g id="size" example="3.8GB">%s</xliff:g> वार्यह खसूसियत वोल हद."</string>
+     <string name="data_usage_restricted_title">"बैकग्राउंड डाटा आव हदस मंज़ करनः"</string>
+     <string name="data_usage_restricted_body">"जीर कर्येव पाबन्दी हाटावनः खात्र."</string>
+     <string name="ssl_certificate">"हिफ़ाज़ती सर्टिफिकेट"</string>
+     <string name="ssl_certificate_is_valid">"यः सर्टिफिकेट छे वैलिड."</string>
+     <string name="issued_to">"दिनः आमच:"</string>
+     <string name="common_name">"आम नाव:"</string>
+     <string name="org_name">"तंजीम:"</string>
+     <string name="org_unit">"तंजीमि हियुन्द यूनिट:"</string>
+     <string name="issued_by">"दियय येम:"</string>
+     <string name="validity_period">"वैलिडिटी:"</string>
+     <string name="issued_on">"दिच्न येथ:"</string>
+     <string name="expires_on">"मोक्लियः येथ:"</string>
+     <string name="serial_number">"सीरियल नंबर:"</string>
+     <string name="fingerprints">"अँगूठनिशान:"</string>
+     <string name="sha256_fingerprint">"SHA-256 अँगूठनिशान:"</string>
+     <string name="sha1_fingerprint">"SHA-1 अँगूठनिशान:"</string>
+     <string name="activity_chooser_view_see_all">"विछेव सोर्रय"</string>
+     <string name="activity_chooser_view_dialog_title_default">"चुनिव काम"</string>
+     <string name="share_action_provider_share_with">"बाँटिव येम्ह सीत"</string>
+     <string name="list_delimeter">", "</string>
+     <string name="sending">"सोज़ान..."</string>
+     <string name="launchBrowserDefault">"लांच ब्राउज़र?"</string>
+     <string name="SetupCallDefault">"मंज़ूर कॉल?"</string>
+     <string name="activity_resolver_use_always">"हमेशह"</string>
+     <string name="activity_resolver_use_once">"खाली अकी"</string>
+     <string name="activity_resolver_work_profiles_support">"%1$s छुनः मददगार वर्क प्रोफाइलस"</string>
+     <string name="default_audio_route_name" product="tablet">"टेबलेट"</string>
+     <string name="default_audio_route_name" product="tv">"टीवी"</string>
+     <string name="default_audio_route_name" product="default">"फ़ोन"</string>
+     <string name="default_audio_route_name_headphones">"हैडफ़ोन"</string>
+     <string name="default_audio_route_name_dock_speakers">"डॉक स्पीकर्स"</string>
+     <string name="default_audio_route_category_name">"सिस्टम"</string>
+     <string name="bluetooth_a2dp_audio_route_name">"ब्लूटूथ आवाज़"</string>
+     <string name="wireless_display_route_description">"वायरलेस डिस्पले"</string>
+     <string name="media_route_button_content_description">"कास्ट"</string>
+     <string name="media_route_chooser_title">""जोडिव आलःस सीत" "</string>
+     <string name="media_route_chooser_title_for_remote_display">"कास्ट स्क्रीन आलःस सीत"</string>
+     <string name="media_route_chooser_searching">"छाडान आलःन खात्र..."</string>
+     <string name="media_route_chooser_extended_settings">"सेटिंग्स"</string>
+     <string name="media_route_controller_disconnect">"मुन्कतः"</string>
+     <string name="media_route_status_scanning">"स्कैन गछान..."</string>
+     <string name="media_route_status_connecting">"कनेक्ट गछान..."</string>
+     <string name="media_route_status_available">"दस्तियाब"</string>
+     <string name="media_route_status_not_available">"छु नः दस्तियाब"</string>
+     <string name="media_route_status_in_use">"इस्तेमालस मंज़"</string>
+     <string name="display_manager_built_in_display_name">"स्क्रीन मंज़ बनाविथ"</string>
+     <string name="display_manager_hdmi_display_name">"HDMI स्क्रीन"</string>
+     <string name="display_manager_overlay_display_name">"छिपवुन #<xliff:g id="id">%1$d</xliff:g>"</string>
+     <string name="display_manager_overlay_display_title">"<xliff:g id="name">%1$s</xliff:g>: <xliff:g id="width">%2$d</xliff:g>x<xliff:g id="height">%3$d</xliff:g>, <xliff:g id="dpi">%4$d</xliff:g> dpi"</string>
+     <string name="display_manager_overlay_display_secure_suffix">",महफूज़"</string>
+     <string name="kg_forgot_pattern_button_text">"पैटर्न गोमुत मशित"</string>
+     <string name="kg_wrong_pattern">"गलत पैटर्न"</string>
+     <string name="kg_wrong_password">"गलत पासवर्ड"</string>
+     <string name="kg_wrong_pin">"गलत PIN"</string>
+     <string name="kg_too_many_failed_attempts_countdown">"दुबारह कर्येव कोशिश येथ <xliff:g id="number">%1$d</xliff:g> सेकंड्स मंज़."</string>
+     <string name="kg_pattern_instructions">"बनायिव पन्नुन पैटर्न"</string>
+     <string name="kg_sim_pin_instructions">"एंटर कर्येव SIM PIN"</string>
+     <string name="kg_pin_instructions">"एंटर कर्येव PIN"</string>
+     <string name="kg_password_instructions">"एंटर कर्येव पासवर्ड"</string>
+     <string name="kg_puk_enter_puk_hint">""SIM छि वोयन नाकार सप्देमिच. एंटर कर्येव PUK कोड जारी थावनः खात्र.  राबितः कर्येव केरियरस तफसील खात्र." "</string>
+     <string name="kg_puk_enter_pin_hint">"एंटर कर्येव पसंद कोर्मुत PIN कोड"</string>
+     <string name="kg_enter_confirm_pin_hint">"वाज़िय्ह कर्येव पसंद कोर्मुत PIN कोड"</string>
+     <string name="kg_sim_unlock_progress_dialog_message">"SIM कार्ड येल्लह गसन"</string>
+     <string name="kg_password_wrong_pin_code">"गलत PIN कोड"</string>
+     <string name="kg_invalid_sim_pin_hint">"लिखियेव अख PIN युस 4 पेठ 8 नम्बरन त्यान."</string>
+     <string name="kg_invalid_sim_puk_hint">"PUK कोड गोस आसून 8 नंबरन हियुन्द."</string>
+     <string name="kg_invalid_puk">"बे कर्येव एंटर सही PUK कोड. बार-बार कोशिश करेन मुस्तकिल पांठ SIM नकार."</string>
+     <string name="kg_invalid_confirm_pin_hint" product="default">"PIN कोड छुनः रलान"</string>
+     <string name="kg_login_too_many_attempts">"वार्या ज़्यादः पैटर्न कूशिशि "</string>
+     <string name="kg_login_instructions">"येल्लह त्रावनः बापथ, करिव साइन पन्निस गूगल एकाउंट्स सीथ."</string>
+     <string name="kg_login_username_hint">"ग्राख सुन्द नाव(ईमेल)"</string>
+     <string name="kg_login_password_hint">"पासवर्ड"</string>
+     <string name="kg_login_submit_button">"साइन इन"</string>
+     <string name="kg_login_invalid_input">"गलत ग्राख सुन्द नाव या पासवर्ड."</string>
+     <string name="kg_login_account_recovery_hint">"मशिथ गोमुत पनुन ग्राख सुन्द नाव बया पासवर्ड\?\n चक्रः       <b>google.com/accounts/recovery</b>."</string>
+     <string name="kg_login_checking_password">"मुहासब करान एकाउंट..."</string>
+     <string name="kg_too_many_failed_pin_attempts_dialog_message">"तुही छु पनुन PIN गलत टाइप कोर्मुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\nबेय कूशिश <xliff:g id="number">%d</xliff:g> सेकंड्स."</string>
+     <string name="kg_too_many_failed_password_attempts_dialog_message">"तुही छु पनुन पासवर्ड गलत टाइप कोर्मुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\n कूशिश बेय <xliff:g id="number">%d</xliff:g> सेकंड्स"</string>
+     <string name="kg_too_many_failed_pattern_attempts_dialog_message">"तुही छुव येल्लह त्रावनुक पैटर्न गलत बनोवमुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\n कूशिश बेयि <xliff:g id="number">%d</xliff:g> सेकंड्स. "</string>
+     <string name="kg_failed_attempts_almost_at_wipe" product="tablet">"तुही छु  गलत कूशिश करमच टेबलेट खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. पततः  <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि ,टेबलेट यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन बेय सोरुय ग्राख सुन्द मवाद गसि ख़त्म."</string>
+     <string name="kg_failed_attempts_almost_at_wipe" product="tv">"तुही छु  गलत कूशिश करमच TV खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. पततः <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि ,TV  यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन बेय सोरुय ग्राख सुन्द मवाद गसि ख़त्म."</string>
+     <string name="kg_failed_attempts_almost_at_wipe" product="default">""तुही छु  गलत कूशिश करमच फ़ोन खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. पततः <xliff:g id="number">%d</xliff:g> ज़्यादः नाकामयाब कूशिशि ,फ़ोन  यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन बेय सोरुय ग्राख सुन्द मवाद गसि ख़त्म"</string>
+     <string name="kg_failed_attempts_now_wiping" product="tablet">""तुही छु  गलत कूशिश करमच टेबलेट खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. टेबलेट यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन." "</string>
+     <string name="kg_failed_attempts_now_wiping" product="tv">""तुही छु  गलत कूशिश करमच TV  खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. TV यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन." "</string>
+     <string name="kg_failed_attempts_now_wiping" product="default">"तुही छु  गलत कूशिश करमच TV  खोलनः बापथ <xliff:g id="number">%d</xliff:g> वक़्त. फ़ोन यियि वनि नोव थावनः फैक्ट्री डिफ़ॉल्टस कुन."</string>
+     <string name="kg_failed_attempts_almost_at_login" product="tablet">"तुहुय छुव गलत पांठ बनोवमुत पन्नुन अनलॉक पैटर्न <xliff:g id="number">%d</xliff:g> वक्तह. अमि पत <xliff:g id="number">%d</xliff:g> वार्याह नाकाम कोशिशह, तुहुय यियः वन्नः अनलॉक कर्येव पन्नुन टेबलेट अकि ईमेल एकाउंट इस्तेमाल करनः सीत.\n\n दुबारह कर्यिव कोशिश येथ <xliff:g id="number">%d</xliff:g> सेकंड्स मंज़."</string>
+     <string name="kg_failed_attempts_almost_at_login" product="tv">"तुहुय छुव गलत पांठ बनोवमुत पन्नुन अनलॉक पैटर्न <xliff:g id="number">%d</xliff:g> वक्तह. अमि पत <xliff:g id="number">%d</xliff:g> वार्याह नाकाम कोशिशह, तुहुय यियः वन्नः अनलॉक कर्येव पन्नुन TV अकि ईमेल एकाउंट इस्तेमाल करनः सीत.\n\n दुबारह कर्यिव कोशिश येथ <xliff:g id="number">%d</xliff:g> सेकंड्स मंज़."</string>
+     <string name="kg_failed_attempts_almost_at_login" product="default">"तुहुय छुव गलत पांठ बनोवमुत पन्नुन अनलॉक पैटर्न <xliff:g id="number">%d</xliff:g> वक्तह. अमि पत <xliff:g id="number">%d</xliff:g> वार्याह नाकाम कोशिशह, तुहुय यियः वन्नः अनलॉक कर्येव पन्नुन फ़ोन अकि ईमेल एकाउंट इस्तेमाल करनः सीत.\n\n दुबारह कर्यिव कोशिश येथ <xliff:g id="number">%d</xliff:g> सेकंड्स मंज़."</string>
+     <string name="kg_text_message_separator" product="default">" \u2014 "</string>
+     <string name="kg_reordering_delete_drop_target_text">"नेबर कडीव"</string>
+     <string name="safe_media_volume_warning" product="default">" "बडायिव आवाज़ वन्नः आमचह हद ज्याद?\n\n बोजुन वार्यह ज्याद आवाज़ मंज़ वार्याह कालस मः करि नोकसान बोज्नस मंज़."</string>
+     <string name="continue_to_enable_accessibility">"रटीथ थायिव बोंकुन ज़अ अंगजि एक्सेसिबिलिटी हावनः बापथ."</string>
+     <string name="accessibility_enabled">"एक्सेसिबिलिटी हावनः आमच."</string>
+     <string name="enable_accessibility_canceled">"एक्सेसिबिलिटी रद्द करनः आमच."</string>
+     <string name="user_switched">"मौजूद ग्राख <xliff:g id="name" example="Bob">%1$s</xliff:g>."</string>
+     <string name="user_switching_message">"फिरनह यिवन <xliff:g id="name" example="Bob">%1$s</xliff:g>..."</string>
+     <string name="owner_name">"मालिख"</string>
+     <string name="error_message_title">"नुक्स"</string>
+     <string name="error_message_change_not_allowed">"यि बदलाव छु न मंज़ूर इन्तिज़ामियाह देस"</string>
+     <string name="app_not_found">"कंह ति एप्लीकेशन आय न लबनः यि काम तुलनः बापथ"</string>
+     <string name="revoke">"मंसूख"</string>
+     <string name="mediasize_chinese_om_pa_kai">"पा कई"</string>
+     <string name="mediasize_chinese_om_dai_pa_kai">"दी पा कई"</string>
+     <string name="mediasize_chinese_om_jurro_ku_kai">"जुर्रो कु कई"</string>
+     <string name="mediasize_unknown_portrait">"गैर शक्ल"</string>
+     <string name="mediasize_unknown_landscape">"गैर पेशीनज़र"</string>
+     <string name="write_fail_reason_cancelled">"रद्द करनः आमुत"</string>
+     <string name="write_fail_reason_cannot_write">"गलती लेखन वोल मवाद"</string>
+     <string name="reason_unknown">"ना मोलूम"</string>
+     <string name="reason_service_unavailable">"प्रिंट सहूलियात छ न थावनः आमिच""</string>
+     <string name="print_service_installed_title">"<xliff:g id="name" example="Cloud Print">%s</xliff:g> सहूलियात इनस्टॉल गमिच"</string>
+     <string name="print_service_installed_message">"ठुक करिव हावनः बापथ"</string>
+     <string name="restr_pin_enter_admin_pin">"अचिव इन्तिज़मियाह PIN"</string>
+     <string name="restr_pin_enter_pin">"एंटर कर्येव PIN"</string>
+     <string name="restr_pin_incorrect">"गलत"</string>
+     <string name="restr_pin_enter_old_pin">"मौजोद PIN"</string>
+     <string name="restr_pin_enter_new_pin">"नोव PIN"</string>
+     <string name="restr_pin_confirm_pin">"तस्दीक करिव नोव PIN"</string>
+     <string name="restr_pin_create_pin">"बनायिव अख PIN दरुस पाबन्दी खात्र"</string>
+     <string name="restr_pin_error_doesnt_match">"PIN एस छि न रलन.बेय करिव कूशिश."</string>
+     <string name="restr_pin_error_too_short">"PIN छु वार्या लकुट.गसि आसुन कमसे कम 4 हरफन हुन्द."</string>
+     <plurals name="restr_pin_countdown">
+<item quantity="one">"बेय करिव कूशिश 1 सेकंड्स मंज़"</item>
+<item quantity="other">"बेय करिव कूशिश <xliff:g id="count">%d</xliff:g> सेकंड्स"</item>
+    </plurals>
+     <string name="restr_pin_try_later">"बेय करिव पततः कुशिश्ज"</string>
+     <string name="immersive_cling_title">"वुछुन पुरः स्क्रीन"</string>
+     <string name="immersive_cling_description">"नेबर नेरनः बापथ,वसिव बोन हेर पेठ."</string>
+     <string name="immersive_cling_positive">"नियिव यि"</string>
+     <string name="done_label">"पूरह"</string>
+     <string name="hour_picker_description">"गनट:गोल रक्नीदार"</string>
+     <string name="minute_picker_description">"मिनट्स गोल रक्नीदार"</string>
+     <string name="select_hours">"चुनिव गनट; "</string>
+     <string name="select_minutes">"चुनिव मिनट्स"</string>
+     <string name="select_day">"चुनिव रेथ त दोह"</string>
+     <string name="select_year">"चुनिव वर्री"</string>
+     <string name="deleted_key">"<xliff:g id="key" example="4">%1$s</xliff:g> हटोमुत"</string>
+     <string name="managed_profile_label_badge">"काम <xliff:g id="label" example="Email">%1$s</xliff:g>"</string>
+     <string name="lock_to_app_toast">"यि स्क्रीन अनPIN करनः बापथ, करिव ज़ीर त रटिव पथ त ओवरव्यू अक्कि साथ."</string>
+     <string name="lock_to_app_toast_accessible">"यि स्क्रीन अनPIN करनः बापथ,करिव ज़ीर त रतिव ओवरव्यू."</string>
+     <string name="lock_to_app_toast_locked">"एप्प छि PIN गमिच: PIN य्ल्लह त्राव्नस छु न यथ आलस मंज़ इजाज़त."</string>
+     <string name="lock_to_app_start">"स्क्रीन छु PIN गमुत"</string>
+     <string name="lock_to_app_exit">"स्क्रीन छु आमुत नेबर कडनः"</string>
+     <string name="lock_to_app_unlock_pin">"प्रिसिव PIN खात्र नेबर कडनः ब्रोंठ"</string>
+     <string name="lock_to_app_unlock_pattern">"प्रिसिव य्ल्लह पैटर्न खात्र नेबर कडनः ब्रोंठ"</string>
+     <string name="lock_to_app_unlock_password">"प्रिसिव पासवर्ड खात्र नेबर कडनः ब्रोंठ"</string>
+     <string name="package_installed_device_owner">"इनस्टॉल गमुत तुहुंदी इन्तिज़मियाह दअस"</string>
+     <string name="package_updated_device_owner">"अपडेट गमुत तुहुंदी इन्तिज़मिया दअस"</string>
+     <string name="package_deleted_device_owner">"हटोमुत तुहुंदी इन्तिज़मिया दअस"</string>
+     <string name="battery_saver_description">"बैटरी वांस हुर्रावनः मदतः बापथ,बैटरी बचावनवोल छु कम करन तुहुंदी आलच काम त छु थरथर हद करन, पततः सहूलियात, बेय वार्या पत्तिम मवाद.इमेल,मेस्सजिंग,त बेय बाकि एप्प्स यिम बरूस छि करन पेठ सिंकिंग हेकि ति न अपडेट गसिथ यीतिस काल्स न तुही यिम य्ल्लह त्रायिव.\n\n बैटरी बचवानवोल गसि बंद पान्य येल्लिः आसि चार्ज गसन."</string>
+     <plurals name="zen_mode_duration_minutes_summary">
+<item quantity="one">"अकिस मिनट्स खात्र (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+<item quantity="other">"खात्र %1$d मिनट्स (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_minutes_summary_short">
+<item quantity="one">"अकिस मिनट्स खात्र (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+<item quantity="other">"खात्र %1$d मिनट्स (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_hours_summary">
+<item quantity="one">"अकिस गनटस खात्र (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+<item quantity="other">"खात्र %1$d गनटन (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_hours_summary_short">
+<item quantity="one">"अकिस गनटस खात्र (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+<item quantity="other">"खात्र %1$d गनटन (यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%2$s</xliff:g>)"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_minutes">
+<item quantity="one">"अकिस मिनटस खात्र"</item>
+<item quantity="other">"%d मिनटन खात्र"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_minutes_short">
+<item quantity="one">"अकिस मिनटस खात्र"</item>
+<item quantity="other">"%d मिनटन खात्र"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_hours">
+<item quantity="one">"अकिस गनटस खात्र"</item>
+<item quantity="other">"%d गनटन खात्र"</item>
+    </plurals>
+     <plurals name="zen_mode_duration_hours_short">
+<item quantity="one">"अकिस गनटस खात्र"</item>
+<item quantity="other">"%d गनटन खात्र"</item>
+    </plurals>
+     <string name="zen_mode_until">"यीतिस काल्स <xliff:g id="formattedTime" example="10:00 PM">%1$s</xliff:g>"</string>
+     <string name="zen_mode_forever">"यीतिस काल्स न तुही यि बंद करिव"</string>
+     <string name="zen_mode_forever_dnd">"यीतिस काल्स न तुही बंद करिव तीतिस काल्स म सतायिव"</string>
+     <string name="zen_mode_rule_name_combination">"<xliff:g id="first" example="Weeknights">%1$s</xliff:g> / <xliff:g id="rest" example="Meetings">%2$s</xliff:g>"</string>
+     <string name="toolbar_collapse_description">"टक्कर"</string>
+     <string name="zen_mode_feature_name">"मः कर्येव थोथ"</string>
+     <string name="zen_mode_downtime_feature_name">"वास्वून वक़्त"</string>
+     <string name="zen_mode_default_weeknights_name">"हफ्तराथ"</string>
+     <string name="zen_mode_default_weekends_name">"हफ्तमुकम्मल"</string>
+     <string name="zen_mode_default_events_name">"वाकः"</string>
+     <string name="muted_by">"खामोश कर्मुत <xliff:g id="third_party">%1$s</xliff:g>"</string>
+     <string name="system_error_wipe_data">"अत्ति छि अख अंदरूनी मुश्किलात तुहुन्दिस आलस सीथ,त यि हेकि गैरमुनासिब आसिथ यीतिस काल्स न तुही फैक्ट्री मवाद नोव थाविव."</string>
+     <string name="system_error_manufacturer">"अत्ति छि अख अंदरूनी मुश्किलात तुहुन्दिस आलस सीथ.राबितः करिव बनावनवालिस सीथ तफ्सुर खात्र."</string>
+     <string name="stk_cc_ussd_to_dial">"USSD आज्ज़ी दरुस करिथ DAIL आज्ज़ी बापथ."</string>
+     <string name="stk_cc_ussd_to_ss">"USSD आज्ज़ी दरुस करिथ SS  आज्ज़ी बापथ."</string>
+     <string name="stk_cc_ussd_to_ussd">"USSD आज्ज़ी दरुस करिथ नयिस USSD आज्ज़ी बापथ."</string>
+     <string name="stk_cc_ss_to_dial">"SS आज्ज़ी छि दरुस करिथ DAIL आज्ज़ी कुन."</string>
+     <string name="stk_cc_ss_to_ussd">"SS आज्ज़ी छि दरुस करिथ USSD आज्ज़ी कुन."</string>
+     <string name="stk_cc_ss_to_ss">"SS आज्ज़ी छि दरुस करिथ नयिस SS आज्ज़ी कुन."</string>
+     <string name="notification_work_profile_content_description">"कामि हुन्द तरीक"</string>
+     <string name="usb_midi_peripheral_name">"एंड्राइड USB पेरिफेरल बंदरगाह"</string>
+     <string name="usb_midi_peripheral_product_name">"USB पेरिफेरल बंदरगाह"</string>
+     <string name="floating_toolbar_open_overflow_description">"वार्यह मुत्बादिल"</string>
+     <string name="floating_toolbar_close_overflow_description">"बंद करिव नीरिथ चलुन"</string>
+     <plurals name="selected_count">
+<item quantity="one">"<xliff:g id="count" example="1">%1$d</xliff:g> चुन्मुत"</item>
+<item quantity="other">"<xliff:g id="count" example="3">%1$d</xliff:g>  चुन्मुत"</item>
+    </plurals>
+     <string name="ext_media_status_shared">"UMS बागराविथ"</string>
+     <string name="sim_ready_title_for_usb">"खबरदारी"</string>
+     <string name="sim_card_activation_warning">"त्रेय्मी जमाच दअस एप्लीकेशन इनस्टॉल करनः किस मसल्स मंज़, मेहरबानी करिथ त्रायिव SIM/USIM कार्ड USB एक्टिवेट करनः बापथ."</string>
+     <string name="usb_ok">"ठीक"</string>
+     <string name="usb_cdrom_notification_title">"असली ड्रेवर छु येल"</string>
+     <string name="usb_charge_only_notification">"जुडिथ छु खाली चार्ज बापथ"</string>
+     <string name="global_action_restart">"नोव शुरू"</string>
+     <string name="reboot_device_title">"नोव शुरू"</string>
+     <string name="global_reboot_close_apps">"बंद करिव सारेय एप्प्स त करिव नोव शुरू फ़ोन"</string>
+     <string name="reboot_device_confirm">"क्या तुही छिवा य्स्सन फ़ोन नई शुरू करूँ वनि?"</string>
+     <string name="station_state_msg">"%1$s जुडिथ,%2$s बंद"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"फ़ोन गासि बंद <xliff:g id="NUMBER">%d</xliff:g> सेकंड्स पततः"</item>
+<item quantity="other">"फ़ोन गासि बंद <xliff:g id="NUMBER">%d</xliff:g> सेकंड्स पततः"</item>
+    </plurals>
+     <string name="phoneFixedNumber">"कायिम नंबर"</string>
+     <string name="gps_time_sync_fail_str">"फेय्ल GPS वक़्त हासिल करन्स मंज़"</string>
+     <string name="disable_touch_mode_title">"चन्दः ज़ीर-नाकार"</string>
+     <string name="disable_touch_mode_hint">"म करिव वुडून फ़ोनकिस पेठमिस हिस्सस"</string>
+     <string name="exit_disable_touch_mode_hint">"तुही हेकिव दबाविथ पॉवर त आवाज़ हेओर बटन ति यि तरीक नाकाबिल करनः खात्र"</string>
+
+</resources>

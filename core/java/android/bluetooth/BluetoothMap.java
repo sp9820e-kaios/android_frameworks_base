@@ -300,13 +300,14 @@ public final class BluetoothMap implements BluetoothProfile {
      */
     public int getConnectionState(BluetoothDevice device) {
         if (DBG) log("getConnectionState(" + device + ")");
-        if (mService != null && isEnabled() &&
-            isValidDevice(device)) {
-            try {
-                return mService.getConnectionState(device);
-            } catch (RemoteException e) {
-                Log.e(TAG, Log.getStackTraceString(new Throwable()));
-                return BluetoothProfile.STATE_DISCONNECTED;
+        synchronized (mConnection) {
+            if (mService != null && isEnabled() && isValidDevice(device)) {
+                try {
+                    return mService.getConnectionState(device);
+                } catch (RemoteException e) {
+                    Log.e(TAG, Log.getStackTraceString(new Throwable()));
+                    return BluetoothProfile.STATE_DISCONNECTED;
+                }
             }
         }
         if (mService == null) Log.w(TAG, "Proxy not attached to service");
@@ -378,7 +379,9 @@ public final class BluetoothMap implements BluetoothProfile {
         }
         public void onServiceDisconnected(ComponentName className) {
             if (DBG) log("Proxy object disconnected");
-            mService = null;
+            synchronized (mConnection) {
+                mService = null;
+            }
             if (mServiceListener != null) {
                 mServiceListener.onServiceDisconnected(BluetoothProfile.MAP);
             }

@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Tik om details weer te geven"</string>
     <string name="retry" msgid="7564024179122207376">"Opnieuw proberen"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Deze bestanden zijn niet gekopieerd: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Kan bestand niet delen"</string>
+     <string name="documents_deleting">"Documenten verwijderen"</string>
+     <string name="cannot_copyfolder_itself">"U kunt de map niet in zichzelf kopiëren"</string>
+
+    <string name="error_permissions">"De app beschikt niet over bepaalde essentiële rechten. Controleer uw instellingen voor rechten."</string>
+     <string name="cannot_copy_drm">"Je kan geen DRM bestanden kopiëren"</string>
+     <string name="cannot_copy_downloading">"Je kan downloaden bestanden niet kopiëren"</string>
 </resources>

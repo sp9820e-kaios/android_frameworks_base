@@ -36,6 +36,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.provider.MediaStore;
 import android.service.media.CameraPrewarmService;
@@ -43,6 +44,7 @@ import android.telecom.TelecomManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -64,6 +66,7 @@ import com.android.systemui.statusbar.KeyguardIndicationController;
 import com.android.systemui.statusbar.policy.AccessibilityController;
 import com.android.systemui.statusbar.policy.FlashlightController;
 import com.android.systemui.statusbar.policy.PreviewInflater;
+import com.sprd.systemui.SystemuiFeatureUtil;
 
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -87,12 +90,15 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
     private static final int DOZE_ANIMATION_STAGGER_DELAY = 48;
     private static final int DOZE_ANIMATION_ELEMENT_DURATION = 250;
     private static final long TRANSIENT_FP_ERROR_TIMEOUT = 1300;
+    // SPRD CMCC version to delete the camera Icon.
+    //private static final boolean SUPPORT_CMCC = SystemProperties.get("ro.operator").equals("cmcc");
 
     private KeyguardAffordanceView mCameraImageView;
     private KeyguardAffordanceView mLeftAffordanceView;
     private LockIcon mLockIcon;
     private TextView mIndicationText;
     private ViewGroup mPreviewContainer;
+    private TextView mLockStarKeyTips;
 
     private View mLeftPreview;
     private View mCameraPreview;
@@ -192,6 +198,7 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         mLeftAffordanceView = (KeyguardAffordanceView) findViewById(R.id.left_button);
         mLockIcon = (LockIcon) findViewById(R.id.lock_icon);
         mIndicationText = (TextView) findViewById(R.id.keyguard_indication_text);
+        mLockStarKeyTips = (TextView) findViewById(R.id.keyguard_indication_star_unlock);
         watchForCameraPolicyChanges();
         updateCameraVisibility();
         mUnlockMethodCache = UnlockMethodCache.getInstance(getContext());
@@ -221,10 +228,14 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 R.dimen.keyguard_indication_margin_bottom);
         MarginLayoutParams mlp = (MarginLayoutParams) mIndicationText.getLayoutParams();
         if (mlp.bottomMargin != indicationBottomMargin) {
-            mlp.bottomMargin = indicationBottomMargin;
+            // SPRD : Feature 478270 Add EmergencyButton on the Lockscreen
+            //mlp.bottomMargin = indicationBottomMargin;
             mIndicationText.setLayoutParams(mlp);
         }
 
+        if(mLockStarKeyTips != null){
+             mLockStarKeyTips.setText(getResources().getText(R.string.label_star_unlock));
+        }
         // Respect font size setting.
         mIndicationText.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getResources().getDimensionPixelSize(
@@ -421,6 +432,9 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 public void run() {
                     int result = ActivityManager.START_CANCELED;
                     try {
+                        //SPRD: modify flags to relunch camera
+                        intent.setFlags(
+                                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         result = ActivityManagerNative.getDefault().startActivityAsUser(
                                 null, getContext().getBasePackageName(),
                                 intent,
@@ -548,7 +562,14 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
     }
 
     private void inflateCameraPreview() {
-        mCameraPreview = mPreviewInflater.inflatePreview(getCameraIntent());
+        /*SPRD : CMCC version to delete the camera Icon.*/
+        //SPRD: 541291 modify the SystemProperties to plugins
+        if (SystemuiFeatureUtil.getInstance().isCMCC()) {
+            mCameraPreview = getCameraPreView();
+        } else {
+            mCameraPreview = mPreviewInflater.inflatePreview(getCameraIntent());
+        }
+        /*@}*/
         if (mCameraPreview != null) {
             mPreviewContainer.addView(mCameraPreview);
             mCameraPreview.setVisibility(View.INVISIBLE);
@@ -699,4 +720,23 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         updateLeftAffordanceIcon();
         updateLeftPreview();
     }
+
+    /* SPRD: use addon to support the function of changing RINGER_MODE @{ */
+    @Override
+    protected void onAttachedToWindow() {
+        SystemuiFeatureUtil.getInstance().changeCameraToProfile(mCameraImageView);
+        super.onAttachedToWindow();
+    }
+    public boolean launchAudioProfile() {
+        return SystemuiFeatureUtil.getInstance().launchAudioProfile(mActivityStarter,mContext);
+    }
+
+    private View getCameraPreView() {
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View v = inflater.inflate(R.layout.keyguard_camera_widget, null);
+        KeyguardPreviewContainer container = new KeyguardPreviewContainer(mContext, null);
+        container.addView(v);
+        return container;
+    }
+    /* @} */
 }

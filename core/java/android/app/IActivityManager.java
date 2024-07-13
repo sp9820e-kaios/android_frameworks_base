@@ -517,6 +517,18 @@ public interface IActivityManager extends IInterface {
 
     public boolean isRootVoiceInteraction(IBinder token) throws RemoteException;
 
+    /* SPRD: add for bug 284692, add set process protect status interface @{ */
+    public void setProcessProtectStatus(int pid, int status) throws RemoteException;
+    public void setProcessProtectStatus(String appName, int status) throws RemoteException ;
+    public void setProcessProtectArea(String appName,  int minAdj, int maxAdj, int protectLevel) throws RemoteException;
+    /* }@ */
+    // SPRD: 380668 add kill-stop process
+    public void startHomePre() throws RemoteException;
+    public void killStopFrontApp(int func) throws RemoteException;
+
+    /* SPRD: add for bug 495208, add log to dump trace when TimeoutException happen @{ */
+    public void dumpProcessTrace(int pid, String msg) throws RemoteException;
+    /* }@ */
     /*
      * Private non-Binder interfaces
      */
@@ -864,4 +876,17 @@ public interface IActivityManager extends IInterface {
             = IBinder.FIRST_CALL_TRANSACTION+299;
     int SHOW_ASSIST_FROM_ACTIVITY_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+300;
     int IS_ROOT_VOICE_INTERACTION_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+301;
+
+    /* SPRD: add for bug 284692, add set process protect status interface @{ */
+    int SET_PROCESS_PROTECT_STATUS_BYPID = IBinder.FIRST_CALL_TRANSACTION+401;
+    int  SET_PROCESS_PROTECT_STATUS =IBinder.FIRST_CALL_TRANSACTION+402;
+    int SET_PROCESS_PROTECT_AREA = IBinder.FIRST_CALL_TRANSACTION+403;
+    /* }@ */
+    /* SPRD: add for bug 495208, add log to dump trace when TimeoutException happen @{ */
+    int DUMP_PROCESS_TRACE = IBinder.FIRST_CALL_TRANSACTION+404;
+    /* }@ */
+    // SPRD: 380668 add kill-stop process @{
+    int KILL_STOP_FRONT_APP_TRANSACTION = IBinder.FIRST_CALL_TRANSACTION+405;
+    int START_HOME_PRE = IBinder.FIRST_CALL_TRANSACTION+406;
+    /* }@ */
 }

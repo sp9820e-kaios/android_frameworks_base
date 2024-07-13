@@ -36,6 +36,7 @@ public final class ParcelableConference implements Parcelable {
     private int mConnectionCapabilities;
     private List<String> mConnectionIds;
     private long mConnectTimeMillis = Conference.CONNECT_TIME_NOT_SPECIFIED;
+    private long mConnectRealTimeMillis = Conference.CONNECT_TIME_NOT_SPECIFIED;
     private final IVideoProvider mVideoProvider;
     private final int mVideoState;
     private StatusHints mStatusHints;
@@ -59,6 +60,7 @@ public final class ParcelableConference implements Parcelable {
         mVideoProvider = videoProvider;
         mVideoState = videoState;
         mConnectTimeMillis = connectTimeMillis;
+        mConnectRealTimeMillis = Conference.CONNECT_TIME_NOT_SPECIFIED; //SPRD: add for bug492533
         mStatusHints = statusHints;
         mExtras = extras;
     }
@@ -118,6 +120,15 @@ public final class ParcelableConference implements Parcelable {
         return mExtras;
     }
 
+    /** SPRD: add for bug492533. @{ */
+    public long getConnectRealTimeMillis() {
+        return mConnectRealTimeMillis;
+    }
+    public void setConnectRealTimeMillis(long connectRealTimeMillis) {
+        mConnectRealTimeMillis = connectRealTimeMillis;
+    }
+    /** @} */
+
     public static final Parcelable.Creator<ParcelableConference> CREATOR =
             new Parcelable.Creator<ParcelableConference> () {
         @Override
@@ -135,8 +146,15 @@ public final class ParcelableConference implements Parcelable {
             StatusHints statusHints = source.readParcelable(classLoader);
             Bundle extras = source.readBundle(classLoader);
 
-            return new ParcelableConference(phoneAccount, state, capabilities, connectionIds,
+            /** SPRD: add for bug492533. @{ */
+            /* return new ParcelableConference(phoneAccount, state, capabilities, connectionIds,
+                    videoCallProvider, videoState, connectTimeMillis, statusHints, extras); */
+            long connectRealTimeMillis = source.readLong();
+            ParcelableConference parcelableConference = new ParcelableConference(phoneAccount, state, capabilities, connectionIds,
                     videoCallProvider, videoState, connectTimeMillis, statusHints, extras);
+            parcelableConference.setConnectRealTimeMillis(connectRealTimeMillis);
+            return parcelableConference;
+            /** @} */
         }
 
         @Override
@@ -164,5 +182,6 @@ public final class ParcelableConference implements Parcelable {
         destination.writeInt(mVideoState);
         destination.writeParcelable(mStatusHints, 0);
         destination.writeBundle(mExtras);
+        destination.writeLong(mConnectRealTimeMillis); //SPRD: add for bug492533
     }
 }

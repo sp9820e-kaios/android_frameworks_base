@@ -23,4 +23,8 @@
     <integer name="button_pressed_animation_delay">100</integer>
     <integer name="disabled_alpha_animation_duration">100</integer>
     <integer name="dock_enter_exit_duration">250</integer>
+    <!--  SPRD services we want to restart  { -->
+    <integer translatable="false" name="config_restartServiceInterval">0</integer>
+    <integer translatable="false" name="config_restartAppServiceInterval">0</integer>
+    <!--  } -->
 </resources>

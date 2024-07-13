@@ -191,7 +191,7 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
         if (mCallback != null) {
             mCallback.userActivity();
         }
-        mSecurityMessageDisplay.setMessage("", false);
+        //mSecurityMessageDisplay.setMessage("", false);
     }
 
     @Override

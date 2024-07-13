@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"ยินดีด้วย! เพิ่มตัวรับสัญญาณ UI ระบบไปยังการตั้งค่าแล้ว"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"นำออกจากการตั้งค่า"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"นำตัวรับสัญญาณ UI ระบบออกจากการตั้งค่าและหยุดใช้คุณลักษณะทั้งหมดของตัวรับสัญญาณใช่ไหม"</string>
+    <string name="quick_settings_volume_label">ประวัติเสียง"</string>
+     <string name="assistant_key_home">"หน้าแรก"</string>
+     <string name="assistant_key_search">"ค้นหา"</string>
+     <string name="assistant_key_menu">"เมนู"</string>
+     <string name="assistant_key_back">"ย้อนกลับ"</string>
+
+    <string name="vibrate_hint">"ปัดด้านซ้ายจะสั่น"</string>
+     <string name="battery_overtage_title">"คำเตือนเกี่ยวกับความปลอดภัย"</string>
+     <string name="battery_overtage_content">"แรงดันในการชาร์จสูงเกินไป!"</string>
+     <string name="battery_overtage_back">"ย้อนกลับ"</string>
 </resources>

@@ -138,7 +138,33 @@ public class BarController {
         return vis;
     }
 
+    /* work around for Screen Pinning @{ */
+    private boolean mForceBarShow = false;
+    public void setForceBarShow(boolean show) {
+        mForceBarShow = show;
+    }
+    /* @} */
+
+    /* work around for Screen Pinning @{ */
     public boolean setBarShowingLw(final boolean show) {
+        /* delete out log @{*/
+        //Slog.d(mTag, "setBarShowingLw state. show = " + show);
+        /*@} */
+        if (mForceBarShow) {
+            return setBarShowingLw(show, false);
+        } else {
+            return setBarShowingLw(show, true);
+        }
+    }
+    /* @} */
+
+    public boolean setBarShowingLw(final boolean show, final boolean forceChange) {
+        /* work around for Screen Pinning test in CTS @{ */
+        if (!forceChange) {
+        Slog.d(mTag, "do not update bar state.");
+        return false;
+        }
+        /* @} */
         if (mWin == null) return false;
         if (show && mTransientBarState == TRANSIENT_BAR_HIDING) {
             mPendingShow = true;
@@ -153,6 +179,14 @@ public class BarController {
         final boolean stateChanged = updateStateLw(state);
         return change || stateChanged;
     }
+
+    /* SPRD: add for dynamic navigationbar @{ */
+    public void setLayoutNeeded(boolean needed) {
+        if (mWin != null) {
+            mWin.setLayoutNeeded(needed);
+        }
+    }
+    /* @} */
 
     private int computeStateLw(boolean wasVis, boolean wasAnim, WindowState win, boolean change) {
         if (win.isDrawnLw()) {

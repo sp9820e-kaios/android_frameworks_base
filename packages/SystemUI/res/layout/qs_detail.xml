@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:minWidth="132dp"
+                android:textSize="20px"
                 android:textAppearance="@style/TextAppearance.QS.DetailButton"
                 android:focusable="true" />
 
@@ -49,6 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="88dp"
+                android:textSize="20px"
                 android:textAppearance="@style/TextAppearance.QS.DetailButton"
                 android:focusable="true"/>
 

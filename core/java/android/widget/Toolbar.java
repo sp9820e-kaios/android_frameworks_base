@@ -800,6 +800,9 @@ public class Toolbar extends ViewGroup {
             mHiddenViews.remove(mNavButtonView);
         }
         if (mNavButtonView != null) {
+            /* SPRD: modify 20160914 Spreadtrum of 598267 , no focus@{ */
+            mNavButtonView.setFocusable(false);
+            /* @} */
             mNavButtonView.setImageDrawable(icon);
         }
     }

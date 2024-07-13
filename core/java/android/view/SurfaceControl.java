@@ -184,6 +184,12 @@ public class SurfaceControl {
      */
     public static final int FX_SURFACE_MASK = 0x000F0000;
 
+    /**
+    *SPRD: Surface creation flag: Surface is hardware accelerated
+    * {@ */
+    public static final int HARDWARE_ACCE = 0x00100000;
+    /* @} */
+
     /* flags used with setFlags() (keep in sync with ISurfaceComposer.h) */
 
     /**

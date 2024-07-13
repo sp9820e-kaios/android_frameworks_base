@@ -204,7 +204,7 @@ public class PhoneStateListener {
      * Listen for changes to LTE network state
      *
      * @see #onLteNetworkStateChanged
-     * @hide
+     * SPRD:remove hide for VoLTE
      */
     public static final int LISTEN_VOLTE_STATE                              = 0x00004000;
 
@@ -497,7 +497,7 @@ public class PhoneStateListener {
      * Callback invoked when the service state of LTE network
      * related to the VoLTE service has changed.
      * @param stateInfo is the current LTE network information
-     * @hide
+     * SPRD:remove hide for VoLTE
      */
     public void onVoLteServiceStateChanged(VoLteServiceState stateInfo) {
     }

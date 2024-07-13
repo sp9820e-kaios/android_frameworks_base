@@ -20,6 +20,8 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.*;
 import android.util.AttributeSet;
 import android.view.accessibility.AccessibilityManager;
@@ -34,6 +36,7 @@ import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.Utilities;
 import com.android.systemui.recents.model.Task;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
+import com.sprd.systemui.SystemUILockAppUtils;
 
 /* A task view */
 public class TaskView extends FrameLayout implements Task.TaskCallbacks,
@@ -73,6 +76,9 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
     TaskViewThumbnail mThumbnailView;
     TaskViewHeader mHeaderView;
     View mActionButtonView;
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    View mLockIconView;
+    /* @} */
     TaskViewCallbacks mCb;
 
     // Optimizations
@@ -150,6 +156,9 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
             }
         });
         mActionButtonTranslationZ = mActionButtonView.getTranslationZ();
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        mLockIconView = findViewById(R.id.app_lock_image);
+        /* @} */
     }
 
     @Override
@@ -493,6 +502,49 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
         }, 0);
     }
 
+    /* SPRD: Bug 475644 new feature of quick cleaning. @{ */
+    public void dismissAllTask() {
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        if (mTask.isLocked) return;
+        /* @} */
+        final TaskView tv = this;
+        startDeleteTaskAnimation(new Runnable() {
+            @Override
+            public void run() {
+                if (mCb != null) {
+                    mCb.onTaskViewDismissed(tv);
+                }
+            }
+        }, 0);
+    }
+    /* @} */
+
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    public void onLockIcon() {
+        SharedPreferences sharedPreference = mContext.getSharedPreferences(Task.PREFERENCE_NAME,
+                Context.MODE_WORLD_READABLE | Context.MODE_WORLD_WRITEABLE);
+        Editor editor = sharedPreference.edit();
+        if (mTask.isLocked == false) {
+            mTask.isLocked = true;
+            mLockIconView.setVisibility(View.VISIBLE);
+            mHeaderView.mDismissButton.setVisibility(View.INVISIBLE);
+            editor.putInt(mTask.key.toStringKey(), mTask.key.id);
+            editor.apply();
+        } else {
+            mTask.isLocked = false;
+            mLockIconView.setVisibility(View.INVISIBLE);
+            mHeaderView.mDismissButton.setVisibility(View.VISIBLE);
+            editor.remove(mTask.key.toStringKey());
+            editor.apply();
+        }
+    }
+
+    public boolean isLockedIcon() {
+//        Task mTask = getTask();
+        return mTask.isLocked;
+    }
+    /* @} */
+
     /**
      * Returns whether this view should be clipped, or any views below should clip against this
      * view.
@@ -661,6 +713,15 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
         mTask = t;
         mTask.setCallbacks(this);
 
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        if(PhoneStatusBar.mSupportLockApp) {
+            if (t.isLocked) {
+                mLockIconView.setVisibility(VISIBLE);
+            } else {
+                mLockIconView.setVisibility(INVISIBLE);
+            }
+        }
+        /* @} */
         // Hide the action button if lock to app is disabled for this view
         int lockButtonVisibility = (!t.lockToTaskEnabled || !t.lockToThisTask) ? GONE : VISIBLE;
         if (mActionButtonView.getVisibility() != lockButtonVisibility) {
@@ -688,6 +749,16 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
             mActionButtonView.setOnClickListener(this);
             mHeaderView.mApplicationIcon.setOnLongClickListener(this);
         }
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        if(PhoneStatusBar.mSupportLockApp) {
+            setOnLongClickListener(this);
+            if (getTask().isLocked) {
+                mLockIconView.setVisibility(VISIBLE);
+            } else {
+                mLockIconView.setVisibility(INVISIBLE);
+            }
+        }
+        /* @} */
         mTaskDataLoaded = true;
     }
 
@@ -741,10 +812,14 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
                             }
                         }
                     } else if (v == mHeaderView.mDismissButton) {
-                        dismissTask();
-                        // Keep track of deletions by the dismiss button
-                        MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
-                                Constants.Metrics.DismissSourceHeaderButton);
+                        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+                        if (!getTask().isLocked) {
+                            dismissTask();
+                            // Keep track of deletions by the dismiss button
+                            MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
+                                    Constants.Metrics.DismissSourceHeaderButton);
+                        }
+                        /* @} */
                     } else if (v == mHeaderView.mMoveTaskButton) {
                         if (mCb != null) {
                             mCb.onTaskResize(tv);
@@ -767,6 +842,15 @@ public class TaskView extends FrameLayout implements Task.TaskCallbacks,
 
     @Override
     public boolean onLongClick(View v) {
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        if(PhoneStatusBar.mSupportLockApp) {
+            if(v instanceof TaskView) {
+                int persistId = ((TaskView)v).getTask().key.id;
+                onLockIcon();
+                return true;
+            }
+        }
+        /* @} */
         if (v == mHeaderView.mApplicationIcon) {
             if (mCb != null) {
                 mCb.onTaskViewAppInfoClicked(this);

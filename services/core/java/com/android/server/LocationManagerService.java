@@ -86,6 +86,7 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.WorkSource;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.Slog;
@@ -209,6 +210,8 @@ public class LocationManagerService extends ILocationManager.Stub {
     // all providers that operate over proxy, for authorizing incoming location
     private final ArrayList<LocationProviderProxy> mProxyProviders =
             new ArrayList<LocationProviderProxy>();
+
+    private static final boolean WCN_DISABLED = SystemProperties.get("ro.wcn").equals("disabled");
 
     // current active user on the device - other users are denied location data
     private int mCurrentUserId = UserHandle.USER_OWNER;
@@ -429,7 +432,7 @@ public class LocationManagerService extends ILocationManager.Stub {
         mEnabledProviders.add(passiveProvider.getName());
         mPassiveProvider = passiveProvider;
 
-        if (GpsLocationProvider.isSupported()) {
+        if (GpsLocationProvider.isSupported() && !WCN_DISABLED) {
             // Create a gps location provider
             GpsLocationProvider gpsProvider = new GpsLocationProvider(mContext, this,
                     mLocationHandler.getLooper());
@@ -1308,12 +1311,12 @@ public class LocationManagerService extends ILocationManager.Stub {
                 changesMade = true;
             }
         }
-        if (changesMade) {
+        // if (changesMade) {
             mContext.sendBroadcastAsUser(new Intent(LocationManager.PROVIDERS_CHANGED_ACTION),
                     UserHandle.ALL);
             mContext.sendBroadcastAsUser(new Intent(LocationManager.MODE_CHANGED_ACTION),
                     UserHandle.ALL);
-        }
+        // }
     }
 
     private void updateProviderListenersLocked(String provider, boolean enabled) {
@@ -1654,6 +1657,34 @@ public class LocationManagerService extends ILocationManager.Stub {
         // same receiver (this request may be high power and the initial might not have been).
         receiver.updateMonitoring(true);
     }
+
+    /* SPRD:support AGPS settings @{ */
+    public void setAgpsServer(String provider, int type, String hostname, int port) {
+        GpsLocationProvider p = (GpsLocationProvider) mProvidersByName.get(provider);
+        if (p == null) {
+            Log.e(TAG, "requested provider " + provider + " doesn't exisit");
+            return;
+        }
+        try {
+            p.setAgpsServer(type, hostname, port);
+        } catch (Exception e) {
+            Slog.e(TAG, "setAgpsServer got exception:", e);
+        }
+    }
+
+    public void setPostionMode(String provider, int mode) {
+        GpsLocationProvider p = (GpsLocationProvider) mProvidersByName.get(provider);
+        if (p == null) {
+            Log.e(TAG, "requested provider " + provider + " doesn't exisit");
+            return;
+        }
+        try {
+            p.setPostionMode(mode);
+        } catch (Exception e) {
+            Slog.e(TAG, "setPostionMode got exception:", e);
+        }
+    }
+    /* @} */
 
     @Override
     public void removeUpdates(ILocationListener listener, PendingIntent intent,

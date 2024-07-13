@@ -75,6 +75,7 @@
             android:name=".ui.SelectPrinterActivity"
             android:label="@string/all_printers_label"
             android:theme="@android:style/Theme.Material.Settings"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false">
         </activity>
 

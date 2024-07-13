@@ -258,6 +258,16 @@ LOCAL_SHARED_LIBRARIES += \
 # <bionic_tls.h> in com_google_android_gles_jni_GLImpl.cpp
 LOCAL_C_INCLUDES += bionic/libc/private
 
+#board have private camera not expose to third app. 1 :one private camera, 2: two private cameras
+#if TARGET_BOARD_HAVE_PRIVATE_CAMERA equal 2, then else DANDROID_HAVE_TWO_PRIVATE_CAMERA
+ifeq ($(strip $(TARGET_BOARD_HAVE_PRIVATE_CAMERA)),1)
+LOCAL_CFLAGS += -DANDROID_HAVE_ONE_PRIVATE_CAMERA
+endif
+
+ifeq ($(strip $(TARGET_BOARD_HAVE_PRIVATE_CAMERA)),2)
+LOCAL_CFLAGS += -DANDROID_HAVE_TWO_PRIVATE_CAMERA
+endif
+
 LOCAL_MODULE:= libandroid_runtime
 
 # -Wno-unknown-pragmas: necessary for Clang as the GL bindings need to turn

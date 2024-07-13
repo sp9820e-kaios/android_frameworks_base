@@ -447,4 +447,16 @@ interface ISms {
     void sendStoredMultipartText(int subId, String callingPkg, in Uri messageUri,
                 String scAddress, in List<PendingIntent> sentIntents,
                 in List<PendingIntent> deliveryIntents);
+
+    void setSmsRetryProperty(String key,String value);
+    boolean enablePWSMessageForSubscriber(int subId, int pri, int sec, int test, int cmas);
+    /**
+     * Open a common interface for Messaging to access to UiccsmsController.bug 489257
+     */
+    boolean commonInterfaceForMessaging(int commonType, long szSubId, String szString, inout int[] data);
+    //489223 begin
+    List<SmsRawData> getMessagesFromIccEfByIndex(int subId, String index);
+
+    String[] getSmsCopyToSimIndex(int subId);
+    //489223 end
 }

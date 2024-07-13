@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"แตะเพื่อดูรายละเอียด"</string>
     <string name="retry" msgid="7564024179122207376">"ลองอีกครั้ง"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"ไม่มีการคัดลอกไฟล์เหล่านี้: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ไม่สามารถใช้ไฟล์ร่วมกัน"</string>
+     <string name="documents_deleting">"ลบเอกสาร"</string>
+     <string name="cannot_copyfolder_itself">"คุณไม่สามารถคัดลอกในโฟลเดอร์ด้วยตัวเอง"</string>
+
+    <string name="error_permissions">"แอปไม่มีสิทธิ์ที่จำเป็นในการเรียกใช้ โปรดตรวจสอบการตั้งค่าสิทธิ์ของคุณ"</string>
+     <string name="cannot_copy_drm">"ไม่สามารถคัดลอกไฟล์ DRM"</string>
+     <string name="cannot_copy_downloading">"ไม่สามารถคัดลอกดาวน์โหลดไฟล์"</string>
 </resources>

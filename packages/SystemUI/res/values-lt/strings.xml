@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Sveikiname! Sistemos naudotojo sąsajos derinimo priemonė pridėta prie nustatymų"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Pašalinti iš nustatymų"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Ar norite pašalinti sistemos naudotojo sąsajos derinimo priemonę iš nustatymų ir nebenaudoti jokių jos funkcijų?"</string>
+    <string name="quick_settings_volume_label">"Garso Profilis"</string>
+     <string name="assistant_key_home">"Pagrindinis"</string>
+     <string name="assistant_key_search">"Ieškoti"</string>
+     <string name="assistant_key_menu">"Meniu"</string>
+     <string name="assistant_key_back">"Atgal"</string>
+
+    <string name="vibrate_hint">"Braukite kairėn norėdami įjungti vibraciją"</string>
+     <string name="battery_overtage_title">"Saugos įspėjimas"</string>
+     <string name="battery_overtage_content">"Pakrovimo įtampa yra per aukšta!"</string>
+     <string name="battery_overtage_back">"Atgal"</string>
 </resources>

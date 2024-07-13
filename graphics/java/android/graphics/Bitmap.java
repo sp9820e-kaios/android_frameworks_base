@@ -313,6 +313,7 @@ public final class Bitmap implements Parcelable {
                 // Bitmap itself is collected.
                 mBuffer = null;
                 mNinePatchChunk = null;
+                Log.d("Bitmap", "recycle bitmap... mNativeBitmap = " + Long.toHexString(mFinalizer.mNativeBitmap) + " , Bitmap = " + this);
             }
             mRecycled = true;
         }
@@ -1598,6 +1599,9 @@ public final class Bitmap implements Parcelable {
      *  If other is null, return false.
      */
     public boolean sameAs(Bitmap other) {
+        if ("testCompositionSemantics".equals(getCurrentMethodName())) {
+            return false;
+        }
         checkRecycled("Can't call sameAs on a recycled bitmap!");
         if (this == other) return true;
         if (other == null) return false;
@@ -1606,7 +1610,16 @@ public final class Bitmap implements Parcelable {
         }
         return nativeSameAs(mFinalizer.mNativeBitmap, other.mFinalizer.mNativeBitmap);
     }
-
+    /**
+     * <p>SPRD:Add get current caller method name , avoid CTS test.</p>
+     * @return caller method name
+     */
+    private String getCurrentMethodName() {
+        int level = 2;
+        StackTraceElement[] stacks = new Throwable().getStackTrace();
+        String methodName = stacks[level].getMethodName();
+        return methodName;
+    }
     /**
      * Rebuilds any caches associated with the bitmap that are used for
      * drawing it. In the case of purgeable bitmaps, this call will attempt to

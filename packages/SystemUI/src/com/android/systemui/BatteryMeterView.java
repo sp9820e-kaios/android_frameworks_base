@@ -34,9 +34,16 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
 import com.android.systemui.statusbar.policy.BatteryController;
 
@@ -80,6 +87,16 @@ public class BatteryMeterView extends View implements DemoMode,
 
     private BatteryController mBatteryController;
     private boolean mPowerSaveEnabled;
+
+    /* SPRD: Bug 474751 add charge animation of batteryView @{ */
+    private Timer mSendTimer;
+    private TimerTask mSendTimerTask;
+
+    //SPRD 559965: change the date when charging, the charge animation of batteryView was stop
+    private Runnable mChargingAnimate;
+    private static final int LEVEL_UPDATE = 1;
+    private static final int ANIMATION_DURATION = 1000;
+    /* @} */
 
     private int mDarkModeBackgroundColor;
     private int mDarkModeFillColor;
@@ -172,6 +189,10 @@ public class BatteryMeterView extends View implements DemoMode,
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_BATTERY_CHANGED);
         filter.addAction(ACTION_LEVEL_TEST);
+        /* SPRD: Bug 474751 add charge animation of batteryView @{ */
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        /* @} */
         final Intent sticky = getContext().registerReceiver(mTracker, filter);
         if (sticky != null) {
             // preload the battery level
@@ -231,8 +252,10 @@ public class BatteryMeterView extends View implements DemoMode,
     }
 
     private void updateShowPercent() {
-        mShowPercent = 0 != Settings.System.getInt(getContext().getContentResolver(),
-                SHOW_PERCENT_SETTING, 0);
+        /* SPRD: Bug 577283 Battery percentage is not shown in statusbar icon when in Guest mode @{ */
+        mShowPercent = 0 != Settings.System.getIntForUser(getContext().getContentResolver(),
+                SHOW_PERCENT_SETTING, 0, UserHandle.USER_OWNER);
+        /* @} */
     }
 
     private int getColorForLevel(int percent) {
@@ -344,7 +367,9 @@ public class BatteryMeterView extends View implements DemoMode,
         mShapePath.lineTo(mButtonFrame.left, mFrame.top);
         mShapePath.lineTo(mButtonFrame.left, mButtonFrame.top);
 
-        if (tracker.plugged) {
+        // SPRD: Bug 474751 add charge animation of batteryView
+        if (tracker.plugged && level != 100
+                && tracker.status == BatteryManager.BATTERY_STATUS_CHARGING) {
             // define the bolt shape
             final float bl = mFrame.left + mFrame.width() / 4.5f;
             final float bt = mFrame.top + mFrame.height() / 6f;
@@ -467,6 +492,10 @@ public class BatteryMeterView extends View implements DemoMode,
         int voltage;
         int temperature;
         boolean testmode = false;
+        /* SPRD: Bug 474751 add charge animation of batteryView @{ */
+        int tempLevel = -1;
+        int ChargeLevel = -1;
+        /* @} */
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -490,7 +519,10 @@ public class BatteryMeterView extends View implements DemoMode,
 
                 setContentDescription(
                         context.getString(R.string.accessibility_battery_level, level));
-                postInvalidate();
+                /* SPRD: Bug 474751 add charge animation of batteryView @{ */
+                // postInvalidate();
+                BatteryMeterViewAnimationShow(intent);
+                /* @} */
             } else if (action.equals(ACTION_LEVEL_TEST)) {
                 testmode = true;
                 post(new Runnable() {
@@ -524,7 +556,91 @@ public class BatteryMeterView extends View implements DemoMode,
                     }
                 });
             }
+
+            /* SPRD: Bug 474751 add charge animation of batteryView @{ */
+            if (action.equals(Intent.ACTION_SCREEN_OFF)) {
+                cleanTimerTask();
+            }
+
+            if (action.equals(Intent.ACTION_SCREEN_ON)) {
+                if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+                    /*
+                     * SPRD 559965: change the date when charging, the charge
+                     * animation of batteryView was stop @{
+                     */
+                    if (mChargingAnimate == null && level < 100) {
+                        mChargingAnimate = new Runnable() {
+                            @Override
+                            public void run() {
+                                ChargeLevel += 20;
+                                level = ChargeLevel;
+                                mHandler.sendEmptyMessage(LEVEL_UPDATE);
+                                if (ChargeLevel > 90) {
+                                    if (tempLevel > 20) {
+                                        ChargeLevel = tempLevel - 20;
+                                    } else {
+                                        ChargeLevel = tempLevel;
+                                    }
+                                }
+                                mHandler.postDelayed(this, ANIMATION_DURATION);
+                            }
+                        };
+                        mHandler.postDelayed(mChargingAnimate, ANIMATION_DURATION);
+                    }
+                    /* @} */
+                }
+            }
         }
+
+        private void BatteryMeterViewAnimationShow(Intent intent) {
+            Log.d(TAG, "level should be =" + level);
+            if (plugged && level < 100 && status == BatteryManager.BATTERY_STATUS_CHARGING) {
+                if (0 < level && level < 20) {
+                    tempLevel = -1;
+                } else if (20 < level && level < 40) {
+                    tempLevel = 19;
+                } else if (40 < level && level < 60) {
+                    tempLevel = 39;
+                } else if (60 < level && level < 80) {
+                    tempLevel = 59;
+                } else if (80 < level && level < 100) {
+                    tempLevel = 79;
+                }
+                ChargeLevel = tempLevel;
+
+                /*
+                 * SPRD 559965: change the date when charging, the charge
+                 * animation of batteryView was stop @{
+                 */
+                if (mChargingAnimate == null) {
+                    mChargingAnimate = new Runnable() {
+                        @Override
+                        public void run() {
+                            ChargeLevel += 20;
+                            level = ChargeLevel;
+                            mHandler.sendEmptyMessage(LEVEL_UPDATE);
+                            if (ChargeLevel > 90) {
+                                if (tempLevel > 20) {
+                                    ChargeLevel = tempLevel - 20;
+                                } else {
+                                    ChargeLevel = tempLevel;
+                                }
+                            }
+                            mHandler.postDelayed(this, ANIMATION_DURATION);
+                        }
+                    };
+                    mHandler.postDelayed(mChargingAnimate, ANIMATION_DURATION);
+                }
+                /* @} */
+            } else {
+                level = (int) (100f * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0) / intent
+                        .getIntExtra(BatteryManager.EXTRA_SCALE, 100));
+                Log.d(TAG, " non-charge: level =" + level);
+                postInvalidate();
+                cleanTimerTask();
+            }
+        }
+        /* @} */
     }
 
     private final class SettingObserver extends ContentObserver {
@@ -536,8 +652,41 @@ public class BatteryMeterView extends View implements DemoMode,
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
             updateShowPercent();
-            postInvalidate();
+            /*
+             * SPRD 559965: change the date when charging, the charge animation of
+             * batteryView was stop @{
+             */
+            BatteryTracker tracker = mDemoMode ? mDemoTracker : mTracker;
+            if (!tracker.plugged) {
+                postInvalidate();
+                cleanTimerTask();
+            }
+            /* @} */
         }
     }
 
+    /* SPRD: Bug 474751 add charge animation of batteryView @{ */
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            // TODO Auto-generated method stub
+            super.handleMessage(msg);
+            if (msg.what == LEVEL_UPDATE) {
+                postInvalidate();
+            }
+        }
+    };
+
+    private void cleanTimerTask() {
+        /*
+         * SPRD 559965: change the date when charging, the charge animation of
+         * batteryView was stop @{
+         */
+        if (mChargingAnimate != null){
+            mHandler.removeCallbacks(mChargingAnimate);
+            mChargingAnimate = null;
+        }
+        /* @} */
+    }
+    /* @} */
 }

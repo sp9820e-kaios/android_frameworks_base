@@ -207,8 +207,8 @@ public class MobileDataControllerImpl implements NetworkController.MobileDataCon
 
     public boolean isMobileDataSupported() {
         // require both supported network and ready SIM
-        return mConnectivityManager.isNetworkSupported(TYPE_MOBILE)
-                && mTelephonyManager.getSimState() == SIM_STATE_READY;
+        // SPRD: modify for 4G and data connection quick setting
+        return mConnectivityManager.isNetworkSupported(TYPE_MOBILE);
     }
 
     public boolean isMobileDataEnabled() {

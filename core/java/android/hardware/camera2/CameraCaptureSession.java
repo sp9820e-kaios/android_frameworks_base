@@ -954,4 +954,8 @@ public abstract class CameraCaptureSession implements AutoCloseable {
     public static abstract class CaptureListener extends CaptureCallback {
     }
 
+    /**
+     * Sprd add for burst
+     */
+    public abstract int cancelPicture() throws CameraAccessException;
 }

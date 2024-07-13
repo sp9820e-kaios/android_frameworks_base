@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Dotaknite se za ogled podrobnosti"</string>
     <string name="retry" msgid="7564024179122207376">"Poskusi znova"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Te datoteke niso bile kopirane: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Ne morem dostopati do deljene datoteke"</string>
+     <string name="documents_deleting">"Brisanje dokumentov"</string>
+     <string name="cannot_copyfolder_itself">"Mape ne morete kopirati v lastno lokacijo"</string>
+
+    <string name="error_permissions">"Aplikacija nima nujnih dovoljenj, potrebnih za izvajanje. Preverite nastavitve dovoljenj."</string>
+     <string name="cannot_copy_drm">"Ne morem kopirati datotek DRM"</string>
+     <string name="cannot_copy_downloading">"Ne morem kopirati datotek, ki se prenašajo"</string>
 </resources>

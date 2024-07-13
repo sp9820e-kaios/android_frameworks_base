@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Toca per veure els detalls"</string>
     <string name="retry" msgid="7564024179122207376">"Torna-ho a provar"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Aquests fitxers no s\'han copiat: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"No es pot compartir el fitxer"</string>
+     <string name="documents_deleting">"S\'estan esborrant documents"</string>
+     <string name="cannot_copyfolder_itself">"No podeu copiar una carpeta en ella mateixa"</string>
+
+    <string name="error_permissions">"L\'aplicació no té els permisos importants necessaris per executar-se. Comprova la configuració dels permisos."</string>
+     <string name="cannot_copy_drm">"No es poden copiar els fitxers DRM"</string>
+     <string name="cannot_copy_downloading">"No es poden copiar els fitxers que s\'estan descarregant"</string>
 </resources>

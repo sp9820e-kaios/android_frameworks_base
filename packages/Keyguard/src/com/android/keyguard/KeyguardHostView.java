@@ -441,6 +441,7 @@ public class KeyguardHostView extends FrameLayout implements SecurityCallback {
 
     public boolean handleMenuKey() {
         // The following enables the MENU key to work for testing automation
+        SecurityMode securityMode = mSecurityContainer.getSecurityMode();
         if (shouldEnableMenuKey()) {
             dismiss();
             return true;

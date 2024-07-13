@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"प्रिंट चर्ख: "</string>
+<string name="more_options_button">"वार्यह मुत्बादिल"</string>
+<string name="label_destination">"तकदीर"</string>
+<string name="label_copies">"काप्यि"</string>
+<string name="label_copies_summary">"काप्यि:"</string>
+<string name="label_paper_size">"पेपर म्य्क्दार"</string>
+<string name="label_paper_size_summary">"पेपर म्य्क्दार:"</string>
+<string name="label_color">"रंग"</string>
+<string name="label_duplex">"दु-तरफ"</string>
+<string name="label_orientation">"मश्रीकी"</string>
+<string name="label_pages">"वरख"</string>
+<string name="template_all_pages">"तमाम <xliff:g id="page_count" example="100">%1$s</xliff:g>"</string>
+<string name="template_page_range">"फह्लाव येमियुक <xliff:g id="page_count" example="100">%1$s</xliff:g>"</string>
+<string name="pages_range_example">"मिसाल: 1&#8212;5,8,11&#8212;13"</string>
+<string name="print_preview">"प्रिंट गोडनज़र"</string>
+<string name="install_for_print_preview">"इनस्टॉल करिव PDF विवर गोडनज़र बापथ"</string>
+<string name="printing_app_crashed">"प्रिंट गसन वाजिन एप्प फुट"</string>
+<string name="generating_print_job">"पअध्ह करन प्रिंट काम"</string>
+<string name="save_as_pdf">"महफूज़ PDF पअठ"</string>
+<string name="all_printers">"तमाम प्रिंटर&#8230;"</string>
+<string name="print_dialog">"प्रिंट करिव कथबाथ"</string>
+<string name="current_page_template">"<xliff:g id="current_page">%1$d</xliff:g>/<xliff:g id="page_count">%2$d</xliff:g>"</string>
+<string name="page_description_template">"वर्ख <xliff:g id="current_page" example="1">%1$d</xliff:g> येम्सीत <xliff:g id="page_count" example="100">%2$d</xliff:g>"</string>
+<string name="summary_template">"खुलास,काप्यि <xliff:g id="copies" example="1">%1$s</xliff:g>, कागज़ साइज़ <xliff:g id="paper_size" example="A4">%2$s</xliff:g>"</string>
+<string name="expand_handle">"फह्लायिव हैंडल"</string>
+<string name="collapse_handle">"वसिथ हैंडल"</string>
+<string name="print_button">"प्रिंट"</string>
+<string name="savetopdf_button">"महफूज़ करिव पी डी ऍफ़ पअठ"</string>
+<string name="print_options_expanded">"प्रिंट आप्शन आय फह्लावनः "</string>
+<string name="print_options_collapsed">""प्रिंट आप्शन गय वसिथ:"</string>
+<string name="search">"छाडिव"</string>
+<string name="all_printers_label">"तमाम प्रिंटर"</string>
+<string name="add_print_service_label">"हुर्रायिव प्रिंटर"</string>
+<string name="print_search_box_shown_utterance">"सांडिव होमुत दब्बह"</string>
+<string name="print_search_box_hidden_utterance">"सांडिव खटिथ दब्बह"</string>
+<string name="print_add_printer">"हुर्रायिव प्रिंटर"</string>
+<string name="print_select_printer">"चुनिव प्रिंटर"</string>
+<string name="print_forget_printer">"मश्रायिव प्रिंटर"</string>
+<plurals name="print_search_result_count_utterance">
+<item quantity="one">"<xliff:g id="count" example="1">%1$s</xliff:g> प्रिंटर आव लबनः "</item>
+<item quantity="other">"<xliff:g id="count" example="2">%1$s</xliff:g> प्रिंटर आव लबनः "</item>
+</plurals>
+<string name="choose_print_service">"चुनिव प्रिंट सहूलियात"</string>
+<string name="print_searching_for_printers">"सांडन प्रिंटर खात्र"</string>
+<string name="print_no_printers">"कंह ति प्रिनेत्र आव न लबनः "</string>
+<string name="printing_notification_title_template">"प्रिंट गस्सन <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="cancelling_notification_title_template">"रद्द गस्सन <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="failed_notification_title_template">"प्रिंटर गलती <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="blocked_notification_title_template">"प्रिंटर बंद गमुत <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<plurals name="composite_notification_title_template">
+<item quantity="one">"<xliff:g id="print_job_name" example="foo.jpg">%1$d</xliff:g> प्रिंट काम"</item>
+<item quantity="other">"<xliff:g id="print_job_name" example="foo.jpg">%1$d</xliff:g> प्रिंट कामि"</item>
+</plurals>
+<string name="cancel">"ख़ारिज"</string>
+<string name="restart">"नोव शुरू"</string>
+<string name="no_connection_to_printer">"कंह कनेक्शन छु न प्रिंटरस"</string>
+<string name="reason_unknown">"ना मोलूम"</string>
+<string name="printer_unavailable">"<xliff:g id="print_job_name" example="Canon-123GHT">%1$s</xliff:g> &#8211; छु न मयस्सर"</string>
+<string-array name="color_mode_labels">
+<item>"क्रिहून &amp; सफ़ेद"</item>
+<item>"रंग"</item>
+</string-array>
+<string-array name="duplex_mode_labels">
+<item>"कहेंनः"</item>
+<item>"ज़िठ दंदर"</item>
+<item>"छोट दंदर"</item>
+</string-array>
+<string-array name="orientation_labels">
+<item>"शक्ल"</item>
+<item>"अन्द्रिम नज़ार"</item>
+</string-array>
+<string name="print_write_error_message">"छु न हेकन लीखिथ फाइलि कुन"</string>
+<string name="print_error_default_message">"माफ़ी,यि छु न काम करन.बेय करिव कूशिश."</string>
+<string name="print_error_retry">"दुबारह कोशिश"</string>
+<string name="print_error_printer_unavailable">"यि प्रिंटर छु न मयस्सर येमि वक्तः."</string>
+<string name="print_preparing_preview">"तैयार करन गोडनज़र..."</string>
+</resources>

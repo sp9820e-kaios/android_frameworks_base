@@ -127,4 +127,7 @@
       <item quantity="one"> यन्त्र <xliff:g id="NUMBER_0">%d</xliff:g> घन्टा देखि अनलक भएको छैन। पासवर्ड पुष्टि गर्नुहोस्।</item>
     </plurals>
     <string name="fingerprint_not_recognized" msgid="2690661881608146617">"चिनिएको छैन"</string>
+    <string name="kg_no_sim_message">"SIM कार्ड छैन"</string>
+    <string name="kg_emergency_call_no_service">"जडान उपलब्ध छैन"</string>
+    <string name="kg_sim_pin_verify_success">"PIN को प्रमाणीकरण सफल भयो"</string>
 </resources>

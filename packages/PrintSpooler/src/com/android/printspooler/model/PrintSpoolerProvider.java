@@ -41,7 +41,12 @@ public class PrintSpoolerProvider implements ServiceConnection {
 
     public void destroy() {
         if (mSpooler != null) {
-            mContext.unbindService(this);
+            /* SPRD 510325 @{ */
+            try {
+                mContext.unbindService(this);
+            } catch (Exception e) {
+            }
+            /* @} */
         }
     }
 

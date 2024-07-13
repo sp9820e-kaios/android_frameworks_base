@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="kg_no_sim_message">"ସୀମ କାର୍ଡ ନାହିଁ"</string>
+<string name="kg_emergency_call_no_service">"କୌଣସି ନେଟୱର୍କ ଉପଲବ୍ଧ ନାହିଁ"</string>
+<string name="kg_sim_pin_verify_success">"PIN ଯାଞ୍ଚ ସଫଳ"</string>
+<string name="kg_sim_pin_delete">"କାଟ"</string>
+<string name="kg_sim_pin_ok">"ଠିକଠାକ"</string>
+</resources>

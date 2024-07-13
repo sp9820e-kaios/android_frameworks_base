@@ -37,6 +37,7 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.Trace;
+import android.os.SystemProperties;
 import android.util.MathUtils;
 import android.util.Slog;
 import android.util.Spline;
@@ -74,6 +75,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
 
     private static boolean DEBUG = false;
     private static final boolean DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT = false;
+
 
     // If true, uses the color fade on animation.
     // We might want to turn this off if we cannot get a guarantee that the screen
@@ -251,6 +253,9 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
     private ObjectAnimator mColorFadeOnAnimator;
     private ObjectAnimator mColorFadeOffAnimator;
     private RampAnimator<DisplayPowerState> mScreenBrightnessRampAnimator;
+
+   // SPRD: mButtonTimeout for Button Light.
+    private int mButtonTimeout;
 
     /**
      * Creates the display power controller.
@@ -445,7 +450,19 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         // In the future, we might manage multiple displays independently.
         mPowerState = new DisplayPowerState(mBlanker,
                 new ColorFade(Display.DEFAULT_DISPLAY));
-
+        //SPRD: When mPowerState is initialize, update ButtonTimeout.
+        updateButtonTimeout(mButtonTimeout);
+        /* SPRD: When DisplayPowerState initialization and buttontimeout != -2,
+         * the screen turn on. @{
+         */
+        if(mButtonTimeout != -2){
+            Slog.d(TAG,"BUTTON LIGHT TURN ON");
+            mPowerState.setButtonOn(true);
+        } else {
+            Slog.d(TAG,"BUTTON LIGHT TURN OFF");
+            mPowerState.setButtonOn(false);
+        }
+        /* @} */
         mColorFadeOnAnimator = ObjectAnimator.ofFloat(
                 mPowerState, DisplayPowerState.COLOR_FADE_LEVEL, 0.0f, 1.0f);
         mColorFadeOnAnimator.setDuration(COLOR_FADE_ON_ANIMATION_DURATION_MILLIS);
@@ -536,7 +553,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         switch (mPowerRequest.policy) {
             case DisplayPowerRequest.POLICY_OFF:
                 state = Display.STATE_OFF;
-                performScreenOffTransition = true;
+                performScreenOffTransition = false;
                 break;
             case DisplayPowerRequest.POLICY_DOZE:
                 if (mPowerRequest.dozeScreenState != Display.STATE_UNKNOWN) {
@@ -792,6 +809,8 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
             mReportedScreenStateToPolicy = REPORTED_TO_POLICY_SCREEN_OFF;
             unblockScreenOn();
             mWindowManagerPolicy.screenTurnedOff();
+            Slog.d(TAG,"BUTTON LIGHT TURN OFF");
+            mPowerState.setButtonOn(false);
         } else if (!isOff && mReportedScreenStateToPolicy == REPORTED_TO_POLICY_SCREEN_OFF) {
             mReportedScreenStateToPolicy = REPORTED_TO_POLICY_SCREEN_TURNING_ON;
             if (mPowerState.getColorFadeLevel() == 0.0f) {
@@ -955,6 +974,25 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         }
     }
 
+    /* Button lights off timeout. @{ */
+    public void scheduleButtonTimeout(long now) {
+        if(mPowerState != null){
+            Slog.d(TAG, "scheduleButtonTimeout");
+            mPowerState.scheduleButtonTimeout(now);
+        }
+    }
+    /* @} */
+
+    /* SPRD: update ButtonTimeout from Settings. @{ */
+    public void updateButtonTimeout(int timeout){
+        Slog.d(TAG, "timeout = " +timeout);
+        mButtonTimeout = timeout;
+        if(mPowerState != null){
+            mPowerState.updateButtonTimeout(mButtonTimeout);
+        }
+    }
+    /* @} */
+
     private void handleProximitySensorEvent(long time, boolean positive) {
         if (mProximitySensorEnabled) {
             if (mPendingProximity == PROXIMITY_NEGATIVE && !positive) {
@@ -969,10 +1007,14 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
             // debouncing the sensor.
             mHandler.removeMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
             if (positive) {
+                // SPRD: when calling call scheduleButtonTimeout(long now).
+                scheduleButtonTimeout(SystemClock.uptimeMillis());
                 mPendingProximity = PROXIMITY_POSITIVE;
                 setPendingProximityDebounceTime(
                         time + PROXIMITY_SENSOR_POSITIVE_DEBOUNCE_DELAY); // acquire wake lock
             } else {
+                // SPRD: ProximitySensor call scheduleButtonTimeout(long now).
+                scheduleButtonTimeout(SystemClock.uptimeMillis());
                 mPendingProximity = PROXIMITY_NEGATIVE;
                 setPendingProximityDebounceTime(
                         time + PROXIMITY_SENSOR_NEGATIVE_DEBOUNCE_DELAY); // acquire wake lock
@@ -1210,6 +1252,10 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                     if (mPendingScreenOnUnblocker == msg.obj) {
                         unblockScreenOn();
                         updatePowerState();
+                        if(mButtonTimeout != -2){
+                            Slog.d(TAG,"BUTTON LIGHT TURN ON");
+                            mPowerState.setButtonOn(true);
+                        }
                     }
                     break;
             }
@@ -1223,6 +1269,8 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                 final long time = SystemClock.uptimeMillis();
                 final float distance = event.values[0];
                 boolean positive = distance >= 0.0f && distance < mProximityThreshold;
+                //SPRD:add power debug log
+                Slog.d(TAG,"Proximity Sensor changed distance= " + distance + " positive= " + positive);
                 handleProximitySensorEvent(time, positive);
             }
         }

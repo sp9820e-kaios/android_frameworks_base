@@ -2784,10 +2784,86 @@ public final class CaptureRequest extends CameraMetadata<CaptureRequest.Key<?>>
     public static final Key<Float> REPROCESS_EFFECTIVE_EXPOSURE_FACTOR =
             new Key<Float>("android.reprocess.effectiveExposureFactor", float.class);
 
+    /**
+     * SPRD: fix bug 473462 add burst capture
+     */
+    @PublicKey
+    public static final Key<Integer> SPRD_CAPTURE_MODE =
+            new Key<Integer>("com.addParameters.capMode", int.class);
+
+    /**
+     * SPRD: fix bug 473462 add burst capture in zsl
+     */
+    /* SPRD; fix bug 496317 for current zsl is not ok
+    @PublicKey
+    public static final Key<Integer> ANDROID_SPRD_ZSL_ENABLED =
+            new Key<Integer>("com.addParameters.sprdZslEnabled", int.class);
+    */
+
+    @PublicKey
+    public static final Key<Byte> ANDROID_SPRD_SENSOR_ORIENTATION = new Key<Byte>(
+            "com.addParameters.sensororientation", byte.class);
+
+    @PublicKey
+    public static final Key<Integer> ANDROID_SPRD_SENSOR_ROTATION = new Key<Integer>(
+            "com.addParameters.sensorrotation", int.class);
     /*~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~
      * End generated code
      *~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~@~O@*/
 
+    // SPRD Bug:474721 Feature:Contrast.
+    @PublicKey
+    public static final Key<Integer> CONTROL_CONTRAST_MODE =
+            new Key<Integer>("com.addParameters.contrast", int.class);
+
+    // SPRD Bug:474715 Feature:Brightness.
+    @PublicKey
+    public static final Key<Integer> CONTROL_BRIGHTNESS_MODE =
+            new Key<Integer>("com.addParameters.brightness", int.class);
+
+    // SPRD Bug:474724 Feature:ISO.
+    @PublicKey
+    public static final Key<Integer> CONTROL_ISO_MODE =
+            new Key<Integer>("com.addParameters.iso", int.class);
+
+    // SPRD Bug:474718 Feature:Metering.
+    @PublicKey
+    public static final Key<Integer> CONTROL_METERING_MODE =
+            new Key<Integer>("com.addParameters.meteringMode", int.class);
+
+    // SPRD Bug:474722 Feature:Saturation.
+    @PublicKey
+    public static final Key<Integer> CONTROL_SATURATION_MODE =
+            new Key<Integer>("com.addParameters.saturation", int.class);
+
+    // SPRD:Bug:474672 Feature:ucam beauty
+    @PublicKey
+    public static final Key<Integer> CONTROL_SKIN_WHITEN_MODE = new Key<Integer>(
+            "com.addParameters.perfectskinlevel", int.class);
+
+     // SPRD:Bug:505155 add sprd zsl
+     @PublicKey
+     public static final Key<Integer> ANDROID_SPRD_ZSL_ENABLED = new Key<Integer>(
+            "com.addParameters.sprdZslEnabled", int.class);
+
+    // SPRD:Bug:500099 Feature:mirror
+    @PublicKey
+    public static final Key<Boolean> CONTROL_FRONT_CAMERA_MIRROR = new Key<Boolean>(
+            "com.addParameters.mirror", boolean.class);
+
+    // SPRD:Add for Feature:PIP/VIV.
+    @PublicKey
+    public static final Key<Integer> ANDROID_SPRD_PIPVIV_ENABLED = new Key<Integer>(
+            "com.addParameters.sprdPipVivEnabled", int.class);
+
+    // SPRD:Add for Feature:HIGHISO.
+    @PublicKey
+    public static final Key<Integer> ANDROID_SPRD_HIGHISO_ENABLED = new Key<Integer>(
+            "com.addParameters.sprdHighIsoEnabled", int.class);
 
 
+    // SPRD: Bug: 534257 Feature: EOIS
+    @PublicKey
+    public static final Key<Boolean> CONTROL_SPRD_EOIS_ENABLE = new Key<Boolean>(
+            "com.addParameters.sprdEisEnabled", boolean.class);
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ተንቀሳቃሽ Wi-Fiየተንቀሳቃስ ዳታ ግንኙነት ይፈልጋል፣ ይህም ተጨማሪ ወጪ ሊኖረው ይችላል፡፡"</string>
+<string name="softap_bt_cannot_coexist">"ብሉቱዝ ሲሰራ ወይም ሲበራ፣ የሶፍትዌር ማግኛው ነጥብ(ሶፍታፕ)አይሰራም፣ እለዚህም እባክዎትን ብሉቱዝ መጥፋቱን እርግጠኛ ይሁኑ፡፡"</string>
+<string name="bt_softap_cannot_coexist">"የሶፍትዌር ማግኛው ነጥብ(ሶፍታፕ) ሲሰራ ወይም ሲበራ፣ ብሉቱዝአይሰራም፣ እለዚህም እባክዎትን የሶፍትዌር ማግኛው ነጥብ(ሶፍታፕ) መጥፋቱን እርግጠኛ ይሁኑ፡፡"</string>
+<string name="lte_service_error_airplane">"ስልኩ ኤሮፕሌን ምርጫ ላይ በሚሆን ግዜ LTE መጠቀም አይችሉም፡፡"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ተከፍቶዋል"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ተዘግቶዋል"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ክፍት"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ዝግ"</string>
+<string name="toggle_data_error_airplane">በአዉሮፕላን ሁነታ ላይ እያለ የሞባይል ውሂብን መጠቀም አይችሉም።</string>
+<string name="quick_settings_data_connection_label">"ውሂብ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ዳታው በርቷል"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ዳታው አልበራም"</string>
+<string name="accessibility_quick_settings_data_on">"ዳታ በራ"</string>
+<string name="accessibility_quick_settings_data_off">"ዳታ ጠፋ"</string>
+<string name="missing_sim_message">" SIM  የለም"</string>
+    <string name="lte_service_error_incall">"በሚደውሉ ግዜ የ LTE አገልግሎት መቀየር አይችሉም፡፡"</string>
+
+</resources>

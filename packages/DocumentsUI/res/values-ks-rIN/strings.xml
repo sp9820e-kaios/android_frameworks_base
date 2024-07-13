@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"कागज़"</string>
+<string name="title_open">"खूलिव पेठ"</string>
+<string name="title_save">"महफूज़ थायिव कोत"</string>
+<string name="menu_create_dir">"बनायिव फोल्डर"</string>
+<string name="menu_grid">"जालिदार नज़ार"</string>
+<string name="menu_list">"लिस्ट नज़ार"</string>
+<string name="menu_sort">"किथ केन थायिव"</string>
+<string name="menu_search">"छाडिव"</string>
+<string name="menu_settings">"सेटिंग्स"</string>
+<string name="menu_open">"खूलिव"</string>
+<string name="menu_save">"महफूज़ थायिव"</string>
+<string name="menu_share">"बागरायिव "</string>
+<string name="menu_delete">"रद"</string>
+<string name="menu_select_all">"चुनिव सारी"</string>
+<string name="menu_deselect_all">"म चुनिव तमाम"</string>
+<string name="menu_copy">"कॉपी कोत..."</string>
+<string name="menu_advanced_show" product="nosdcard">"हयिव अन्द्रिम स्टोरेज"</string>
+<string name="menu_advanced_show" product="default">"हयिव SD कार्ड"</string>
+<string name="menu_advanced_hide" product="nosdcard">"खटिथ थायिव अन्द्रिम स्टोरेज"</string>
+<string name="menu_advanced_hide" product="default">"खटिथ थायिव SD कार्ड"</string>
+<string name="menu_file_size_show">"हयिव फाइल म्य्क्दार"</string>
+<string name="menu_file_size_hide">"खटिथ थायिव फाइल म्य्क्दार"</string>
+<string name="button_select">"चुनिव"</string>
+<string name="button_copy">"नकल"</string>
+<string name="sort_name">"नाव पअठ "</string>
+<string name="sort_date">"तारीख हिसाब दरुस गमुत"</string>
+<string name="sort_size">"म्य्क्दार हिसाब"</string>
+<string name="drawer_open">"हयिव मूल"</string>
+<string name="drawer_close">"खटिथ  थायिव मूल"</string>
+<string name="save_error">"फोल्डर महफूज़ थावुन गोव नाकाम"</string>
+<string name="create_error">"फोल्डर बनावुन गोव नाकाम"</string>
+<string name="query_error">"डाक्यूमेंट्स हिउन्द शकशुबा करूँ गोव नाकाम"</string>
+<string name="root_recent">"तजः"</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g> मुफ्त"</string>
+<string name="root_type_service">"स्टोरेज सहूलियात"</string>
+<string name="root_type_shortcut">"सोटवथ"</string>
+<string name="root_type_device">"आल्ह"</string>
+<string name="root_type_apps">"ज़्यादः एप्प्स"</string>
+<string name="empty">"कंह चीज़ न"</string>
+<string name="toast_no_application">"हेकि न फाइल खूलिथ"</string>
+<string name="toast_failed_delete">"केंह डाक्यूमेंट्स हटावनस मंज़ नाकाम"</string>
+<string name="share_via">"बागरायिव ज़र्यः"</string>
+<string name="copy_notification_title">"कॉपी करन फाइल्स"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> बकायाथ"</string>
+<plurals name="copy_begin">
+<item quantity="one">"कॉपी गसन <xliff:g id="count" example="1">%1$d</xliff:g> फाइल्स."</item>
+<item quantity="other">"कॉपी गसन <xliff:g id="count" example="3">%1$d</xliff:g> फाइल्स."</item>
+</plurals>
+<string name="copy_preparing">"तयार गसन कॉपी खात्र..."</string>
+<plurals name="copy_error_notification_title">
+<item quantity="one">"हेकि न कॉपी करिथ <xliff:g id="count" example="1">%1$d</xliff:g> फाइल"</item>
+<item quantity="other">"हेकि न कॉपी करिथ <xliff:g id="count" example="2">%1$d</xliff:g>  फाइल"</item>
+</plurals>
+<string name="notification_touch_for_details">"ज़ीर करिव तफ्सुर वुछनः बापथ"</string>
+<string name="retry">"दुबारह कोशिश"</string>
+<string name="copy_failure_alert_content">"यिम फाइलह छ न कॉपी गमचि: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"हेकि न बागराविथ फाइल"</string>
+<string name="documents_deleting">"डॉक्यूमेंट छ हटावनः यिवन"</string>
+<string name="error_permissions">"एप्प छु न नाज़ुख इजाज़त ज़रूरत पकनः खात्र.मेहरबानी करित वुछिव पनिन इजाज़त सेटिंग्स."</string>
+<string name="cannot_copyfolder_itself">"तुही हेकिव न कॉपी करिथ फोल्डर पन्निस पानस मंज़"</string>
+<string name="cannot_copy_drm">"हेकि न कॉपी गसिथ डी आर एम् फाइल्स"</string>
+<string name="cannot_copy_downloading">"हेकि न कॉपी करित डाउनलोड गमिच फाइल्स"</string>
+</resources>

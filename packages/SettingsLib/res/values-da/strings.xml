@@ -89,4 +89,9 @@
     <skip />
     <!-- no translation found for accessibility_wifi_signal_full (7061045677694702) -->
     <skip />
+    <string name="wifi_secured_first_item">"Sikret med <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_secured_second_item">", sikret med <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_wps_available_first_item">"WPS er tilgængelig"</string>
+     <string name="wifi_wps_available_second_item">" (WPS er tilgængelig)"</string>
+
 </resources>

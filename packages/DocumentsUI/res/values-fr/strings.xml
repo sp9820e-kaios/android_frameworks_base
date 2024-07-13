@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Appuyez pour en savoir plus."</string>
     <string name="retry" msgid="7564024179122207376">"Réessayer"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Les fichiers suivants n\'ont pas été copiés : <xliff:g id="LIST">%1$s</xliff:g>."</string>
+    <string name="shared_error">"Impossible de partager le fichier"</string>
+     <string name="documents_deleting">"Suppression des documents"</string>
+     <string name="cannot_copyfolder_itself">"Vous ne pouvez pas copier le dossier en lui-même"</string>
+
+    <string name="error_permissions">"L\'application ne dispose pas de certaines autorisations nécessaires à son exécution. Veuillez vérifier vos paramètres relatifs aux autorisations."</string>
+     <string name="cannot_copy_drm">"Vous peut pas copier les fichiers DRM"</string>
+     <string name="cannot_copy_downloading">"Vous peut pas copier les fichiers téléchargés"</string>
 </resources>

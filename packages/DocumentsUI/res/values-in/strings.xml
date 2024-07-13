@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Sentuh untuk melihat detail"</string>
     <string name="retry" msgid="7564024179122207376">"Coba lagi"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Semua file ini tidak disalin: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Tidak dapat membagi catatan"</string>
+     <string name="documents_deleting">"Menghapus dokumen"</string>
+     <string name="cannot_copyfolder_itself">"Kamu tidak dapat menyalin berkas dalam berkas sendiri"</string>
+
+    <string name="error_permissions">"Aplikasi ini tidak memiliki izin kritis yang diperlukan untuk berjalan. Periksa setelan izin."</string>
+     <string name="cannot_copy_drm">"Tidak dapat menyalin catatan DRM"</string>
+     <string name="cannot_copy_downloading">"Tidak dapat menyalin unduhan catatan"</string>
 </resources>

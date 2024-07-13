@@ -237,7 +237,7 @@
     <string name="permgrouplab_sms" msgid="228308803364967808">"SMS"</string>
     <string name="permgroupdesc_sms" msgid="4656988620100940350">"надсилати та переглядати SMS-повідомлення"</string>
     <string name="permgrouplab_storage" msgid="1971118770546336966">"Зберігання"</string>
-    <string name="permgroupdesc_storage" msgid="637758554581589203">"отримувати доступ до фотографій, мультимедійного вмісту та файлів на вашому пристрої"</string>
+    <string name="permgroupdesc_storage" msgid="637758554581589203">"доступ до фото, мультимедіа та файлів на вашому пристрої"</string>
     <string name="permgrouplab_microphone" msgid="171539900250043464">"Мікрофон"</string>
     <string name="permgroupdesc_microphone" msgid="4988812113943554584">"записувати аудіо"</string>
     <string name="permgrouplab_camera" msgid="4820372495894586615">"Камера"</string>
@@ -1157,14 +1157,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Назад"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Далі"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Пропустити"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Немає збігів"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Знайти на сторінці"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="one"><xliff:g id="INDEX">%d</xliff:g> із <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="few"><xliff:g id="INDEX">%d</xliff:g> із <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="many"><xliff:g id="INDEX">%d</xliff:g> із <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> із <xliff:g id="TOTAL">%d</xliff:g></item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Готово"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Стирання носія USB..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Стирання карти SD..."</string>
@@ -1552,4 +1545,31 @@
       <item quantity="many">Вибрано <xliff:g id="COUNT_1">%1$d</xliff:g></item>
       <item quantity="other">Вибрано <xliff:g id="COUNT_1">%1$d</xliff:g></item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"Активовано режим доступу в Інтернет через USB-порт ПК"</string>
+     <string name="ext_media_status_shared">"Спільний доступ до універсальної системи передачі та обробки повідомлень"</string>
+     <string name="sim_ready_title_for_usb">"попередження"</string>
+     <string name="sim_card_activation_warning">"У разі установки програм третіми особами для активації USB, будь ласка, виконайте вхід з SIM/USIM- карти."</string>
+     <string name="usb_ok">OK</string>
+     <string name="usb_cdrom_notification_title">"Віртуальний драйвер ввімкнено"</string>
+     <string name="usb_charge_only_notification">"Connected as charge only"</string>
+     <string name="global_action_restart">"Перезапуск"</string>
+     <string name="reboot_device_title">"Перезапуск"</string>
+     <string name="global_reboot_close_apps">"Закрийте всі програми і перезавантажте телефон"</string>
+     <string name="reboot_device_confirm">Ви хочете перезавантажити телефон зараз?</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Телефон відключиться через <xliff:g id="NUMBER">%d</xliff:g> секунд"</item>
+<item quantity="other">"Телефон буде вимкнено через <xliff:g id="NUMBER">%d</xliff:g> секунд"</item>
+    </plurals>
+
+    <string name="station_state_msg">"підключено %1$s , заблоковано %2$s"</string>
+     <string name="phoneFixedNumber">"Фіксований номер"</string>
+     <string name="gps_time_sync_fail_str">"Не вдалося отримати час GPS"</string>
+     <string name="disable_touch_mode_title">"Захист від натискання в кишені-Відключити"</string>
+     <string name="disable_touch_mode_hint">"Не закривайте верхню частину телефону"</string>
+     <string name="exit_disable_touch_mode_hint">"Ви також можете натиснути кнопки живлення і підвищення гучності, щоб вимкнути цей режим"</string>
+
 </resources>

@@ -22,4 +22,7 @@
 
     <!-- Allow the menu hard key to be disabled in LockScreen on some devices [DO NOT TRANSLATE] -->
     <bool name="config_disableMenuKeyInLockScreen">false</bool>
+     <string name="plugin_keyguard_operator" translatable="false">plugin.sprd.keyguardoperator.KeyguardFeaturesForOperator</string>
+     <!-- SPRD: modify for bug 511349  -->
+     <string name="plugin_simlock_status_operator" translatable="false">plugin.sprd.keyguardsimlockstatus.AddonSimlockStatusHelper</string>
 </resources>

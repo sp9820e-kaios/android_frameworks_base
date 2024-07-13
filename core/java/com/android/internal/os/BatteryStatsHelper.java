@@ -31,6 +31,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -398,7 +399,7 @@ public final class BatteryStatsHelper {
         mBatteryTimeRemaining = mStats.computeBatteryTimeRemaining(rawRealtimeUs);
         mChargeTimeRemaining = mStats.computeChargeTimeRemaining(rawRealtimeUs);
 
-        if (DEBUG) {
+        if (DEBUG || getDeBugBatteryStatusLog()) {
             Log.d(TAG, "Raw time: realtime=" + (rawRealtimeUs/1000) + " uptime="
                     + (rawUptimeUs/1000));
             Log.d(TAG, "Battery time: realtime=" + (mBatteryRealtime/1000) + " uptime="
@@ -508,7 +509,7 @@ public final class BatteryStatsHelper {
             mFlashlightPowerCalculator.calculateApp(app, u, mRawRealtime, mRawUptime, mStatsType);
 
             final double totalPower = app.sumPower();
-            if (DEBUG && totalPower != 0) {
+            if (DEBUG || getDeBugBatteryStatusLog() && totalPower != 0) {
                 Log.d(TAG, String.format("UID %d: total power=%s", u.getUid(),
                         makemAh(totalPower)));
             }
@@ -574,7 +575,7 @@ public final class BatteryStatsHelper {
             long brightnessTime = mStats.getScreenBrightnessTime(i, mRawRealtime, mStatsType)
                     / 1000;
             double p = screenBinPower*brightnessTime;
-            if (DEBUG && p != 0) {
+            if (DEBUG || getDeBugBatteryStatusLog() && p != 0) {
                 Log.d(TAG, "Screen bin #" + i + ": time=" + brightnessTime
                         + " power=" + makemAh(p / (60 * 60 * 1000)));
             }
@@ -599,7 +600,7 @@ public final class BatteryStatsHelper {
     private void aggregateSippers(BatterySipper bs, List<BatterySipper> from, String tag) {
         for (int i=0; i<from.size(); i++) {
             BatterySipper wbs = from.get(i);
-            if (DEBUG) Log.d(TAG, tag + " adding sipper " + wbs + ": cpu=" + wbs.cpuTimeMs);
+            if (DEBUG || getDeBugBatteryStatusLog()) Log.d(TAG, tag + " adding sipper " + wbs + ": cpu=" + wbs.cpuTimeMs);
             bs.add(wbs);
         }
         bs.computeMobilemspp();
@@ -611,7 +612,7 @@ public final class BatteryStatsHelper {
                 - mStats.getScreenOnTime(mRawRealtime, mStatsType)) / 1000;
         double idlePower = (idleTimeMs * mPowerProfile.getAveragePower(PowerProfile.POWER_CPU_IDLE))
                 / (60*60*1000);
-        if (DEBUG && idlePower != 0) {
+        if (DEBUG || getDeBugBatteryStatusLog() && idlePower != 0) {
             Log.d(TAG, "Idle: time=" + idleTimeMs + " power=" + makemAh(idlePower));
         }
         if (idlePower != 0) {
@@ -771,5 +772,11 @@ public final class BatteryStatsHelper {
             Log.w(TAG, "RemoteException:", e);
         }
         return new BatteryStatsImpl();
+    }
+
+    public static boolean getDeBugBatteryStatusLog() {
+        boolean DEBUG_BATTERY_STATUS = SystemProperties.getBoolean("debug.power.battery",
+                false) || SystemProperties.getBoolean("debug.power.all", false);
+        return DEBUG_BATTERY_STATUS;
     }
 }

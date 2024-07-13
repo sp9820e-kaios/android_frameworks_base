@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"বিশদ বিবরণ দেখতে স্পর্শ করুন"</string>
     <string name="retry" msgid="7564024179122207376">"পুনরায় চেষ্টা করুন"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"এই ফাইলগুলির প্রতিলিপি করা হয় নি: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">ফাইল আদানপ্রদান করতে পারে না</string>
+     <string name="documents_deleting">"নথি মোছা হচ্ছে"</string>
+     <string name="cannot_copyfolder_itself">"নিজের উপরে আপনি ফোল্ডার কপি করতে পারবেন না"</string>
+    <string name="menu_deselect_all">সব অনিবাচন</string>
+    <string name="error_permissions">"অ্যাপ্লিকেশাটি চালানোর জন্য কোনো গুরুত্বপূর্ণ অনুমতির প্রয়োজন নেই৷ অনুগ্রহ করে আপনার অনুমতি সেটিংস পরীক্ষা করুন৷"</string>
+     <string name="cannot_copy_drm">"DRM ফাইলগুলি কপি করতে পারে না"</string>
+     <string name="cannot_copy_downloading">"ডাউনলোড হতে থাকা ফাইলগুলি কপি করতে পারে না"</string>
 </resources>

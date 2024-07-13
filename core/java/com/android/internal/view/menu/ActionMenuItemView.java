@@ -255,6 +255,11 @@ public class ActionMenuItemView extends TextView
             // Don't show the cheat sheet for items that already show text.
             return false;
         }
+     // SPRD: Don't show the cheat sheet if the menu don't have title text! @{
+        if (mItemData == null || TextUtils.isEmpty(mItemData.getTitle())) {
+        return false;
+       }
+       // @}
 
         final int[] screenPos = new int[2];
         final Rect displayFrame = new Rect();

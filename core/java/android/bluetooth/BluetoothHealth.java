@@ -347,16 +347,19 @@ public final class BluetoothHealth implements BluetoothProfile {
      */
     @Override
     public int getConnectionState(BluetoothDevice device) {
-        if (mService != null && isEnabled() && isValidDevice(device)) {
-            try {
-                return mService.getHealthDeviceConnectionState(device);
-            } catch (RemoteException e) {
-                Log.e(TAG, e.toString());
+        synchronized (mConnection) {
+            if (mService != null && isEnabled() && isValidDevice(device)) {
+                try {
+                    return mService.getHealthDeviceConnectionState(device);
+                } catch (RemoteException e) {
+                    Log.e(TAG, e.toString());
+                }
+            } else {
+                Log.w(TAG, "Proxy not attached to service");
+                if (DBG)
+                    Log.d(TAG, Log.getStackTraceString(new Throwable()));
             }
-        } else {
-            Log.w(TAG, "Proxy not attached to service");
-            if (DBG) Log.d(TAG, Log.getStackTraceString(new Throwable()));
-        }
+       }
         return STATE_DISCONNECTED;
     }
 
@@ -530,7 +533,9 @@ public final class BluetoothHealth implements BluetoothProfile {
         }
         public void onServiceDisconnected(ComponentName className) {
             if (DBG) Log.d(TAG, "Proxy object disconnected");
-            mService = null;
+            synchronized (mConnection) {
+                mService = null;
+            }
             if (mServiceListener != null) {
                 mServiceListener.onServiceDisconnected(BluetoothProfile.HEALTH);
             }

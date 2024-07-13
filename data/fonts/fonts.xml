@@ -220,13 +220,19 @@
         <font weight="700" style="normal">NotoSansLaoUI-Bold.ttf</font>
     </family>
     <family variant="elegant">
+        <font weight="400" style="normal">Spreadtrum_SansSerifMyanmarZWG-6-24-03.ttf</font>
+    </family>
+    <family variant="compact">
+        <font weight="400" style="normal">Spreadtrum_SansSerifMyanmarZWG-6-24-03.ttf</font>
+    </family>
+    <!--<family variant="elegant">
         <font weight="400" style="normal">NotoSansMyanmar-Regular.ttf</font>
         <font weight="700" style="normal">NotoSansMyanmar-Bold.ttf</font>
     </family>
     <family variant="compact">
         <font weight="400" style="normal">NotoSansMyanmarUI-Regular.ttf</font>
         <font weight="700" style="normal">NotoSansMyanmarUI-Bold.ttf</font>
-    </family>
+    </family>-->
     <family>
         <font weight="400" style="normal">NotoSansThaana-Regular.ttf</font>
         <font weight="700" style="normal">NotoSansThaana-Bold.ttf</font>

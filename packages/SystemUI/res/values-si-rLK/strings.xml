@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"සුබ පැතුම්! පද්ධති UI සුසරකය සැකසීම් වෙත එක් කර ඇත"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"සැකසීම් වෙතින් ඉවත් කරන්න"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"සැකසීම් වෙතින් පද්ධති UI සුසරකය ඉවත් කර සහ එහි සියලු අංග භාවිතය නවත් වන්නද?"</string>
+    <string name="quick_settings_volume_label">"ශ්‍රව්‍ය පැතිකඩ"</string>
+    <string name="assistant_key_home">"මුල් පිටුව"</string>
+    <string name="assistant_key_search">"සොයන්න"</string>
+    <string name="assistant_key_menu">"මෙනුව"</string>
+    <string name="assistant_key_back">"ආපසු"</string>
+    <string name="vibrate_hint">"කම්පනය සඳහා වමට ස්වයිප් කරන්න"</string>
+    <string name="battery_overtage_title">"ආරක්ෂක අනතුරු ඇඟවීම"</string>
+    <string name="battery_overtage_content">"ආරෝපණ වෝල්ටීයතාව ඉතා ඉහළයි"</string>
+    <string name="battery_overtage_back">"ආපසු"</string>
+    <string name="recent_app_clean_finished_toast">" <xliff:g id="count">%1$s</xliff:g>මතකය,<xliff:g id="count">%2$s</xliff:g> නිදහස් කිරීම දැන් ලබා ගත හැකිය."</string>
 </resources>

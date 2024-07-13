@@ -73,7 +73,9 @@ public class ToggleSlider extends RelativeLayout {
         mSlider.setOnSeekBarChangeListener(mSeekListener);
 
         mLabel = (TextView) findViewById(R.id.label);
-        mLabel.setText(a.getString(R.styleable.ToggleSlider_text));
+        /* SPRD: Bug 583693 PikeL Feature {@ */
+        //mLabel.setText(a.getString(R.styleable.ToggleSlider_text));
+        /* @} */
 
         mSlider.setAccessibilityLabel(getContentDescription().toString());
 

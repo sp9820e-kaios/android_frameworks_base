@@ -1673,9 +1673,22 @@ public class MediaPlayer implements SubtitleController.Listener
         mOnSubtitleDataListener = null;
         _release();
     }
-
+    /**
+     * SPRD:bug 506989 Add Drm feature
+     *
+     * When press home key in video when playing a drm file,
+     * right should not be consumed. So a new release method is
+     * added with a parameter to indicate consume or not.
+     */
+    public void setNeedToConsume(boolean isConsume) {
+        setNeedConsume(isConsume);
+    }
     private native void _release();
-
+    /**
+     * SPRD:bug 506989 Add Drm feature
+     * @hide
+     */
+    private native void setNeedConsume(boolean isConsume);
     /**
      * Resets the MediaPlayer to its uninitialized state. After calling
      * this method, you will have to initialize it again by setting the

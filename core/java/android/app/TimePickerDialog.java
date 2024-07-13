@@ -191,4 +191,13 @@ public class TimePickerDialog extends AlertDialog implements OnClickListener,
             }
         }
     };
+
+    /**
+     * SPRD: Add for Bug425245. @{
+     * @hide
+     */
+    public TimePicker getTime(){
+        return mTimePicker;
+    }
+    /* @} */
 }

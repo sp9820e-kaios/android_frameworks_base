@@ -171,5 +171,44 @@ interface IWifiManager
     void factoryReset();
 
     Network getCurrentNetwork();
+    /**
+    * For SoftAp advance Feature
+    */
+
+    //To block a station with a mac string. Then this station will can not connected to our softap
+    boolean softApBlockStation(String mac);
+
+    //To ublock the statition
+    boolean softApUnblockStation(String mac);
+
+    //get the current connected station, return a string with format:
+    //XX:XX:XX:XX:XX:XX XX:XX:XX:XX:XX:XX ...
+    //each mac string separate with a blank
+    String softApGetConnectedStations();
+
+    //get the current blocked station, return a string with format:
+    //XX:XX:XX:XX:XX:XX XX:XX:XX:XX:XX:XX ...
+    //each mac string separate with a blank
+    String softApGetBlockedStations();
+
+    List<String> softApGetConnectedStationsDetail();
+    List<String> softApGetBlockedStationsDetail();
+
+    boolean softApAddClientToWhiteList(String mac, String name);
+    boolean softApDelClientFromWhiteList(String mac, String name);
+    boolean softApSetClientWhiteListEnabled(boolean enabled);
+    List<String> softApGetClientWhiteList();
+    boolean softApIsWhiteListEnabled();
+
+    //NOTE: Add for SPRD Passpoint R1 Feature -->
+    boolean setPasspointEnable(boolean enable);
+    String addPasspointCred(in WifiConfiguration config);
+    boolean removePasspointCred(String credStringId);
+    List<ScanResult> getPasspointApList();
+    List<WifiConfiguration> getPasspointConfiguredCreds();
+    WifiConfiguration getPasspointConfiguredCred(String credStringID);
+    //<-- Add for SPRD Passpoint R1 Feature
+
+    boolean softApWpsCheckPin(String wpsPin);
 }
 

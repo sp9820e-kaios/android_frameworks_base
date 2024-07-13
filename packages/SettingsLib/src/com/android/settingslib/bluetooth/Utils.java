@@ -2,12 +2,13 @@ package com.android.settingslib.bluetooth;
 
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.os.Debug;
 
 import com.android.settingslib.R;
 
 public class Utils {
     public static final boolean V = false; // verbose logging
-    public static final boolean D = true;  // regular logging
+    public static final boolean D = Debug.isDebug();  // regular logging
 
     private static ErrorListener sErrorListener;
 

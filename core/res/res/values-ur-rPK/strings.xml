@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"واپس جائیں"</string>
     <string name="next_button_label" msgid="1080555104677992408">"اگلا"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"نظر انداز کریں"</string>
-    <string name="no_matches" msgid="8129421908915840737">"کوئی مماثلتیں نہیں ہیں"</string>
     <string name="find_on_page" msgid="1946799233822820384">"صفحہ پر تلاش کریں"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> از <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 مماثلت</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"ہو گیا"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"‏USB اسٹوریج کو مٹا رہا ہے…"</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"‏SD کارڈ کو مٹا رہا ہے…"</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> منتخب کردہ</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> منتخب کردہ</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-انٹرنیٹ ٹیدرنگ فعال ہے"</string>
+     <string name="ext_media_status_shared">"UMS اشتراک کردہ"</string>
+     <string name="sim_ready_title_for_usb">انتباہ</string>
+     <string name="sim_card_activation_warning">"تیسرے فریق کی جانب سے نصب شدہ ایپلیکیشن کے معاملہ کی صورت میں، براہ مہربانی یو ایس بی کو فعال کرنے کیلئے SIM/USIM کو ان پٹ دیں۔"</string>
+     <string name="usb_ok">"ٹھیک ہے"</string>
+     <string name="usb_cdrom_notification_title">مجازی ڈرائیور آن ہے</string>
+     <string name="usb_charge_only_notification">صرف چارج کے طور پہ مربوط کریں۔</string>
+     <string name="global_action_restart">"دوبارہ شروع کریں"</string>
+     <string name="reboot_device_title">"دوبارہ شروع کریں"</string>
+     <string name="global_reboot_close_apps">تمام ایپلی کیشنز بند کریں اور فون دوبارہ شروع کریں</string>
+     <string name="reboot_device_confirm">اب آپ اپنے فون کو دوبارہ شروع کرنا چاہتے ہیں؟</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">فون <xliff:g id="NUMBER">%d</xliff:g>سیکنڈ کے بعد بند ہو جائے گا</item>
+<item quantity="other">فون بند ہوجاۓ گا <xliff:g id="NUMBER">%d</xliff:g> سیکنڈ بعد</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s منسلک شدہ، %2$s بلاک کیا"</string>
+     <string name="phoneFixedNumber">"متعین نمبر"</string>
+     <string name="gps_time_sync_fail_str">۔GPS ٹائم حاصل کرنے میں ناکام۔</string>
+     <string name="disable_touch_mode_title">"پاکٹ ٹچ-غیراہل"</string>
+     <string name="disable_touch_mode_hint">"فون کی اوپری سطح کو مت ڈھانپیں"</string>
+     <string name="exit_disable_touch_mode_hint">"آپ اس موڈ کو غیر اہل بنانے کے لئے بجلی کا بٹن دبا سکتے ہیں اور اس موڈ کو غیراہل بنانے کے لئے والیم زیادہ کر سکتے ہیں"</string>
+
 </resources>

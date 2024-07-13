@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Bærbart wi-fi-hotspot skal bruge mobildata for at forbinde. Dette kan medføre yderligere omkostninger."</string>
+<string name="softap_bt_cannot_coexist">"Når bluetooth aktiveres eller slås til, kan hotspot ikke fungere. Ønsker du at bruge hotspot, skal du sørge for, at bluetooth er deaktiveret."</string>
+<string name="bt_softap_cannot_coexist">"Når hotspot aktiveres eller slås til, kan bluetooth ikke fungere. Ønsker du at bruge bluetooth, skal du sørge for, at bluetooth er deaktiveret."</string>
+<string name="lte_service_error_airplane">"Du kan ikke bruge LTE, når telefonen er i flytilstand."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G tændt"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G slukket"</string>
+<string name="accessibility_quick_settings_lte_on">"Tænd 4G"</string>
+<string name="accessibility_quick_settings_lte_off">"Sluk 4G"</string>
+<string name="toggle_data_error_airplane">"Du kan ikke bruge mobildata når telefonen er i flyfunkton"</string>
+<string name="quick_settings_data_connection_label">Data</string>
+<string name="accessibility_quick_settings_data_changed_on">"Data slået til"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Data slået fra"</string>
+<string name="accessibility_quick_settings_data_on">"Data til"</string>
+<string name="accessibility_quick_settings_data_off">"Data fra"</string>
+<string name="missing_sim_message">"Intet SIM"</string>
+    <string name="lte_service_error_incall">"Du kan ikke skifte LTE-service under et opkald."</string>
+
+</resources>

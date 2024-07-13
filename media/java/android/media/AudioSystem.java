@@ -61,13 +61,23 @@ public class AudioSystem
     public static final int STREAM_DTMF = 8;
     /* @hide The audio stream for text to speech (TTS) */
     public static final int STREAM_TTS = 9;
+    /* @hide The audio stream for FMRadio */
+    public static final int STREAM_FM = 10;
+
     /**
      * @deprecated Use {@link #numStreamTypes() instead}
      */
     public static final int NUM_STREAMS = 5;
 
     // Expose only the getter method publicly so we can change it in the future
+    /**
+     * SPRD: bug492835, FM audio route change.
+     * Original Android code:
     private static final int NUM_STREAM_TYPES = 10;
+     * @{
+     */
+    private static final int NUM_STREAM_TYPES = 11;
+
     public static final int getNumStreamTypes() { return NUM_STREAM_TYPES; }
 
     public static final String[] STREAM_NAMES = new String[] {
@@ -173,6 +183,12 @@ public class AudioSystem
      *    key1=value1;key2=value2;...
      */
     public static native String getParameters(String keys);
+    /* SPRD: add method isAudioRecording @{
+    * Checks whether audio recording is going in AudioFlinger.
+    * return true if audio recording is going.
+    */
+    public static native boolean isAudioRecording();
+    /* @} */
 
     // These match the enum AudioError in frameworks/base/core/jni/android_media_AudioSystem.cpp
     /* Command sucessful or Media server restarted. see ErrorCallback */
@@ -320,6 +336,16 @@ public class AudioSystem
     public static final int DEVICE_OUT_SPEAKER_SAFE = 0x400000;
     public static final int DEVICE_OUT_IP = 0x800000;
 
+    /**
+     * SPRD: bug492835, add FM devices: headset and speaker.
+     * @{
+     */
+    public static final int DEVICE_OUT_FM_HEADSET = 0x1000000;
+    public static final int DEVICE_OUT_FM_SPEAKER = 0x2000000;
+    /**
+     * @}
+     */
+
     public static final int DEVICE_OUT_DEFAULT = DEVICE_BIT_DEFAULT;
 
     public static final int DEVICE_OUT_ALL = (DEVICE_OUT_EARPIECE |
@@ -346,6 +372,15 @@ public class AudioSystem
                                               DEVICE_OUT_AUX_LINE |
                                               DEVICE_OUT_SPEAKER_SAFE |
                                               DEVICE_OUT_IP |
+                                              /**
+                                               * SPRD: bug492835, add FM devices: headset and speaker.
+                                               * @{
+                                               */
+                                              DEVICE_OUT_FM_HEADSET |
+                                              DEVICE_OUT_FM_SPEAKER |
+                                              /**
+                                               * @}
+                                               */
                                               DEVICE_OUT_DEFAULT);
     public static final int DEVICE_OUT_ALL_A2DP = (DEVICE_OUT_BLUETOOTH_A2DP |
                                                    DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
@@ -464,6 +499,13 @@ public class AudioSystem
     public static final String DEVICE_IN_LOOPBACK_NAME = "loopback";
     public static final String DEVICE_IN_IP_NAME = "ip";
 
+    /**
+     * SPRD: bug492835, add FM devices: headset and speaker.
+     * @{
+     */
+    public static final String DEVICE_OUT_FM_HEADSET_NAME = "fm_headset";
+    public static final String DEVICE_OUT_FM_SPEAKER_NAME = "fm_speaker";
+
     public static String getOutputDeviceName(int device)
     {
         switch(device) {
@@ -515,6 +557,17 @@ public class AudioSystem
             return DEVICE_OUT_SPEAKER_SAFE_NAME;
         case DEVICE_OUT_IP:
             return DEVICE_OUT_IP_NAME;
+        /**
+         * SPRD: bug492835, add FM devices: headset and speaker.
+         * @{
+         */
+        case DEVICE_OUT_FM_HEADSET:
+            return DEVICE_OUT_FM_HEADSET_NAME;
+        case DEVICE_OUT_FM_SPEAKER:
+            return DEVICE_OUT_FM_SPEAKER_NAME;
+        /**
+         * @}
+         */
         case DEVICE_OUT_DEFAULT:
         default:
             return Integer.toString(device);
@@ -599,7 +652,17 @@ public class AudioSystem
     public static final int FOR_DOCK = 3;
     public static final int FOR_SYSTEM = 4;
     public static final int FOR_HDMI_SYSTEM_AUDIO = 5;
+    /**
+     * SPRD: bug492835, FM audio route change.
+     * Original Android code:
     private static final int NUM_FORCE_USE = 6;
+     * @{
+     */
+    public static final int FOR_FM = 6;
+    private static final int NUM_FORCE_USE = 7;
+    /**
+     * @}
+     */
 
     // usage for AudioRecord.startRecordingSync(), must match AudioSystem::sync_event_t
     public static final int SYNC_EVENT_NONE = 0;
@@ -692,13 +755,16 @@ public class AudioSystem
         4,  // STREAM_VOICE_CALL
         7,  // STREAM_SYSTEM
         5,  // STREAM_RING
-        11, // STREAM_MUSIC
+        6, // STREAM_MUSIC //change volume for Bug503967
         6,  // STREAM_ALARM
         5,  // STREAM_NOTIFICATION
         7,  // STREAM_BLUETOOTH_SCO
         7,  // STREAM_SYSTEM_ENFORCED
         11, // STREAM_DTMF
-        11  // STREAM_TTS
+        11, // STREAM_TTS
+        /** SPRD: bug492835, FM audio route change @{ */
+        6,  // STREAM_FM
+        /** @} */
     };
 
     public static String streamToString(int stream) {

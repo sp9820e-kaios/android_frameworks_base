@@ -22,6 +22,11 @@ import android.os.storage.StorageManager;
 import android.os.storage.StorageVolume;
 import android.text.TextUtils;
 import android.util.Log;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
+import android.os.storage.VolumeInfo;
+import android.os.storage.IMountService;
 
 import java.io.File;
 
@@ -692,7 +697,18 @@ public class Environment {
         if (volume != null) {
             return volume.isRemovable();
         } else {
+            /* SPRD: return true if external storage is not ready @{
+             * @orig
             throw new IllegalArgumentException("Failed to find storage device at " + path);
+            */
+            if(path.getPath().equals("/dev/null")) {
+                Log.w(TAG, "external storage is not ready, path = " + path);
+                return true;
+            } else {
+                Log.w(TAG, "Failed to find storage device at " + path);
+                throw new IllegalArgumentException("Failed to find storage device at " + path);
+            }
+            /* @} */
         }
     }
 
@@ -723,7 +739,13 @@ public class Environment {
         if (volume != null) {
             return volume.isEmulated();
         } else {
+            /* SPRD: avoid throw Exception lead to system process fatal exception @{
+             * @orig
             throw new IllegalArgumentException("Failed to find storage device at " + path);
+             */
+            Log.w(TAG, "Failed to find storage device at " + path);
+            return false;
+            /* @} */
         }
     }
 
@@ -793,4 +815,182 @@ public class Environment {
     public static File maybeTranslateEmulatedPathToInternal(File path) {
         return StorageManager.maybeTranslateEmulatedPathToInternal(path);
     }
+
+    /* SPRD: support double sdcard @{ */
+    private static int internalType = -1;
+
+    private static final String ENV_EMULATED_STORAGE = "EMULATED_STORAGE";
+    private static final String ENV_PHYSICAL_STORAGE = "PHYSICAL_STORAGE";
+    private static final String ENV_PHYSICAL1_STORAGE = "PHYSICAL1_STORAGE";
+    private static final String ENV_USBDISK_STORAGE = "USBDISK_STORAGE";
+
+    public static final int STORAGE_PRIMARY_EXTERNAL = 1;
+    public static final int STORAGE_PRIMARY_INTERNAL = 2;
+
+    private static final String emulatedPathPrefix = "/storage/emulated";
+    private static final String emulatedPathString = getPathString(ENV_EMULATED_STORAGE, "/storage/self/emulated");
+    private static final String physicalPathString = getPathString(ENV_PHYSICAL_STORAGE, "/storage/sdcard0");
+    private static final String physical1PathString = getPathString(ENV_PHYSICAL1_STORAGE, "/storage/sdcard1");
+    private static final String usbdiskPathString = getPathString(ENV_USBDISK_STORAGE, "/storage/usbdisk");
+
+    static String getPathString(String variableName, String defaultPath) {
+        String path = System.getenv(variableName);
+        return path == null ? defaultPath : path;
+    }
+
+    public static File getSecondaryStorageDirectory() {
+        File path = null;
+        switch (getStorageType()) {
+            case STORAGE_PRIMARY_EXTERNAL:
+                path = getInternalStoragePath();
+                break;
+
+            case STORAGE_PRIMARY_INTERNAL:
+                path = getExternalStoragePath();
+                break;
+        }
+        return path;
+    }
+
+    public static File getInternalStoragePath() {
+        File internalPath = null;
+        if (internalIsEmulated()) {
+            internalPath = new File(emulatedPathPrefix + "/" + UserHandle.myUserId());
+        } else {
+            internalPath = getStoragePathFormKey("vold.sdcard0.path");
+        }
+        if (internalPath == null) {
+            internalPath = getInternalStorageLinkPath();
+        }
+        return internalPath;
+    }
+
+    public static String getInternalStoragePathState() {
+        if (internalIsEmulated()) {
+            return getExternalStorageState(getInternalStoragePath());
+        } else {
+            return SystemProperties.get("vold.sdcard0.state", Environment.MEDIA_UNKNOWN);
+        }
+    }
+
+    public static File getExternalStoragePath() {
+        File externalPath = null;
+        if (internalIsEmulated()) {
+            externalPath = getStoragePathFormKey("vold.sdcard0.path");
+        } else {
+            externalPath = getStoragePathFormKey("vold.sdcard1.path");
+        }
+        if (externalPath == null) {
+            externalPath = getExternalStorageLinkPath();
+        }
+        return externalPath;
+    }
+
+    /** {@hide} */
+    public static File getInternalStorageLinkPath() {
+        if (internalIsEmulated()) {
+            return new File(emulatedPathPrefix + "/" + UserHandle.myUserId());
+        } else {
+            return new File(physicalPathString);
+        }
+    }
+
+    /** {@hide} */
+    public static File getExternalStorageLinkPath() {
+        if (internalIsEmulated()) {
+            return new File(physicalPathString);
+        } else {
+            return new File(physical1PathString);
+        }
+    }
+
+    /** {@hide} */
+    public static File getEmulatedStoragePath() {
+        return new File(emulatedPathString);
+    }
+
+    /** {@hide} */
+    public static File getUsbdiskStoragePath() {
+        File usbdiskPath = getStoragePathFormKey("vold.usbdisk.path");
+        if (usbdiskPath == null) {
+            usbdiskPath = new File(usbdiskPathString);
+        }
+        return usbdiskPath;
+    }
+
+    /** {@hide} */
+    public static String getUsbdiskStoragePathState() {
+            return SystemProperties.get("vold.usbdisk.state", Environment.MEDIA_UNKNOWN);
+    }
+
+    /** {@hide} */
+    public static List<VolumeInfo> getUsbdiskVolumes() {
+        List<VolumeInfo> vols;
+        final ArrayList<VolumeInfo> res = new ArrayList<>();
+
+        final IMountService mountService = IMountService.Stub.asInterface(ServiceManager.getService("mount"));
+
+        try {
+            vols = Arrays.asList(mountService.getVolumes(0));
+        } catch (RemoteException e) {
+            throw e.rethrowAsRuntimeException();
+        }
+
+        for (VolumeInfo vol : vols) {
+            if (vol.disk != null && vol.disk.isUsb()) {
+                res.add(vol);
+            }
+        }
+
+        return res;
+    }
+
+    /** {@hide} */
+    public static File[] getUsbdiskVolumePaths() {
+        int mCount;
+        List<VolumeInfo> vols = getUsbdiskVolumes();
+        mCount = vols.size();
+
+        final File[] files = new File[mCount];
+        for (int i = 0; i < mCount; i++) {
+            files[i] = vols.get(i).getPath();
+        }
+
+        return files;
+    }
+
+    /** {@hide} */
+    public static String getUsbdiskVolumeState(File path) {
+        return getExternalStorageState(path);
+    }
+
+    public static String getExternalStoragePathState() {
+        if (internalIsEmulated()) {
+            return SystemProperties.get("vold.sdcard0.state", Environment.MEDIA_UNKNOWN);
+        } else {
+            return SystemProperties.get("vold.sdcard1.state", Environment.MEDIA_UNKNOWN);
+        }
+    }
+
+    public static int getStorageType() {
+        return SystemProperties.getInt(StorageManager.PROP_PRIMARY_TYPE, 2);
+    }
+
+    public static boolean internalIsEmulated() {
+        if (internalType == -1) {
+            internalType = SystemProperties.getInt(StorageManager.PROP_INTERNAL_EMULATED, 1);
+            Log.d(TAG, "internalIsEmulated : " + (internalType == 1));
+        }
+        return internalType == 1;
+    }
+
+    private static File getStoragePathFormKey(String key) {
+        String path = SystemProperties.get(key);
+        if(TextUtils.isEmpty(path)) {
+            return null;
+        } else {
+            return new File(path);
+        }
+    }
+    /* @} */
 }

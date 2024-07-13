@@ -53,6 +53,8 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 #include <EGL/eglext.h>
+// SPRD: add shutdown animation
+#include <system/audio.h>
 
 #include "BootAnimation.h"
 #include "AudioPlayer.h"
@@ -62,13 +64,17 @@
 #define SYSTEM_ENCRYPTED_BOOTANIMATION_FILE "/system/media/bootanimation-encrypted.zip"
 #define EXIT_PROP_NAME "service.bootanim.exit"
 
+/* SPRD: Modify for bug 562251 @{ */
+#define FULLSCREEN_ANIM 1
+/* }@ */
+
 namespace android {
 
 static const int ANIM_ENTRY_NAME_MAX = 256;
 
 // ---------------------------------------------------------------------------
 
-BootAnimation::BootAnimation() : Thread(false), mZip(NULL)
+BootAnimation::BootAnimation() : Thread(false), mfd(-1), mZip(NULL) // SPRD: add shutdown animation
 {
     mSession = new SurfaceComposerClient();
 }
@@ -77,6 +83,8 @@ BootAnimation::~BootAnimation() {
     if (mZip != NULL) {
         delete mZip;
     }
+    // SPRD: add shutdown animation
+    if(mfd != -1){ close(mfd); }
 }
 
 void BootAnimation::onFirstRef() {
@@ -161,6 +169,9 @@ status_t BootAnimation::initTexture(Texture* texture, AssetManager& assets,
     return NO_ERROR;
 }
 
+/* SPRD: Add for bug 277897 Optimize boot speed @{ */
+static int flg = 0;
+/* @} */
 status_t BootAnimation::initTexture(const Animation::Frame& frame)
 {
     //StopWatch watch("blah");
@@ -197,6 +208,15 @@ status_t BootAnimation::initTexture(const Animation::Frame& frame)
 
     switch (bitmap.colorType()) {
         case kN32_SkColorType:
+            /* SPRD: Add for bug 277897 Optimize boot speed @{ */
+            static int bc = 0;
+            if(flg && bc != *((int*)p)){
+                bc = *((int*)p);
+                //ALOGD("> p=%08x", bc);
+                glClearColor((GLfloat)SkColorGetR(bc)/255,(GLfloat)SkColorGetG(bc)/255,(GLfloat)SkColorGetB(bc)/255,1.0);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
+            /* @} */
             if (tw != w || th != h) {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA,
                         GL_UNSIGNED_BYTE, 0);
@@ -238,13 +258,12 @@ status_t BootAnimation::readyToRun() {
     if (status)
         return -1;
 
+    // Modify for bug bug 282034, add eFXSurfaceNoDisp flag to remove black frame in bootanimation
     // create the native surface
-    sp<SurfaceControl> control = session()->createSurface(String8("BootAnimation"),
-            dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565);
-
-    SurfaceComposerClient::openGlobalTransaction();
-    control->setLayer(0x40000000);
-    SurfaceComposerClient::closeGlobalTransaction();
+    //sp<SurfaceControl> control = session()->createSurface(String8("BootAnimation"),
+    //        dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565);
+    sp<SurfaceControl> control = session()->createSurface(
+                      String8("BootAnimation"), dinfo.w, dinfo.h, PIXEL_FORMAT_RGB_565, ISurfaceComposerClient::eFXSurfaceNoDisp);
 
     sp<Surface> s = control->getSurface();
 
@@ -282,6 +301,31 @@ status_t BootAnimation::readyToRun() {
     mFlingerSurfaceControl = control;
     mFlingerSurface = s;
 
+
+    /* SPRD: Add for bug 259913, draw a black frame before rotation screen to cover previous APP's activity @{ */
+    // Only do this in shutdown animation
+    if(mShutdownAnimation) {
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT);
+        eglSwapBuffers(mDisplay, mSurface);
+    }
+
+    SurfaceComposerClient::openGlobalTransaction();
+    control->setLayer(0x40000000);
+    // Only do this in shutdown animation
+    if(mShutdownAnimation) {
+        Rect layerStackRect(dinfo.w, dinfo.h);
+        Rect displayRect(dinfo.w, dinfo.h);
+
+        session()->setDisplayProjection(
+            dtoken, 0 /* 0 degree rotation */,
+            layerStackRect,
+            displayRect);
+    }
+    SurfaceComposerClient::closeGlobalTransaction();
+    /* @} */
+
+
     // If the device has encryption turned on or is in process
     // of being encrypted we show the encrypted boot animation.
     char decrypt[PROPERTY_VALUE_MAX];
@@ -294,6 +338,13 @@ status_t BootAnimation::readyToRun() {
             (access(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE, R_OK) == 0) &&
             ((zipFile = ZipFileRO::open(SYSTEM_ENCRYPTED_BOOTANIMATION_FILE)) != NULL)) ||
 
+            /* SPRD: Add support for customization boot animation and shutdown animation, bug243780  @{ */
+            ((access(moviepath, R_OK) == 0) &&
+            ((zipFile = ZipFileRO::open(moviepath)) != NULL)) ||
+
+            ((access(movie_default_path, R_OK) == 0) &&
+            ((zipFile = ZipFileRO::open(movie_default_path)) != NULL)) ||
+            /* @} */
             ((access(OEM_BOOTANIMATION_FILE, R_OK) == 0) &&
             ((zipFile = ZipFileRO::open(OEM_BOOTANIMATION_FILE)) != NULL)) ||
 
@@ -328,8 +379,21 @@ bool BootAnimation::threadLoop()
 
 bool BootAnimation::android()
 {
-    initTexture(&mAndroid[0], mAssets, "images/android-logo-mask.png");
-    initTexture(&mAndroid[1], mAssets, "images/android-logo-shine.png");
+    // SPRD: use small logo pictures on small screen devices @{
+    if (mWidth <= 160) {
+        initTexture(&mAndroid[0], mAssets, "images/sprd-logo-mask-minimum.png");
+        initTexture(&mAndroid[1], mAssets, "images/android-logo-shine-minimum.png");
+    } else if (mWidth <= 240) {
+        initTexture(&mAndroid[0], mAssets, "images/sprd-logo-mask-little.png");
+        initTexture(&mAndroid[1], mAssets, "images/android-logo-shine-little.png");
+    } else if (mWidth <= 480) {
+        initTexture(&mAndroid[0], mAssets, "images/android-logo-mask-small.png");
+        initTexture(&mAndroid[1], mAssets, "images/android-logo-shine-small.png");
+    } else {
+        initTexture(&mAndroid[0], mAssets, "images/android-logo-mask.png");
+        initTexture(&mAndroid[1], mAssets, "images/android-logo-shine.png");
+    }
+    // @}
 
     // clear screen
     glShadeModel(GL_FLAT);
@@ -454,6 +518,10 @@ bool BootAnimation::movie()
 {
     String8 desString;
 
+    /* SPRD: Add for bug 562251 @{ */
+    int fullscreen = 0;
+    /* }@ */
+
     if (!readFile("desc.txt", desString)) {
         return false;
     }
@@ -471,6 +539,18 @@ bool BootAnimation::movie()
 
     Animation animation;
 
+    // SPRD: add shutdown animation
+    /* SPRD: startup tone should not make sound in silent mode @{ */
+    char silence[PROPERTY_VALUE_MAX];
+    property_get("persist.sys.silence", silence, "0");
+
+    /* SPRD: Add for bug 283924, do not play boot animation in cmcc device @{ */
+
+    if(strcmp("1", silence) !=0){
+        soundplay();
+    }
+    /* @} */
+
     // Parse the description file
     for (;;) {
         const char* endl = strstr(s, "\n");
@@ -482,8 +562,8 @@ bool BootAnimation::movie()
         char color[7] = "000000"; // default to black if unspecified
 
         char pathType;
-        if (sscanf(l, "%d %d %d", &width, &height, &fps) == 3) {
-            // ALOGD("> w=%d, h=%d, fps=%d", width, height, fps);
+        if (sscanf(l, "%d %d %d %d %d", &width, &height, &fps, &flg, &fullscreen) >= 3) {/* SPRD: Modify for bug 277897 @{} */
+            //ALOGD("> w=%d, h=%d, fps=%d, flg=%d", width, height, fps, flg);/* SPRD: Modify for bug 277897  @{} */
             animation.width = width;
             animation.height = height;
             animation.fps = fps;
@@ -557,14 +637,14 @@ bool BootAnimation::movie()
     mZip->endIteration(cookie);
 
     // clear screen
-    glShadeModel(GL_FLAT);
-    glDisable(GL_DITHER);
-    glDisable(GL_SCISSOR_TEST);
-    glDisable(GL_BLEND);
-    glClearColor(0,0,0,1);
-    glClear(GL_COLOR_BUFFER_BIT);
+    //glShadeModel(GL_FLAT);
+    //glDisable(GL_DITHER);
+    //glDisable(GL_SCISSOR_TEST);
+    //glDisable(GL_BLEND);
+    //glClearColor(0,0,0,1);
+    //glClear(GL_COLOR_BUFFER_BIT);
 
-    eglSwapBuffers(mDisplay, mSurface);
+    //eglSwapBuffers(mDisplay, mSurface);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glEnable(GL_TEXTURE_2D);
@@ -596,11 +676,13 @@ bool BootAnimation::movie()
                 mAudioPlayer->playFile(part.audioFile);
             }
 
-            glClearColor(
-                    part.backgroundColor[0],
-                    part.backgroundColor[1],
-                    part.backgroundColor[2],
-                    1.0f);
+            /* SPRD: delete for bug 277897 Optimize boot speed @{ */
+            //glClearColor(
+            //        part.backgroundColor[0],
+            //        part.backgroundColor[1],
+            //        part.backgroundColor[2],
+            //        1.0f);
+            /* @} */
 
             for (size_t j=0 ; j<fcount && (!exitPending() || part.playUntilComplete) ; j++) {
                 const Animation::Frame& frame(part.frames[j]);
@@ -630,10 +712,24 @@ bool BootAnimation::movie()
                     }
                     glDisable(GL_SCISSOR_TEST);
                 }
-                // specify the y center as ceiling((mHeight - animation.height) / 2)
-                // which is equivalent to mHeight - (yc + animation.height)
-                glDrawTexiOES(xc, mHeight - (yc + animation.height),
-                              0, animation.width, animation.height);
+                /* SPRD: Modify for bug 562251 @{ */
+                //What if display size goes to 1920x1080 or 2K, the pics which had same
+                //size of display would occur a long time cost to decode pic and to create
+                //texture for OpenGLES.
+                //Use smaller pics than display size.
+                if (fullscreen == FULLSCREEN_ANIM)
+                {
+                    //if screen is too large, we choose to use smaller animaiton
+                    //resources to Optimize FPS. So that we need to draw a small
+                    //pic into fullscreen.
+                    glDrawTexiOES(0, 0, 0, mWidth, mHeight);
+                } else {
+                    // specify the y center as ceiling((mHeight - animation.height) / 2)
+                    // which is equivalent to mHeight - (yc + animation.height)
+                    glDrawTexiOES(xc, mHeight - (yc + animation.height),
+                            0, animation.width, animation.height);
+                }
+                /* }@ */
                 eglSwapBuffers(mDisplay, mSurface);
 
                 nsecs_t now = systemTime();
@@ -669,9 +765,98 @@ bool BootAnimation::movie()
             }
         }
     }
-
+    // SPRD: add shutdown animation
+    soundstop();
     return false;
 }
+
+/* SPRD: add shutdown animation @{ */
+bool BootAnimation::soundplay()
+{
+    mp = NULL;
+
+    if(soundpath.length() == 0){
+        __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "sound resource is not right.");
+        return false;
+    }
+
+    mfd = open(soundpath.string(), O_RDONLY);
+
+    if(mfd == -1){
+        __android_log_print(ANDROID_LOG_WARN, LOG_TAG, "boot animation play default source.");
+        mfd = open(sound_default_path.string(),O_RDONLY);
+
+        if(mfd == -1){
+           __android_log_print(ANDROID_LOG_WARN, LOG_TAG, "can not find bootanimation sound resource....");
+           return false;
+        }
+    }
+    //__android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "path = %s mfd = %d", soundpath.string(), mfd);
+    //AudioSystem::setForceUse((audio_policy_force_use_t)1,(audio_policy_forced_cfg_t)1);// for media,force speaker.
+
+     mp = new MediaPlayer();
+     mp->setDataSource(mfd, 0, 0x7ffffffffffffffLL);
+     mp->setAudioStreamType(/*AUDIO_STREAM_MUSIC*/AUDIO_STREAM_SYSTEM);
+     mp->prepare();
+     mp->start();
+     return false;
+}
+
+bool BootAnimation::soundstop()
+{
+    if (soundpath.length() == 0) {
+    __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, "no sound resource ");
+    return false;
+    }
+
+    if (mp != NULL)mp->stop();
+    return false;
+}
+
+bool BootAnimation::setsoundpath(String8 path)
+{
+    //__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "path = %s", path.string());
+    soundpath = path;
+    return false;
+}
+
+bool BootAnimation::setmoviepath(String8 path)
+{
+    //__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "moviepath = %s", path.string());
+    moviepath = path;
+    return false;
+}
+
+bool BootAnimation::setdescname(String8 path)
+{
+    //__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "descname = %s", path.string());
+    descname = path;
+    return false;
+}
+
+bool BootAnimation::setsoundpath_default(String8 path)
+{
+    sound_default_path  = path;
+    return false;
+}
+
+bool BootAnimation::setmoviepath_default(String8 path)
+{
+    movie_default_path = path;
+    return false;
+}
+
+bool BootAnimation::setdescname_default(String8 path)
+{
+    descname_default = path;
+    return false;
+}
+
+void BootAnimation::setShutdownAnimation(bool isShutdownAnimation)
+{
+    mShutdownAnimation = isShutdownAnimation;
+}
+/* @} */
 
 // ---------------------------------------------------------------------------
 

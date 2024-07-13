@@ -57,6 +57,8 @@ class Player: public MediaPlayerBase
     virtual status_t    initCheck() {return OK;}
     virtual bool        hardwareOutput() {return true;}
 
+    virtual void        setNeedConsume(bool needConsume) {ALOGV("needConsume %d", needConsume);}
+
     virtual status_t    setDataSource(
             const sp<IMediaHTTPService>& /* httpService */,
             const char *url,

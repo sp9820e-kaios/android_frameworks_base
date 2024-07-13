@@ -16,9 +16,11 @@
 
 package com.android.systemui.power;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
@@ -30,7 +32,9 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.Slog;
+import android.view.WindowManager;
 
+import com.android.systemui.R;
 import com.android.systemui.SystemUI;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
@@ -51,6 +55,10 @@ public class PowerUI extends SystemUI {
     private int mBatteryStatus = BatteryManager.BATTERY_STATUS_UNKNOWN;
     private int mPlugType = 0;
     private int mInvalidCharger = 0;
+    /* SPRD: Modified for bug 505221, add voltage high warning @{ */
+    int mBatteryHealth = BatteryManager.BATTERY_HEALTH_UNKNOWN;
+    AlertDialog mVoltageHighDialog;
+    /* @} */
 
     private int mLowBatteryAlertCloseLevel;
     private final int[] mLowBatteryReminderLevels = new int[2];
@@ -161,7 +169,11 @@ public class PowerUI extends SystemUI {
                 mPlugType = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 1);
                 final int oldInvalidCharger = mInvalidCharger;
                 mInvalidCharger = intent.getIntExtra(BatteryManager.EXTRA_INVALID_CHARGER, 0);
-
+                /* SPRD: Modified for bug 505221, add voltage high warning @{ */
+                final int oldBatteryHealth = mBatteryHealth;
+                mBatteryHealth = intent.getIntExtra(BatteryManager.EXTRA_HEALTH,
+                        BatteryManager.BATTERY_HEALTH_UNKNOWN);
+                /* @} */
                 final boolean plugged = mPlugType != 0;
                 final boolean oldPlugged = oldPlugType != 0;
 
@@ -191,7 +203,26 @@ public class PowerUI extends SystemUI {
                     // if invalid charger is showing, don't show low battery
                     return;
                 }
-
+                /* SPRD: Modified for bug 505221, add voltage high warning @{ */
+                if (plugged) {
+                    if (oldBatteryHealth != mBatteryHealth
+                            && oldBatteryHealth != BatteryManager.BATTERY_HEALTH_UNKNOWN) {
+                        if (mBatteryHealth == BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE) {
+                            Slog.d(TAG, "showing BATTERY_HEALTH_OVER_VOLTAGE warning");
+                            showVoltageHighWarningDialog();
+                        } else if (oldBatteryHealth == BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE) {
+                            Slog.d(TAG, "dismiss BATTERY_HEALTH_OVER_VOLTAGE warning");
+                            dismissVoltageHighWarningDialog();
+                        } else {
+                            // do nothing
+                        }
+                    }
+                } else {
+                    if (oldPlugged) {
+                        dismissVoltageHighWarningDialog();
+                    }
+                }
+                /* @} */
                 if (!plugged
                         && (bucket < oldBucket || oldPlugged)
                         && mBatteryStatus != BatteryManager.BATTERY_STATUS_UNKNOWN
@@ -219,6 +250,40 @@ public class PowerUI extends SystemUI {
             }
         }
     };
+
+    /* SPRD: Modified for bug 505221, add voltage high warning @{ */
+    private void showVoltageHighWarningDialog() {
+        Slog.d(TAG, "showing BATTERY_HEALTH_COLD dialog");
+        AlertDialog.Builder b = new AlertDialog.Builder(mContext);
+        b.setTitle(R.string.battery_overtage_title);
+        b.setCancelable(false);
+        b.setMessage(R.string.battery_overtage_content);
+        b.setIconAttribute(android.R.attr.alertDialogIcon);
+        b.setPositiveButton(R.string.battery_overtage_back,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog d = b.create();
+        d.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            public void onDismiss(DialogInterface dialog) {
+                mVoltageHighDialog = null;
+            }
+        });
+
+        d.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR);
+        d.show();
+        mVoltageHighDialog = d;
+    }
+    private void dismissVoltageHighWarningDialog() {
+        if (mVoltageHighDialog != null) {
+            Slog.d(TAG, "dismiss BATTERY_HEALTH_OVER_VOLTAGE dialog");
+            mVoltageHighDialog.dismiss();
+        }
+    }
+    /* @} */
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         pw.print("mLowBatteryAlertCloseLevel=");

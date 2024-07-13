@@ -19,6 +19,7 @@ package com.android.internal.telephony;
 import android.app.PendingIntent;
 import android.telephony.SubscriptionInfo;
 import com.android.internal.telephony.ISubscriptionListener;
+import android.net.Uri;
 
 interface ISub {
     /**
@@ -183,4 +184,11 @@ interface ISub {
     int getSimStateForSlotIdx(int slotIdx);
 
     boolean isActiveSubId(int subId);
+
+    /**
+     * spread for bug 489250 end
+     */
+    boolean getFdnEnable(int subId);
+
+    boolean checkUriValid(in Uri uri);
 }

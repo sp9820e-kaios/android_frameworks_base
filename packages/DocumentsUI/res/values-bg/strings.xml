@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Докоснете, за да видите подробностите"</string>
     <string name="retry" msgid="7564024179122207376">"Нов опит"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Следните файлове не бяха копирани: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">Невъзможно споделянето на файл</string>
+     <string name="documents_deleting">"Изтриване на документи"</string>
+     <string name="cannot_copyfolder_itself">"Не може да копирате папка в нея самата"</string>
+
+    <string name="error_permissions">"Приложението няма критично важни разрешения, необходими, за да работи. Моля, проверете настройките си за разрешенията."</string>
+     <string name="cannot_copy_drm">"DRM файлове не могат да се копират"</string>
+     <string name="cannot_copy_downloading">"Файлове в процес на сваляне не могат да се копират"</string>
 </resources>

@@ -68,6 +68,7 @@ import java.util.List;
 public final class DocumentsContract {
     private static final String TAG = "Documents";
 
+    private final static int MAX_BITMAP_SIZE = 4096;
     // content://com.example/root/
     // content://com.example/root/sdcard/
     // content://com.example/root/sdcard/recent/
@@ -537,6 +538,8 @@ public final class DocumentsContract {
     public static final String METHOD_RENAME_DOCUMENT = "android:renameDocument";
     /** {@hide} */
     public static final String METHOD_DELETE_DOCUMENT = "android:deleteDocument";
+    /** {@hide} */
+    public static final String METHOD_DELETE_DOCUMENTS_DONE = "android:deleteDocumentsDone";
 
     /** {@hide} */
     public static final String EXTRA_URI = "uri";
@@ -874,7 +877,12 @@ public final class DocumentsContract {
             } else {
                 BitmapFactory.decodeFileDescriptor(fd, null, opts);
             }
-
+            /*Bug 538003,553509:fix oom when load large size thumbnail,start*/
+            Log.i(TAG,"documentUri== "+documentUri+",opts.outWidth="+opts.outWidth + ",opts.outHeight="+opts.outHeight);
+            if (opts.outWidth * opts.outHeight >= MAX_BITMAP_SIZE * MAX_BITMAP_SIZE) {
+                return null;
+            }
+            /*Bug 538003,553509:fix oom when load large size thumbnail,end*/
             final int widthSample = opts.outWidth / size.x;
             final int heightSample = opts.outHeight / size.y;
 
@@ -1013,6 +1021,16 @@ public final class DocumentsContract {
         in.putParcelable(DocumentsContract.EXTRA_URI, documentUri);
 
         client.call(METHOD_DELETE_DOCUMENT, null, in);
+    }
+
+    /**
+     * add for notifying mediaprovider after file delelted
+     * @hide
+     */
+    public static void deleteDocumentsDone(ContentProviderClient client)
+            throws RemoteException {
+
+        client.call(METHOD_DELETE_DOCUMENTS_DONE, null, null);
     }
 
     /**

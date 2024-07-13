@@ -89,4 +89,9 @@
     <skip />
     <!-- no translation found for accessibility_wifi_signal_full (7061045677694702) -->
     <skip />
+    <string name="wifi_secured_first_item">Zerkin babestua <xliff:g>%1$s</xliff:g></string>
+     <string name="wifi_secured_second_item">, <xliff:g>%1$s</xliff:g>rekin babestua</string>
+     <string name="wifi_wps_available_first_item">WPS erabilgarri</string>
+     <string name="wifi_wps_available_second_item">\u0020(WPS erabilgarri)</string>
+
 </resources>

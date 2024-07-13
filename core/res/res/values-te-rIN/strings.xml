@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"వెనుకకు"</string>
     <string name="next_button_label" msgid="1080555104677992408">"తదుపరి"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"దాటవేయి"</string>
-    <string name="no_matches" msgid="8129421908915840737">"సరిపోలికలు లేవు"</string>
     <string name="find_on_page" msgid="1946799233822820384">"పేజీలో కనుగొనండి"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="TOTAL">%d</xliff:g>లో <xliff:g id="INDEX">%d</xliff:g></item>
-      <item quantity="one">1 సరిపోలిక</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"పూర్తయింది"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"USB నిల్వను ఎరేజ్ చేస్తోంది…"</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"SD కార్డు‌ను ఎరేజ్ చేస్తోంది…"</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> ఎంచుకోబడ్డాయి</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> ఎంచుకోబడింది</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>""</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-ఇంటర్నెట్ టేతరింగ్ యాక్టివ్"</string>
+     <string name="ext_media_status_shared">"UMS షేర్డ్"</string>
+     <string name="sim_ready_title_for_usb">హెచ్చరిక</string>
+     <string name="sim_card_activation_warning">"థర్డ్ పార్టీల నుంచి అప్లికేషన్లను ఇన్స్టాల్ చేయవలసి ఉంటే USB ను యాక్టివేట్ చేయడము కొరకు SIM/USIM ను ఇన్పుట్ చేయండి"</string>
+     <string name="usb_ok">సరి</string>
+     <string name="usb_cdrom_notification_title">వర్చువల్ డ్రైవర్ ఆన్ లో ఉన్నది</string>
+     <string name="usb_charge_only_notification">"చార్జ్‌గా మాత్రమే కనెక్ట్ అయింది"</string>
+     <string name="global_action_restart">స్థానికంగా ఉంచు</string>
+     <string name="reboot_device_title">స్థానికంగా ఉంచు</string>
+     <string name="global_reboot_close_apps">"అన్ని ఆపులను మూసివేయండి మరియు ఫోనును మరలా ప్రారంభించండి"</string>
+     <string name="reboot_device_confirm">"మీరు మీ ఫోన్ ను రీస్టార్ట్ చేయాలని చేయాలని అనుకుంటున్నారా?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">" <xliff:g id="NUMBER">%d</xliff:g> సెకండ్ల తరువాత ఫోన్ షట్ డౌన్ అవుతుంది"</item>
+<item quantity="other">" <xliff:g id="NUMBER">%d</xliff:g> సెకండ్ల తరువాత ఫోన్ షట్ డౌన్ అవుతుంది"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s కనెక్ట్ చేయబడింది, %2$s బ్లాక్ చేయబడింది"</string>
+     <string name="phoneFixedNumber">"స్థిరసంఖ్య"</string>
+     <string name="gps_time_sync_fail_str">"GPS సమయాన్ని పొందడంలో విఫలం"</string>
+     <string name="disable_touch_mode_title">"పాకెట్ టచ్-డిజేబుల్"</string>
+     <string name="disable_touch_mode_hint">"ఫోన్ పై భాగం కవర్ చేయవద్దు"</string>
+     <string name="exit_disable_touch_mode_hint">"మోడ్ డిసేబుల్ చేసేందుకు మీరు కూడా వపర్ మరియు వాల్యూమ్ బటన్లు పైకి నొక్కవచ్చు"</string>
+
 </resources>

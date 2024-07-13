@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string-array name="wifi_status">
+<item></item>
+<item>"स्कैन गस्सन..."</item>
+<item>"जुडन..."</item>
+<item>"तस्दीक करन..."</item>
+<item>"हासिल करन आय पी पततः ..."</item>
+<item>"जुड़नः आमुत"</item>
+<item>"मोतल गमुत"</item>
+<item>"अलग गस्सन..."</item>
+<item>"अलग गमुत"</item>
+<item>"नाकामयाब"</item>
+<item>"बंद गमुत"</item>
+<item>"आरजी तौर नज़र अंदाज़ करन कमज़ोर कनेक्शन"</item>
+</string-array>
+<string-array name="wifi_status_with_ssid">
+<item></item>
+<item>"स्कैन गस्सन..."</item>
+<item>"जुड़न <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"तस्दीक गस्सन <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"हासिल करन आय पी पततः <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"जुडीथ <xliff:g id="network_name">%1$s</xliff:g>"</item>
+<item>"मोतल गमुत"</item>
+<item>"अलग गमुत <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"अलग गमुत"</item>
+<item>"नाकामयाब"</item>
+<item>"बंद गमुत"</item>
+<item>"आरजी तौर नज़र अंदाज़ करन कमज़ोर कनेक्शन"</item>
+</string-array>
+</resources>

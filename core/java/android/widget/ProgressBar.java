@@ -208,6 +208,8 @@ public class ProgressBar extends View {
     private int mProgress;
     private int mSecondaryProgress;
     private int mMax;
+    // SPRD: 6.0 Porting Bug 371782 - Adding Min.
+    private int mMin;
 
     private int mBehavior;
     private int mDuration;
@@ -553,6 +555,8 @@ public class ProgressBar extends View {
      */
     private void initProgressBar() {
         mMax = 100;
+        // SPRD: 6.0 Porting Bug 371782 - Adding Min.
+        mMin = 0;
         mProgress = 0;
         mSecondaryProgress = 0;
         mIndeterminate = false;
@@ -1349,6 +1353,7 @@ public class ProgressBar extends View {
             // Not applicable.
             return false;
         }
+        // SPRD: 6.0 Porting Bug 371782 - Adding Min.
 
         progress = MathUtils.constrain(progress, 0, mMax);
 
@@ -1379,9 +1384,10 @@ public class ProgressBar extends View {
         if (mIndeterminate) {
             return;
         }
+        // SPRD: 6.0 Porting Bug 371782 - Adding Min.
 
-        if (secondaryProgress < 0) {
-            secondaryProgress = 0;
+        if (secondaryProgress < mMin) {
+            secondaryProgress = mMin;
         }
 
         if (secondaryProgress > mMax) {
@@ -1441,6 +1447,14 @@ public class ProgressBar extends View {
     public synchronized int getMax() {
         return mMax;
     }
+    /**
+    * SPRD: 5.0 Porting Bug 371782 - Adding Min.
+    *
+    * @hide
+    */
+        public synchronized int getMin() {
+            return mMin;
+        }
 
     /**
      * <p>Set the range of the progress bar to 0...<tt>max</tt>.</p>
@@ -1456,6 +1470,10 @@ public class ProgressBar extends View {
         if (max < 0) {
             max = 0;
         }
+        // SPRD: 6.0 Porting Bug 371782 - Adding Min.
+        if (max < mMin) {
+            max = mMin;
+        }
         if (max != mMax) {
             mMax = max;
             postInvalidate();
@@ -1466,6 +1484,27 @@ public class ProgressBar extends View {
             refreshProgress(R.id.progress, mProgress, false);
         }
     }
+    /**
+    * SPRD: 6.0 Porting Bug 371782 - Adding Min.
+    *
+    * @hide
+    */
+        public synchronized void setMin(int min) {
+            if (min < 0) {
+                min = 0;
+            }
+            if (min > mMax) {
+                min = mMax;
+            }
+            if (min != mMin) {
+                mMin = min;
+                postInvalidate();
+                if (mProgress < min) {
+                    mProgress = min;
+                }
+                refreshProgress(R.id.progress, mProgress, false);
+            }
+        }
 
     /**
      * <p>Increase the progress bar's progress by the specified amount.</p>

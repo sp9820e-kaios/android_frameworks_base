@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.android.internal.app.AlertActivity;
 import com.android.internal.app.AlertController;
@@ -79,6 +80,14 @@ public class UsbDebuggingActivity extends AlertActivity
         ap.mView = checkbox;
 
         setupAlert();
+        TextView mTitleTextView = (TextView)this.findViewById(com.android.internal.R.id.alertTitle);
+        TextView mMessageTextView = (TextView)this.findViewById(com.android.internal.R.id.message);
+        /*SPRD bug 620680:Text size is too big{@*/
+//        mTitleTextView.setTextSize(25);
+//        mMessageTextView.setTextSize(24);
+        mTitleTextView.setTextSize(18);
+        mMessageTextView.setTextSize(16);
+        /*@}*/
     }
 
     private class UsbDisconnectedReceiver extends BroadcastReceiver {

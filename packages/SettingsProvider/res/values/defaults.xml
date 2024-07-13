@@ -17,8 +17,11 @@
  */
 -->
 <resources>
+    <!-- SPRD: add for bug473877 -->
+    <integer name="def_flipping_silence_data">0</integer>
     <bool name="def_dim_screen">true</bool>
     <integer name="def_screen_off_timeout">60000</integer>
+    <integer name="def_button_light_off_timeout">1500</integer>
     <integer name="def_sleep_timeout">-1</integer>
     <bool name="def_airplane_mode_on">false</bool>
     <bool name="def_theater_mode_on">false</bool>
@@ -27,6 +30,9 @@
     <string name="airplane_mode_toggleable_radios" translatable="false">bluetooth,wifi,nfc</string>
     <bool name="def_auto_time">true</bool>
     <bool name="def_auto_time_zone">true</bool>
+    <!-- SPRD:support GPS automatic update time @{ -->
+    <bool name="def_auto_time_gps">false</bool>
+    <!-- @} -->
     <bool name="def_accelerometer_rotation">true</bool>
     <!-- Default screen brightness, from 0 to 255.  102 is 40%. -->
     <integer name="def_screen_brightness">102</integer>
@@ -43,7 +49,9 @@
          Network location is off by default because it requires
          user opt-in via Setup Wizard or Settings.
     -->
-    <string name="def_location_providers_allowed" translatable="false">gps</string>
+    <!-- SPRD:set default GPS status is off @{ -->
+    <string name="def_location_providers_allowed" translatable="false"></string>
+    <!-- @} -->
     <bool name="assisted_gps_enabled">true</bool>
     <bool name="def_netstats_enabled">true</bool>
     <bool name="def_usb_mass_storage_enabled">true</bool>
@@ -157,6 +165,10 @@
     <!-- Default for Settings.System.POINTER_SPEED -->
     <integer name="def_pointer_speed">0</integer>
 
+    <!-- SPRD：Default for Settings.Secure.SHOW_IME_WITH_HARD_KEYBOARD for bug 515449 @{ -->
+    <bool name="def_show_ime_with_hard_keyboard">true</bool>
+    <!-- @} -->
+
     <!-- Default for DTMF tones enabled -->
     <bool name="def_dtmf_tones_enabled">true</bool>
     <!-- Default for UI touch sounds enabled -->
@@ -212,4 +224,19 @@
 
     <!-- Default for Settings.Secure.NFC_PAYMENT_COMPONENT -->
     <string name="def_nfc_payment_component"></string>
+    <string name="config_default_input_method" translatable="false">com.iflytek.inputmethod/.FlyIME</string>
+    <!-- SPRD: Bug 592065 change default and only input method for PikeL -->
+    <string name="config_enabled_input_method" translatable="false">com.iflytek.inputmethod/.FlyIME</string>
+    <!-- SPRD: Bug 613720 change default input method for PikeL Reliance -->
+    <string name="config_default_input_method_reliance" translatable="false">com.coooie.ime.t9ime/.T9IME</string>
+    <string name="config_enabled_input_method_reliance" translatable="false">com.coooie.ime.t9ime/.T9IME</string>
+
+    <!--  Default for Settings.Global.SWITCH_FOR_USB_ACTIVE -->
+    <integer name="def_switch_for_usb_active">0</integer>
+
+    <!-- SPRD: Add for fade-in feature @{ -->
+    <integer name="def_fade_in_on">0</integer>
+    <!-- @} -->
+    <!-- SPRD:Default for Settings.Secure.TTS_DEFAULT_SYNT -->
+    <string name="config_default_tts" translatable="false">com.spreadtrum.tts</string>
 </resources>

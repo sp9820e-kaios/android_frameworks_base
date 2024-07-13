@@ -38,6 +38,7 @@ import android.database.DatabaseUtils;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.provider.ContactsContract.RawContacts;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -1490,6 +1491,15 @@ public final class ContactsContract {
                 "as_multi_vcard");
 
         /**
+         * SPRD add for Contacts
+         * @ {
+         */
+         public static final String DISPLAY_ACCOUNT_TYPE = "account_type";
+         public static final String DISPLAY_ACCOUNT_NAME = "account_name";
+        /**
+         * @ }
+         */
+        /**
          * Builds a {@link #CONTENT_LOOKUP_URI} style {@link Uri} describing the
          * requested {@link Contacts} entry.
          *
@@ -2215,6 +2225,22 @@ public final class ContactsContract {
         public static final String CONTACT_ID = "contact_id";
 
         /**
+         * SPRD:Bug474803 Sync Facebook contacts.
+         *
+         * @ {
+         */
+        /**
+         * Flag indicating that this {@link RawContacts} entry and its children have been restricted to specific platform apps.
+         * <P>Type: INTEGER (boolean)</P>
+         *
+         * @hide until finalized in future platform release
+         */
+        public static final String IS_RESTRICTED = "is_restricted";
+        /**
+         * @}
+         */
+
+        /**
          * Persistent unique id for each raw_contact within its account.
          * This id is provided by its own data source, and can be used to backup metadata
          * to the server.
@@ -2280,6 +2306,11 @@ public final class ContactsContract {
          * personal profile entry.
          */
         public static final String RAW_CONTACT_IS_USER_PROFILE = "raw_contact_is_user_profile";
+         /**
+         * SPRD add for cleaning up contacts
+         * @hide
+         */
+        public static final String ACCOUNT_ID = "account_id";
     }
 
     /**
@@ -5885,6 +5916,8 @@ public final class ContactsContract {
             public static final int TYPE_ASSISTANT = 19;
             public static final int TYPE_MMS = 20;
 
+            //SPRD: fixed bug 474812 for cucc case
+            public static final int TYPE_FIXED_NUMBER = 222;
             /**
              * The phone number as the user entered it.
              * <P>Type: TEXT</P>
@@ -5946,6 +5979,8 @@ public final class ContactsContract {
                     case TYPE_WORK_PAGER: return com.android.internal.R.string.phoneTypeWorkPager;
                     case TYPE_ASSISTANT: return com.android.internal.R.string.phoneTypeAssistant;
                     case TYPE_MMS: return com.android.internal.R.string.phoneTypeMms;
+                    //SPRD: fixed bug 474812 for cucc case
+                    case TYPE_FIXED_NUMBER: return com.android.internal.R.string.phoneFixedNumber;
                     default: return com.android.internal.R.string.phoneTypeCustom;
                 }
             }
@@ -7993,6 +8028,15 @@ public final class ContactsContract {
          * on the device.
          */
         public static final int STATUS_EMPTY = 2;
+        /**
+         * The status is set when sync sim contacts.
+         * SPRD add for Contacts
+         * @ {
+         */
+         public static final int STATUS_IMPORTING = 3;
+         /**
+          * @ }
+          */
     }
 
     /**
@@ -8952,4 +8996,42 @@ public final class ContactsContract {
             public static final String EXTRA_DATA_SET = "android.provider.extra.DATA_SET";
         }
     }
+    /**
+     * SPRD add for cleaning up contacts
+     * @hide
+     */
+    public static final class RawContactsMerge {
+        public RawContactsMerge() {
+        }
+
+        public static final String TARGET_RAW_CONTACT_ID = "target_raw_contact_id";
+        public static final String SUBJECT_KEY_PREFIX = "raw_contacts_id_";
+        public static final String SUBJECT_COUNT = "subject_count";
+
+        public static final ArrayList<Long> getRawContctsIdArray(
+                ContentValues values) {
+            Integer count = values.getAsInteger(SUBJECT_COUNT);
+            ArrayList<Long> retArray = new ArrayList<Long>();
+            if (count == null || count <= 0) {
+                return null;
+            }
+
+            String key;
+            Long id;
+            for (int i = 0; i < count; i++) {
+                key = getSubjectKey(i);
+                id = values.getAsLong(key);
+                if (id != null) {
+                    retArray.add(id);
+                }
+            }
+
+            return retArray;
+        }
+
+        public static final String getSubjectKey(int i) {
+            return SUBJECT_KEY_PREFIX + i;
+        }
+    }
+
 }

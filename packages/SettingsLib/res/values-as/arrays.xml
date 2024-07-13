@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string-array name="wifi_status">
+<item></item>
+<item>"স্কেন হৈ আছে\u2026"</item>
+<item>"সংযোগ স্থাপন হৈ আছে\u2026"</item>
+<item>"প্ৰামাণিকীকৰণ হৈ আছে\u2026"</item>
+<item>"IP ঠিকনা গ্ৰহণ কৰি থকা হৈছে\u2026"</item>
+<item>"সংযোগ স্থাপন হৈছে"</item>
+<item>"নিলম্বন কৰা হৈছে"</item>
+<item>"সংযোগ বিচ্ছিন্ন হৈ আছে\u2026"</item>
+<item>"সংযোগ বিচ্ছিন্ন হৈছে"</item>
+<item>"অসফল"</item>
+<item>"অৱৰোধিত"</item>
+<item>"অস্থায়ীভাবে দুৰ্বল সংযোগ পৰিহাৰ কৰিছে"</item>
+</string-array>
+<string-array name="wifi_status_with_ssid">
+<item></item>
+<item>"স্কেন হৈ আছে\u2026"</item>
+<item>"<xliff:g id="network_name">%1$s</xliff:g>\u2026 লৈ সংযোগ স্থাপন কৰক"</item>
+<item>"<xliff:g id="network_name">%1$s</xliff:g>\u2026 ৰ সৈতে প্ৰামাণিকীকৰণ"</item>
+<item>"<xliff:g id="network_name">%1$s</xliff:g>\u2026 ৰ পৰা IP ঠিকনা গ্ৰহণ কৰক"</item>
+<item>"<xliff:g id="network_name">%1$s</xliff:g> লৈ সংযোগ কৰক"</item>
+<item>"নিলম্বন কৰা হৈছে"</item>
+<item>"<xliff:g id="network_name">%1$s</xliff:g>\u2026 ৰ পৰা সংযোগ বিচ্ছিন্ন"</item>
+<item>"সংযোগ বিচ্ছিন্ন হৈছে"</item>
+<item>"অসফল"</item>
+<item>"অৱৰোধিত"</item>
+<item>"অস্থায়ীভাবে দুৰ্বল সংযোগ পৰিহাৰ কৰিছে"</item>
+</string-array>
+</resources>

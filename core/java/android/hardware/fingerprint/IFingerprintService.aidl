@@ -68,4 +68,29 @@ interface IFingerprintService {
 
     // Gets the authenticator ID for fingerprint
     long getAuthenticatorId(String opPackageName);
+
+    // Add by silead begin
+    int setScreenStatus(int screenStatus);
+    int setFPEnableCredential(int index, int enable);
+    int getFPEnableCredential(int index);
+    int getFPVirtualKeyCode();
+    int setFPVirtualKeyCode(int virtualKeyCode);
+    int getFPLongPressVirtualKeyCode();
+    int setFPLongPressVirtualKeyCode(int virtualKeyCode);
+    int getFPDouClickVirtualKeyCode();
+    int setFPDouClickVirtualKeyCode(int virtualKeyCode);
+    int getFPVirtualKeyState();
+    int setFPVirtualKeyState(int virtualKeyState);
+    int getFPWakeUpState();
+    int setFPWakeUpState(int wakeUpState);
+    int getFingerPrintState();
+    int setFingerPrintState(int fingerPrintState);
+    int setFPPowerFuncKeyState(int funcKeyState);
+    int getFPPowerFuncKeyState();
+    int setFPIdleFuncKeyState(int funcKeyState);
+    int getFPIdleFuncKeyState();
+    int setFPWholeFuncKeyState(int funcKeyState);
+    int setFPFunctionKeyState(int index, int enable);
+    int getFPFunctionKeyState(int index);
+    // Add by silead end
 }

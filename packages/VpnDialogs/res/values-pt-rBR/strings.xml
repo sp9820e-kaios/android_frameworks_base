@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="prompt">"Solicitação de ligação"</string>
+<string name="warning">"<xliff:g id="app">%s</xliff:g> quer ajustar uma VPN ligação que permite para monitorizar o trâfico de rede. Apenas aceita se você confia nos recursos. <![CDATA[ <br /> <br /> <img src="vpn_icon" /> ]]> aparece na cima da sua tela quando VPN é ativo."</string>
+<string name="legacy_title">"VPN é ligado"</string>
+<string name="configure">"Configurar"</string>
+<string name="disconnect">"Desconectar"</string>
+<string name="session">"Sessão:"</string>
+<string name="duration">"Duração"</string>
+<string name="data_transmitted">"Enviado:"</string>
+<string name="data_received">"Recebido:"</string>
+<string name="data_value_format">" <xliff:g id="number">%1$s</xliff:g> bytes / <xliff:g id="number">%2$s</xliff:g> pacotes"</string>
+
+</resources>

@@ -440,7 +440,6 @@ public class Linkify {
             if (matchFilter == null || matchFilter.acceptMatch(s, start, end)) {
                 LinkSpec spec = new LinkSpec();
                 String url = makeUrl(m.group(0), schemes, m, transformFilter);
-
                 spec.url = url;
                 spec.start = start;
                 spec.end = end;
@@ -557,6 +556,124 @@ public class Linkify {
             i++;
         }
     }
+    /* SPRD: modify 20151230 Spreadtrum of 517805 To the SMS, cannot identify information content for before and after the url of the characters @{ */
+    public static final boolean addLinksSprd(TextView text, int mask) {
+        if (mask == 0) {
+            return false;
+        }
+
+        CharSequence t = text.getText();
+
+        if (t instanceof Spannable) {
+            if (addLinksSprd((Spannable) t, mask)) {
+                addLinkMovementMethod(text);
+                return true;
+            }
+
+            return false;
+        } else {
+            SpannableString s = SpannableString.valueOf(t);
+
+            if (addLinksSprd(s, mask)) {
+                addLinkMovementMethod(text);
+                text.setText(s);
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+    public static final boolean addLinksSprd(Spannable text, int mask) {
+        if (mask == 0) {
+            return false;
+        }
+
+        URLSpan[] old = text.getSpans(0, text.length(), URLSpan.class);
+
+        for (int i = old.length - 1; i >= 0; i--) {
+            text.removeSpan(old[i]);
+        }
+
+        ArrayList<LinkSpec> links = new ArrayList<LinkSpec>();
+
+        if ((mask & WEB_URLS) != 0) {
+            gatherLinksSprd(links, text, Patterns.WEB_URL_FOR_TEXTVIEW,
+                new String[] { "http://", "https://", "rtsp://" },
+                sUrlMatchFilter, null, mask);
+        }
+
+        if ((mask & EMAIL_ADDRESSES) != 0) {
+            gatherLinksSprd(links, text, Patterns.EMAIL_ADDRESS,
+                new String[] { "mailto:" },
+                null, null, mask);
+        }
+
+        if ((mask & PHONE_NUMBERS) != 0) {
+            gatherTelLinks(links, text);
+        }
+
+        if ((mask & MAP_ADDRESSES) != 0) {
+            gatherMapLinks(links, text);
+        }
+
+        pruneOverlaps(links);
+
+        if (links.size() == 0) {
+            return false;
+        }
+
+        for (LinkSpec link: links) {
+            applyLink(link.url, link.start, link.end, text);
+        }
+
+        return true;
+    }
+
+    private static final void gatherLinksSprd(ArrayList<LinkSpec> links,
+            Spannable s, Pattern pattern, String[] schemes,
+            MatchFilter matchFilter, TransformFilter transformFilter, int mask) {
+        Matcher m = pattern.matcher(s);
+        int len = s.length();
+        int findStart = -1;
+        int findEnd = -1;
+        int realEnd = 0;
+        CharSequence cs;
+
+        while (m.find()) {
+            int start = m.start();
+            int end = m.end();
+
+            if (matchFilter == null || matchFilter.acceptMatch(s, start, end)) {
+                LinkSpec spec = new LinkSpec();
+                String url = makeUrl(m.group(0), schemes, m, transformFilter);
+                StringBuilder urlBuilder = new StringBuilder(url);
+                if ((mask & WEB_URLS) != 0 ) {
+                    if (end < len - 1) {
+                        cs = s.subSequence(end, len);
+                        Matcher matcher= Patterns.FILE_NAME.matcher(cs);
+                        while (matcher.find()) {
+                            findStart = matcher.start();
+                            findEnd = matcher.end();
+                            if (findStart == 0 && findEnd < len) {
+                                realEnd = end + findEnd;
+                                end = realEnd;
+                                urlBuilder.append(s.subSequence(findStart, findEnd).toString());
+                                break;
+                            }
+                        }
+                    }
+                }
+                spec.url = urlBuilder.toString();
+                spec.start = start;
+                spec.end = end;
+
+                links.add(spec);
+            }
+        }
+    }
+    /* @} */
 }
 
 class LinkSpec {

@@ -64,6 +64,13 @@ public class Credentials {
     /** Key prefix for user secret keys. */
     public static final String USER_SECRET_KEY = "USRSKEY_";
 
+    // Broadcom, WAPI
+    /** Key prefix for WAPI AS certificates. */
+    public static final String WAPI_AS_CERTIFICATE = "WAPIAS_";
+    /** Key prefix for WAPI user certificates. */
+    public static final String WAPI_USER_CERTIFICATE = "WAPIUSR_";
+    // Broadcom, WAPI
+
     /** Key prefix for VPN. */
     public static final String VPN = "VPN_";
 
@@ -121,6 +128,13 @@ public class Credentials {
      * Intent extra: data for CA certificate chain in PEM-encoded X.509.
      */
     public static final String EXTRA_CA_CERTIFICATES_DATA = "ca_certificates_data";
+
+    // Broadcom, WAPI
+    public static final String EXTRA_WAPI_USER_CERTIFICATES_NAME = "wapi_user_certificate_name";
+    public static final String EXTRA_WAPI_USER_CERTIFICATES_DATA = "wapi_user_certificate_data";
+    public static final String EXTRA_WAPI_AS_CERTIFICATES_NAME = "wapi_ca_certificates_name";
+    public static final String EXTRA_WAPI_AS_CERTIFICATES_DATA = "wapi_ca_certificates_data";
+    // Broadcom, WAPI
 
     /**
      * Convert objects to a PEM format which is used for

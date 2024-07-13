@@ -39,8 +39,10 @@ public class StackScrollAlgorithm {
 
     private static final String LOG_TAG = "StackScrollAlgorithm";
 
-    private static final int MAX_ITEMS_IN_BOTTOM_STACK = 3;
-    private static final int MAX_ITEMS_IN_TOP_STACK = 3;
+    /* SPRD: Bug 583693 PikeL Feature {@ */
+    private static final int MAX_ITEMS_IN_BOTTOM_STACK = 0;
+    private static final int MAX_ITEMS_IN_TOP_STACK = 0;
+    /* @} */
 
     public static final float DIMMED_SCALE = 0.95f;
 

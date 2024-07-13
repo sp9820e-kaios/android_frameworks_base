@@ -73,4 +73,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Atingeți pentru a afișa detaliile"</string>
     <string name="retry" msgid="7564024179122207376">"Reîncercați"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Aceste fișiere nu au fost copiate: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Fişierul nu poate fi partajat"</string>
+     <string name="documents_deleting">"Ștergere documente"</string>
+     <string name="cannot_copyfolder_itself">"Nu puteți copia folderul în el însuși"</string>
+
+    <string name="error_permissions">"Aplicația nu are permisiunile esențiale necesare pentru a funcționa. Verificați setările pentru permisiuni."</string>
+     <string name="cannot_copy_drm">"Nu se pot copia fișierele DRM"</string>
+     <string name="cannot_copy_downloading">"Nu se pot copia fișierele în curs de descărcare"</string>
 </resources>

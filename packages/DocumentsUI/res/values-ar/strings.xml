@@ -79,4 +79,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"المس لعرض التفاصيل"</string>
     <string name="retry" msgid="7564024179122207376">"إعادة المحاولة"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"لم يتم نسخ هذه الملفات: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"لا يمكن مشاركة الملف"</string>
+     <string name="documents_deleting">"حذف الوثائق"</string>
+     <string name="cannot_copyfolder_itself">"لا يمكنك نسخ المجلد إلى نفسه"</string>
+
+    <string name="error_permissions">"لا يحتاج التطبيق إلى أذونات خطيرة لتشغيله، يرجى التحقق من إعدادات الأذونات."</string>
+     <string name="cannot_copy_drm">"لا يمكنك نسخ ملفات DRM"</string>
+     <string name="cannot_copy_downloading">"لا يمكنك نسخ الملفات المنزلة"</string>
 </resources>

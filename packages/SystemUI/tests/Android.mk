@@ -20,13 +20,13 @@ LOCAL_MODULE_TAGS := tests
 LOCAL_AAPT_FLAGS := --auto-add-overlay --extra-packages com.android.systemui:com.android.keyguard
 LOCAL_SRC_FILES := $(call all-java-files-under, src) \
     $(call all-java-files-under, ../src) \
-    src/com/android/systemui/EventLogTags.logtags
-
+    src/com/android/systemui/EventLogTags.logtags \
+    src/com/sprd/voicetrigger/aidl/IVoiceTriggerUnlock.aidl
 LOCAL_RESOURCE_DIR := $(LOCAL_PATH)/res \
     frameworks/base/packages/SystemUI/res \
     frameworks/base/packages/Keyguard/res
 
-LOCAL_JAVA_LIBRARIES := android.test.runner telephony-common
+LOCAL_JAVA_LIBRARIES := android.test.runner telephony-common ims-common
 
 LOCAL_PACKAGE_NAME := SystemUITests
 

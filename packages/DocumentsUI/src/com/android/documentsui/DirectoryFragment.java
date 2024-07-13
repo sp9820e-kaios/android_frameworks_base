@@ -34,6 +34,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.app.Instrumentation;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -54,6 +55,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.OperationCanceledException;
 import android.os.Parcelable;
+import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.provider.DocumentsContract;
 import android.provider.DocumentsContract.Document;
 import android.text.TextUtils;
@@ -69,6 +72,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.MotionEvent;
 import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AbsListView.RecyclerListener;
@@ -91,6 +95,14 @@ import com.google.android.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.android.documentsui.PlugInDrm.DocumentsUIPlugInDrm;
+import android.provider.Downloads;
+import android.content.ContentUris;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import java.util.concurrent.atomic.AtomicBoolean;
+import android.graphics.BitmapFactory;
+import java.lang.RuntimeException;
 
 /**
  * Display the documents inside a single directory.
@@ -138,6 +150,15 @@ public class DirectoryFragment extends Fragment {
     private final int mLoaderId = 42;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private ProgressDialog mDeletingProgress;
+
+    /*
+     * for documentui_DRM
+     *@{
+     */
+    private static final String DRM_TYPE = "application/vnd.oma.drm.content";
+    /*@}*/
 
     public static void showNormal(FragmentManager fm, RootInfo root, DocumentInfo doc, int anim) {
         show(fm, TYPE_NORMAL, root, doc, null, anim);
@@ -190,7 +211,13 @@ public class DirectoryFragment extends Fragment {
 
     public static DirectoryFragment get(FragmentManager fm) {
         // TODO: deal with multiple directories shown at once
-        return (DirectoryFragment) fm.findFragmentById(R.id.container_directory);
+        DirectoryFragment fragment;
+        try {
+            fragment = (DirectoryFragment) fm.findFragmentById(R.id.container_directory);
+        } catch (ClassCastException e) {
+            fragment = null;
+        }
+        return fragment;
     }
 
     @Override
@@ -221,6 +248,7 @@ public class DirectoryFragment extends Fragment {
         mGridView.setOnItemClickListener(mItemListener);
         mGridView.setMultiChoiceModeListener(mMultiListener);
         mGridView.setRecyclerListener(mRecycleListener);
+        mGridView.setSelector(R.drawable.grid_selector);
 
         return view;
     }
@@ -268,6 +296,8 @@ public class DirectoryFragment extends Fragment {
                 Context.ACTIVITY_SERVICE);
         mSvelteRecents = am.isLowRamDevice() && (mType == TYPE_RECENT_OPEN);
 
+
+
         mCallbacks = new LoaderCallbacks<DirectoryResult>() {
             @Override
             public Loader<DirectoryResult> onCreateLoader(int id, Bundle args) {
@@ -309,6 +339,10 @@ public class DirectoryFragment extends Fragment {
                         public void run() {
                             final Activity activity = getActivity();
                             if (activity != null) {
+                                /* SPRD:516313 update display state even if result is null @{ */
+                                mAdapter.swapResult(null);
+                                updateDisplayState();
+                                /* }@ */
                                 activity.onBackPressed();
                             }
                         }
@@ -328,7 +362,7 @@ public class DirectoryFragment extends Fragment {
                 state.derivedSortOrder = result.sortOrder;
                 ((BaseActivity) context).onStateChanged();
 
-                updateDisplayState();
+                //updateDisplayState();
 
                 // When launched into empty recents, show drawer
                 if (mType == TYPE_RECENT_OPEN && mAdapter.isEmpty() && !state.stackTouched &&
@@ -340,10 +374,10 @@ public class DirectoryFragment extends Fragment {
                 final SparseArray<Parcelable> container = state.dirState.remove(mStateKey);
                 if (container != null && !getArguments().getBoolean(EXTRA_IGNORE_STATE, false)) {
                     getView().restoreHierarchyState(container);
-                } else if (mLastSortOrder != state.derivedSortOrder) {
-                    mListView.smoothScrollToPosition(0);
-                    mGridView.smoothScrollToPosition(0);
                 }
+                Log.d(TAG,"====onLoadFinished updateDisplayState");
+                mLastMode = MODE_UNKNOWN;
+                updateDisplayState();
 
                 mLastSortOrder = state.derivedSortOrder;
             }
@@ -391,6 +425,11 @@ public class DirectoryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        /* SPRD:523279 force load the list when onresume@{ */
+        if(getLoaderManager().getLoader(mLoaderId) != null) {
+            getLoaderManager().getLoader(mLoaderId).forceLoad();
+        }
+        /*@}*/
         updateDisplayState();
     }
 
@@ -471,7 +510,13 @@ public class DirectoryFragment extends Fragment {
         } else {
             throw new IllegalStateException("Unknown state " + state.derivedMode);
         }
-
+        if(((DocumentsActivity) getActivity()).isRootsDrawerOpen()){
+            Log.d("DirectoryFragment", "==== updateDisplayState  drawerview requestFocus");
+            ((DocumentsActivity) getActivity()).rootsDrawerRequestFocus();
+        }else{
+            Log.d("DirectoryFragment","==== updateDisplayState directoryview requestFocus");
+            mCurrentView.requestFocus();
+        }
         mThumbSize = new Point(thumbSize, thumbSize);
     }
 
@@ -501,11 +546,21 @@ public class DirectoryFragment extends Fragment {
         @Override
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
             final State state = getDisplayState(DirectoryFragment.this);
+            /**
+            *Add for barphone support
+            *@{
+            */
+            boolean PRODUCT_BARPHONE = SystemProperties.getBoolean("ro.product.barphone",false);
+            /*@}*/
 
             final MenuItem open = menu.findItem(R.id.menu_open);
             final MenuItem share = menu.findItem(R.id.menu_share);
             final MenuItem delete = menu.findItem(R.id.menu_delete);
             final MenuItem copy = menu.findItem(R.id.menu_copy);
+            /* SPRD: Modify for bug 573938 {@ */
+            final MenuItem select_all = menu.findItem(R.id.menu_select_all);
+            final MenuItem deselect_all = menu.findItem(R.id.menu_deselect_all);
+            /* @} */
 
             final boolean manageOrBrowse = (state.action == ACTION_MANAGE
                     || state.action == ACTION_BROWSE || state.action == ACTION_BROWSE_ALL);
@@ -513,8 +568,29 @@ public class DirectoryFragment extends Fragment {
             open.setVisible(!manageOrBrowse);
             share.setVisible(manageOrBrowse);
             delete.setVisible(manageOrBrowse);
+            /* SPRD: Modify for bug 573938 {@ */
+            int count = mCurrentView.getCount();
+            if(mCurrentView.getCheckedItemCount() == count){
+                deselect_all.setVisible(true);
+                select_all.setVisible(false);
+            }
+            else{
+               deselect_all.setVisible(false);
+               select_all.setVisible(true);
+           }
+            /* @} */
             // Disable copying from the Recents view.
             copy.setVisible(manageOrBrowse && mType != TYPE_RECENT_OPEN);
+
+            /**
+            *Add for barphone support
+            *@{
+            */
+            if (PRODUCT_BARPHONE){
+                share.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                delete.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+            }
+            /*@}*/
 
             return true;
         }
@@ -527,14 +603,28 @@ public class DirectoryFragment extends Fragment {
             for (int i = 0; i < size; i++) {
                 if (checked.valueAt(i)) {
                     final Cursor cursor = mAdapter.getItem(checked.keyAt(i));
-                    final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
-                    docs.add(doc);
+                    if (cursor != null) {
+                        final DocumentInfo doc = DocumentInfo.fromDirectoryCursor(cursor);
+                        docs.add(doc);
+                    }
                 }
             }
-
             final int id = item.getItemId();
             if (id == R.id.menu_open) {
-                BaseActivity.get(DirectoryFragment.this).onDocumentsPicked(docs);
+                /* Fix Bug:499212 Long press and select the folder, Email stops running 2015.11.16 start */
+                List<DocumentInfo> docsForOpen = Lists.newArrayList();
+                for (DocumentInfo doc: docs) {
+                    if (!Document.MIME_TYPE_DIR.equals(doc.mimeType)) {
+                        docsForOpen.add(doc);
+                    }
+                }
+                if (docsForOpen.size() > 0) {
+                    BaseActivity.get(DirectoryFragment.this).onDocumentsPicked(docsForOpen);
+                }
+                else{
+                    Toast.makeText(getActivity(), R.string.toast_no_application, Toast.LENGTH_SHORT).show();
+                }
+                /* Fix Bug:499212 Long press and select the folder, Email stops running 2015.11.16 end */
                 mode.finish();
                 return true;
 
@@ -544,7 +634,7 @@ public class DirectoryFragment extends Fragment {
                 return true;
 
             } else if (id == R.id.menu_delete) {
-                onDeleteDocuments(docs);
+                onDeleteDocuments(docs, item);
                 mode.finish();
                 return true;
 
@@ -560,7 +650,15 @@ public class DirectoryFragment extends Fragment {
                 }
                 updateDisplayState();
                 return true;
-
+            /* SPRD: Modify for bug 573938 {@ */
+            } else if (id == R.id.menu_deselect_all) {
+                int count = mCurrentView.getCount();
+                for (int i = 0; i < count; i++) {
+                    mCurrentView.setItemChecked(i, false);
+                }
+                updateDisplayState();
+                return true;
+            /* @} */
             } else {
                 return false;
             }
@@ -621,7 +719,28 @@ public class DirectoryFragment extends Fragment {
 
         if (docsForSend.size() == 1) {
             final DocumentInfo doc = docsForSend.get(0);
-
+            /*
+             * for documentui_DRM
+             *@{
+             */
+            if (!DocumentsUIPlugInDrm.getInstance().setDocMimeType(doc))
+                return;
+            /*@}*/
+            /*modify for not share when downloading*/
+            Uri uri = null;
+            Log.i(TAG,"action send   doc.authority = "+doc.authority);
+            if (isDownloads(doc.authority)) {
+                Context context = getActivity();
+                if (context == null) {
+                    return;
+                }
+                uri = getFileUri(context, doc.documentId);
+                if(uri != null && uri.equals(Uri.parse("file://not_successful"))){
+                    Log.i(TAG,"action send download not successful");
+                    Toast.makeText(getActivity(), R.string.shared_error, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
             intent = new Intent(Intent.ACTION_SEND);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -636,6 +755,28 @@ public class DirectoryFragment extends Fragment {
             final ArrayList<String> mimeTypes = Lists.newArrayList();
             final ArrayList<Uri> uris = Lists.newArrayList();
             for (DocumentInfo doc : docsForSend) {
+                /*
+                 * for documentui_DRM
+                 *@{
+                 */
+                if (!DocumentsUIPlugInDrm.getInstance().setDocMimeType(doc))
+                    return;
+                /*@}*/
+                /*modify for not share when downloading*/
+                Uri uri = null;
+                Log.i(TAG,"action send   doc.authority = "+doc.authority);
+                if (isDownloads(doc.authority)) {
+                    Context context = getActivity();
+                    if (context == null) {
+                        return;
+                    }
+                    uri = getFileUri(context, doc.documentId);
+                    if(uri != null && uri.equals(Uri.parse("file://not_successful"))){
+                        Log.i(TAG,"action send download not successful");
+                        Toast.makeText(getActivity(), R.string.shared_error, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
                 mimeTypes.add(doc.mimeType);
                 uris.add(doc.derivedUri);
             }
@@ -644,6 +785,8 @@ public class DirectoryFragment extends Fragment {
             intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
 
         } else {
+            /* SPRD:Bug 520217 Share without any hint 2016.01.04 */
+            Toast.makeText(getActivity(), R.string.shared_error, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -651,37 +794,122 @@ public class DirectoryFragment extends Fragment {
         startActivity(intent);
     }
 
-    private void onDeleteDocuments(List<DocumentInfo> docs) {
+    private void onDeleteDocuments(List<DocumentInfo> docs, final MenuItem item) {
         final Context context = getActivity();
         final ContentResolver resolver = context.getContentResolver();
+        final List<DocumentInfo> mDocs = docs;
+        final AtomicBoolean mCancelled = new AtomicBoolean();
 
-        boolean hadTrouble = false;
-        for (DocumentInfo doc : docs) {
-            if (!doc.isDeleteSupported()) {
-                Log.w(TAG, "Skipping " + doc);
-                hadTrouble = true;
-                continue;
+        Log.i(TAG, "onDeleteDocuments");
+        /**
+         * modify for deleting in thread
+         */
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected void onPreExecute() {
+                item.setEnabled(false);
+                if(mDeletingProgress != null && mDeletingProgress.isShowing()) {
+                    mDeletingProgress.dismiss();
+                    mDeletingProgress = null;
+                }
+                mDeletingProgress = new ProgressDialog(context);
+                mDeletingProgress.setCancelable(false);
+                mDeletingProgress.setTitle(R.string.menu_delete);
+                mDeletingProgress.setMessage(context.getResources().getString(R.string.documents_deleting));
+                mDeletingProgress.setButton(DialogInterface.BUTTON_NEGATIVE,
+                        context.getResources().getString(android.R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                mCancelled.set(true);
+                            }
+                        });
+                mDeletingProgress.show();
             }
+            @Override
+            protected Boolean doInBackground(Void... unused) {
+                boolean hadTrouble = false;
+                final ArrayList<String> authorityList = Lists.newArrayList();
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception e) {
+                }
+                for (DocumentInfo doc : mDocs) {
+                    if (mCancelled.get()) {
+                        Log.i(TAG, "onDeleteDocuments cancel");
+                        return hadTrouble;
+                    }
 
-            ContentProviderClient client = null;
-            try {
-                client = DocumentsApplication.acquireUnstableProviderOrThrow(
-                        resolver, doc.derivedUri.getAuthority());
-                DocumentsContract.deleteDocument(client, doc.derivedUri);
-            } catch (Exception e) {
-                Log.w(TAG, "Failed to delete " + doc);
-                hadTrouble = true;
-            } finally {
-                ContentProviderClient.releaseQuietly(client);
+                    if (!doc.isDeleteSupported()) {
+                        Log.w(TAG, "Skipping " + doc);
+                        hadTrouble = true;
+                        continue;
+                    }
+
+                    ContentProviderClient client = null;
+                    try {
+                        /**
+                         * add for notifying mediaprovider after file delelted
+                         */
+                        String authority = doc.derivedUri.getAuthority();
+                        if (!authorityList.contains(authority)) {
+                            authorityList.add(authority);
+                        }
+                        client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                                resolver, authority);
+                        DocumentsContract.deleteDocument(client, doc.derivedUri);
+                    } catch (Exception e) {
+                        Log.w(TAG, "Failed to delete " + doc);
+                        hadTrouble = true;
+                    } finally {
+                        ContentProviderClient.releaseQuietly(client);
+                    }
+                }
+
+                /**
+                 * add for notifying mediaprovider after file delelted
+                 */
+                for (String authority : authorityList) {
+                    Log.i(TAG, "onDeleteDocuments,authority " + authority);
+                    ContentProviderClient client = null;
+                    try {
+                        client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                                resolver, authority);
+                        DocumentsContract.deleteDocumentsDone(client);
+                    } catch (Exception e) {
+                        Log.i(TAG, "deleteDocumentsDone" + e);
+                    } finally {
+                        ContentProviderClient.releaseQuietly(client);
+                    }
+                }
+                return hadTrouble;
             }
-        }
+            @Override
+            protected void onPostExecute(Boolean hadTrouble){
+                if(mDeletingProgress != null && mDeletingProgress.isShowing()) {
+                    mDeletingProgress.dismiss();
+                    mDeletingProgress = null;
+                }                
+                if (hadTrouble) {
+                    Toast.makeText(context, R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
+                }
+                item.setEnabled(true);
+            }
+        }.execute();
+    }
 
-        if (hadTrouble) {
-            Toast.makeText(context, R.string.toast_failed_delete, Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public void onDestroy() {
+        if(mDeletingProgress != null && mDeletingProgress.isShowing()) {
+            mDeletingProgress.dismiss();
+            mDeletingProgress = null;
+        }        
+        super.onDestroy();
     }
 
     private void onCopyDocuments(List<DocumentInfo> docs) {
+        /*
+         * for documentui_DRM
+         * original code
         getDisplayState(this).selectedDocumentsForCopy = docs;
 
         // Pop up a dialog to pick a destination.  This is inadequate but works for now.
@@ -692,14 +920,100 @@ public class DirectoryFragment extends Fragment {
                 getActivity(),
                 DocumentsActivity.class);
         boolean directoryCopy = false;
+        ArrayList<String> copyUris = new ArrayList<String>();
         for (DocumentInfo info : docs) {
             if (Document.MIME_TYPE_DIR.equals(info.mimeType)) {
                 directoryCopy = true;
-                break;
+                copyUris.add(info.derivedUri.toString());
+                continue;
             }
         }
         intent.putExtra(BaseActivity.DocumentsIntent.EXTRA_DIRECTORY_COPY, directoryCopy);
+        intent.putStringArrayListExtra(BaseActivity.DocumentsIntent.EXTRA_DIRECTORY_COPY_URIS,copyUris);
         startActivityForResult(intent, REQUEST_COPY_DESTINATION);
+         *@{
+         */
+        final Fragment fragment = DirectoryFragment.this;
+        final List<DocumentInfo> mDocs = docs;
+        final int RESULT_OK = 1;
+        final int RESULT_DRM = 2;
+        final int RESULT_DOWNLOADING = 3;
+        final int RESULT_FAILED = 4;
+
+        new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... unused) {
+                if (DocumentsUIPlugInDrm.getInstance().isDrmEnabled()){
+                    for (DocumentInfo doc : mDocs) {
+                        Context context = getActivity();
+                        if(context == null) {
+                            return RESULT_FAILED;
+                        }
+                        /* SPRD:509343  if have a downloading file @{ */
+                        Uri uri = null;
+                        boolean isDrm = false;
+                        Log.i(TAG,"onCopyDocuments,   doc.authority = "+doc.authority);
+                        if (isDownloads(doc.authority)) {
+                            uri = getFileUri(context, doc.documentId);
+                            if(uri != null && uri.equals(Uri.parse("file://not_successful"))){
+                                Log.i(TAG,"onCopyDocuments, have downloading file");
+                                return RESULT_DOWNLOADING;
+                            }
+                        }
+                        /* }@ */
+
+                        /* SPRD:519935 catch exception if Drm operate fail@{ */
+                        try {
+                            String drmPath = DocumentsUIPlugInDrm.getInstance().getDrmPath(context,doc.derivedUri);
+                            isDrm = DocumentsUIPlugInDrm.getInstance().getIsDrm(context,drmPath);
+                            Log.d(TAG, "onCopyDocuments, drmPath = " + drmPath + ", isDrm = " + isDrm);
+                        } catch (Exception e) {
+                            Log.w(TAG, "Failed to check if Drm file: " + doc.derivedUri + ": " + e);
+                        } finally {
+                            if (isDrm) {
+                                return RESULT_DRM;
+                            }
+                        }
+                        /* }@ */
+                    }
+                }
+                return RESULT_OK;
+            }
+            @Override
+            protected void onPostExecute(Integer result){
+                if (result.intValue() == RESULT_DRM) {
+                    Toast.makeText(getActivity(), R.string.cannot_copy_drm, Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (result.intValue() == RESULT_DOWNLOADING) {
+                    Toast.makeText(getActivity(), R.string.cannot_copy_downloading, Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (result.intValue() == RESULT_FAILED) {
+                    return;
+                }
+                getDisplayState(fragment).selectedDocumentsForCopy = mDocs;
+
+                // Pop up a dialog to pick a destination.  This is inadequate but works for now.
+                // TODO: Implement a picker that is to spec.
+                final Intent intent = new Intent(
+                        BaseActivity.DocumentsIntent.ACTION_OPEN_COPY_DESTINATION,
+                        Uri.EMPTY,
+                        getActivity(),
+                        DocumentsActivity.class);
+                boolean directoryCopy = false;
+                ArrayList<String> copyUris = new ArrayList<String>();
+                for (DocumentInfo info : mDocs) {
+                    if (Document.MIME_TYPE_DIR.equals(info.mimeType)) {
+                        directoryCopy = true;
+                        copyUris.add(info.derivedUri.toString());
+                        continue;
+                    }
+                }
+                intent.putExtra(BaseActivity.DocumentsIntent.EXTRA_DIRECTORY_COPY, directoryCopy);
+                intent.putStringArrayListExtra(BaseActivity.DocumentsIntent.EXTRA_DIRECTORY_COPY_URIS,copyUris);
+                startActivityForResult(intent, REQUEST_COPY_DESTINATION);
+            }
+        }.execute();
+        /*@}*/
     }
 
     private static State getDisplayState(Fragment fragment) {
@@ -791,7 +1105,12 @@ public class DirectoryFragment extends Fragment {
 
             mFooters.clear();
 
-            final Bundle extras = mCursor != null ? mCursor.getExtras() : null;
+            Bundle extras = null;
+            try{
+                extras = mCursor != null ? mCursor.getExtras() : null;
+            }catch(RuntimeException e){
+                extras = null;
+            }
             if (extras != null) {
                 final String info = extras.getString(DocumentsContract.EXTRA_INFO);
                 if (info != null) {
@@ -890,15 +1209,27 @@ public class DirectoryFragment extends Fragment {
             iconThumb.animate().cancel();
 
             final boolean supportsThumbnail = (docFlags & Document.FLAG_SUPPORTS_THUMBNAIL) != 0;
+            /*
+             * for documentui_DRM
+             * original code
             final boolean allowThumbnail = (state.derivedMode == MODE_GRID)
-                    || MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, docMimeType);
+                    || MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, docMimeType));
+             *@{
+             */
+            final boolean allowThumbnail = (state.derivedMode == MODE_GRID)
+                    || MimePredicate.mimeMatches(MimePredicate.VISUAL_MIMES, docMimeType)
+                    || (docMimeType != null && docMimeType.equals(DRM_TYPE));
+            /*@}*/
             final boolean showThumbnail = supportsThumbnail && allowThumbnail && !mSvelteRecents;
-
             final boolean enabled = isDocumentEnabled(docMimeType, docFlags);
             final float iconAlpha = (state.derivedMode == MODE_LIST && !enabled) ? 0.5f : 1f;
+            boolean isDrmAudio = false;
+            if (docDisplayName != null && docMimeType != null) {
+                isDrmAudio = docDisplayName.endsWith(".dcf") && docMimeType.startsWith("audio/");
+            }
 
             boolean cacheHit = false;
-            if (showThumbnail) {
+            if (showThumbnail || isDrmAudio) {
                 final Uri uri = DocumentsContract.buildDocumentUri(docAuthority, docId);
                 final Bitmap cachedResult = thumbs.get(uri);
                 if (cachedResult != null) {
@@ -1047,7 +1378,7 @@ public class DirectoryFragment extends Fragment {
 
         @Override
         public Cursor getItem(int position) {
-            if (position < mCursorCount) {
+            if ((position < mCursorCount) && (mCursor != null) && (!mCursor.isClosed())) {
                 mCursor.moveToPosition(position);
                 return mCursor;
             } else {
@@ -1084,6 +1415,14 @@ public class DirectoryFragment extends Fragment {
         private final Point mThumbSize;
         private final float mTargetAlpha;
         private final CancellationSignal mSignal;
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        private Context mContext;
+        private String mDrmPath;
+        private boolean mIsDrm;
+        /*@}*/
 
         public ThumbnailAsyncTask(Uri uri, ImageView iconMime, ImageView iconThumb, Point thumbSize,
                 float targetAlpha) {
@@ -1093,6 +1432,7 @@ public class DirectoryFragment extends Fragment {
             mThumbSize = thumbSize;
             mTargetAlpha = targetAlpha;
             mSignal = new CancellationSignal();
+            mContext = mIconThumb.getContext();
         }
 
         @Override
@@ -1111,10 +1451,26 @@ public class DirectoryFragment extends Fragment {
             ContentProviderClient client = null;
             Bitmap result = null;
             try {
+                /*
+                 * for documentui_DRM
+                 * original code
                 client = DocumentsApplication.acquireUnstableProviderOrThrow(
                         resolver, mUri.getAuthority());
                 result = DocumentsContract.getDocumentThumbnail(client, mUri, mThumbSize, mSignal);
-                if (result != null) {
+                 *@{
+                 */
+                mDrmPath = DocumentsUIPlugInDrm.getInstance().getDrmPath(context,mUri);
+                mIsDrm = DocumentsUIPlugInDrm.getInstance().getIsDrm(context,mDrmPath);
+                Log.d(TAG, "ThumbnailAsyncTask, mDrmPath = " + mDrmPath + ", mIsDrm = " + mIsDrm);
+                if (!mIsDrm){
+                    client = DocumentsApplication.acquireUnstableProviderOrThrow(
+                        resolver, mUri.getAuthority());
+                    result = DocumentsContract.getDocumentThumbnail(client, mUri, mThumbSize, mSignal);
+                } else {
+                    result = DocumentsUIPlugInDrm.getInstance().getIconBitmap(context, DRM_TYPE, mDrmPath);
+                }
+                /*@}*/
+                if (result != null && !mIsDrm) {
                     final ThumbnailCache thumbs = DocumentsApplication.getThumbnailsCache(
                             context, mThumbSize);
                     thumbs.put(mUri, result);
@@ -1214,6 +1570,92 @@ public class DirectoryFragment extends Fragment {
             return false;
         }
 
+        /*
+         * for documentui_DRM
+         *@{
+         */
+        if (docMimeType != null && docMimeType.equals(DRM_TYPE)) {
+            return true;
+        }
+        /*@}*/
+
         return MimePredicate.mimeMatches(state.acceptMimes, docMimeType);
     }
+
+    /*modify for not share when downloading*/
+    private Uri getFileUri(Context context, String downloadId){
+        Uri fileUri = null;
+        Cursor c = null;
+        try {
+            c = context.getContentResolver().query(
+                ContentUris.withAppendedId(Downloads.Impl.ALL_DOWNLOADS_CONTENT_URI, Integer.parseInt(downloadId)),
+                new String[] {Downloads.Impl._DATA, Downloads.Impl.COLUMN_STATUS},
+                null, null, null);
+            if((c != null) && (c.getCount() > 0)) {
+                if (c.moveToFirst()) {
+                    int status = c.getInt(1);
+                    String file_uri = c.getString(0);
+                    if(!isStatusSuccess(status)){
+                        //if status is not successful, return "file://not_successful"
+                        fileUri = Uri.parse("file://not_successful");
+                    }else if(file_uri != null){
+                        fileUri = Uri.parse("file://" + file_uri);
+                    }else{
+                        fileUri = null;
+                    }
+                }
+            }
+        }finally {
+            if (c != null) {
+                c.close();
+                c = null;
+            }
+        }
+        return fileUri;
+    }
+
+    //check whether the doc is download item
+    private boolean isDownloads(String authority) {
+        return "com.android.providers.downloads.documents".equals(authority);
+    }
+
+    //check whether the download is successful, which is 200
+    private boolean isStatusSuccess(int status) {
+        return (status >= 200 && status < 300);
+    }
+
+    /**
+    *Add for barphone support
+    *@{
+    */
+    private void simulateOverFlowClick( float x, float y) {
+        Instrumentation mInst = new Instrumentation();
+        mInst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0));
+        mInst.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, x, y, 0));
+    }
+
+    //@Override
+    public boolean onMenuKeyUp(){
+        if (mCurrentView.getCheckedItemCount() >0){
+
+            Thread t = new Thread(new Runnable(){
+                @Override
+                public void run(){
+                    final int overflow_pos_x;
+                    final int overflow_pos_y;
+                    overflow_pos_x = getResources().getDimensionPixelSize(R.dimen.overflow_pos_x);
+                    overflow_pos_y = getResources().getDimensionPixelSize(R.dimen.overflow_pos_y);
+                    simulateOverFlowClick(overflow_pos_x,overflow_pos_y);
+                    }
+            });
+            t.start();
+
+            return true;
+        }
+        return false;
+    }
+    /*@}*/
+
 }

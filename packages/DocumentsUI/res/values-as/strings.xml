@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"তথ্যপাতি"</string>
+<string name="title_open">"ৰ পৰা খোলা"</string>
+<string name="title_save">"লৈ সংৰক্ষণ কৰা"</string>
+<string name="menu_create_dir">"ফোল্ডাৰ সৃষ্টি কৰা"</string>
+<string name="menu_grid">"গ্ৰিড "</string>
+<string name="menu_list">"তালিকা"</string>
+<string name="menu_sort">"বিভাগ অনুযায়ী"</string>
+<string name="menu_search">"বিচাৰ"</string>
+<string name="menu_settings">"ছেটিংছ"</string>
+<string name="menu_open">"খোলা"</string>
+<string name="menu_save">"সংৰক্ষণ কৰা "</string>
+<string name="menu_share">"বিনিময়"</string>
+<string name="menu_delete">"মচি দিয়া"</string>
+<string name="menu_select_all">"আটাইবোৰ নিৰ্ধাৰণ কৰক"</string>
+<string name="menu_copy">"ইয়ালৈ প্ৰতিলিপি কৰক\u2026"</string>
+<string name="menu_advanced_show" product="nosdcard">"আভ্যন্তৰীন ষ্টোৰেজ প্ৰদৰ্শন কৰক"</string>
+<string name="menu_advanced_show" product="default">"SD কাৰ্ড প্ৰদৰ্শন কৰক"</string>
+<string name="menu_advanced_hide" product="nosdcard">"আভ্যন্তৰীন ষ্টোৰেজ লুকুৱাই ৰাখক"</string>
+<string name="menu_advanced_hide" product="default">"SD কাৰ্ড লুকুৱাই ৰাখক"</string>
+<string name="menu_file_size_show">"ফাইলৰ আকাৰ প্ৰদৰ্শন কৰক"</string>
+<string name="menu_file_size_hide">"ফাইলৰ আকাৰ লুকুৱাই ৰাখক"</string>
+<string name="button_select">"নিৰ্বাচন কৰক।"</string>
+<string name="button_copy">"কপি"</string>
+<string name="sort_name">"নামেৰে"</string>
+<string name="sort_date">"সৃষ্টি কৰা তাৰিখ অনুযায়ী"</string>
+<string name="sort_size">"আকাৰ অনুযায়ী"</string>
+<string name="drawer_open">"ৰুটসমূহ প্ৰদৰ্শন কৰক"</string>
+<string name="drawer_close">"ৰুটসমূহ লুকুৱাই ৰাখক"</string>
+<string name="save_error">"তথ্যসমূহ সংৰক্ষণ কৰাত ব্যৰ্থ"</string>
+<string name="create_error">"ফোল্ডাৰ সৃষ্টিত ব্যৰ্থ"</string>
+<string name="query_error">"তথ্য বিচৰাত ব্যৰ্থ"</string>
+<string name="root_recent">"শেহতীয়া"</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g> ফ্ৰী"</string>
+<string name="root_type_service">"ষ্টোৰেজ সেৱাসমূহ"</string>
+<string name="root_type_shortcut">"শ্বৰ্টকাটসমূহ"</string>
+<string name="root_type_device">"ডিভাইচসমূহ"</string>
+<string name="root_type_apps">"অধিক এপ্প"</string>
+<string name="empty">"কোনো বস্তু নাই"</string>
+<string name="toast_no_application">"ফাইল খুলিব নোৱাৰি"</string>
+<string name="toast_failed_delete">"কিছুমান নথিপত্ৰ মচি পেলাবলৈ অক্ষম"</string>
+<string name="share_via">"জৰিয়তে শ্বেয়াৰ কৰক"</string>
+<string name="copy_notification_title">"ফাইলসমূহ প্ৰতিলিপি কৰি আছে"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> বাকী আছে"</string>
+<string name="copy_preparing">"প্ৰতিলিপি কৰিবলৈ প্ৰস্তুত কৰি আছে\u2026"</string>
+<string name="notification_touch_for_details">"বিশদ-বিৱৰণ দৰ্শন কৰিবলৈ স্পৰ্শ কৰক"</string>
+<string name="retry">"পুনৰাই চেষ্টা কৰক"</string>
+<string name="copy_failure_alert_content">"এই ফাইলবোৰ প্ৰতিলিপি হোৱা নাই: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"ফাইল ভাগ বতৰা কৰিব নোৱাৰি"</string>
+<string name="documents_deleting">"নথিপত্ৰ বিলোপ কৰি আছে"</string>
+<string name="cannot_copyfolder_itself">"আপুনি ফল্ডাৰ ইয়াৰ ভিতৰত প্ৰতিলিপি কৰিব নোৱাৰে"</string>
+    <string name="error_permissions">"এপ্পটোৰ চলাবলৈ আৱশ্যকীয় জটিল অনুমতি নাই। অনুগ্ৰহ কৰি আপোনাৰ অনুমতি ছেটিংছ পৰীক্ষা কৰক।"</string>
+     <string name="cannot_copy_drm">"DRM ফাইল কপি কৰা না যায়"</string>
+     <string name="cannot_copy_downloading">"ডাউনলোডিং ফাইল কপি কৰা না যায়"</string>
+<string name="menu_deselect_all">"আটাইবোৰ নিৰ্বাচন নাকচ"</string>
+<plurals name="copy_begin">
+<item quantity="one">"কপিং <xliff:g id="count" example="1">%1$d</xliff:g> ফাইল।"</item>
+<item quantity="other">"কপিং <xliff:g id="count" example="3">%1$d</xliff:g> ফাইল।"</item>
+</plurals>
+<plurals name="copy_error_notification_title">
+<item quantity="one">"কপি নহয় <xliff:g id="count" example="1">%1$d</xliff:g> ফাইল।"</item>
+<item quantity="other">"কপি নহয় <xliff:g id="count" example="2">%1$d</xliff:g> ফাইল।"</item>
+</plurals>
+</resources>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- SPRD: Add for dealing with SS notification @{ -->
+    <string name="ActiveUnconCf">"无条件呼叫转移启动"</string>
+    <string name="ActiveConCf">"有条件呼叫转移启动"</string>
+    <string name="IncomingCallForwarded">"另一通来电被转接"</string>
+    <string name="CallForwarded">"呼叫转接"</string>
+    <string name="ForwardedCall">"转移呼叫"</string>
+    <string name="CallWaiting">"呼叫等待中"</string>
+    <string name="OutCallBarred">"禁止呼出"</string>
+    <string name="InCallBarred">"禁止呼入"</string>
+    <string name="CallHold">"呼叫被保持"</string>
+    <string name="CallRetrieved">"呼叫被激活"</string>
+    <!-- SPRD: @} -->
+    <!-- SPRD: modify for bug479433 @{ -->
+    <string-array name="videophone_fallback_menu">
+        <item>@string/videophone_fallback_menu_videocall</item>
+        <item>@string/videophone_fallback_menu_voicecall</item>
+        <item>@string/videophone_fallback_menu_cancel</item>
+    </string-array>
+
+    <string name="videophone_fallback_title">可视电话回落</string>
+    <string name="videophone_never_fallback">对方请求语音回拨，自动放弃</string>
+    <string name="videophone_always_fallback">对方请求语音回拨，自动回拨</string>
+    <string name="videophone_notin3g_never_fallback">当前网络不支持视频呼叫，自动放弃</string>
+    <string name="videophone_notin3g_always_fallback">当前网络不支持视频呼叫，自动回拨</string>
+    <string name="videophone_fallback_menu_videocall">可视电话</string>
+    <string name="videophone_fallback_menu_voicecall">语音电话</string>
+    <string name="videophone_fallback_menu_cancel">取消呼叫</string>
+    <string name="videophone_fallback_question">您要进行什么操作?</string>
+    <string name="videophone_failcause_1000">上一通可视电话没有正常结束，请稍后再试</string>
+    <string name="videophone_failcause_1">您所拨打的号码是空号</string>
+    <string name="videophone_failcause_3">对方无法接通</string>
+    <string name="videophone_failcause_8">呼叫禁止</string>
+    <string name="videophone_failcause_17">对方用户忙</string>
+    <string name="videophone_failcause_19">对方无应答</string>
+    <string name="videophone_failcause_27">对方与网络通信异常</string>
+    <string name="videophone_failcause_34">连接已断开</string>
+    <string name="videophone_failcause_63_modify">可视电话无法建立</string>
+    <string name="videophone_failcause_79">对方不支持可视电话</string>
+    <string name="videophone_failcause_default">对方无法接通</string>
+    <string name="videophone_failcause_47">对不起，不能发起可视电话</string>
+    <string name="videophone_failcause_50">暂不支持可视电话</string>
+    <string name="videophone_failcause_57_remote">对方未开通可视电话</string>
+    <string name="videophone_failcause_58">对方暂不支持可视电话</string>
+    <string name="videophone_failcause_157">本机未开通可视电话服务</string>
+    <string name="videophone_failcause_88">被叫选择语音呼叫</string>
+    <string name="videophone_failcause_minus_1">无法获得3G网络</string>
+    <string name="net_connection_disconnect">网络连接已断开</string>
+    <string name="no_vt_service">"无法进行可视电话"</string>
+    <string name="remote_request_change">"远程媒体请求改变"</string>
+    <string name="choose_accept_reject">"请选择接受或拒绝"</string>
+    <string name="remote_request_change_accept">"接受"</string>
+    <string name="remote_request_change_reject">"拒绝"</string>
+    <string name="reject_remote_audio_to_video">"对端拒绝远程媒体请求改变"</string>
+    <string name="accept_remote_audio_to_video">"对端接受远程媒体请求改变"</string>
+    <string name="video_fall_to_audio_automatic">"视频回落到语音"</string>
+    <!-- @} -->
+    <!-- SPRD: add pin2/puk2 string @{-->
+    <string name="Pin2Mmi">"PIN2 码更改"</string>
+    <string name="PukMmi">"解锁PIN码"</string>
+    <string name="Puk2Mmi">"解锁PIN2码"</string>
+    <string name="badPin2">"您输入的旧 PIN2 不正确。"</string>
+    <string name="badPuk2">"您输入的 PUK2 码不正确。"</string>
+    <string name="mismatchPin2">"您输入的 PIN2 码不一致。"</string>
+    <string name="mismatchPuk">"您输入的 PUK 码不一致。"</string>
+    <string name="mismatchPuk2">"您输入的 PUK2 码不一致。"</string>
+    <!-- @}-->
+    <!-- SPRD: modify for bug 514467 @{ -->
+    <string name="puklengthlimit">"请输入八位数的PUK码。"</string>
+    <!-- @} -->
+    <!-- SPRD: add for bug569865 -->
+    <string name="data_unavailable">"当前数据服务不可用，请检查数据开关和漫游开关。"</string>
+</resources>

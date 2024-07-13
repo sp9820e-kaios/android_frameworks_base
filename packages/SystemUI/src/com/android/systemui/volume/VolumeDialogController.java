@@ -78,6 +78,8 @@ public class VolumeDialogController {
         AudioSystem.STREAM_SYSTEM_ENFORCED,
         AudioSystem.STREAM_TTS,
         AudioSystem.STREAM_VOICE_CALL,
+        //SPRD 492835
+        AudioSystem.STREAM_FM,
     };
 
     private final HandlerThread mWorkerThread;
@@ -378,6 +380,8 @@ public class VolumeDialogController {
             case AudioSystem.STREAM_RING:
             case AudioSystem.STREAM_SYSTEM:
             case AudioSystem.STREAM_VOICE_CALL:
+            //SPRD 492835
+            case AudioSystem.STREAM_FM:
                 return true;
         }
         return false;

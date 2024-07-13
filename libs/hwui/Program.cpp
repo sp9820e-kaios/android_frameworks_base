@@ -22,6 +22,11 @@
 #include "Program.h"
 #include "Vertex.h"
 
+#ifdef USE_OFFLINE_COMPILER_SHADER
+#define PROGRAM_BINARY_MAX_SIZE (16*1024)
+#define PROGRAM_BINARY_FORMAT 36705
+#endif
+
 namespace android {
 namespace uirenderer {
 
@@ -29,12 +34,128 @@ namespace uirenderer {
 // Base program
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef USE_OFFLINE_COMPILER_SHADER
+static void SaveProgramBinary(GLuint programId, programid key, char* FileName, void *programBinary)
+{
+    GLsizei length = 0;
+    GLenum binaryFormat = 0;
+    FILE *fp = fopen(FileName, "wb+");
+
+    if (NULL != fp)
+    {
+        glGetProgramBinaryOES(programId, PROGRAM_BINARY_MAX_SIZE, &length, &binaryFormat, programBinary);
+        if (length > 0 && length < PROGRAM_BINARY_MAX_SIZE && binaryFormat == PROGRAM_BINARY_FORMAT)
+        {
+            fwrite(programBinary, length, 1, fp);
+            //ALOGD("james save %s programId=%d, length=%d, binaryFormat=%d, key=%" PRIx64 "", FileName, programId, length, binaryFormat, key);
+        }
+        else
+        {
+            ALOGE("SaveProgramBinary failed %s, size=%d, binaryFormat=%d", FileName, length, binaryFormat);
+        }
+        fclose(fp);
+    }
+    else
+    {
+        ALOGE("SaveProgramBinary failed %s", FileName);
+    }
+}
+#endif
+
 Program::Program(const ProgramDescription& description, const char* vertex, const char* fragment) {
     mInitialized = false;
     mHasColorUniform = false;
     mHasSampler = false;
     mUse = false;
 
+#ifdef USE_OFFLINE_COMPILER_SHADER
+    bool pbRet = false;
+    programid key = description.key();
+    char FileName[512] = {0};
+    char cmdline[512] = {0};
+    void *programBinary = malloc(PROGRAM_BINARY_MAX_SIZE);
+    FILE *cmdline_file = fopen("/proc/self/cmdline", "r");
+    GLsizei length;
+    GLint status;
+
+    // glProgramBinaryOES need program id
+    mProgramId = glCreateProgram();
+
+    if (NULL != cmdline_file)
+    {
+        size_t size = fread(cmdline, 1, 512, cmdline_file);
+        fclose(cmdline_file);
+
+        sprintf(FileName, "/data/data/%s/PB_%x_%" PRIx64 "", cmdline, PROGRAM_BINARY_FORMAT, key);
+        FILE *fp = fopen(FileName, "rb+");
+        if (NULL != fp)
+        {
+            length = fread(programBinary, 1, PROGRAM_BINARY_MAX_SIZE, fp);
+            if (length > 0 && length < PROGRAM_BINARY_MAX_SIZE)
+            {
+                glProgramBinaryOES(mProgramId, PROGRAM_BINARY_FORMAT, programBinary, length);
+                glGetProgramiv(mProgramId, GL_LINK_STATUS, &status);
+                if (status == GL_TRUE)
+                {
+                        pbRet = true;
+                }
+                else
+                {
+                    ALOGE("glProgramBinaryOES failed %s, size=%d", FileName, length);
+                }
+            }
+            else
+            {
+                ALOGE("open failed %s, size=%d", FileName, length);
+            }
+            fclose(fp);
+        }
+    }
+
+    // No need to cache compiled shaders, rely instead on Android's
+    // persistent shaders cache
+    if (!pbRet)
+    {
+        mVertexShader = buildShader(vertex, GL_VERTEX_SHADER);
+        mFragmentShader = buildShader(fragment, GL_FRAGMENT_SHADER);
+        glAttachShader(mProgramId, mVertexShader);
+        glAttachShader(mProgramId, mFragmentShader);
+    }
+
+    bindAttrib("position", kBindingPosition);
+    if (description.hasTexture || description.hasExternalTexture) {
+        texCoords = bindAttrib("texCoords", kBindingTexCoords);
+    } else {
+        texCoords = -1;
+    }
+
+    if (!pbRet)
+    {
+        ATRACE_BEGIN("linkProgram");
+        glLinkProgram(mProgramId);
+        ATRACE_END();
+    }
+
+    glGetProgramiv(mProgramId, GL_LINK_STATUS, &status);
+    if (status != GL_TRUE) {
+        GLint infoLen = 0;
+        glGetProgramiv(mProgramId, GL_INFO_LOG_LENGTH, &infoLen);
+        if (infoLen > 1) {
+            GLchar log[infoLen];
+            glGetProgramInfoLog(mProgramId, infoLen, nullptr, &log[0]);
+            ALOGE("%s", log);
+        }
+        LOG_ALWAYS_FATAL("Error while linking shaders");
+    } else {
+        mInitialized = true;
+        if (!pbRet)
+        {
+            SaveProgramBinary(mProgramId, key, FileName, programBinary);
+        }
+    }
+
+    free(programBinary);
+#else
     // No need to cache compiled shaders, rely instead on Android's
     // persistent shaders cache
     mVertexShader = buildShader(vertex, GL_VERTEX_SHADER);
@@ -75,6 +196,7 @@ Program::Program(const ProgramDescription& description, const char* vertex, cons
             glDeleteShader(mVertexShader);
         }
     }
+#endif
 
     if (mInitialized) {
         transform = addUniform("transform");

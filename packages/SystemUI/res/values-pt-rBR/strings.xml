@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Parabéns! O sintonizador System UI foi adicionado às configurações"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Remover das configurações"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Remover sintonizador System UI das configurações e parar de usar todos os seus recursos?"</string>
+    <string name="quick_settings_volume_label">"Perfil de Audio"</string>
+     <string name="assistant_key_home">"Página Principal"</string>
+     <string name="assistant_key_search">"Pesquisar"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Voltar"</string>
+
+    <string name="vibrate_hint">"Deslize para a esquerda para Vibrar"</string>
+     <string name="battery_overtage_title">"Aviso de segurança"</string>
+     <string name="battery_overtage_content">"Voltagem de carregamento demasiado alta!"</string>
+     <string name="battery_overtage_back">"Voltar"</string>
 </resources>

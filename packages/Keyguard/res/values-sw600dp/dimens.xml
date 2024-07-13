@@ -27,7 +27,7 @@
 
     <!-- Overload default clock widget parameters -->
     <dimen name="widget_big_font_size">125dp</dimen>
-    <dimen name="widget_label_font_size">16sp</dimen>
+    <dimen name="widget_label_font_size">25px</dimen>
     <dimen name="bottom_text_spacing_digital">-16dp</dimen>
 
     <!-- EmergencyCarrierArea overlap - amount to overlap the emergency button and carrier text.

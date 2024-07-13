@@ -16,6 +16,7 @@
 
 package com.android.internal.view.menu;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Parcelable;
@@ -197,7 +198,19 @@ public class MenuPopupHelper implements AdapterView.OnItemClickListener, View.On
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         MenuAdapter adapter = mAdapter;
-        adapter.mAdapterMenu.performItemAction(adapter.getItem(position), 0);
+        /* 2015.12.09 SPRD: Bug 509729 - For monkey test IndexOutOfBoundsException. @{ */
+        if (ActivityManager.isUserAMonkey()) {
+            try {
+                adapter.mAdapterMenu.performItemAction(adapter.getItem(position), 0);
+            } catch (IndexOutOfBoundsException e) {
+                Throwable tr = new Throwable();
+                tr.fillInStackTrace();
+                android.util.Log.d("MenuPopuHelper","Monkey Test Promblem show trace",tr);
+            }
+        } else {
+            adapter.mAdapterMenu.performItemAction(adapter.getItem(position), 0);
+        }
+        /* @} */
     }
 
     @Override

@@ -77,6 +77,8 @@ public class ScreenPinningRequest implements View.OnClickListener {
         // show the confirmation
         WindowManager.LayoutParams lp = getWindowLayoutParams();
         mWindowManager.addView(mRequestWindow, lp);
+
+        startPinning();
     }
 
     public void onConfigurationChanged() {
@@ -105,11 +107,25 @@ public class ScreenPinningRequest implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.screen_pinning_ok_button || mRequestWindow == v) {
-            try {
-                ActivityManagerNative.getDefault().startLockTaskModeOnCurrent();
-            } catch (RemoteException e) {}
+            // Ignore
+            // startPinning();
+        }
+        if (v.getId() == R.id.screen_pinning_cancel_button) {
+            stopPinning();
         }
         clearPrompt();
+    }
+
+    void startPinning() {
+        try {
+            ActivityManagerNative.getDefault().startLockTaskModeOnCurrent();
+        } catch (RemoteException e) {}
+    }
+
+    void stopPinning() {
+        try {
+            ActivityManagerNative.getDefault().stopLockTaskModeOnCurrent();
+        } catch (RemoteException e) {}
     }
 
     public FrameLayout.LayoutParams getRequestLayoutParams(boolean isLandscape) {

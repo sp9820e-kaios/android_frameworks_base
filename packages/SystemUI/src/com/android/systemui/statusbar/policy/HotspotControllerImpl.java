@@ -16,19 +16,30 @@
 
 package com.android.systemui.statusbar.policy;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
+import android.os.Message;
 import android.os.UserHandle;
+import android.os.SystemProperties;
 import android.util.Log;
-
+import android.widget.Toast;
+import android.os.SystemProperties;
+import android.provider.Settings;
 import com.android.settingslib.TetherUtil;
+import android.provider.Settings;
+import android.content.ContentResolver;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
 public class HotspotControllerImpl implements HotspotController {
 
@@ -41,14 +52,32 @@ public class HotspotControllerImpl implements HotspotController {
             .putExtra(TetherUtil.EXTRA_ENABLE_WIFI_TETHER, true)
             .setComponent(TetherUtil.TETHER_SERVICE);
 
+    private static final int MSG_SOFTAP_BT_COEXIST = 1;
+    private static final int MSG_MOBILE_DATA_NEEDED = 2;
+
     private final ArrayList<Callback> mCallbacks = new ArrayList<Callback>();
     private final Receiver mReceiver = new Receiver();
     private final Context mContext;
+    private final ConnectivityManager mConnectivityManager;
+    private boolean supportBtWifiSoftApCoexist = true;
+    private BluetoothAdapter mBluetoothAdapter;
+    private PhoneStatusBar mBar;
+    private UIHandler mHandler;
 
     private int mHotspotState;
 
     public HotspotControllerImpl(Context context) {
         mContext = context;
+        mConnectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (SystemProperties.get("ro.btwifisoftap.coexist", "true").equals(
+                "false")) {
+            if (mBluetoothAdapter == null) {
+                mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            }
+            supportBtWifiSoftApCoexist = false;
+        }
+        mHandler = new UIHandler();
     }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
@@ -98,11 +127,39 @@ public class HotspotControllerImpl implements HotspotController {
 
     @Override
     public void setHotspotEnabled(boolean enabled) {
-        // Call provisioning app which is called when enabling Tethering from Settings
+        final ContentResolver cr = mContext.getContentResolver();
+        // Call provisioning app which is called when enabling Tethering from
+        // Settings
         if (enabled && TetherUtil.isProvisioningNeeded(mContext)) {
-            mContext.startServiceAsUser(TETHER_SERVICE_INTENT, UserHandle.CURRENT);
+            mContext.startServiceAsUser(TETHER_SERVICE_INTENT,
+                    UserHandle.CURRENT);
         } else {
+            if (!supportBtWifiSoftApCoexist) {
+                int btState = mBluetoothAdapter.getState();
+                if (mBar != null
+                        && enabled
+                        && (btState != BluetoothAdapter.STATE_OFF)) {
+                    // SPRD:fixbug434711 make the statusbar close when click
+                    // hotspot.
+                    mHandler.sendEmptyMessage(MSG_SOFTAP_BT_COEXIST);
+                    return;
+                }
+                if (enabled) {
+                    Settings.Global.putInt(cr,
+                        Settings.Global.SOFTAP_REENABLING, 1);
+                }
+            }
             TetherUtil.setWifiTethering(enabled, mContext);
+
+            /*
+             * SPRD: Modify Bug 451875 show tip for wifi hotspot by mobile data
+             * disabled @{
+             */
+            if (mBar != null && enabled
+                    && !mConnectivityManager.getMobileDataEnabled()) {
+                mHandler.sendEmptyMessage(MSG_MOBILE_DATA_NEEDED);
+            }
+            /* @} */
         }
     }
 
@@ -138,4 +195,46 @@ public class HotspotControllerImpl implements HotspotController {
             fireCallback(mHotspotState == WifiManager.WIFI_AP_STATE_ENABLED);
         }
     }
+
+    public void setbar(PhoneStatusBar bar) {
+        // TODO Auto-generated method stub
+        mBar = bar;
+    }
+
+    /*
+     * SPRD: Modify Bug 451875 show tip for wifi hotspot by mobile data disabled
+     *
+     * @{
+     */
+    private void showAlertForMobileDataNeedEnabled() {
+        Toast.makeText(mContext,
+                com.android.systemui.R.string.softap_need_mobile_data_enabled,
+                Toast.LENGTH_LONG).show();
+    }
+    /* @} */
+
+    class UIHandler extends Handler {
+
+        public UIHandler() {
+            super();
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            case MSG_SOFTAP_BT_COEXIST:
+                mBar.animateCollapseQuickSettings();
+                Toast.makeText(mContext,
+                        com.android.systemui.R.string.softap_bt_cannot_coexist,
+                        Toast.LENGTH_SHORT).show();
+                break;
+            case MSG_MOBILE_DATA_NEEDED:
+                mBar.animateCollapseQuickSettings();
+                showAlertForMobileDataNeedEnabled();
+                break;
+            }
+
+        }
+    }
+
 }

@@ -30,6 +30,9 @@ import java.util.Objects;
  * A task represents the top most task in the system's task stack.
  */
 public class Task {
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    public static final String PREFERENCE_NAME = "SprdOptLockList";
+    /* @} */
     /* Task callbacks */
     public interface TaskCallbacks {
         /* Notifies when a task has been bound */
@@ -115,6 +118,13 @@ public class Task {
                     + "lat: " + lastActiveTime + ", "
                     + baseIntent.getComponent().getPackageName();
         }
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        public String toStringKey() {
+            return "Task.Key: " + id + ", "
+                    + "u: " + userId + ", "
+                    + baseIntent.getComponent().getPackageName();
+        }
+        /* @} */
     }
 
     public TaskKey key;
@@ -134,6 +144,9 @@ public class Task {
     public boolean lockToTaskEnabled;
     public Bitmap icon;
     public String iconFilename;
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    public boolean isLocked;
+    /* @} */
     TaskCallbacks mCb;
 
     public Task() {

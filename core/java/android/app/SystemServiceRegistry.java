@@ -119,6 +119,14 @@ import android.view.textservice.TextServicesManager;
 
 import java.util.HashMap;
 
+//SPRD: add for heartbeat powerguru service
+import android.app.PowerGuru;
+
+// SPRD: secure start
+import com.thundersoft.secure.TsIpTableManager;
+import com.thundersoft.secure.ITsIpTableManager;
+
+
 /**
  * Manages all of the system services that can be returned by {@link Context#getSystemService}.
  * Used by {@link ContextImpl}.
@@ -551,6 +559,23 @@ final class SystemServiceRegistry {
                 return new AppOpsManager(ctx, service);
             }});
 
+        // SPRD: secure start
+        registerService(TsIpTableManager.TSIPTABLE_SERVICE, TsIpTableManager.class,
+                new CachedServiceFetcher<TsIpTableManager>() {
+            @Override
+            public TsIpTableManager createService(ContextImpl ctx) {
+                IBinder b = ServiceManager.getService(TsIpTableManager.TSIPTABLE_SERVICE);
+                if(b==null){
+                   Log.i("SystemServiceRegistry", "error:getService is null");
+                 }
+                ITsIpTableManager service = ITsIpTableManager.Stub.asInterface(b);
+                if(service==null){
+                   Log.i("SystemServiceRegistry", "error:service is null");
+                 }
+                return new TsIpTableManager(ctx, service);
+            }});
+        // SPRD: secure end
+
         registerService(Context.CAMERA_SERVICE, CameraManager.class,
                 new CachedServiceFetcher<CameraManager>() {
             @Override
@@ -704,6 +729,18 @@ final class SystemServiceRegistry {
             public RadioManager createService(ContextImpl ctx) {
                 return new RadioManager(ctx);
             }});
+
+//SPRD: add for heartbeat powerguru service
+if (PowerGuru.isEnabled()) {
+		registerService(Context.POWERGURU_SERVICE,PowerGuru.class,
+			new CachedServiceFetcher<PowerGuru>() {
+		public PowerGuru createService(ContextImpl ctx) {
+			IBinder b = ServiceManager.getService(Context.POWERGURU_SERVICE);
+			IPowerGuru service = IPowerGuru.Stub.asInterface(b);
+			return new PowerGuru(service, ctx);
+		}});
+	}
+
     }
 
     /**

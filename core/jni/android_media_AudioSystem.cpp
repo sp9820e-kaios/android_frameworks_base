@@ -290,6 +290,15 @@ android_media_AudioSystem_isMicrophoneMuted(JNIEnv *env, jobject thiz)
     return state;
 }
 
+/** SPRD: add method isAudioRecording @{ */
+    static jboolean android_media_AudioSystem_isAudioRecording(JNIEnv *env, jobject thiz)
+    {
+        bool state = false;
+        AudioSystem::isAudioRecording(&state);
+        return state;
+    }
+/** @} */
+
 static jboolean
 android_media_AudioSystem_isStreamActive(JNIEnv *env, jobject thiz, jint stream, jint inPastMs)
 {
@@ -1660,6 +1669,7 @@ static JNINativeMethod gMethods[] = {
     {"native_register_dynamic_policy_callback", "()V",
                                     (void *)android_media_AudioSystem_registerDynPolicyCallback},
     {"systemReady", "()I", (void *)android_media_AudioSystem_systemReady},
+    {"isAudioRecording", "()Z", (void *)android_media_AudioSystem_isAudioRecording},// SPRD: add method isAudioRecording
 };
 
 

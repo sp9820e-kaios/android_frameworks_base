@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Trykk for å se detaljer"</string>
     <string name="retry" msgid="7564024179122207376">"Prøv på nytt"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Disse filene ble ikke kopiert: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Kan ikke dele fil"</string>
+     <string name="documents_deleting">"Sletter dokumenter"</string>
+     <string name="cannot_copyfolder_itself">"Du kan ikke kopiere mappen inn i den"</string>
+
+    <string name="error_permissions">"Appen mangler tillatelser som er avgjørende for å kunne kjøres. Sjekk innstillingene for tillatelsene dine."</string>
+     <string name="cannot_copy_drm">"Kan ikke kopiere DRM-filer"</string>
+     <string name="cannot_copy_downloading">"Kan ikke kopiere filer som lastes ned"</string>
 </resources>

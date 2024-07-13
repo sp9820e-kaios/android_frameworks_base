@@ -172,6 +172,14 @@ public class SubscriptionManager {
      */
     public static final int NAME_SOURCE_USER_INPUT = 2;
 
+    /* SPRD: modify for bug492214 @{ */
+    /**
+     * The name_source is from the user input null
+     * @hide
+     */
+    public static final int NAME_SOURCE_USER_INPUT_NULL = 3;
+    /* @} */
+
     /**
      * TelephonyProvider column name for the color of a SIM.
      * <P>Type: INTEGER (int)</P>
@@ -1327,6 +1335,36 @@ public class SubscriptionManager {
             ISub iSub = ISub.Stub.asInterface(ServiceManager.getService("isub"));
             if (iSub != null) {
                 return iSub.isActiveSubId(subId);
+            }
+        } catch (RemoteException ex) {
+        }
+        return false;
+    }
+
+    /**
+     * @return true if the sim fdn is active. fix for bug 489250
+     * and the SIM providing the subscription is present in a slot and in "LOADED" state.
+     * @hide
+     */
+    public static boolean getFdnEnable(int subId) {
+        try {
+            ISub iSub = ISub.Stub.asInterface(ServiceManager.getService("isub"));
+            if (iSub != null) {
+                return iSub.getFdnEnable(subId);
+            }
+        } catch (RemoteException ex) {
+        }
+        return false;
+    }
+
+    /**
+     * @hide
+     */
+     public boolean checkUriValid(Uri uri){
+        try {
+            ISub iSub = ISub.Stub.asInterface(ServiceManager.getService("isub"));
+            if (iSub != null) {
+                return iSub.checkUriValid(uri);
             }
         } catch (RemoteException ex) {
         }

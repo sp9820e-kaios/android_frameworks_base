@@ -83,7 +83,14 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.StrictJarFile;
 import java.util.zip.ZipEntry;
-
+/*SPRD:Modify the process of the certificate verification to improve the speed of installing application{@*/
+import java.lang.ref.WeakReference;
+import java.util.Enumeration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+/* @} */
 /**
  * Parser for package files (APKs) on disk. This supports apps packaged either
  * as a single "monolithic" APK, or apps packaged as a "cluster" of multiple
@@ -615,6 +622,12 @@ public class PackageParser {
     public final static int PARSE_COLLECT_CERTIFICATES = 1<<8;
     public final static int PARSE_TRUSTED_OVERLAY = 1<<9;
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public final static int PARSE_ON_INTERNALSD = 1<<10;
+    /* @} */
+
     private static final Comparator<String> sSplitNameComparator = new SplitNameComparator();
 
     /**
@@ -768,7 +781,6 @@ public class PackageParser {
      */
     private Package parseClusterPackage(File packageDir, int flags) throws PackageParserException {
         final PackageLite lite = parseClusterPackageLite(packageDir, 0);
-
         if (mOnlyCoreApps && !lite.coreApp) {
             throw new PackageParserException(INSTALL_PARSE_FAILED_MANIFEST_MALFORMED,
                     "Not a coreApp: " + packageDir);
@@ -864,7 +876,6 @@ public class PackageParser {
     private Package parseBaseApk(File apkFile, AssetManager assets, int flags)
             throws PackageParserException {
         final String apkPath = apkFile.getAbsolutePath();
-
         String volumeUuid = null;
         if (apkPath.startsWith(MNT_EXPAND)) {
             final int end = apkPath.indexOf('/', MNT_EXPAND.length());
@@ -1063,14 +1074,14 @@ public class PackageParser {
         }
     }
 
+    /* SPRD: Modify the process of the certificate verification to improve the speed of installing application{@ */
     private static void collectCertificates(Package pkg, File apkFile, int flags)
             throws PackageParserException {
         final String apkPath = apkFile.getAbsolutePath();
-
-        StrictJarFile jarFile = null;
+        StrictJarFile jarFile1 =null;
         try {
-            jarFile = new StrictJarFile(apkPath);
-
+            final StrictJarFile jarFile= new StrictJarFile(apkPath);
+            jarFile1=jarFile;
             // Always verify manifest, regardless of source
             final ZipEntry manifestEntry = jarFile.findEntry(ANDROID_MANIFEST_FILENAME);
             if (manifestEntry == null) {
@@ -1098,14 +1109,15 @@ public class PackageParser {
             // Verify that entries are signed consistently with the first entry
             // we encountered. Note that for splits, certificates may have
             // already been populated during an earlier parse of a base APK.
-            for (ZipEntry entry : toVerify) {
-                final Certificate[][] entryCerts = loadCertificates(jarFile, entry);
-                if (ArrayUtils.isEmpty(entryCerts)) {
-                    throw new PackageParserException(INSTALL_PARSE_FAILED_NO_CERTIFICATES,
-                            "Package " + apkPath + " has no certificates at entry "
-                            + entry.getName());
-                }
-                final Signature[] entrySignatures = convertToSignatures(entryCerts);
+            if ((flags & PARSE_IS_SYSTEM) != 0) {
+                for (ZipEntry entry : toVerify) {
+                    final Certificate[][] entryCerts = loadCertificates(jarFile, entry);
+                     if (ArrayUtils.isEmpty(entryCerts)) {
+                         throw new PackageParserException(INSTALL_PARSE_FAILED_NO_CERTIFICATES,
+                                 "Package " + apkPath + " has no certificates at entry "
+                                 + entry.getName());
+                      }
+                     final Signature[] entrySignatures = convertToSignatures(entryCerts);
 
                 if (pkg.mCertificates == null) {
                     pkg.mCertificates = entryCerts;
@@ -1123,6 +1135,44 @@ public class PackageParser {
                     }
                 }
             }
+            }else{
+                int length = toVerify.size();
+                final Package mPkg=pkg;
+                Slog.i(TAG, "collectCertificates length = " + length);
+                mThreshold = length / 2;
+                final CountDownLatch mConnectedSignal = new CountDownLatch(2);
+                new Thread("asynccollectCertificates1") {
+                    @Override
+                    public void run() {
+                        mIsasync1=asynccollectCertificates(mPkg,toVerify, jarFile, 1);
+                        mIsSync1Finish = true;
+                        if (!mIsasync1) {
+                               mConnectedSignal.countDown();
+                           }
+                        mConnectedSignal.countDown();
+                    }
+                }.start();
+
+                new Thread("asynccollectCertificates2") {
+                    @Override
+                    public void run() {
+                        mIsasync2=asynccollectCertificates(mPkg,toVerify, jarFile, 2);
+                        if(mIsSync1Finish){
+                            mIsSync1Finish = false;
+                        }
+                        if (!mIsasync2) {
+                            mConnectedSignal.countDown();
+                           }
+                        mConnectedSignal.countDown();
+                    }
+                }.start();
+                waitForLatch(mConnectedSignal);
+                Slog.e(TAG,"mIsasync1 = " + mIsasync1 + " mIsasync2 = " + mIsasync2);
+                if (!mIsasync1 || !mIsasync2) {
+                    throw new PackageParserException(INSTALL_PARSE_FAILED_NO_CERTIFICATES,
+                             "Package " + apkPath + " has no certificates ");
+                  }
+            }
         } catch (GeneralSecurityException e) {
             throw new PackageParserException(INSTALL_PARSE_FAILED_CERTIFICATE_ENCODING,
                     "Failed to collect certificates from " + apkPath, e);
@@ -1130,9 +1180,10 @@ public class PackageParser {
             throw new PackageParserException(INSTALL_PARSE_FAILED_NO_CERTIFICATES,
                     "Failed to collect certificates from " + apkPath, e);
         } finally {
-            closeQuietly(jarFile);
+            closeQuietly(jarFile1);
         }
     }
+    /* @} */
 
     private static Signature[] convertToSignatures(Certificate[][] certs)
             throws CertificateEncodingException {
@@ -1353,7 +1404,6 @@ public class PackageParser {
     private Package parseBaseApk(Resources res, XmlResourceParser parser, int flags,
             String[] outError) throws XmlPullParserException, IOException {
         final boolean trustedOverlay = (flags & PARSE_TRUSTED_OVERLAY) != 0;
-
         AttributeSet attrs = parser;
 
         mParseInstrumentationArgs = null;
@@ -1427,6 +1477,14 @@ public class PackageParser {
         if ((flags & PARSE_EXTERNAL_STORAGE) != 0) {
             pkg.applicationInfo.flags |= ApplicationInfo.FLAG_EXTERNAL_STORAGE;
         }
+
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         */
+        if ((flags & PARSE_ON_INTERNALSD) != 0) {
+            pkg.applicationInfo.flags |= ApplicationInfo.FLAG_INTERNALSD_STORAGE;
+        }
+        /* @} */
 
         // Resource boolean are -1, so 1 means we don't know the value.
         int supportsSmallScreens = 1;
@@ -5100,10 +5158,10 @@ public class PackageParser {
         sCompatibilityModeEnabled = compatibilityModeEnabled;
     }
 
-    private static AtomicReference<byte[]> sBuffer = new AtomicReference<byte[]>();
-
+    /*SPRD:Modify the process of the certificate verification to improve the speed of installing application{@*/
+    private static ThreadLocal<byte[]> sBuffer = new ThreadLocal<byte[]>();
     public static long readFullyIgnoringContents(InputStream in) throws IOException {
-        byte[] buffer = sBuffer.getAndSet(null);
+        byte[] buffer=sBuffer.get();
         if (buffer == null) {
             buffer = new byte[4096];
         }
@@ -5117,6 +5175,7 @@ public class PackageParser {
         sBuffer.set(buffer);
         return count;
     }
+    /* @} */
 
     public static void closeQuietly(StrictJarFile jarFile) {
         if (jarFile != null) {
@@ -5140,4 +5199,97 @@ public class PackageParser {
             this.error = error;
         }
     }
+    /* SPRD: Modify the process of the certificate verification to improve the speed of installing application{@ */
+    private static void waitForLatch(CountDownLatch latch) {
+        for (;;) {
+            try {
+                if (latch.await(1000 * 500, TimeUnit.MILLISECONDS)) {
+                    Slog.e(TAG, "waitForLatch done!");
+                    return;
+                } else {
+                    Slog.e(TAG, "Thread " + Thread.currentThread().getName()
+                            + " still waiting for asynccollectCertificates ready...");
+                }
+            } catch (InterruptedException e) {
+                Slog.e(TAG, "Interrupt while waiting for asynccollectCertificates to be ready.");
+            }
+        }
+    }
+    private static boolean mIsasync1 = true;
+    private static boolean mIsasync2 = true;
+    private static boolean mIsSync1Finish = false;
+    private static int mThreshold;
+    private static boolean asynccollectCertificates(Package pkg,List<ZipEntry> entries, StrictJarFile jarFile,
+            int asyncNum){
+        int elementNum = 0;
+        Slog.e(TAG, "asyncNum = " + asyncNum);
+        try{
+            final Iterator<ZipEntry> i = entries.iterator();
+            while (i.hasNext()) {
+                final ZipEntry entry = i.next();
+                elementNum++;
+                if (asyncNum == 1) {
+                    if (elementNum > mThreshold) {
+                        break;
+                    }
+                } else {
+                    if (elementNum <= mThreshold) {
+                        continue;
+                    }
+                }
+                if (entry.isDirectory()) continue;
+                if (entry.getName().startsWith("META-INF/")) continue;
+
+
+
+               final Certificate[][] localCerts = loadCertificates(jarFile, entry);
+
+               if (ArrayUtils.isEmpty(localCerts)) {
+                   throw new PackageParserException(INSTALL_PARSE_FAILED_NO_CERTIFICATES,
+                           "Package " + pkg.packageName + " has no certificates at entry "
+                           + entry.getName());
+               }
+               if((pkg.mCertificates == null) && (asyncNum == 2)){
+                   Slog.e(TAG, "certs == null");
+                   while(pkg.mCertificates == null){
+                       try{
+                           Thread.sleep(20);
+                           if(mIsSync1Finish){
+                               break;
+                           }
+                           continue;
+                       }catch(Exception e){
+                           Slog.i(TAG, "exception occured");
+                       }
+                   }
+               }
+               final Signature[] entrySignatures = convertToSignatures(localCerts);
+
+               if (pkg.mCertificates == null) {
+                   pkg.mCertificates = localCerts;
+                   pkg.mSignatures = entrySignatures;
+                   pkg.mSigningKeys = new ArraySet<PublicKey>();
+                   for (int i1=0; i1 < localCerts.length; i1++) {
+                       pkg.mSigningKeys.add(localCerts[i1][0].getPublicKey());
+                     }
+               } else {
+                   if (!Signature.areExactMatch(pkg.mSignatures, entrySignatures)) {
+                       throw new PackageParserException(
+                               INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES, "Package " + pkg
+                                       + " has mismatched certificates at entry "
+                                       + entry.getName());
+                   }
+               }
+           }
+
+       } catch (GeneralSecurityException e) {
+            Slog.w(TAG, "Failed to collect certificates from " + pkg.packageName, e);
+            return false;
+       } catch (Exception  e) {
+            Slog.w(TAG, "Failed to collect certificates from " + pkg.packageName, e);
+            return false;
+        }
+       return true;
+    }
+    /* @} */
 }

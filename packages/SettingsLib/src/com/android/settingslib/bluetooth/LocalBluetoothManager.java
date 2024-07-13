@@ -46,6 +46,20 @@ public final class LocalBluetoothManager {
     /** The broadcast receiver event manager. */
     private final BluetoothEventManager mEventManager;
 
+    public static synchronized LocalBluetoothManager getInstance(Context context) {
+        if (sInstance == null) {
+            LocalBluetoothAdapter adapter = LocalBluetoothAdapter.getInstance();
+            if (adapter == null) {
+                return null;
+            }
+            // This will be around as long as this process is
+            Context appContext = context.getApplicationContext();
+            sInstance = new LocalBluetoothManager(adapter, appContext);
+        }
+
+        return sInstance;
+    }
+
     public static synchronized LocalBluetoothManager getInstance(Context context,
             BluetoothManagerCallback onInitCallback) {
         if (sInstance == null) {
@@ -77,6 +91,14 @@ public final class LocalBluetoothManager {
 
     public LocalBluetoothAdapter getBluetoothAdapter() {
         return mLocalAdapter;
+    }
+
+    public boolean isTetheringOn() {
+        if (mProfileManager != null && mProfileManager.getPanProfile() != null) {
+            return mProfileManager.getPanProfile().isTetheringOn();
+        } else {
+            return false;
+        }
     }
 
     public Context getContext() {

@@ -19,12 +19,14 @@ package android.widget;
 import android.annotation.Nullable;
 import android.os.Bundle;
 import android.os.Trace;
+
 import com.android.internal.R;
 import com.android.internal.util.Predicate;
 import com.google.android.collect.Lists;
 
 import android.annotation.IdRes;
 import android.annotation.NonNull;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -79,6 +81,7 @@ import java.util.ArrayList;
  */
 @RemoteView
 public class ListView extends AbsListView {
+    private static final String TAG = "ListView";
     /**
      * Used to indicate a no preference for a position type.
      */
@@ -2168,6 +2171,11 @@ public class ListView extends AbsListView {
     }
 
     private boolean commonKey(int keyCode, int count, KeyEvent event) {
+        /* SPRD: Bug 593284 - edit MMS place crash.@{ */
+        if (ActivityManager.isUserAMonkey()) {
+            return false;
+        }
+        /* @} */
         if (mAdapter == null || !isAttachedToWindow()) {
             return false;
         }
@@ -3081,6 +3089,11 @@ public class ListView extends AbsListView {
                 final int lastVisiblePosition = mFirstPosition + numChildren - 1;
                 if (lastVisiblePosition < mItemCount - 1) {
                     last = addViewBelow(last, lastVisiblePosition);
+                    // SPRD: Bug 575755 - ListView is NullPointerException when ListView is scroll.@{
+                    if(last == null && ActivityManager.isUserAMonkey()) {
+                        android.util.Log.d(TAG,"scrollListItemsBy numChild: "+numChildren+", ChildCount:"+getChildCount()+", this: "+this);
+                    }
+                    //@}
                     numChildren++;
                 } else {
                     break;
@@ -3096,6 +3109,12 @@ public class ListView extends AbsListView {
 
             // top views may be panned off screen
             View first = getChildAt(0);
+            // SPRD: Bug 599521 - ListView is NullPointerException when ListView is scroll.@{
+            if(first == null){
+                android.util.Log.d(TAG,"scrollListItemsBy numChild: "+numChildren+", ChildCount:"+getChildCount()+", this: "+this);
+                return;
+            }
+            //@}
             while (first.getBottom() < listTop) {
                 AbsListView.LayoutParams layoutParams = (LayoutParams) first.getLayoutParams();
                 if (recycleBin.shouldRecycleViewType(layoutParams.viewType)) {
@@ -3103,15 +3122,32 @@ public class ListView extends AbsListView {
                 }
                 detachViewFromParent(first);
                 first = getChildAt(0);
+                // SPRD: Bug 599521 - ListView is NullPointerException when ListView is scroll.@{
+                if(first == null){
+                    android.util.Log.d(TAG,"scrollListItemsBy numChild: "+numChildren+", ChildCount:"+getChildCount()+", this: "+this);
+                    return;
+                }
+                //@}
                 mFirstPosition++;
             }
         } else {
             // shifted items down
             View first = getChildAt(0);
-
+            // SPRD: Bug 562731 - ListView is NullPointerException when ListView is scroll.@{
+            if(first == null && ActivityManager.isUserAMonkey()){
+                android.util.Log.d(TAG,"scrollListItemsBy numChild: "+getChildCount()+", ChildCount:"+getChildCount()+", this: "+this);
+                return;
+            }
+            //@}
             // may need to pan views into top
             while ((first.getTop() > listTop) && (mFirstPosition > 0)) {
                 first = addViewAbove(first, mFirstPosition);
+                // SPRD: Bug 575755 - ListView is NullPointerException when ListView is scroll.@{
+                if(first == null && ActivityManager.isUserAMonkey()){
+                    android.util.Log.d(TAG,"scrollListItemsBy numChild: "+getChildCount()+", ChildCount:"+getChildCount()+", this: "+this);
+                    return;
+                }
+                //@}
                 mFirstPosition--;
             }
 
@@ -3124,6 +3160,15 @@ public class ListView extends AbsListView {
             int lastIndex = getChildCount() - 1;
             View last = getChildAt(lastIndex);
 
+            // SPRD: Bug 594937 - ListView is NullPointerException when ListView is scroll.@{
+            if(last == null) {
+                android.util.Log.d(TAG,"scrollListItemsBy numChild: "+getChildCount()+", ChildCount:"+getChildCount()+", this: "+this);
+                Throwable tr = new Throwable();
+                tr.fillInStackTrace();
+                android.util.Log.d("stl","Throw",tr);
+                return;
+            }
+            //@}
             // bottom view may be panned off screen
             while (last.getTop() > listBottom) {
                 AbsListView.LayoutParams layoutParams = (LayoutParams) last.getLayoutParams();
@@ -3132,6 +3177,15 @@ public class ListView extends AbsListView {
                 }
                 detachViewFromParent(last);
                 last = getChildAt(--lastIndex);
+                // SPRD: Bug 594937 - ListView is NullPointerException when ListView is scroll.@{
+                if(last == null) {
+                    android.util.Log.d(TAG,"scrollListItemsBy numChild: "+getChildCount()+", ChildCount:"+getChildCount()+", this: "+this);
+                    Throwable tr = new Throwable();
+                    tr.fillInStackTrace();
+                    android.util.Log.d("stl","Throw",tr);
+                    return;
+                }
+                //@}
             }
         }
     }
@@ -3960,4 +4014,25 @@ public class ListView extends AbsListView {
 
         encoder.addProperty("recycleOnMeasure", recycleOnMeasure());
     }
+
+    /* SPRD: modify 20151222 Spreadtrum of 512114 com.android.deskclock happens JavaCrash,log:java.lang.OutOfMemoryError @{ */
+    @Override
+    protected void onDetachedFromWindow() {
+        android.util.Log.d(TAG, "mHeaderViewInfos.size() = " + mHeaderViewInfos.size() + " mFooterViewInfos.size()" + mFooterViewInfos.size());
+        if (isAttachedToWindow() && ActivityManager.isUserAMonkey()) {
+            if (mHeaderViewInfos.size() > 0) {
+                for (int temp = 0 ; temp < mHeaderViewInfos.size() ; temp++) {
+                    removeDetachedView(mHeaderViewInfos.get(temp).view, false);
+                }
+            }
+
+            if (mFooterViewInfos.size() > 0) {
+                for (int temp = 0 ; temp < mFooterViewInfos.size() ; temp++) {
+                    removeDetachedView(mFooterViewInfos.get(temp).view, false);
+                }
+            }
+        }
+        super.onDetachedFromWindow();
+    }
+    /* @} */
 }

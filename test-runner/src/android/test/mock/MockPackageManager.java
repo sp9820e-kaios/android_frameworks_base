@@ -154,6 +154,14 @@ public class MockPackageManager extends PackageManager {
         throw new UnsupportedOperationException();
     }
 
+    /* SPRD: add feature for scanning oem directory @{ */
+    @Override
+    public List<String> getOemPackageList() {
+        throw new UnsupportedOperationException();
+    }
+
+    /* @} */
+
     @Override
     public List<PackageInfo> getInstalledPackages(int flags) {
         throw new UnsupportedOperationException();
@@ -649,6 +657,21 @@ public class MockPackageManager extends PackageManager {
             int newState, int flags) {
         throw new UnsupportedOperationException();
     }
+    /* SPRD: update label and icon for app @{ */
+    @Override
+    public void setComponentEnabledSettingForSetupMenu(ComponentName componentName,
+        int flags,Intent attr) {
+        throw new UnsupportedOperationException();
+    }
+    /* @} */
+
+    /* SPRD: update label and icon for app @{ */
+    @Override
+    public void setComponentEnabledSettingForSpecific(ComponentName componentName,
+            int newState, int flags,Intent attr) {
+        throw new UnsupportedOperationException();
+    }
+    /* @} */
 
     @Override
     public int getComponentEnabledSetting(ComponentName componentName) {
@@ -942,4 +965,20 @@ public class MockPackageManager extends PackageManager {
     public Drawable loadUnbadgedItemIcon(PackageItemInfo itemInfo, ApplicationInfo appInfo) {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * SPRD: add for backup app {@
+     */
+    @Override
+    public int backupAppData(String pkgName, String destDir) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int restoreAppData(String sourceDir, String pkgName) {
+        throw new UnsupportedOperationException();
+    }
+   /**
+    * @}
+    */
 }

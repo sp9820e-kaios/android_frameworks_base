@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.os.SystemClock;
 import android.hardware.fingerprint.FingerprintManager;
+import android.telephony.ServiceState;
 import android.telephony.TelephonyManager;
 import android.view.WindowManagerPolicy;
 
@@ -51,6 +52,10 @@ public class KeyguardUpdateMonitorCallback {
      * Called when the carrier PLMN or SPN changes.
      */
     public void onRefreshCarrierInfo() { }
+
+    /* SPRD: modify by BUG 540847 @{ */
+    public void onServiceStateChange(int subId, ServiceState state) { }
+    /* @} */
 
     /**
      * Called when the ringer mode changes.

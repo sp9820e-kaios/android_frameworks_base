@@ -18,205 +18,262 @@
 -->
 <!-- This is the SIM PIN view that allows the user to enter a SIM PIN to unlock the device. -->
 <com.android.keyguard.KeyguardSimPinView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:androidprv="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/keyguard_sim_pin_view"
-        android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:androidprv="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/keyguard_sim_pin_view"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    androidprv:layout_maxWidth="@dimen/keyguard_security_width"
+    androidprv:layout_maxHeight="@dimen/keyguard_security_max_height"
+    android:gravity="center_horizontal">
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        androidprv:layout_maxWidth="@dimen/keyguard_security_width"
-        androidprv:layout_maxHeight="@dimen/keyguard_security_max_height"
-        android:gravity="center_horizontal">
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
 
-    <ImageView
-            android:id="@+id/keyguard_sim"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_lockscreen_sim"/>
-
-    <include layout="@layout/keyguard_message_area"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-            />
-    <LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:orientation="vertical"
-            android:layout_weight="1"
-            android:layoutDirection="ltr"
-            >
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/keyguard_sim"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_lockscreen_sim" />
+
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                layout="@layout/keyguard_message_area" />
+        </LinearLayout>
+
         <RelativeLayout
-                android:id="@+id/row0"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:paddingBottom="16dp"
-                >
+            android:id="@+id/row0"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+             >
+
             <com.android.keyguard.PasswordTextView
-                    android:id="@+id/simPinEntry"
-                    android:layout_width="@dimen/keyguard_security_width"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginRight="72dp"
-                    androidprv:scaledTextSize="28"
-                    android:contentDescription="@string/keyguard_accessibility_sim_pin_area"
-                    />
+                android:id="@+id/simPinEntry"
+                android:layout_width="@dimen/keyguard_security_width"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="72dp"
+                android:contentDescription="@string/keyguard_accessibility_sim_pin_area"
+                android:gravity="center"
+                androidprv:scaledTextSize="28" />
+
             <ImageButton
-                    android:id="@+id/delete_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:src="@drawable/ic_backspace_24dp"
-                    android:clickable="true"
-                    android:paddingTop="8dip"
-                    android:paddingBottom="8dip"
-                    android:paddingRight="8dp"
-                    android:paddingLeft="24dp"
-                    android:background="@drawable/ripple_drawable"
-                    android:contentDescription="@string/keyboardview_keycode_delete"
-                    android:layout_alignEnd="@+id/pinEntry"
-                    android:layout_alignParentRight="true"
-                    />
-            <View
-                    android:id="@+id/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_alignParentBottom="true"
-                    android:background="#28FFFFFF"
-                    />
+                android:id="@+id/delete_button"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
         </RelativeLayout>
-        <LinearLayout
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:layout_weight="2" >
+
+            <View
+                android:id="@+id/divider"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="2dp"
+                android:background="#28FFFFFF" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <com.android.keyguard.NumPadKey
+                android:id="@+id/key1"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                >
+                androidprv:digit="1"
+                androidprv:textView="@+id/simPinEntry" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key1"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="1"
-                    />
+                android:id="@+id/key2"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="2"
+                androidprv:textView="@+id/simPinEntry" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key2"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="2"
-                    />
-            <com.android.keyguard.NumPadKey
-                    android:id="@+id/key3"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="3"
-                    />
+                android:id="@+id/key3"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="3"
+                androidprv:textView="@+id/simPinEntry" />
         </LinearLayout>
+
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <com.android.keyguard.NumPadKey
+                android:id="@+id/key4"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                >
+                androidprv:digit="4"
+                androidprv:textView="@+id/simPinEntry" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key4"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="4"
-                    />
+                android:id="@+id/key5"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="5"
+                androidprv:textView="@+id/simPinEntry" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key5"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="5"
-                    />
-            <com.android.keyguard.NumPadKey
-                    android:id="@+id/key6"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="6"
-                    />
+                android:id="@+id/key6"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="6"
+                androidprv:textView="@+id/simPinEntry" />
         </LinearLayout>
+
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <com.android.keyguard.NumPadKey
+                android:id="@+id/key7"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                >
+                androidprv:digit="7"
+                androidprv:textView="@+id/simPinEntry" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key7"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="7"
-                    />
+                android:id="@+id/key8"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="8"
+                androidprv:textView="@+id/simPinEntry" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key8"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="8"
-                    />
-            <com.android.keyguard.NumPadKey
-                    android:id="@+id/key9"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="9"
-                    />
+                android:id="@+id/key9"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="9"
+                androidprv:textView="@+id/simPinEntry" />
         </LinearLayout>
+
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                >
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
             <Space
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    />
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
             <com.android.keyguard.NumPadKey
-                    android:id="@+id/key0"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    androidprv:textView="@+id/simPinEntry"
-                    androidprv:digit="0"
-                    />
+                android:id="@+id/key0"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                androidprv:digit="0"
+                androidprv:textView="@+id/simPinEntry" />
+
             <ImageButton
-                    android:id="@+id/key_enter"
-                    android:layout_width="0px"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:paddingBottom="11sp"
-                    android:src="@drawable/ic_done_wht"
-                    android:background="@drawable/ripple_drawable"
-                    android:contentDescription="@string/keyboardview_keycode_enter"
-                    />
+                android:id="@+id/key_enter"
+                android:layout_width="0px"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_drawable"
+                android:contentDescription="@string/keyboardview_keycode_enter"
+                android:paddingBottom="11sp"
+                android:src="@drawable/ic_done_wht" />
         </LinearLayout>
     </LinearLayout>
+    <com.android.keyguard.CarrierTextInSimLockPanel
+        android:id="@+id/carriers_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:ellipsize="marquee"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="@dimen/kg_status_line_font_size_ex"
+        android:textColor="?android:attr/textColorSecondary"
+        android:layout_marginBottom="10dp"
+        androidprv:allCaps="@bool/kg_use_all_caps"
+        android:orientation="vertical" />
 
-    <include layout="@layout/keyguard_eca"
-             android:id="@+id/keyguard_selector_fade_container"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:orientation="vertical"
-             android:layout_gravity="bottom|center_horizontal"
-             android:gravity="center_horizontal"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/eca_overlap"
+        android:layout_gravity="bottom|center_horizontal"
+       >
 
+        <com.android.keyguard.EmergencyButton
+            android:id="@+id/emergency_call_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="150dp"
+            android:gravity="left"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="@*android:string/lockscreen_emergency_call"
+            android:textAllCaps="@bool/kg_use_all_caps"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/kg_status_line_font_size_ex" />
+
+        <TextView
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/kg_sim_pin_ok"
+            android:textAllCaps="@bool/kg_use_all_caps"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/kg_status_line_font_size_ex" />
+
+        <TextView
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="@string/kg_sim_pin_delete"
+            android:textAllCaps="@bool/kg_use_all_caps"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/kg_status_line_font_size_ex" />
+    </RelativeLayout>
 </com.android.keyguard.KeyguardSimPinView>

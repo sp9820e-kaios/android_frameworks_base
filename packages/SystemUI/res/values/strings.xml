@@ -3,16 +3,16 @@
 /**
  * Copyright (c) 2009, The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 -->
@@ -1022,6 +1022,7 @@
         <item></item> <!-- STREAM_SYSTEM_ENFORCED -->
         <item></item> <!-- STREAM_DTMF -->
         <item></item> <!-- STREAM_TTS -->
+        <item>FM</item> <!-- STREAM_FM --> <!-- SPRD 492835 -->
     </string-array>
 
     <string name="volume_stream_muted" translatable="false">%s silent</string>
@@ -1120,4 +1121,29 @@
     <!-- Dialog asking if the tuner should really be removed from settings [CHAR LIMIT=NONE]-->
     <string name="remove_from_settings_prompt">Remove System UI Tuner from Settings and stop using all of its features?"</string>
 
+    <!-- Bug 474760 New feature add audio profile switch to status bar quick setting page. -->
+    <!-- SPRD: Multi language mode, character error -->
+    <string name="quick_settings_volume_label">Audio Profile</string>
+
+    <!-- SPRD: asistant touch @{-->
+    <string name="assistant_key_home">Home</string>
+    <string name="assistant_key_search">Search</string>
+    <string name="assistant_key_menu">Menu</string>
+    <string name="assistant_key_back">Back</string>
+    <!-- SPRD: asistant touch @}-->
+    <!-- SPRD: Change the hint when click the Profile icon. -->
+    <string name="vibrate_hint">"Swipe left for Vibrate"</string>
+
+    <!-- SPRD: Modified for bug 505221, add voltage high warning -->
+    <string name="battery_overtage_title">Security Warning</string>
+    <string name="battery_overtage_content">Charging voltage is too high!</string>
+    <string name="battery_overtage_back">Back</string>
+    <string name="recent_app_clean_finished_toast">Release <xliff:g id="count">%1$s</xliff:g> memory,<xliff:g id="count">%2$s</xliff:g> available now.</string>
+    <string name="accessibility_hide">Hide</string>
+    <!-- SPRD 583693 New string for PikeL -->
+    <string name="label_tab_notifications">NOTIFY</string>
+    <string name="label_tab_qs">SWITCH</string>
+    <string name="label_screen_brightness">Display brightness</string>
+    <string name="label_star_unlock">Long press * Unlock</string>
+    <string name="speak_spec">H m</string>
 </resources>

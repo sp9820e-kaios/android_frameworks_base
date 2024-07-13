@@ -233,6 +233,13 @@ public class Camera {
      * If {@link #getNumberOfCameras()} returns N, the valid id is 0 to N-1.
      */
     public static void getCameraInfo(int cameraId, CameraInfo cameraInfo) {
+        /*
+         * SPRD Bug:For cts & 3rd party app. Hide the private cameras. @{
+         */
+        if (cameraId >= getNumberOfCameras()) {
+            throw new RuntimeException("Unknown camera ID");
+        }
+        /* @} */
         _getCameraInfo(cameraId, cameraInfo);
         IBinder b = ServiceManager.getService(Context.AUDIO_SERVICE);
         IAudioService audioService = IAudioService.Stub.asInterface(b);
@@ -240,7 +247,11 @@ public class Camera {
             if (audioService.isCameraSoundForced()) {
                 // Only set this when sound is forced; otherwise let native code
                 // decide.
+                /**
+                 * SPRD:fix bug474665 add control for shutter sound for api1 in soundforced
                 cameraInfo.canDisableShutterSound = false;
+                 */
+                cameraInfo.canDisableShutterSound = true;
             }
         } catch (RemoteException e) {
             Log.e(TAG, "Audio service is unavailable for queries");
@@ -488,7 +499,17 @@ public class Camera {
 
     /** used by Camera#open, Camera#open(int) */
     Camera(int cameraId) {
-        int err = cameraInitNormal(cameraId);
+        /*
+         * SPRD Bug:For cts & 3rd party app. Hide the private cameras. @{
+         */
+        int err;
+
+        if (cameraId >= getNumberOfCameras()) {
+            err = EACCESS;
+        } else {
+            err = cameraInitNormal(cameraId);
+        }
+        /* @} */
         if (checkInitErrors(err)) {
             switch(err) {
                 case EACCESS:
@@ -1544,6 +1565,8 @@ public class Camera {
      * @see ShutterCallback
      */
     public final boolean enableShutterSound(boolean enabled) {
+        /**
+         * SPRD:fix bug474665 add control for shutter sound
         if (!enabled) {
             IBinder b = ServiceManager.getService(Context.AUDIO_SERVICE);
             IAudioService audioService = IAudioService.Stub.asInterface(b);
@@ -1553,6 +1576,7 @@ public class Camera {
                 Log.e(TAG, "Audio service is unavailable for queries");
             }
         }
+         */
         return _enableShutterSound(enabled);
     }
 
@@ -2088,6 +2112,9 @@ public class Camera {
         private static final String KEY_PREVIEW_FPS_RANGE = "preview-fps-range";
         private static final String KEY_PICTURE_SIZE = "picture-size";
         private static final String KEY_PICTURE_FORMAT = "picture-format";
+        /*SPRD:fix bug 473462 add burst capture @{*/
+        private static final String KEY_CAPTURE_MODE = "capture-mode";
+        /* @}*/
         private static final String KEY_JPEG_THUMBNAIL_SIZE = "jpeg-thumbnail-size";
         private static final String KEY_JPEG_THUMBNAIL_WIDTH = "jpeg-thumbnail-width";
         private static final String KEY_JPEG_THUMBNAIL_HEIGHT = "jpeg-thumbnail-height";
@@ -3039,6 +3066,13 @@ public class Camera {
             return formats;
         }
 
+        /**
+         * SPRD:fix bug 473462 add burst capture
+         */
+        public void setContinuousCount(String value) {
+            set(KEY_CAPTURE_MODE, value);
+        }
+
         private String cameraFormatForPixelFormat(int pixel_format) {
             switch(pixel_format) {
             case ImageFormat.NV16:      return PIXEL_FORMAT_YUV422SP;
@@ -3444,6 +3478,22 @@ public class Camera {
          * @see #getFocusMode()
          */
         public void setFocusMode(String value) {
+            /* SPRD: if the focus is not adjustable, return here,
+             * or all parameter settings will not be excuted in hal layer.
+             */
+            // CTS case CameraTest#testInvalidParameters requires.
+            if ("invalid".equals(value)) {
+                set(KEY_FOCUS_MODE, value);
+                return;
+            }
+
+            List<String> supportedFocusModes = getSupportedFocusModes();
+            if (supportedFocusModes != null && supportedFocusModes.size() == 1
+                    && FOCUS_MODE_FIXED.equals(supportedFocusModes.get(0))) {
+                Log.d(TAG, "setFocusMode return " + value);
+                return;
+            }
+            /* @} */
             set(KEY_FOCUS_MODE, value);
         }
 
@@ -4220,5 +4270,152 @@ public class Camera {
             if (s1 != null && s1.equals(s2)) return true;
             return false;
         }
+
+        /*
+         * SPRD Bug:474721 Feature:Contrast. @{
+         */
+        private static final String KEY_CONTRAST = "contrast";
+
+        public void setContrast(String value) {
+            set(KEY_CONTRAST, value);
+        }
+
+        public String getContrast() {
+            return get(KEY_CONTRAST);
+        }
+
+        public List<String> getSupportedContrast() {
+            String str = get(KEY_CONTRAST + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+        /* @} */
+
+        /* 
+         * SPRD Bug:474696 Feature:Slow-Motion. @{
+         */
+        private static final String KEY_SLOWMOTION = "slow-motion";
+
+        public void setSlowmotion(String value) {
+            set(KEY_SLOWMOTION, value);
+        }
+
+        public String getSlowmotion() {
+            return get(KEY_SLOWMOTION);
+        }
+
+        public List<String> getSupportedSlowmotion() {
+            String str = get(KEY_SLOWMOTION + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+        /* @} */
+
+        /*
+         * SPRD Bug: 534257 Feature:EOIS. @{
+         */
+
+        private static final String KEY_EOIS = "EOIS";
+
+        public void setEOIS(boolean value) {
+            set(KEY_EOIS, value ? TRUE : FALSE);
+        }
+
+        public boolean getEOIS() {
+            String value = get(KEY_EOIS);
+            return TRUE.equals(value);
+        }
+
+        public List<String> getSupportedEOIS() {
+            String str = get(KEY_EOIS + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+        /* @} */
+
+        /*
+         * SPRD Bug:474715 Feature:Brightness. @{
+         */
+        private static final String KEY_BRIGHTNESS = "brightness";
+
+        public void setBrightness(String value) {
+            set(KEY_BRIGHTNESS, value);
+        }
+
+        public String getBrightness() {
+            return get(KEY_BRIGHTNESS);
+        }
+
+        public List<String> getSupportedBrightness() {
+            String str = get(KEY_BRIGHTNESS + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+        /* @} */
+
+        /*
+         * SPRD Bug:474724 Feature:ISO. @{
+         */
+        private static final String KEY_ISO = "iso";
+
+        public static final String ISO_AUTO = "auto";
+        public static final String ISO_100 = "100";
+        public static final String ISO_200 = "200";
+        public static final String ISO_400 = "400";
+        public static final String ISO_800 = "800";
+        public static final String ISO_1600 = "1600";
+
+        public List<String> getSupportedISO() {
+            String str = get(KEY_ISO + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+
+        public String getISO() {
+            return get(KEY_ISO);
+        }
+
+        public void setISO(String value) {
+            set(KEY_ISO, value);
+        }
+        /* @} */
+
+        /*
+         * SPRD Bug:474718 Feature:Metering. @{
+         */
+        private static final String KEY_METERING = "metering-mode";
+
+        public static final String AUTO_EXPOSURE_FRAME_AVG = "frame-average";
+        public static final String AUTO_EXPOSURE_CENTER_WEIGHTED = "center-weighted";
+        public static final String AUTO_EXPOSURE_SPOT_METERING = "spot-metering";
+
+        public void setMeteringMode(String value) {
+            set(KEY_METERING, value);
+        }
+
+        public String getMeteringMode() {
+            return get(KEY_METERING);
+        }
+
+        public List<String> getSupportedMeteringMode() {
+            String str = get(KEY_METERING + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+        /* @} */
+
+        /*
+         * SPRD Bug:474722 Feature:Saturation. @{
+         */
+        private static final String KEY_SATURATION = "saturation";
+
+        public void setSaturation(String value) {
+            set(KEY_SATURATION, value);
+        }
+
+        public String getSaturation() {
+            return get(KEY_SATURATION);
+        }
+
+        public List<String> getSupportedSaturation() {
+            String str = get(KEY_SATURATION + SUPPORTED_VALUES_SUFFIX);
+            return split(str);
+        }
+        /* @} */
     };
+
 }

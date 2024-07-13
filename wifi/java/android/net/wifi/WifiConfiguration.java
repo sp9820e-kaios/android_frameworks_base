@@ -61,6 +61,60 @@ public class WifiConfiguration implements Parcelable {
     /** {@hide} */
     public static final int INVALID_NETWORK_ID = -1;
 
+    // Broadcom, WAPI
+    /**
+     * String representing the keystore URI used for wpa_supplicant.
+     * @hide
+     */
+    public static final String KEYSTORE_URI = "keystore://";
+
+    /** {@hide} */
+    public static final String wapiAsCertVarName = "wapi_as_cert";
+    /** {@hide} */
+    public static final String wapiUserCertVarName = "wapi_user_cert";
+    /** {@hide} */
+    public static final String wapiCertIndexVarName = "cert_index";
+    /** {@hide} */
+    public static final String wapiPskTypeVarName = "psk_key_type";
+    /** {@hide} */
+    public static final int WAPI_ASCII_PASSWORD = 0;
+    /** {@hide} */
+    public static final int WAPI_HEX_PASSWORD = 1;
+
+    /**
+     * The location of WAPI AS Cert.
+     * @hide
+     */
+    public String wapiAsCert;
+    /**
+     * The location of WAPI User Cert.
+     * @hide
+     */
+    public String wapiUserCert;
+    /**
+     * The WAPI Cert Index.
+     * @hide
+     */
+    public int wapiCertIndex;
+    /**
+     * The WAPI PSK Key Type.
+     * @hide
+     */
+    public int wapiPskType;
+    // Broadcom, WAPI
+
+    /**
+     * SPRD: add eap_sim_slot for EAP-SIM.
+     * {@hide}
+     */
+    public static final String eapSimSlotVarName = "sim_num";
+
+    /**
+     * SPRD: Add for Choosing which sim card for EAP-SIM to authenticate.
+     * @hide
+     */
+    public int eap_sim_slot;
+
     /**
      * Recognized key management schemes.
      */
@@ -83,10 +137,33 @@ public class WifiConfiguration implements Parcelable {
           */
         public static final int WPA2_PSK = 4;
 
+        /** @hide */
+        public static final int FT_EAP = 5;
+        /** @hide */
+        public static final int FT_PSK = 6;
+
+        // Broadcom, WAPI
+        /** WAPI pre-shared key (requires {@code preSharedKey} to be specified). {@hide}*/
+        public static final int WAPI_PSK = 7;
+        /** WAPI certificate to be specified. {@hide} */
+        public static final int WAPI_CERT = 8;
+        // Broadcom, WAPI
+
+        /** @hide */
+        public static final int PSK_SHA256 = 9;
+        /** @hide */
+        public static final int EAP_SHA256 = 10;
+
         public static final String varName = "key_mgmt";
 
         public static final String[] strings = { "NONE", "WPA_PSK", "WPA_EAP", "IEEE8021X",
-                "WPA2_PSK" };
+                "WPA2_PSK"
+                , "FT_EAP", "FT_PSK"
+        // Broadcom, WAPI
+                , "WAPI_PSK", "WAPI_CERT"
+        // Broadcom, WAPI
+                , "WPA_PSK_SHA256", "WPA_EAP_SHA256"
+        };
     }
 
     /**
@@ -99,10 +176,18 @@ public class WifiConfiguration implements Parcelable {
         public static final int WPA = 0;
         /** WPA2/IEEE 802.11i */
         public static final int RSN = 1;
+        // Broadcom, WAPI
+        /** WAPI {@hide} */
+        public static final int WAPI = 2;
+        // Broadcom, WAPI
 
         public static final String varName = "proto";
 
-        public static final String[] strings = { "WPA", "RSN" };
+        public static final String[] strings = { "WPA", "RSN"
+        // Broadcom, WAPI
+                , "WAPI"
+        // Broadcom, WAPI
+        };
     }
 
     /**
@@ -254,7 +339,16 @@ public class WifiConfiguration implements Parcelable {
      * 0 - find a random available channel according to the apBand
      * @hide
      */
-    public int apChannel = 0;
+    public int apChannel = 11; // set default channel to 11 for 2.4G band. 0;
+
+    //NOTE: Add for SoftAp Advance Feature -->
+    /**
+     * SoftAp allow the max number of station
+     * @hide
+     */
+    public int softApMaxNumSta;
+    //<-- Add for SoftAp Advance Feature
+
 
     /**
      * Pre-shared key for use with WPA-PSK.
@@ -353,6 +447,32 @@ public class WifiConfiguration implements Parcelable {
      * passpoint credential will be considered valid
      */
     public long[] roamingConsortiumIds;
+
+
+    //NOTE: Add for SPRD Passpoint R1 Feature -->
+
+    /**
+     * Identify if this configuration is created from Passpoint Cred
+     * @hide
+     */
+    public boolean createdFromPasspointCred;
+
+    /**
+     * corresponding HomeSP configkey
+     * @hide
+     */
+    public String passpointCredIdentifier;
+
+    /**
+     * Identify if the passpoint cred related to this configuration is disabled
+     * @hide
+     */
+    public boolean passpointCredDisabled;
+
+    //<-- Add for SPRD Passpoint R1 Feature
+
+
+
 
     /**
      * @hide
@@ -920,6 +1040,17 @@ public class WifiConfiguration implements Parcelable {
         for (int i = 0; i < wepKeys.length; i++) {
             wepKeys[i] = null;
         }
+
+        // SPRD: add for EAP-SIM
+        eap_sim_slot = -1;
+
+        // Broadcom, WAPI
+        wapiAsCert = null;
+        wapiUserCert = null;
+        wapiCertIndex = -1;
+        wapiPskType = -1;
+        // Broadcom, WAPI
+
         enterpriseConfig = new WifiEnterpriseConfig();
         autoJoinStatus = AUTO_JOIN_ENABLED;
         selfAdded = false;
@@ -929,6 +1060,13 @@ public class WifiConfiguration implements Parcelable {
         mIpConfiguration = new IpConfiguration();
         lastUpdateUid = -1;
         creatorUid = -1;
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        createdFromPasspointCred = false;
+        passpointCredIdentifier = null;
+        passpointCredDisabled = false;
+        //<-- Add for SPRD Passpoint R1 Feature
+
     }
 
     /**
@@ -1089,6 +1227,26 @@ public class WifiConfiguration implements Parcelable {
             sbuf.append('*');
         }
         sbuf.append("\nEnterprise config:\n");
+
+        // Broadcom, WAPI
+        sbuf.append('\n');
+        if (this.wapiAsCert != null) {
+            sbuf.append(" WapiAsCert: ").append(this.wapiAsCert);
+        }
+        sbuf.append('\n');
+        if (this.wapiUserCert != null) {
+            sbuf.append(" WapiUserCert: ").append(this.wapiUserCert);
+        }
+        sbuf.append('\n');
+        if (this.wapiCertIndex != -1) {
+            sbuf.append(" WapiCertIndex: ").append(this.wapiCertIndex);
+        }
+        sbuf.append('\n');
+        if (this.wapiPskType != -1) {
+            sbuf.append(" WapiPskType: ").append(this.wapiPskType);
+        }
+        // Broadcom, WAPI
+
         sbuf.append(enterpriseConfig);
 
         sbuf.append("IP config:\n");
@@ -1304,6 +1462,13 @@ public class WifiConfiguration implements Parcelable {
         } else if (allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
             return KeyMgmt.IEEE8021X;
         }
+        // Broadcom, WAPI
+        else if (allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+            return KeyMgmt.WAPI_PSK;
+        } else if (allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+            return KeyMgmt.WAPI_CERT;
+        }
+        // Broadcom, WAPI
         return KeyMgmt.NONE;
     }
 
@@ -1329,9 +1494,28 @@ public class WifiConfiguration implements Parcelable {
             } else if (allowedKeyManagement.get(KeyMgmt.WPA_EAP) ||
                     allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
                 key = SSID + KeyMgmt.strings[KeyMgmt.WPA_EAP];
-            } else if (wepKeys[0] != null) {
-                key = SSID + "WEP";
+            }else if (allowedKeyManagement.get(KeyMgmt.PSK_SHA256)) {
+                key = SSID + KeyMgmt.strings[KeyMgmt.PSK_SHA256];
+            }else if (allowedKeyManagement.get(KeyMgmt.EAP_SHA256)) {
+                key = SSID + KeyMgmt.strings[KeyMgmt.EAP_SHA256];
+            }else if (allowedKeyManagement.get(KeyMgmt.FT_PSK)) {
+                    key = SSID + KeyMgmt.strings[KeyMgmt.FT_PSK];
+            } else if (allowedKeyManagement.get(KeyMgmt.FT_EAP)) {
+                key = SSID + KeyMgmt.strings[KeyMgmt.FT_EAP];
+            } else if (allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+                key = SSID + KeyMgmt.strings[KeyMgmt.WAPI_CERT];
+            } else if (allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+                key = SSID + KeyMgmt.strings[KeyMgmt.WAPI_PSK];
+            //} else if (wepKeys[0] != null) {
+            //    key = SSID + "WEP";
             } else {
+                for (int i = 0; i < wepKeys.length; i++) {
+                    if (wepKeys[i] != null) {
+                        key = SSID + "WEP";
+                        mCachedConfigKey = key;
+                        return key;
+                    }
+                }
                 key = SSID + KeyMgmt.strings[KeyMgmt.NONE];
             }
             mCachedConfigKey = key;
@@ -1442,8 +1626,21 @@ public class WifiConfiguration implements Parcelable {
             providerFriendlyName = source.providerFriendlyName;
             preSharedKey = source.preSharedKey;
 
+            // SPRD: add for EAP-SIM
+            eap_sim_slot = source.eap_sim_slot;
+
+            // Broadcom, WAPI
+            wapiAsCert = source.wapiAsCert;
+            wapiUserCert = source.wapiUserCert;
+            wapiCertIndex = source.wapiCertIndex;
+            wapiPskType = source.wapiPskType;
+            // Broadcom, WAPI
+
             apBand = source.apBand;
             apChannel = source.apChannel;
+            //NOTE: Add for SoftAp Advance Feature -->
+            softApMaxNumSta = source.softApMaxNumSta;
+            //<-- Add for SoftAp Advance Feature
 
             wepKeys = new String[4];
             for (int i = 0; i < wepKeys.length; i++) {
@@ -1522,6 +1719,13 @@ public class WifiConfiguration implements Parcelable {
             noInternetAccessExpected = source.noInternetAccessExpected;
             creationTime = source.creationTime;
             updateTime = source.updateTime;
+
+            //NOTE: Add for SPRD Passpoint R1 Feature -->
+            createdFromPasspointCred = source.createdFromPasspointCred;
+            passpointCredIdentifier = source.passpointCredIdentifier;
+            passpointCredDisabled = source.passpointCredDisabled;
+            //<-- Add for SPRD Passpoint R1 Feature
+
         }
     }
 
@@ -1540,6 +1744,9 @@ public class WifiConfiguration implements Parcelable {
         dest.writeString(BSSID);
         dest.writeInt(apBand);
         dest.writeInt(apChannel);
+        //NOTE: Add for SoftAp Advance Feature -->
+        dest.writeInt(softApMaxNumSta);
+        //<-- Add for SoftAp Advance Feature
         dest.writeString(autoJoinBSSID);
         dest.writeString(FQDN);
         dest.writeString(providerFriendlyName);
@@ -1557,11 +1764,24 @@ public class WifiConfiguration implements Parcelable {
         dest.writeInt(requirePMF ? 1 : 0);
         dest.writeString(updateIdentifier);
 
+        // SPRD: add for EAP-SIM
+        dest.writeInt(eap_sim_slot);
+
         writeBitSet(dest, allowedKeyManagement);
         writeBitSet(dest, allowedProtocols);
         writeBitSet(dest, allowedAuthAlgorithms);
         writeBitSet(dest, allowedPairwiseCiphers);
         writeBitSet(dest, allowedGroupCiphers);
+
+        // Broadcom, WAPI
+        if (allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+            dest.writeInt(wapiPskType);
+        } else if (allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+            dest.writeString(wapiAsCert);
+            dest.writeString(wapiUserCert);
+            dest.writeInt(wapiCertIndex);
+        }
+        // Broadcom, WAPI
 
         dest.writeParcelable(enterpriseConfig, flags);
 
@@ -1601,6 +1821,13 @@ public class WifiConfiguration implements Parcelable {
         dest.writeInt(userApproved);
         dest.writeInt(numNoInternetAccessReports);
         dest.writeInt(noInternetAccessExpected ? 1 : 0);
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        dest.writeInt(createdFromPasspointCred ? 1 : 0);
+        dest.writeString(passpointCredIdentifier);
+        dest.writeInt(passpointCredDisabled ? 1 : 0);
+        //<-- Add for SPRD Passpoint R1 Feature
+
     }
 
     /** Implement the Parcelable interface {@hide} */
@@ -1615,6 +1842,9 @@ public class WifiConfiguration implements Parcelable {
                 config.BSSID = in.readString();
                 config.apBand = in.readInt();
                 config.apChannel = in.readInt();
+                //NOTE: Add for SoftAp Advance Feature -->
+                config.softApMaxNumSta = in.readInt();
+                //<-- Add for SoftAp Advance Feature
                 config.autoJoinBSSID = in.readString();
                 config.FQDN = in.readString();
                 config.providerFriendlyName = in.readString();
@@ -1633,11 +1863,24 @@ public class WifiConfiguration implements Parcelable {
                 config.requirePMF = in.readInt() != 0;
                 config.updateIdentifier = in.readString();
 
+                // SPRD: add for EAP-SIM
+                config.eap_sim_slot = in.readInt();
+
                 config.allowedKeyManagement   = readBitSet(in);
                 config.allowedProtocols       = readBitSet(in);
                 config.allowedAuthAlgorithms  = readBitSet(in);
                 config.allowedPairwiseCiphers = readBitSet(in);
                 config.allowedGroupCiphers    = readBitSet(in);
+
+                // Broadcom, WAPI
+                if (config.allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+                    config.wapiPskType = in.readInt();
+                } else if (config.allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+                    config.wapiAsCert = in.readString();
+                    config.wapiUserCert = in.readString();
+                    config.wapiCertIndex = in.readInt();
+                }
+                // Broadcom, WAPI
 
                 config.enterpriseConfig = in.readParcelable(null);
 
@@ -1677,6 +1920,13 @@ public class WifiConfiguration implements Parcelable {
                 config.userApproved = in.readInt();
                 config.numNoInternetAccessReports = in.readInt();
                 config.noInternetAccessExpected = in.readInt() != 0;
+
+                //NOTE: Add for SPRD Passpoint R1 Feature -->
+                config.createdFromPasspointCred = in.readInt() != 0;
+                config.passpointCredIdentifier = in.readString();
+                config.passpointCredDisabled = in.readInt() != 0;
+                //<-- Add for SPRD Passpoint R1 Feature
+
                 return config;
             }
 

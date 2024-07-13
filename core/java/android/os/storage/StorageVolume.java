@@ -60,6 +60,9 @@ public class StorageVolume implements Parcelable {
 
     public static final int STORAGE_ID_INVALID = 0x00000000;
     public static final int STORAGE_ID_PRIMARY = 0x00010001;
+    /* SPRD: add primary emulated flag for bug528133 @{ */
+    public static final int STORAGE_ID_PRIMARY_EMU = 0x00000100;
+    /* @} */
 
     public StorageVolume(String id, int storageId, File path, String description, boolean primary,
             boolean removable, boolean emulated, long mtpReserveSize, boolean allowMassStorage,

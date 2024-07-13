@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"ສຳ​ພັດເພື່ອເບິ່ງລາຍລະອຽດ"</string>
     <string name="retry" msgid="7564024179122207376">"ລອງໃໝ່"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"ໄຟ​ລ໌​ເຫຼົ່າ​ນີ້​ບໍ່​ຖື​ກ​ອັດ​ສຳ​ເນົາ: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ບໍ່​ສາ​ມາດ​ແຊ​ຣ໌​ໄຟ​ລ໌"</string>
+     <string name="documents_deleting">"ກຳ​ລັງ​ລຶບ​ເອ​ກະ​ສານ"</string>
+     <string name="error_permissions">"ແອັບ​ບໍ່​ມີ​ການ​ອະ​ນຸ​ຍາດ​ສຳ​ຄັນ​ຈຳ​ເປັນເພື່ອ​ແລ່ນ. ກະ​ລຸ​ນາ​ກວດ​ເບິ່ງ​ການ​ຕັ້ງ​ຄ່າ​ການ​ອະ​ນຸ​ຍາດ​ຂອງ​ທ່ານ."</string>
+     <string name="cannot_copyfolder_itself">"ທ່ານບໍ່​ສາ​ມາດກ໊ອບ​ປີ​ໂຟ​ລ​ເດີ​ໄປ​ທີ່​ໂຟ​ລ​ເດີ​ຕົວມັນ​ເອງ"</string>
+     <string name="cannot_copy_drm">"ບໍ່​ສາ​ມາດກ໊ອບ​ປີ​ໄຟ​ລ໌ DRM"</string>
+     <string name="cannot_copy_downloading">"ບໍ່​ສາ​ມາດກ໊ອບ​ປີ​ໄຟ​ລ໌​ທີ່​ດາວ​ໂຫລດ"</string>
+
 </resources>

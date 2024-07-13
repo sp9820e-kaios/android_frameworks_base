@@ -16,6 +16,7 @@
 package com.android.internal.os;
 
 import android.os.BatteryStats;
+import android.os.SystemProperties;
 import android.util.Log;
 
 /**
@@ -58,7 +59,7 @@ public class WifiPowerCalculator extends PowerCalculator {
         app.wifiTxBytes = u.getNetworkActivityBytes(BatteryStats.NETWORK_WIFI_TX_DATA,
                 statsType);
 
-        if (DEBUG && app.wifiPowerMah != 0) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog() && app.wifiPowerMah != 0) {
             Log.d(TAG, "UID " + u.getUid() + ": idle=" + idleTime + "ms rx=" + rxTime + "ms tx=" +
                     txTime + "ms power=" + BatteryStatsHelper.makemAh(app.wifiPowerMah));
         }
@@ -84,7 +85,7 @@ public class WifiPowerCalculator extends PowerCalculator {
         }
         app.wifiPowerMah = Math.max(0, powerDrainMah - mTotalAppPowerDrain);
 
-        if (DEBUG) {
+        if (DEBUG || BatteryStatsHelper.getDeBugBatteryStatusLog()) {
             Log.d(TAG, "left over WiFi power: " + BatteryStatsHelper.makemAh(app.wifiPowerMah));
         }
     }

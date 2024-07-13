@@ -1532,6 +1532,16 @@ public final class DisplayManagerService extends SystemService {
         }
 
         @Override
+        public void scheduleButtonTimeout(long now) {
+             mDisplayPowerController.scheduleButtonTimeout(now);
+        }
+
+        @Override
+        public void updateButtonTimeout(int timeout) {
+             mDisplayPowerController.updateButtonTimeout(timeout);
+        }
+
+        @Override
         public boolean isProximitySensorAvailable() {
             return mDisplayPowerController.isProximitySensorAvailable();
         }

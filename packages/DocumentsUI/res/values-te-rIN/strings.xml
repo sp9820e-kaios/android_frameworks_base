@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"వివరాలను వీక్షించడానికి తాకండి"</string>
     <string name="retry" msgid="7564024179122207376">"మళ్లీ ప్రయత్నించు"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"ఈ ఫైల్‌లు కాపీ చేయబడలేదు: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"ఫైలును షేర్ చేయడం కుదరలేదు"</string>
+     <string name="documents_deleting">"డాక్యుమెంట్లను తొలగిస్తోంది"</string>
+     <string name="cannot_copyfolder_itself">"ఫోల్డరును దానిలోకి దానినే మీరు కాపీ చేయడం వీలు కాదు"</string>
+     <string name="menu_deselect_all">"అన్నిటినీ డీసెలెక్ట్ చేయండి"</string>
+    <string name="error_permissions">"అనువర్తనం అమలు కావడానికి అవసరమయ్యే క్లిష్టమైన అనుమతులను కలిగి లేదు. దయచేసి మీ అనుమతుల సెట్టింగ్‌లను తనిఖీ చేయండి."</string>
+     <string name="cannot_copy_drm">"DRM ఫైళ్లు కాపీ చేయడం కుదరదు"</string>
+     <string name="cannot_copy_downloading">"డౌన్లోడ్ అవుతున్న ఫైళ్లను కాపీ చేయడం కుదరదు"</string>
 </resources>

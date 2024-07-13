@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Το φορητό σημείο πρόσβασης Wi-Fi απαιτεί σύνδεση των δεδομένων του κινητού, μπορεί να επιφέρει πρόσθετο κόστος."</string>
+<string name="softap_bt_cannot_coexist">"Όταν το bluetooth είναι ενεργοποιημένο ή ενεργοποιείται, το softap δεν μπορεί να λειτουργήσει, αν θέλετε να χρησιμοποιήσετε το softap, παρακαλούμε βεβαιωθείτε ότι το bluetooth είναι απενεργοποιημένο."</string>
+<string name="bt_softap_cannot_coexist">"Όταν το softap είναι ενεργοποιημένο ή ενεργοποιείται, το bluetooth δεν μπορεί να λειτουργήσει, αν θέλετε να χρησιμοποιήσετε το softap, παρακαλούμε βεβαιωθείτε ότι το softap είναι απενεργοποιημένο."</string>
+<string name="lte_service_error_airplane">"Δεν μπορείτε να χρησιμοποιήσετε το LTE όταν το τηλέφωνό σας βρίσκεται σε λειτουργία πτήσης."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ενεργοποιήθηκε"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G απενεργοποιήθηκε"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ενεργοποιημένο"</string>
+<string name="accessibility_quick_settings_lte_off">"4G απενεργοποιημένο"</string>
+<string name="toggle_data_error_airplane">"Δεν μπορείτε\να χρησιμοποιήσετε τα δεδομένα Κινητού όταν βρίσκεται σε κατάσταση Αεροπλάνο."</string>
+<string name="quick_settings_data_connection_label">"ΔΕΔΟΜΕΝΑ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Τα δεδομένα ενεργοποιήθηκαν"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Τα δεδομένα απενεργοποιήθηκαν"</string>
+<string name="accessibility_quick_settings_data_on">"Ενεργοποίηση δεδομένων"</string>
+<string name="accessibility_quick_settings_data_off">"Απενεργοποίηση δεδομένων"</string>
+<string name="missing_sim_message">"Καμία SIM"</string>
+    <string name="lte_service_error_incall">""Δεν μπορείτε να αλλάξετε την υπηρεσία LTE κατά τη διάρκεια της κλήσης." "</string>
+
+</resources>

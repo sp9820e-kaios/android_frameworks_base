@@ -255,6 +255,15 @@ public class SubscriptionInfo implements Parcelable {
     }
 
     /**
+     * Add by SPRD:
+     * Sets the number displayed to the user that identifies this subscription
+     * @hide
+     */
+    public void setNumber(String number) {
+        this.mNumber = number;
+    }
+
+    /**
      * @return the data roaming state for this subscription, either
      * {@link SubscriptionManager#DATA_ROAMING_ENABLE} or {@link SubscriptionManager#DATA_ROAMING_DISABLE}.
      */

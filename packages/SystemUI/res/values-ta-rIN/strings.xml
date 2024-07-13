@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"வாழ்த்துகள்! அமைப்புகளில் System UI Tuner சேர்க்கப்பட்டது"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"அமைப்புகளிலிருந்து அகற்று"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"அமைப்புகளிலிருந்து System UI Tunerஐ அகற்றிவிட்டு, அதன் எல்லா அம்சங்களையும் பயன்படுத்துவதை நிறுத்தவா?"</string>
+    <string name="quick_settings_volume_label">"ஆடியோ ப்ரொஃபைல்"</string>
+     <string name="assistant_key_home">முகப்பு</string>
+     <string name="assistant_key_search">"தேடல்"</string>
+     <string name="assistant_key_menu">மெனு</string>
+     <string name="assistant_key_back">பின்னே</string>
+
+    <string name="vibrate_hint">"அதிர்வுக்கு இடதுபுறமாக தேய்க்கவும்"</string>
+     <string name="battery_overtage_title">"பாதுகாப்பு எச்சரிக்கை"</string>
+     <string name="battery_overtage_content">"சார்ஜிங் வோல்ட்டேஜ் மிக அதிகமாக உள்ளது!"</string>
+     <string name="battery_overtage_back">பின்னே</string>
+    <string name="recent_app_clean_finished_toast">"நினைவகத்தை <xliff:g id="count">%1$s</xliff:g> வெளியிடவும்,<xliff:g id="count">%2$s</xliff:g> இப்போது கிடைக்கிறது."</string>
+     <string name="label_tab_notifications">அறிவிக்கவும்</string>
+     <string name="label_tab_qs">"மாறு"</string>
+     <string name="label_screen_brightness">"திரை பிரகாசம்"</string>
+     <string name="label_star_unlock">"நீண்ட நேரம் அழுத்தவும் * திறக்கவும்"</string>
+     <string name="speak_spec">"H m"</string>
 </resources>

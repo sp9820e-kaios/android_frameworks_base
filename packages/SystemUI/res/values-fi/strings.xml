@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Hienoa! System UI Tuner on nyt lisätty Asetuksiin."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Poista Asetuksista"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Haluatko poistaa System UI Tunerin Asetuksista ja lopettaa sen ominaisuuksien käytön?"</string>
+    <string name="quick_settings_volume_label">"Ääniprofiili"</string>
+     <string name="assistant_key_home">"Aloitusruutu"</string>
+     <string name="assistant_key_search">"Haku"</string>
+     <string name="assistant_key_menu">"Valikko"</string>
+     <string name="assistant_key_back">"Takaisin"</string>
+
+    <string name="vibrate_hint">"Pyyhkäise vasemmalle asettaaksesi värinän"</string>
+     <string name="battery_overtage_title">"Suojausvaroitus"</string>
+     <string name="battery_overtage_content">"Latausvirta on liian korkea!"</string>
+     <string name="battery_overtage_back">"Takaisin"</string>
 </resources>

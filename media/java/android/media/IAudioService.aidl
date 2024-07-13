@@ -215,4 +215,10 @@ interface IAudioService {
     int setFocusPropertiesForPolicy(int duckingBehavior, in IAudioPolicyCallback pcb);
 
     void setVolumePolicy(in VolumePolicy policy);
+
+    /**
+    * SPRD:add interface for speaker switch function on videoplayer is invalid.
+    * @param routing device is speaker or headset
+    */
+    void setSpeakerMediaOn(boolean on);
 }

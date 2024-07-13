@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /**
  * Copyright (c) 2009, The Android Open Source Project
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0 
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
  -->
@@ -428,4 +428,29 @@
     <string name="tuner_toast" msgid="603429811084428439">"恭喜！系统界面调谐器已添加到“设置”中"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"从“设置”中移除"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"要将系统界面调谐器从“设置”中移除，并停止使用所有相关功能吗？"</string>
+    <!-- Bug 474760 New feature add audio profile switch to status bar quick setting page. -->
+    <string name="quick_settings_volume_label">情景模式</string>
+
+    <!-- SPRD: asistant touch @{-->
+    <string name="assistant_key_home">桌面</string>
+    <string name="assistant_key_search">搜索</string>
+    <string name="assistant_key_menu">菜单</string>
+    <string name="assistant_key_back">返回</string>
+    <!-- SPRD: asistant touch @}-->
+
+    <!-- SPRD: Change the hint when click the Profile icon. -->
+    <string name="vibrate_hint">"向左滑动可打开震动模式"</string>
+
+    <!-- SPRD: Modified for bug 505221, add voltage high warning -->
+    <string name="battery_overtage_title">安全警告</string>
+    <string name="battery_overtage_content">充电电压过高！</string>
+    <string name="battery_overtage_back">返回</string>
+
+    <string name="recent_app_clean_finished_toast">成功释放了<xliff:g id="count">%1$s</xliff:g>内存,当前可用内存为<xliff:g id="count">%2$s</xliff:g></string>
+    <!-- SPRD 583693 New string for PikeL -->
+    <string name="label_tab_notifications">通知</string>
+    <string name="label_tab_qs">开关</string>
+    <string name="label_screen_brightness">屏幕亮度</string>
+    <string name="label_star_unlock">长按*号键解锁</string>
+    <string name="speak_spec">H 点 mm</string>
 </resources>

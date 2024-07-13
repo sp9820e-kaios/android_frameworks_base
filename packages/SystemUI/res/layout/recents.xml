@@ -34,6 +34,17 @@
         android:focusable="true">
     </com.android.systemui.recents.views.RecentsView>
 
+    <!--SPRD: Bug 475644 New feature of quick cleaning. -->
+    <ImageButton
+        android:id="@+id/clear_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/delete_btn" />
+
     <!-- Empty View -->
     <ViewStub android:id="@+id/empty_view_stub"
            android:layout="@layout/recents_empty"

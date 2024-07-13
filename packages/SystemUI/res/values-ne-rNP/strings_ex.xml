@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"पोर्टेबल Wi-Fi हटस्पटका लागि डेटा जडानको आवश्यकता पर्छ, यसले गर्दा थप शुल्क लाग्न सक्छ।"</string>
+<string name="softap_bt_cannot_coexist">"ब्लुटुथ सक्षम वा अन हुँदा सफ्ट्यापले काम गर्न सक्दैन, यदि तपाईं सफ्ट्यापको प्रयोग गर्न चाहनुहुन्छ भने ब्लुटुथलाई असक्षम गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।"</string>
+<string name="bt_softap_cannot_coexist">"सफ्ट्याप सक्षम वा अन हुँदा ब्लुटुथले काम गर्न सक्दैन, यदि तपाईं ब्लुटुथको प्रयोग गर्न चाहनुहुन्छ भने सफ्ट्यापलाई असक्षम गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।"</string>
+<string name="lte_service_error_airplane">"फोन हवाइजहाज मोडमा हुँदा तपाईं LTE को प्रयोग गर्न सक्नुहुन्न।"</string>
+<string name="lte_service_error_incall">"तपाईं कलको अवधिमा LTE सेवालाई परिवर्तन गर्न सक्नुहुन्न।"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G लाई अन गरियो"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G लाई अफ गरियो"</string>
+<string name="accessibility_quick_settings_lte_on">"4G अन"</string>
+<string name="accessibility_quick_settings_lte_off">"4G अफ"</string>
+<string name="toggle_data_error_airplane">"फोन हवाइजहाज मोडमा हुँदा तपाईं मोबाइल डेटाको प्रयोग गर्न सक्नुहुन्न।"</string>
+<string name="quick_settings_data_connection_label">"डेटा"</string>
+<string name="accessibility_quick_settings_data_changed_on">"डेटालाई अन गरियो"</string>
+<string name="accessibility_quick_settings_data_changed_off">"डेटालाई अफ गरियो"</string>
+<string name="accessibility_quick_settings_data_on">"डेटा अन"</string>
+<string name="accessibility_quick_settings_data_off">"डेटा अफ"</string>
+<string name="missing_sim_message">"Sim छैन"</string>
+</resources>

@@ -22,4 +22,6 @@
          usually see this when using another app and trying to set
          an image as the wallpaper -->
     <string name="wallpaper_load_fail">Couldn\'t load image as wallpaper</string>
+
+    <string name="set_wallpaper_failed">Set wallpaper failed!</string>
 </resources>

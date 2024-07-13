@@ -17,7 +17,6 @@
 package com.android.documentsui;
 
 import static com.android.documentsui.model.DocumentInfo.getCursorString;
-
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -27,6 +26,7 @@ import android.content.UriMatcher;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,6 +45,7 @@ import libcore.io.IoUtils;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.List;
 
 public class RecentsProvider extends ContentProvider {
     private static final String TAG = "RecentsProvider";
@@ -171,7 +172,15 @@ public class RecentsProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
             String sortOrder) {
-        final SQLiteDatabase db = mHelper.getReadableDatabase();
+        /* Fix Bug:522251 When the memory is too high, some of the applications are crash 2016.01.15 start */
+        final SQLiteDatabase db;
+        try {
+            db = mHelper.getReadableDatabase();
+        } catch (SQLiteException e) {
+            Log.d(TAG, e.toString());
+            return null;
+        }
+        /* Fix Bug:522251 When the memory is too high, some of the applications are crash 2016.01.15 end */
         switch (sMatcher.match(uri)) {
             case URI_RECENT:
                 final long cutoff = System.currentTimeMillis() - MAX_HISTORY_IN_MILLIS;
@@ -200,7 +209,15 @@ public class RecentsProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        final SQLiteDatabase db = mHelper.getWritableDatabase();
+        /* Fix Bug:522251 When the memory is too high, some of the applications are crash 2016.01.15 start */
+        final SQLiteDatabase db;
+        try {
+            db = mHelper.getWritableDatabase();
+        } catch (SQLiteException e) {
+            Log.d(TAG, e.toString());
+            return null;
+        }
+        /* Fix Bug:522251 When the memory is too high, some of the applications are crash 2016.01.15 end */
         final ContentValues key = new ContentValues();
         switch (sMatcher.match(uri)) {
             case URI_RECENT:
@@ -257,18 +274,23 @@ public class RecentsProvider extends ContentProvider {
             // Purge references to unknown authorities
             final Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
             final Set<String> knownAuth = Sets.newHashSet();
-            for (ResolveInfo info : getContext()
-                    .getPackageManager().queryIntentContentProviders(intent, 0)) {
-                knownAuth.add(info.providerInfo.authority);
+            final List<ResolveInfo> infos = getContext().getPackageManager()
+                .queryIntentContentProviders(intent, 0);
+            if(infos != null) {
+                for (ResolveInfo info : infos) {
+                    knownAuth.add(info.providerInfo.authority);
+                }
             }
 
-            purgeByAuthority(new Predicate<String>() {
-                @Override
-                public boolean apply(String authority) {
-                    // Purge unknown authorities
-                    return !knownAuth.contains(authority);
-                }
-            });
+            if (!knownAuth.isEmpty()) {
+                 purgeByAuthority(new Predicate<String>() {
+                    @Override
+                    public boolean apply(String authority) {
+                        // Purge unknown authorities
+                        return !knownAuth.contains(authority);
+                    }
+                });
+            }
 
             return null;
 
@@ -277,9 +299,13 @@ public class RecentsProvider extends ContentProvider {
             final Intent intent = new Intent(DocumentsContract.PROVIDER_INTERFACE);
             intent.setPackage(arg);
             final Set<String> packageAuth = Sets.newHashSet();
-            for (ResolveInfo info : getContext()
-                    .getPackageManager().queryIntentContentProviders(intent, 0)) {
-                packageAuth.add(info.providerInfo.authority);
+
+            final List<ResolveInfo> infos = getContext().getPackageManager()
+                .queryIntentContentProviders(intent, 0);
+            if(infos != null) {
+                for (ResolveInfo info : infos) {
+                    packageAuth.add(info.providerInfo.authority);
+                }
             }
 
             if (!packageAuth.isEmpty()) {

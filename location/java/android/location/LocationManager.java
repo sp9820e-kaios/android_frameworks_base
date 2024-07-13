@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -206,6 +207,12 @@ public class LocationManager {
      */
     public static final String HIGH_POWER_REQUEST_CHANGE_ACTION =
         "android.location.HIGH_POWER_REQUEST_CHANGE";
+
+    /**
+     * SPRD: flag for cmcc versions.
+     * @hide
+     */
+    public static final boolean SUPPORT_CMCC = SystemProperties.get("ro.operator").equals("cmcc");
 
     // Map from LocationListeners to their associated ListenerTransport objects
     private HashMap<LocationListener,ListenerTransport> mListeners =
@@ -880,6 +887,8 @@ public class LocationManager {
             mService.requestLocationUpdates(request, transport, intent, packageName);
        } catch (RemoteException e) {
            Log.e(TAG, "RemoteException", e);
+       }catch (IllegalArgumentException e){
+           Log.e(TAG, "IllegalArgumentException", e);
        }
     }
 
@@ -1737,4 +1746,28 @@ public class LocationManager {
             throw new IllegalArgumentException("invalid geofence: " + fence);
         }
     }
+
+    /* SPRD:support AGPS settings @{ */
+    /**
+     * @hide
+     */
+    public void setAgpsServer(String provider, int type, String hostname, int port) {
+        try {
+            mService.setAgpsServer(provider, type, hostname, port);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "setAgpsServer: RemoteException", ex);
+        }
+    }
+
+    /**
+     * @hide
+     */
+    public void setPostionMode(String provider, int mode) {
+        try {
+            mService.setPostionMode(provider, mode);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "setPostionMode: RemoteException", ex);
+        }
+    }
+    /* @} */
 }

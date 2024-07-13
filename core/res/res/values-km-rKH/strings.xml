@@ -1145,12 +1145,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"ថយក្រោយ"</string>
     <string name="next_button_label" msgid="1080555104677992408">"បន្ទាប់​"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"រំលង"</string>
-    <string name="no_matches" msgid="8129421908915840737">"គ្មាន​ការ​ផ្គូផ្គង"</string>
     <string name="find_on_page" msgid="1946799233822820384">"រក​ក្នុង​ទំព័រ"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> នៃ <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">ការប្រកួត 1</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"រួចរាល់"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"កំពុង​លុប​ឧបករណ៍​ផ្ទុក​យូអេសប៊ី..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"កំពុង​លុប​កាត​អេសឌី..."</string>
@@ -1518,4 +1513,27 @@
       <item quantity="other">បានជ្រើស <xliff:g id="COUNT_1">%1$d</xliff:g></item>
       <item quantity="one">បានជ្រើស <xliff:g id="COUNT_0">%1$d</xliff:g></item>
     </plurals>
+    <string name="whichApplicationNamed">បំពេញសកម្មភាពនេះដោយប្រើប្រាស់%1$s</string>
+     <string name="tetheredPC_notification_title">"បានបើកប្រើមុខងារប្រើអ៊ីនធើនែតតាមUSB"</string>
+     <string name="ext_media_status_shared">"ចែករំលែកUMS"</string>
+     <string name="sim_ready_title_for_usb">ការព្រមាន</string>
+     <string name="sim_card_activation_warning">ក្នុងករណីដែលបានតម្លើងកម្មវិធីរបស់ភាគីទីបី សូមបញ្ចូលស៊ីមកាត/USIMកាតដើម្បីធ្វើអោយផតUSBសកម្ម។</string>
+     <string name="usb_ok">យល់ព្រម</string>
+     <string name="usb_cdrom_notification_title">"បានបើកប្រើប្រាស់ថាស"</string>
+     <string name="usb_charge_only_notification">"គ្រាន់តែភ្ជាប់ដើម្បីសាកថ្មីប៉ុណ្ណោះ"</string>
+     <string name="global_action_restart">"ចាប់ផ្ដើមឡើងវិញ"</string>
+     <string name="reboot_device_title">"ចាប់ផ្ដើមឡើងវិញ"</string>
+     <string name="global_reboot_close_apps">បិទរាល់កម្មវិធីទាំងអស់ ហើយធ្វើការបើកទូរស័ព្ទឡើងវិញ</string>
+     <string name="reboot_device_confirm">តើលោកអ្នកត្រូវការដំណើការទូរស័ព្ទរបស់លោកអ្នកឡើងវិញឥឡូវនេះឬ?</string>
+     <string name="station_state_msg">ស្ថានីយ៍%1$sត្រូវបានភ្ជាប់ហើយ ស្ថានីយ៍ %2$sត្រូវបានប្លុក</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"ទូរស័ព្ទនឹងបិទនៅ<xliff:g id="NUMBER">%d</xliff:g>វិនាទីបន្ទាប់"</item>
+<item quantity="other">"ទូរស័ព្ទនឹងបិទបន្ទាប់ពី<xliff:g id="NUMBER">%d</xliff:g> វិនាទីក្រោយ​។"</item>
+    </plurals>
+     <string name="phoneFixedNumber">"លេខទូរស័ព្ទហៅថេរ"</string>
+     <string name="gps_time_sync_fail_str">បរាជ័យក្នុងការទទួលយកពេលវេលានៃGPS</string>
+     <string name="disable_touch_mode_title">"បិទមុខងារថាច់ពេលនៅក្នុងហោប៉ាវ"</string>
+     <string name="disable_touch_mode_hint">"មិនត្រូវគ្របផ្នែកកំពូលនៃទូរស័ព្ទនោះទេ"</string>
+     <string name="exit_disable_touch_mode_hint">"លោកអ្នកក៏អាចចុចប៊ូតុងបិទបើកនិងប៊ូតុងតម្លើងសម្លេង ព្រមគ្នាដើម្បីបិទដំណើការម៉ូដនេះបានដែរ។"</string>
+
 </resources>

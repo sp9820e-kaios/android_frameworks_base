@@ -17,10 +17,14 @@
 package android.widget;
 
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+/* SPRD: modify 20160510 Spreadtrum of 558788 get size is 0,catch the IndexOutOfBoundsException @{ */
+import android.util.Log;
+/* @} */
 
 /**
  * ListAdapter used when a ListView has header views. This ListAdapter
@@ -30,6 +34,8 @@ import java.util.ArrayList;
  * use this class directly in your own code.
  */
 public class HeaderViewListAdapter implements WrapperListAdapter, Filterable {
+
+    private static final String TAG = "HeaderViewListAdapter";
 
     private final ListAdapter mAdapter;
 
@@ -161,7 +167,14 @@ public class HeaderViewListAdapter implements WrapperListAdapter, Filterable {
         }
 
         // Footer (off-limits positions will throw an IndexOutOfBoundsException)
-        return mFooterViewInfos.get(adjPosition - adapterCount).isSelectable;
+        /* SPRD: modify 20160510 Spreadtrum of 558788 get size is 0,catch the IndexOutOfBoundsException @{ */
+        try{
+            return mFooterViewInfos.get(adjPosition - adapterCount).isSelectable;
+        }catch (IndexOutOfBoundsException er){
+            Log.e("HeaderViewListAdapter", "IndexOutOfBoundsException");
+            return false;
+        }
+        /* @} */
     }
 
     public Object getItem(int position) {
@@ -221,6 +234,15 @@ public class HeaderViewListAdapter implements WrapperListAdapter, Filterable {
             }
         }
 
+        if (mAdapter == null) {
+            Log.w(TAG, "mAdapter is null , position = " + position + " numHeaders = " + numHeaders
+                    + " adjPosition = " + adjPosition + " adapterCount = " + adapterCount
+                    + " mFooterViewInfos.size() = " + mFooterViewInfos == null ? "mFooterViewInfos is null" : mFooterViewInfos.size() + "");
+        } else {
+            Log.w(TAG, "mAdapter is not null , position = " + position + " numHeaders = "
+                    + numHeaders + " adjPosition = " + adjPosition + " adapterCount = "
+                    + adapterCount + " mFooterViewInfos.size() = " + mFooterViewInfos == null ? "mFooterViewInfos is null" : mFooterViewInfos.size() + "");
+        }
         // Footer (off-limits positions will throw an IndexOutOfBoundsException)
         return mFooterViewInfos.get(adjPosition - adapterCount).view;
     }

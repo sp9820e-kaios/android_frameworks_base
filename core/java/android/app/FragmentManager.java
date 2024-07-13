@@ -22,6 +22,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -35,6 +36,7 @@ import android.util.AttributeSet;
 import android.util.DebugUtils;
 import android.util.Log;
 import android.util.LogWriter;
+import android.util.Slog;
 import android.util.SparseArray;
 import android.util.SuperNotCalledException;
 import android.view.LayoutInflater;
@@ -1031,7 +1033,9 @@ final class FragmentManagerImpl extends FragmentManager implements LayoutInflate
                         if (f.mView != null) {
                             // Need to save the current view state if not
                             // done already.
-                            if (mHost.onShouldSaveFragmentState(f) && f.mSavedViewState == null) {
+                            if (mHost == null )Slog.w(TAG,"mHost is null ,maybe need check. fragment is "+f.toString()+"; newState: "
+                                    +newState +"; f.mState: "+f.mState);
+                            if (mHost != null && mHost.onShouldSaveFragmentState(f) && f.mSavedViewState == null) {
                                 saveFragmentViewState(f);
                             }
                         }

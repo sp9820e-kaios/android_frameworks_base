@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="wifi_fail_to_scan">"Wala naka scan ug mga network"</string>
+<string name="wifi_security_none">"Wala"</string>
+<string name="wifi_remembered">"Nahinumdom"</string>
+<string name="wifi_disabled_generic">"Gipawng"</string>
+<string name="wifi_disabled_network_failure">"Pakyas nga Konpigurasyon sa IP"</string>
+<string name="wifi_disabled_wifi_failure">"WiFi koneksyon wala"</string>
+<string name="wifi_disabled_password_failure">"Problema sa pagpatinuod"</string>
+<string name="wifi_not_in_range">"Wala sa sukod"</string>
+<string name="wifi_no_internet">"Walay Internet Akses nga Na-detektahan, dili dayon makakonekta pagbalik"</string>
+<string name="saved_network">"Nasalbar sa <xliff:g id="name">%1$s</xliff:g>"</string>
+<string name="connected_via_wfa">"Konektado pinaagi sa Wi\u2011Fi asistant"</string>
+<string name="connected_via_passpoint">"Konektado pinaagi sa %1$s"</string>
+<string name="available_via_passpoint">"Makuha pinaagi sa %1$s"</string>
+<string name="wifi_connected_no_internet">"Konektado, walay internet"</string>
+<string name="bluetooth_disconnected">Tanggalon?</string>
+<string name="bluetooth_disconnecting">"Nag-diskonekta..."</string>
+<string name="bluetooth_connecting">"Nagkonekta..."</string>
+<string name="bluetooth_connected">"Konektado"</string>
+<string name="bluetooth_pairing">"Nagpares\u2026"</string>
+<string name="bluetooth_connected_no_headset">"Konektado (walay phone)"</string>
+<string name="bluetooth_connected_no_a2dp">"Konektado (walay media)"</string>
+<string name="bluetooth_connected_no_map">"KonektedoConnected (walay akses sa mensahe)"</string>
+<string name="bluetooth_connected_no_headset_no_a2dp">"Konektado (walay phone o media)"</string>
+<string name="bluetooth_profile_a2dp">"Midya tingog"</string>
+<string name="bluetooth_profile_headset">"phone"</string>
+<string name="bluetooth_profile_opp">"Balhin sa butanganan"</string>
+<string name="bluetooth_profile_hid">"Device para sa Interface sa Tawo"</string>
+<string name="bluetooth_profile_pan">"Access sa Internet"</string>
+<string name="bluetooth_profile_pbap">"Pagbahin sa Kontak"</string>
+<string name="bluetooth_profile_pbap_summary">"Gamit para sa pagbahin sa kontak"</string>
+<string name="bluetooth_profile_pan_nap">"Pagbahagi sa koneksyon sa internet"</string>
+<string name="bluetooth_profile_map">"Akses sa mensahe"</string>
+<string name="bluetooth_profile_sap">"SIM Akses"</string>
+<string name="bluetooth_a2dp_profile_summary_connected">"Konektado sa media audio"</string>
+<string name="bluetooth_headset_profile_summary_connected">"Konektado ngadto sa phone audio"</string>
+<string name="bluetooth_opp_profile_summary_connected">"Konektado sa server sa pagbalhin ug file"</string>
+<string name="bluetooth_map_profile_summary_connected">"Konektado sa mapa"</string>
+<string name="bluetooth_sap_profile_summary_connected">"Konektado sa SAP"</string>
+<string name="bluetooth_opp_profile_summary_not_connected">"Dili konektado sa server sa pagbalhin ug file"</string>
+<string name="bluetooth_hid_profile_summary_connected">"Konektado sa HID"</string>
+<string name="bluetooth_pan_user_profile_summary_connected">"Konektado ngadto sa device para sa access sa Internet"</string>
+<string name="bluetooth_pan_nap_profile_summary_connected">"Nagbahagi ug lokal nga koneksyon sa Internet uban sa device"</string>
+<string name="bluetooth_pan_profile_summary_use_for">"Gamit para sa access sa Internet"</string>
+<string name="bluetooth_map_profile_summary_use_for">"Gamit para sa mapa"</string>
+<string name="bluetooth_sap_profile_summary_use_for">"Gamit para sa pag-akses sa SIM"</string>
+<string name="bluetooth_a2dp_profile_summary_use_for">"Gamit para sa media audio"</string>
+<string name="bluetooth_headset_profile_summary_use_for">"Gamit para sa phone nga audio"</string>
+<string name="bluetooth_opp_profile_summary_use_for">"Gamit para sa pagbalhin ug file "</string>
+<string name="bluetooth_hid_profile_summary_use_for">"Gamit para sa HID input"</string>
+<string name="bluetooth_pairing_accept">"Pares"</string>
+<string name="bluetooth_pairing_accept_all_caps">"Pares"</string>
+<string name="bluetooth_pairing_decline">"Kansela"</string>
+<string name="bluetooth_pairing_will_share_phonebook">"Pagpares naghatag ug akses sa imong mga kontak ug kaagi sa tawag kung konektado."</string>
+<string name="bluetooth_pairing_error_message">"Dili magkapareha ug ang <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_pin_error_message">"Dili magkapareha ug ang <xliff:g id="device_name">%1$s</xliff:g> tungod sa sayop nga PIN o passkey."</string>
+<string name="bluetooth_pairing_device_down_error_message">"Dili maka komunikar ug ang <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_rejected_error_message">"Ang pagpares gibalibaran <xliff:g id="device_name">%1$s</xliff:g>."</string>
+    <string name="wifi_secured_first_item">"Sigudado sa <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_secured_second_item">", sigurado sa <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_wps_available_first_item">"WPS kay maggamit"</string>
+     <string name="wifi_wps_available_second_item">"\u0020(WPS kay maggamit)"</string>
+
+</resources>

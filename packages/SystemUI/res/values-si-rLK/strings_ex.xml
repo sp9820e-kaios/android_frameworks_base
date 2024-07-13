@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ගෙන යා හැකි Wi-Fi හොට්ස්පොට් සඳහා ජංගම දත්ත සබැඳීම අවශ්‍යයි, අමතර පිරිවැය ඇති කළ හැකිය."</string>
+<string name="softap_bt_cannot_coexist">"බ්ලූටූත් සබල හෝ ක්‍රියාත්මක විට, softap ක්‍රියා නොකළ හැකිය, ඔබට softap භාවිත කිරීමට අවශ්‍ය නම්, කරුණාකර බ්ලූටූත් අබල බව සහතික කර ගන්න."</string>
+<string name="bt_softap_cannot_coexist">"softap සබල හෝ ක්‍රියාත්මක විට, බ්ලූටූත් ක්‍රියා නොකළ හැකිය, ඔබට බ්ලූටූත් භාවිත කිරීමට අවශ්‍ය නම්, කරුණාකර softap අබල බව සහතික කර ගන්න."</string>
+<string name="lte_service_error_airplane">"දුරකථනය ගුවන් යානා ප්‍රකාරය තුළ ඇති විට ඔබට LTE භාවිත කළ නොහැකිය."</string>
+<string name="lte_service_error_incall">"ඔබට ඇමතුම අතරතුර LTE සේවාව මාරු කළ නොහැකිය."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ක්‍රියාත්මකයි"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ක්‍රියාවිරහිතයි"</string>
+<string name="accessibility_quick_settings_lte_on">"4G සක්‍රියයි"</string>
+<string name="accessibility_quick_settings_lte_off">"4G අක්‍රියයි"</string>
+<string name="toggle_data_error_airplane">"දුරකථනය ගුවන් යානා ප්‍රකාරය තුළ ඇති විට ඔබට ජංගම දත්ත භාවිත කළ නොහැකිය."</string>
+<string name="quick_settings_data_connection_label">"දත්ත"</string>
+<string name="accessibility_quick_settings_data_changed_on">"දත්ත ක්‍රියාත්මකයි"</string>
+<string name="accessibility_quick_settings_data_changed_off">"දත්ත ක්‍රියාවිරහිතයි"</string>
+<string name="accessibility_quick_settings_data_on">"දත්ත සක්‍රියයි"</string>
+<string name="accessibility_quick_settings_data_off">"දත්ත අක්‍රියයි"</string>
+<string name="missing_sim_message">"sim නොමැත"</string>
+</resources>

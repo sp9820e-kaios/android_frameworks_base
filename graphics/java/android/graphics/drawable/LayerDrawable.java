@@ -133,7 +133,7 @@ public class LayerDrawable extends Drawable implements Drawable.Callback {
         mLayerState.mChildren = r;
 
         ensurePadding();
-        refreshPadding();
+        //refreshPadding();
     }
 
     LayerDrawable() {
@@ -144,7 +144,7 @@ public class LayerDrawable extends Drawable implements Drawable.Callback {
         mLayerState = createConstantState(state, res);
         if (mLayerState.mNum > 0) {
             ensurePadding();
-            refreshPadding();
+            //refreshPadding();
         }
     }
 
@@ -164,7 +164,7 @@ public class LayerDrawable extends Drawable implements Drawable.Callback {
         inflateLayers(r, parser, attrs, theme);
 
         ensurePadding();
-        refreshPadding();
+        //refreshPadding();
     }
 
     /**
@@ -1629,13 +1629,14 @@ public class LayerDrawable extends Drawable implements Drawable.Callback {
         mPaddingB = new int[N];
     }
 
-    void refreshPadding() {
+    //SPRD 494209: refreshPadding in Constructor and inflate() of LayerDrawable & RippleDrawable causes abnormal drawing, do not use it
+    /*void refreshPadding() {
         final int N = mLayerState.mNum;
         final ChildDrawable[] array = mLayerState.mChildren;
         for (int i = 0; i < N; i++) {
             refreshChildPadding(i, array[i]);
         }
-    }
+    }*/
 
     @Override
     public ConstantState getConstantState() {

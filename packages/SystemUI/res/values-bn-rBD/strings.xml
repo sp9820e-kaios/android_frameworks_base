@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"অভিনন্দন! সেটিংস -এ সিস্টেম UI টিউনার যোগ করা হয়েছে"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"সেটিংস থেকে সরান"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"সেটিংস থেকে সিস্টেম UI টিউনার সরাতে এবং এটির সমস্ত বৈশিষ্ট্য ব্যবহার করা বন্ধ করতে চান?"</string>
+    <string name="quick_settings_volume_label">"অডিও প্রোফাইল"</string>
+     <string name="assistant_key_home">হোম</string>
+     <string name="assistant_key_search">অনুসন্ধান</string>
+     <string name="assistant_key_menu">মেনু</string>
+     <string name="assistant_key_back">পিছনে</string>
+
+    <string name="vibrate_hint">"কম্পনের জন্য বাঁদিকে সোয়াইপ করুন"</string>
+     <string name="battery_overtage_title">"নিরাপত্তা সতর্কবাণী"</string>
+     <string name="battery_overtage_content">"চার্জ করার ভোল্টেজ খুব বেশী!"</string>
+     <string name="battery_overtage_back">পিছনে</string>
+    <string name="recent_app_clean_finished_toast">"প্রকাশ <xliff:g id="count">%1$s</xliff:g> মেমোরি,<xliff:g id="count">%2$s</xliff:g>এখন উপলদ্ধ।"</string>
+     <string name="label_tab_notifications">অবহিত</string>
+     <string name="label_tab_qs">"পাল্টান"</string>
+     <string name="label_screen_brightness">"প্রদর্শনের উজ্জ্বলতা"</string>
+     <string name="label_star_unlock">"* আনলক অনেকক্ষণ চেপে রাখুন"</string>
+     <string name="speak_spec">"ঘ: মি:"</string>
 </resources>

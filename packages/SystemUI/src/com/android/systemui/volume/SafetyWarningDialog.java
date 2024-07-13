@@ -73,8 +73,9 @@ abstract public class SafetyWarningDialog extends SystemUIDialog
         if (keyCode == KeyEvent.KEYCODE_VOLUME_UP && mNewVolumeUp
                 && (System.currentTimeMillis() - mShowTime) > KEY_CONFIRM_ALLOWED_AFTER) {
             if (D.BUG) Log.d(TAG, "Confirmed warning via VOLUME_UP");
-            mAudioManager.disableSafeMediaVolume();
-            dismiss();
+            // SPRD: bug 577557 SafetyWarningDialog dissmiss after click volume up key.
+            //mAudioManager.disableSafeMediaVolume();
+            //dismiss();
         }
         return super.onKeyUp(keyCode, event);
     }

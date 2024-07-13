@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Հետ"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Հաջորդը"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Բաց թողնել"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Համընկնում չկա"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Գտեք էջում"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="one"><xliff:g id="INDEX">%d</xliff:g>՝ <xliff:g id="TOTAL">%d</xliff:g>-ից</item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g>՝ <xliff:g id="TOTAL">%d</xliff:g>-ից</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Կատարված է"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Ջնջում է USB կրիչը..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Ջնջում է SD քարտը..."</string>

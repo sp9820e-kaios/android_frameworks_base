@@ -27,9 +27,10 @@
     <string name="menu_settings" msgid="6008033148948428823">"設定"</string>
     <string name="menu_open" msgid="432922957274920903">"開啟"</string>
     <string name="menu_save" msgid="2394743337684426338">"儲存"</string>
-    <string name="menu_share" msgid="3075149983979628146">"共用"</string>
+    <string name="menu_share" msgid="3075149983979628146">"分享"</string>
     <string name="menu_delete" msgid="8138799623850614177">"刪除"</string>
     <string name="menu_select_all" msgid="8323579667348729928">"全選"</string>
+    <string name="menu_deselect_all">"取消全選"</string>
     <string name="menu_copy" msgid="3612326052677229148">"複製到…"</string>
     <string name="menu_advanced_show" product="nosdcard" msgid="4693652895715631401">"顯示內部儲存空間"</string>
     <string name="menu_advanced_show" product="default" msgid="5792182900084144261">"顯示 SD 卡"</string>
@@ -71,4 +72,12 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"輕觸即可查看詳細資料"</string>
     <string name="retry" msgid="7564024179122207376">"重試"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"未複製這些檔案：<xliff:g id="LIST">%1$s</xliff:g>"</string>
+
+    <string name="shared_error">無法分享檔案</string>
+    <string name="documents_deleting">正在刪除文件</string>
+    <string name="error_permissions">"這個應用程式缺乏必要的關鍵權限，因此無法執行。請檢查您的權限設定。"</string>
+    <!-- SPRD: Add for bug499812, Copy a folder into itself,delete the folder,there is a high probability of  happened ANR. { -->
+    <string name="cannot_copyfolder_itself">你無法將資料夾複製到自身</string>
+    <string name="cannot_copy_drm">無法複製DRM檔案</string>
+    <string name="cannot_copy_downloading">無法複製下載中的檔案</string>
 </resources>

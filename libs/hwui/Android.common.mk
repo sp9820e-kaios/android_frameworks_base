@@ -125,3 +125,7 @@ LOCAL_CFLAGS += -ffast-math -O3
 ifneq ($(USE_CLANG_PLATFORM_BUILD),true)
     LOCAL_CFLAGS += -Werror
 endif
+
+ifeq ($(DEVICE_USE_OFFILNE_COMPILER_SHADER),true)
+    LOCAL_CFLAGS += -DUSE_OFFLINE_COMPILER_SHADER
+endif

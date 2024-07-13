@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"‏مبارک ہو! سسٹم UI ٹیونر کو ترتیبات میں شامل کر دیا گیا ہے"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"ترتیبات سے ہٹائیں"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"‏ترتیبات سے سسٹم UI ٹیونر کو ہٹائیں اور اس کی سبھی خصوصیات کا استعمال بند کریں؟"</string>
+    <string name="quick_settings_volume_label">"آڈیو پروفائل"</string>
+     <string name="assistant_key_home">"ہوم"</string>
+     <string name="assistant_key_search">"تلاش کریں"</string>
+     <string name="assistant_key_menu">"مینو"</string>
+     <string name="assistant_key_back">"واپس جائیں"</string>
+
+    <string name="vibrate_hint">"ارتعاش کیلئے دائیں جانب سوائپ کریں"</string>
+     <string name="battery_overtage_title">سلامتی کی انتیباہ</string>
+     <string name="battery_overtage_content">"چارجنگ وولٹیج بہت زیادہ ہے!"</string>
+     <string name="battery_overtage_back">"واپس جائیں"</string>
+    <string name="recent_app_clean_finished_toast">"<xliff:g id="count">%1$s</xliff:g> میموری,<xliff:g id="count">%2$s</xliff:g> کا اجراء کریں ابھی دستیاب ہے"</string>
+     <string name="label_tab_notifications">"مطلع کریں"</string>
+     <string name="label_tab_qs">"تبدیل کریں"</string>
+     <string name="label_screen_brightness">"ڈسپلے کی چمک"</string>
+     <string name="label_star_unlock">"طویل دبانا * غیرمقفل"</string>
+     <string name="speak_spec">"گھنٹے منٹ"</string>
 </resources>

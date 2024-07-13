@@ -1150,13 +1150,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Atpakaļ"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Tālāk"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Izlaist"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Nav atbilstību"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Atrast lapā"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="zero"><xliff:g id="INDEX">%d</xliff:g>. no <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one"><xliff:g id="INDEX">%d</xliff:g>. no <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g>. no <xliff:g id="TOTAL">%d</xliff:g></item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Gatavs"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Notiek USB atmiņas dzēšana..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Notiek SD kartes dzēšana..."</string>
@@ -1534,4 +1528,31 @@
       <item quantity="one"><xliff:g id="COUNT_1">%1$d</xliff:g> atlasīts</item>
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> atlasīti</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB - Interneta Piesaiste aktīva"</string>
+     <string name="ext_media_status_shared">"UMS Kopīgots"</string>
+     <string name="sim_ready_title_for_usb">Brīdinājums</string>
+     <string name="sim_card_activation_warning">"Trešās personas aplikācijas instalēšanas gadījumā, lūdzu uevadiet SIM/USIM karti, lai aktivētu USB. "</string>
+     <string name="usb_ok">"Labi"</string>
+     <string name="usb_cdrom_notification_title">"Virtuālais draiveris ieslēgts"</string>
+     <string name="usb_charge_only_notification">"Savienots tikai uzlādēšanai"</string>
+     <string name="global_action_restart">"Restartēt"</string>
+     <string name="reboot_device_title">"Restartēt"</string>
+     <string name="global_reboot_close_apps">"Aizvērt visas aplikācijas un restartēt telefonu"</string>
+     <string name="reboot_device_confirm">"Vai jūs vēlētos restartēt jūsu telefonu ?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Telefons izslēgsies pēc <xliff:g id="NUMBER">%d</xliff:g> sekundes"</item>
+<item quantity="other">"Telefons izslēgsies pēc <xliff:g id="NUMBER">%d</xliff:g> sekundēm"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s savienots, %2$s bloķēts"</string>
+     <string name="phoneFixedNumber">"Fiksēts nummurs"</string>
+     <string name="gps_time_sync_fail_str">"Nevar iegūt GPS laiku"</string>
+     <string name="disable_touch_mode_title">"Kabatas-pieskāriena atspējošana"</string>
+     <string name="disable_touch_mode_hint">"Neaizsedziet telefona augšējo virsmu"</string>
+     <string name="exit_disable_touch_mode_hint">"Jūs varat arī nospiest ieslēgšanas un skaņas paaugstināšanas pogas, lai atspējotu šo režīmu"</string>
+
 </resources>

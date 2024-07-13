@@ -48,6 +48,10 @@
     <string name="wifi_security_psk_generic">@string/wifi_security_wpa_wpa2</string>
     <!-- Do not translate.  Concise terminology for wifi with 802.1x EAP security -->
     <string name="wifi_security_eap">802.1x EAP</string>
+    <!-- Do not translate.  Concise terminology for wifi with WAPI_PSK -->
+    <string name="wifi_security_wapi_psk">WAPI PSK</string>
+    <!-- Do not translate.  Concise terminology for wifi with WAPI_CERT -->
+    <string name="wifi_security_wapi_cert">WAPI CERT</string>
     <!-- Do not translate.  Concise terminology for Passpoint network -->
     <string name="wifi_security_passpoint">Passpoint</string>
 
@@ -195,4 +199,18 @@
     <!-- Content description of the WIFI signal when it is full for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_wifi_signal_full">Wifi signal full.</string>
 
+    <string name="wifi_security_ft_psk">FT PSK</string>
+    <string name="wifi_security_ft_eap">FT EAP</string>
+
+    <string name="wifi_secured_first_item">Secured with <xliff:g>%1$s</xliff:g></string>
+    <string name="wifi_secured_second_item">, secured with <xliff:g>%1$s</xliff:g></string>
+    <!-- Substring of status line when Wi-Fi Protected Setup (WPS) is available and
+         string is listed first [CHAR LIMIT=20]-->
+    <string name="wifi_wps_available_first_item">WPS available</string>
+    <!-- Substring of wifi status when Wi-Fi Protected Setup (WPS) is available and
+         string is listed after a wifi_secured_* string-->
+    <string name="wifi_wps_available_second_item">\u0020(WPS available)</string>
+
+    <string name="wifi_security_psk_sha256">PSK-SHA256</string>
+    <string name="wifi_security_eap_sha256">EAP-SHA256</string>
 </resources>

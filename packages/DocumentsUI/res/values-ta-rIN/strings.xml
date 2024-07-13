@@ -29,7 +29,7 @@
     <string name="menu_save" msgid="2394743337684426338">"சேமி"</string>
     <string name="menu_share" msgid="3075149983979628146">"பகிர்"</string>
     <string name="menu_delete" msgid="8138799623850614177">"நீக்கு"</string>
-    <string name="menu_select_all" msgid="8323579667348729928">"எல்லாவற்றையும் தேர்ந்தெடு"</string>
+    <string name="menu_select_all" msgid="8323579667348729928">"அனைத்தையும் தேர்வுநீக்கு"</string>
     <string name="menu_copy" msgid="3612326052677229148">"இங்கு நகலெடு…"</string>
     <string name="menu_advanced_show" product="nosdcard" msgid="4693652895715631401">"அகச் சேமிப்பகத்தைக் காட்டு"</string>
     <string name="menu_advanced_show" product="default" msgid="5792182900084144261">"SD கார்டைக் காட்டு"</string>
@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"விவரங்களைப் பார்க்க, தொடவும்"</string>
     <string name="retry" msgid="7564024179122207376">"மீண்டும் முயற்சிக்கவும்"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"நகலெடுக்கப்படாத கோப்புகள்: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"கோப்பை பகிர முடியவில்லை"</string>
+     <string name="documents_deleting">"ஆவணங்களை நீக்குகிறது"</string>
+     <string name="cannot_copyfolder_itself">"கோப்புறையை அதற்குள்ளேயே நீங்கள் பிரதி எடுக்க முடியாது"</string>
+
+    <string name="error_permissions">"இயக்குவதற்குத் தேவைப்படும் முக்கியமான அனுமதிகள் பயன்பாட்டில் இல்லை. உங்கள் அனுமதிகளின் அமைப்புகளைச் சரிபார்க்கவும்."</string>
+     <string name="cannot_copy_drm">"DRM பைல்களை காப்பி பண்ண முடியாது"</string>
+     <string name="cannot_copy_downloading">"டவுண்லோடிங் பைல்களை காப்பி பண்ண முடியாது"</string>
 </resources>

@@ -273,6 +273,14 @@ public class CameraCaptureSessionImpl extends CameraCaptureSession
         mDeviceImpl.stopRepeating();
     }
 
+    /**
+     * SPRD:fix bug 473462 add for burst capture
+     */
+    @Override
+    public int cancelPicture() throws CameraAccessException {
+        return mDeviceImpl.cancelPicture();
+    }
+
     @Override
     public synchronized void abortCaptures() throws CameraAccessException {
         checkNotClosed();

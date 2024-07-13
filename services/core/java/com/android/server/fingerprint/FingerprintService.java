@@ -58,6 +58,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+// Add by silead begin
+import android.content.BroadcastReceiver;
+import android.content.Intent;
+import android.content.IntentFilter;
+// Add by silead end
 
 /**
  * A service to manage multiple clients that want to access the fingerprint HAL API.
@@ -710,7 +715,117 @@ public class FingerprintService extends SystemService implements IBinder.DeathRe
                 }
             });
         }
+        // Add by silead begin
+        @Override
+        public int setScreenStatus(int screenStatus) {
+            return sileadSetScreenStatus(screenStatus);
+        }
 
+        @Override
+        public int setFPEnableCredential(int index, int enable){
+            return sileadSetFPEnableCredential(index,enable);
+        }
+
+        @Override
+        public int getFPEnableCredential(int index){
+            return sileadGetFPEnableCredential(index);
+        }
+
+        @Override
+        public int getFPVirtualKeyCode(){
+            return sileadGetFPVirtualKeyCode();
+        }
+
+        @Override
+        public int setFPVirtualKeyCode(int virtualKeyCode){
+            return sileadSetFPVirtualKeyCode(virtualKeyCode);
+        }
+
+        @Override
+        public int getFPLongPressVirtualKeyCode(){
+            return sileadGetFPLongPressVirtualKeyCode();
+        }
+
+        @Override
+        public int setFPLongPressVirtualKeyCode(int virtualKeyCode){
+            return sileadSetFPLongPressVirtualKeyCode(virtualKeyCode);
+        }
+
+        @Override
+        public int getFPDouClickVirtualKeyCode(){
+            return sileadGetFPDouClickVirtualKeyCode();
+        }
+
+        @Override
+        public int setFPDouClickVirtualKeyCode(int virtualKeyCode){
+            return sileadSetFPDouClickVirtualKeyCode(virtualKeyCode);
+        }
+
+        @Override
+        public int getFPVirtualKeyState(){
+            return sileadGetFPVirtualKeyState();
+        }
+
+        @Override
+        public int setFPVirtualKeyState(int virtualKeyState){
+            return sileadSetFPVirtualKeyState(virtualKeyState);
+        }
+
+        @Override
+        public int getFPWakeUpState(){
+            return sileadGetFPWakeUpState();
+        }
+
+        @Override
+        public int setFPWakeUpState(int wakeUpState){
+            return sileadSetFPWakeUpState(wakeUpState);
+        }
+
+        @Override
+        public int getFingerPrintState(){
+            return sileadGetFingerPrintState();
+        }
+
+        @Override
+        public int setFingerPrintState(int fingerPrintState){
+            return sileadSetFingerPrintState(fingerPrintState);
+        }
+
+        @Override
+        public int setFPPowerFuncKeyState(int funcKeyState){
+            return sileadSetFPPowerFuncKeyState(funcKeyState);
+        }
+
+        @Override
+        public int getFPPowerFuncKeyState(){
+            return sileadGetFPPowerFuncKeyState();
+        }
+
+        @Override
+        public int setFPIdleFuncKeyState(int funcKeyState){
+            return sileadSetFPIdleFuncKeyState(funcKeyState);
+        }
+
+        @Override
+        public int getFPIdleFuncKeyState(){
+            return sileadGetFPIdleFuncKeyState();
+        }
+
+        @Override
+        public int setFPWholeFuncKeyState(int funcKeyState){
+            return sileadSetFPWholeFuncKeyState(funcKeyState);
+        }
+
+        @Override
+        public int setFPFunctionKeyState(int index, int enable){
+            return sileadSetFPFunctionKeyState(index,enable);
+        }
+
+        @Override
+        public int getFPFunctionKeyState(int index){
+            return sileadGetFPFunctionKeyState(index);
+        }
+        // Add by silead end
         private boolean isRestricted() {
             // Only give privileged apps (like Settings) access to fingerprint info
             final boolean restricted = !hasPermission(MANAGE_FINGERPRINT);
@@ -850,7 +965,295 @@ public class FingerprintService extends SystemService implements IBinder.DeathRe
             return FingerprintService.this.getAuthenticatorId();
         }
     }
+    // Add by silead begin
+    private int sileadSetScreenStatus(int screenStatus) {
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPScreenStatus(screenStatus);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE sileadSetScreenStatus occurs exception: ", e);
+            }
+        }
+        return -1;
+    }
 
+    private int sileadSetFPEnableCredential(int index, int enable){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPEnableCredential(index,enable);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPEnableCredential occurs exception: ", e);
+            }
+        }
+        return -1;
+    }
+
+    private int sileadGetFPEnableCredential(int index){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPEnableCredential(index);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPEnableCredential occurs exception: ", e);
+            }
+        }
+        return  0;
+    }
+
+    private int sileadGetFPVirtualKeyCode(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPVirtualKeyCode();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPVirtualKeyCode occurs exception: ", e);
+            }
+        }
+        return -1;
+    }
+
+    private int sileadSetFPVirtualKeyCode(int virtualKeyCode){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPVirtualKeyCode(virtualKeyCode);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPVirtualKeyCode occurs exception: ", e);
+            }
+        }
+
+         return -1;
+    }
+
+    private int sileadGetFPLongPressVirtualKeyCode(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPLongPressVirtualKeyCode();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPLongPressVirtualKeyCode occurs exception: ", e);
+            }
+        }
+
+         return 0;
+    }
+
+    private int sileadSetFPLongPressVirtualKeyCode(int virtualKeyCode){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPLongPressVirtualKeyCode(virtualKeyCode);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPLongPressVirtualKeyCode occurs exception: ", e);
+            }
+        }
+
+         return -1;
+    }
+
+    private int sileadGetFPDouClickVirtualKeyCode(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPDouClickVirtualKeyCode();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPDouClickVirtualKeyCode occurs exception: ", e);
+            }
+        }
+
+         return 0;
+    }
+
+    private int sileadSetFPDouClickVirtualKeyCode(int virtualKeyCode){
+       IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPDouClickVirtualKeyCode(virtualKeyCode);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPDouClickVirtualKeyCode occurs exception: ", e);
+            }
+        }
+
+         return -1;
+    }
+
+    private int sileadGetFPVirtualKeyState(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPVirtualKeyState();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPVirtualKeyState occurs exception: ", e);
+            }
+        }
+
+         return 0;
+    }
+
+    private int sileadSetFPVirtualKeyState(int virtualKeyState){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPVirtualKeyState(virtualKeyState);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPVirtualKeyState occurs exception: ", e);
+            }
+        }
+
+         return -1;
+    }
+
+    private int sileadGetFPWakeUpState(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPWakeUpState();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPWakeUpState occurs exception: ", e);
+            }
+        }
+
+         return 0;
+    }
+
+    private int sileadSetFPWakeUpState(int wakeUpState){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPWakeUpState(wakeUpState);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPWakeUpState occurs exception: ", e);
+            }
+        }
+
+         return -1;
+    }
+
+    private int sileadGetFingerPrintState(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFingerPrintState();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFingerPrintState occurs exception: ", e);
+            }
+        }
+
+         return 0;
+    }
+
+    private int sileadSetFingerPrintState(int fingerPrintState){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFingerPrintState(fingerPrintState);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFingerPrintState occurs exception: ", e);
+            }
+        }
+
+         return 0;
+    }
+
+   private int sileadSetFPPowerFuncKeyState(int funcKeyState){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPPowerFuncKeyState(funcKeyState);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPPowerFuncKeyState occurs exception: ", e);
+            }
+        }
+        return -1;
+    }
+
+    private int sileadGetFPPowerFuncKeyState(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPPowerFuncKeyState();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPPowerFuncKeyState occurs exception: ", e);
+            }
+        }
+        return 0;
+    }
+
+    private int sileadSetFPIdleFuncKeyState(int funcKeyState){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPIdleFuncKeyState(funcKeyState);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPPowerFuncKeyState occurs exception: ", e);
+            }
+        }
+        return 0;
+    }
+
+    private int sileadGetFPIdleFuncKeyState(){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPIdleFuncKeyState();
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPIdleFuncKeyState occurs exception: ", e);
+            }
+        }
+        return 0;
+    }
+
+    private int sileadSetFPWholeFuncKeyState(int funcKeyState){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPWholeFuncKeyState(funcKeyState);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPWholeFuncKeyState occurs exception: ", e);
+            }
+        }
+        return 0;
+    }
+
+    private int sileadSetFPFunctionKeyState(int index, int enable){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.setFPFunctionKeyState(index,enable);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE setFPFunctionKeyState occurs exception: ", e);
+            }
+        }
+        return -1;
+    }
+
+    private int sileadGetFPFunctionKeyState(int index){
+        IFingerprintDaemon daemon = getFingerprintDaemon();
+        if (daemon != null) {
+            try {
+                return daemon.getFPFunctionKeyState(index);
+            } catch(RemoteException e) {
+                Slog.e(TAG, "SLCODE getFPFunctionKeyState occurs exception: ", e);
+            }
+        }
+        return  0;
+    }
+
+    private BroadcastReceiver screenReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Slog.v(TAG, " SLCODE screenReceiver recv action: " + action);
+            if(Intent.ACTION_SCREEN_OFF.equals(action)) {
+                //setScreenStatus(0);
+            } else if (Intent.ACTION_SCREEN_ON.equals(action)) {
+                //setScreenStatus(1);
+            }
+        }
+    };
+    // Add by silead end
     @Override
     public void onStart() {
         publishBinderService(Context.FINGERPRINT_SERVICE, new FingerprintServiceWrapper());

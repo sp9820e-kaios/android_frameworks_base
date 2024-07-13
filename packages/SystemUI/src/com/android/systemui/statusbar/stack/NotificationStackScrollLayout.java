@@ -26,12 +26,16 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
+import android.widget.LinearLayout;
 import android.widget.OverScroller;
 
 import com.android.systemui.ExpandHelper;
@@ -53,13 +57,14 @@ import com.android.systemui.statusbar.phone.ScrimController;
 import com.android.systemui.statusbar.policy.HeadsUpManager;
 import com.android.systemui.statusbar.policy.ScrollAdapter;
 
+import java.lang.Throwable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
  * A layout which handles a dynamic amount of notifications and presents them in a scrollable stack.
  */
-public class NotificationStackScrollLayout extends ViewGroup
+public class NotificationStackScrollLayout extends /*ViewGroup*/LinearLayout
         implements SwipeHelper.Callback, ExpandHelper.Callback, ScrollAdapter,
         ExpandableView.OnHeightChangedListener, NotificationGroupManager.OnGroupChangeListener {
 
@@ -231,6 +236,9 @@ public class NotificationStackScrollLayout extends ViewGroup
     private boolean mForceNoOverlappingRendering;
     private NotificationOverflowContainer mOverflowContainer;
     private final ArrayList<Pair<ExpandableNotificationRow, Boolean>> mTmpList = new ArrayList<>();
+    /* SPRD: Bug 583693 NSSL original height {@ */
+    private int mOriginalNSSLHeight;
+    /* @} */
 
     public NotificationStackScrollLayout(Context context) {
         this(context, null);
@@ -294,6 +302,7 @@ public class NotificationStackScrollLayout extends ViewGroup
         mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
         mOverflingDistance = configuration.getScaledOverflingDistance();
 
+        // SPRD: Bug 583693 PikeL Feature, rebase to original code, modify the value in dimens.xml
         mSidePaddings = context.getResources()
                 .getDimensionPixelSize(R.dimen.notification_side_padding);
         mCollapsedSize = context.getResources()
@@ -304,15 +313,26 @@ public class NotificationStackScrollLayout extends ViewGroup
         mStackScrollAlgorithm.setDimmed(mAmbientState.isDimmed());
         mPaddingBetweenElementsDimmed = context.getResources()
                 .getDimensionPixelSize(R.dimen.notification_padding_dimmed);
+        // SPRD: Bug 583693 PikeL Feature, rebase to original code, modify the value in dimens.xml
         mPaddingBetweenElementsNormal = context.getResources()
                 .getDimensionPixelSize(R.dimen.notification_padding);
         updatePadding(mAmbientState.isDimmed());
         mMinTopOverScrollToEscape = getResources().getDimensionPixelSize(
                 R.dimen.min_top_overscroll_to_qs);
+        // SPRD: Bug 583693 PikeL Feature, rebase to original code, needn't modification
         mNotificationTopPadding = getResources().getDimensionPixelSize(
                 R.dimen.notifications_top_padding);
         mCollapseSecondCardPadding = getResources().getDimensionPixelSize(
                 R.dimen.notification_collapse_second_card_padding);
+        /* SPRD: Bug 583693 NSSL original height {@ */
+        DisplayMetrics dm = new DisplayMetrics();
+        Display display = ((WindowManager)context.getSystemService(
+                Context.WINDOW_SERVICE)).getDefaultDisplay();
+        display.getMetrics(dm);
+        mOriginalNSSLHeight = dm.heightPixels - getResources().getDimensionPixelSize(
+                R.dimen.switch_buttons_height);
+        Log.d(TAG, "initView#Display Attribute: " + dm.heightPixels + "; mOriginalNSSLHeight: "+mOriginalNSSLHeight);
+        /* @} */
     }
 
     private void updatePadding(boolean dimmed) {
@@ -337,6 +357,28 @@ public class NotificationStackScrollLayout extends ViewGroup
         int size = MeasureSpec.getSize(widthMeasureSpec);
         int childMeasureSpec = MeasureSpec.makeMeasureSpec(size - 2 * mSidePaddings, mode);
         measureChildren(childMeasureSpec, heightMeasureSpec);
+        /* SPRD: Bug 583693 ensure notifications not overlap even if there are many items {@ */
+        int height = 0;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child.getVisibility() != View.GONE) {
+                if (height != 0) {
+                    // add the padding before this element
+                    height += mPaddingBetweenElements;
+                }
+                if (child instanceof ExpandableView) {
+                    ExpandableView expandableView = (ExpandableView) child;
+                    height += expandableView.getIntrinsicHeight();
+                }
+            }
+        }
+        Log.d(TAG, "onMeasure#the notifications and padding's height: " + height);
+        if(height > mOriginalNSSLHeight) {
+            setMeasuredDimension(size, height);
+        } else {
+            setMeasuredDimension(size, mOriginalNSSLHeight);
+        }
+        /* @} */
     }
 
     @Override
@@ -356,6 +398,7 @@ public class NotificationStackScrollLayout extends ViewGroup
                     (int) (centerX + width / 2.0f),
                     (int) height);
         }
+        Log.d(TAG, "onLayout#getChildCount(): " + getChildCount() + "; getHeight(): "+getHeight());
         setMaxLayoutHeight(getHeight());
         updateContentHeight();
         clampScrollPosition();
@@ -416,7 +459,9 @@ public class NotificationStackScrollLayout extends ViewGroup
     }
 
     private void updateAlgorithmHeightAndPadding() {
-        mAmbientState.setLayoutHeight(getLayoutHeight());
+        /* SPRD: Bug 583693 this must be modified to avoid gap between two notifications {@ */
+        mAmbientState.setLayoutHeight(/*getLayoutHeight()*/mMaxLayoutHeight);
+        /* @} */
         mAmbientState.setTopPadding(mTopPadding);
     }
 
@@ -522,7 +567,9 @@ public class NotificationStackScrollLayout extends ViewGroup
             updateAlgorithmHeightAndPadding();
             requestChildrenUpdate();
         }
-        setStackTranslation(paddingOffset);
+        /* SPRD: Bug 583693 Fix the gap(padding value) of the first notification {@ */
+        setStackTranslation(/*paddingOffset*/0);
+        /* @} */
     }
 
     public float getStackTranslation() {
@@ -1482,8 +1529,10 @@ public class NotificationStackScrollLayout extends ViewGroup
         } else {
             mTopPaddingOverflow = 0;
         }
-        setTopPadding(ignoreIntrinsicPadding ? (int) start : clampPadding((int) start),
+        /* SPRD: Bug 583693 Notification hide in keyguard and location when click button {@ */
+        setTopPadding(ignoreIntrinsicPadding ? (int) start : /*clampPadding((int) start)*/0,
                 animate);
+        /* @} */
         setStackHeight(mLastSetStackHeight);
     }
 
@@ -2409,11 +2458,12 @@ public class NotificationStackScrollLayout extends ViewGroup
 
     public void setSpeedBumpView(SpeedBumpView speedBumpView) {
         mSpeedBumpView = speedBumpView;
-        addView(speedBumpView);
+        //addView(speedBumpView);    // SPRD: Bug 583693 this view isn't supported in PikeL
     }
 
     private void updateSpeedBump(boolean visible) {
-        boolean notGoneBefore = mSpeedBumpView.getVisibility() != GONE;
+        /* SPRD: Bug 583693 hide bump view in anytime {@ */
+        /*boolean notGoneBefore = mSpeedBumpView.getVisibility() != GONE;
         if (visible != notGoneBefore) {
             int newVisibility = visible ? VISIBLE : GONE;
             mSpeedBumpView.setVisibility(newVisibility);
@@ -2424,7 +2474,8 @@ public class NotificationStackScrollLayout extends ViewGroup
                 // TODO: This doesn't really work, because the view is already set to GONE above.
                 generateRemoveAnimation(mSpeedBumpView);
             }
-        }
+        }*/
+        /* @} */
     }
 
     public void goToFullShade(long delay) {
@@ -2506,12 +2557,13 @@ public class NotificationStackScrollLayout extends ViewGroup
 
     public void setDismissView(DismissView dismissView) {
         mDismissView = dismissView;
-        addView(mDismissView);
+        /*SPRD bug 621329:Rollback open clear all notifcations.*/
+        addView(mDismissView);    // SPRD: Bug 583693 this view isn't supported in PikeL
     }
 
     public void setEmptyShadeView(EmptyShadeView emptyShadeView) {
         mEmptyShadeView = emptyShadeView;
-        addView(mEmptyShadeView);
+        //addView(mEmptyShadeView);    // SPRD: Bug 583693 this view isn't supported in PikeL
     }
 
     public void updateEmptyShadeView(boolean visible) {
@@ -2551,7 +2603,7 @@ public class NotificationStackScrollLayout extends ViewGroup
 
     public void setOverflowContainer(NotificationOverflowContainer overFlowContainer) {
         mOverflowContainer = overFlowContainer;
-        addView(mOverflowContainer);
+        //addView(mOverflowContainer);    // SPRD: Bug 583693 this view isn't supported in PikeL
     }
 
     public void updateOverflowContainerVisibility(boolean visible) {

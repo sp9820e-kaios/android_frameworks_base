@@ -206,6 +206,68 @@ public final class Proxy {
         return false;
     }
 
+    private static boolean isIPv6(String address)
+    {
+        boolean result = false;
+        String regHex = "(\\p{XDigit}{1,4})";
+        String regIPv6Full = "^(" + regHex + ":){7}" + regHex + "$";
+        String regIPv6AbWithColon = "^(" + regHex + "(:|::)){0,6}" + regHex
+                + "$";
+        String regIPv6AbStartWithDoubleColon = "^(" + "::(" + regHex
+                + ":){0,5}" + regHex + ")$";
+        String regIPv6 = "^(" + regIPv6Full + ")|("
+                + regIPv6AbStartWithDoubleColon + ")|(" + regIPv6AbWithColon
+                + ")$";
+        final int ADDRESS_IPV6_MAX = 39;
+        Log.d(TAG, "regIPv6 =" + regIPv6);
+        if (address.indexOf(":") != -1)
+        {
+            if (address.length() <= ADDRESS_IPV6_MAX)
+            {
+                String addressTemp = address;
+                int doubleColon = 0;
+                while (addressTemp.indexOf("::") != -1)
+                {
+                    addressTemp = addressTemp.substring(addressTemp
+                            .indexOf("::") + 2, addressTemp.length());
+                    doubleColon++;
+                }
+                if (doubleColon <= 1)
+                {
+                    result = address.matches(regIPv6);
+                }
+            }
+        }
+
+        //        InetAddress addressIPv6 = null;
+        //        Inet6Address IPv6 = null;
+        //        Inet4Address IPv4 = null;
+        //
+        //        try
+        //        {
+        //            addressIPv6 = InetAddress.getByName(address);
+        //        }
+        //        catch (UnknownHostException e)
+        //        {
+        //            loghelper.error("isIPv6", e.getMessage());
+        //
+        //            e.printStackTrace();
+        //        }
+        //        if(addressIPv6 instanceof Inet6Address)
+        //        {
+        //            IPv6 = (Inet6Address) addressIPv6;
+        //            System.out.println("addressIPv6 =" + addressIPv6.getHostAddress());
+        //            result = true;
+        //        }
+        //        if(addressIPv6 instanceof Inet4Address)
+        //        {
+        //            IPv4 = (Inet4Address) addressIPv6;
+        //            System.out.println("addressIPv4 =" + addressIPv6.getHostAddress());
+        //        }
+        Log.d(TAG, "isIPv6 result" + result);
+        return result;
+    }
+
     /**
      * Validate syntax of hostname, port and exclusion list entries
      * {@hide}
@@ -213,14 +275,16 @@ public final class Proxy {
     public static int validate(String hostname, String port, String exclList) {
         Matcher match = HOSTNAME_PATTERN.matcher(hostname);
         Matcher listMatch = EXCLLIST_PATTERN.matcher(exclList);
+        Log.d(TAG, "validate hostname:" + hostname + " port: " + port + " exclList: " + exclList);
 
-        if (!match.matches()) return PROXY_HOSTNAME_INVALID;
+        if ((!isIPv6(hostname)) && (!match.matches())) return PROXY_HOSTNAME_INVALID;
 
         if (!listMatch.matches()) return PROXY_EXCLLIST_INVALID;
 
         if (hostname.length() > 0 && port.length() == 0) return PROXY_PORT_EMPTY;
 
         if (port.length() > 0) {
+
             if (hostname.length() == 0) return PROXY_HOSTNAME_EMPTY;
             int portVal = -1;
             try {
@@ -230,6 +294,7 @@ public final class Proxy {
             }
             if (portVal <= 0 || portVal > 0xFFFF) return PROXY_PORT_INVALID;
         }
+
         return PROXY_VALID;
     }
 

@@ -49,7 +49,9 @@ final class PackageDexOptimizer {
     static final int DEX_OPT_PERFORMED = 1;
     static final int DEX_OPT_DEFERRED = 2;
     static final int DEX_OPT_FAILED = -1;
-
+    /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+    final Object mDexOptLock = new Object();
+    /* @} */
     private final PackageManagerService mPackageManagerService;
     private ArraySet<PackageParser.Package> mDeferredDexOpt;
 
@@ -218,7 +220,11 @@ final class PackageDexOptimizer {
     private String createOatDirIfSupported(PackageParser.Package pkg, String dexInstructionSet)
             throws IOException {
         if ((pkg.isSystemApp() && !pkg.isUpdatedSystemApp()) || pkg.isForwardLocked()
-                || pkg.applicationInfo.isExternalAsec()) {
+                || pkg.applicationInfo.isExternalAsec()
+                /* SPRD: preloadapp/vital-app can generate oat in dalvik-cache instead of code path @{ */
+                || (pkg.applicationInfo.sourceDir != null && (pkg.applicationInfo.sourceDir.startsWith("/system/preloadapp/") ||
+                      pkg.applicationInfo.sourceDir.startsWith("/system/vital-app")))) {
+                  /* @} */
             return null;
         }
         File codePath = new File(pkg.codePath);
@@ -251,16 +257,25 @@ final class PackageDexOptimizer {
      * @return content of dexopt set if it was not empty
      */
     public ArraySet<PackageParser.Package> clearDeferredDexOptPackages() {
-        ArraySet<PackageParser.Package> result = mDeferredDexOpt;
+        /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+        ArraySet<PackageParser.Package> result;
+        synchronized (mDexOptLock) {
+        result = mDeferredDexOpt;
         mDeferredDexOpt = null;
+        }
+        /* @} */
         return result;
     }
 
     public void addPackageForDeferredDexopt(PackageParser.Package pkg) {
+        /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+        synchronized (mDexOptLock) {
         if (mDeferredDexOpt == null) {
             mDeferredDexOpt = new ArraySet<>();
         }
         mDeferredDexOpt.add(pkg);
+        }
+        /* @} */
     }
 
     void systemReady() {

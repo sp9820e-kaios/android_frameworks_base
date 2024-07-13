@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Hotspot Wi-Fi  portabil necesită conexiune mobilă de date care poate conduce la costuri suplimentare."</string>
+<string name="softap_bt_cannot_coexist">"Când bluetooth-ul este activat sau se iniţiază, softap nu poate opera; dacă doriţi să utilizaţi softap, asiguraţi-vă că bluetooth-ul este dezactivat."</string>
+<string name="bt_softap_cannot_coexist">"Când softap este activat sau se iniţiază, bluetooth-ul nu poate opera; dacă doriţi să utilizaţi bluetooth-ul, asiguraţi-vă că softap este dezactivat."</string>
+<string name="lte_service_error_airplane">"Nu puteţi utiliza LTE când telefonul este în mod avion."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G comutat în starea pornit"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G comutat în starea oprit"</string>
+<string name="accessibility_quick_settings_lte_on">"4G pornit"</string>
+<string name="accessibility_quick_settings_lte_off">"4G oprit"</string>
+<string name="toggle_data_error_airplane">Nu puteti folosi datele mobile cand telefonul este in modul Avion.</string>
+<string name="quick_settings_data_connection_label">"DATE"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Date activate"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Date dezactivate"</string>
+<string name="accessibility_quick_settings_data_on">"Date active"</string>
+<string name="accessibility_quick_settings_data_off">"Date inactive"</string>
+<string name="missing_sim_message">"Nicio cartelă SIM"</string>
+    <string name="lte_service_error_incall">"Nu puteți comuta serviciul LTE în timpul apelului."</string>
+
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string-array name="wifi_status">
+<item></item>
+<item>"Nagscan\u2026"</item>
+<item>"Nagkonekta..."</item>
+<item>Kumpirmahon\u2026</item>
+<item>"Nagdawat ug address sa IP\u2026"</item>
+<item>"Konektado"</item>
+<item>"Suspendido"</item>
+<item>"Nag-diskonekta..."</item>
+<item>Tanggalon?</item>
+<item>"Dili malampuson"</item>
+<item>"Alihan"</item>
+<item>"Temporaryo nga naglikay sa hinay nga koneksyon"</item>
+</string-array>
+<string-array name="wifi_status_with_ssid">
+<item></item>
+<item>"Nagscan\u2026"</item>
+<item>"Nagkonekta ngadto <xliff:g id="network_name">%1$s</xliff:g>\u2026"</item>
+<item>"Gipamatud-an uban sa <xliff:g id="network_name">%1$s</xliff:g>\u2026"</item>
+<item>"Nagkuha og IP adres gikan sa <xliff:g id="network_name">%1$s</xliff:g>\u2026"</item>
+<item>"Konektado ngadto sa <xliff:g id="network_name">%1$s</xliff:g>"</item>
+<item>"Suspendido"</item>
+<item>"Nagdiskonekta gikan sa <xliff:g id="network_name">%1$s</xliff:g>\u2026"</item>
+<item>Tanggalon?</item>
+<item>"Dili malampuson"</item>
+<item>"Alihan"</item>
+<item>"Temporaryo nga naglikay sa hinay nga koneksyon"</item>
+</string-array>
+</resources>

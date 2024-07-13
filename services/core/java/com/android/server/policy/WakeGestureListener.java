@@ -17,6 +17,7 @@
 package com.android.server.policy;
 
 import android.os.Handler;
+import android.os.SystemProperties;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -42,7 +43,6 @@ public abstract class WakeGestureListener {
     public WakeGestureListener(Context context, Handler handler) {
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
         mHandler = handler;
-
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_WAKE_GESTURE);
     }
 

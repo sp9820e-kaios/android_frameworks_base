@@ -16,12 +16,15 @@
 
 package com.android.systemui.statusbar.phone;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import com.android.systemui.R;
@@ -31,11 +34,13 @@ import com.android.systemui.qs.tiles.BluetoothTile;
 import com.android.systemui.qs.tiles.CastTile;
 import com.android.systemui.qs.tiles.CellularTile;
 import com.android.systemui.qs.tiles.ColorInversionTile;
+import com.android.systemui.qs.tiles.DataConnectionTile;
 import com.android.systemui.qs.tiles.DndTile;
 import com.android.systemui.qs.tiles.FlashlightTile;
 import com.android.systemui.qs.tiles.HotspotTile;
 import com.android.systemui.qs.tiles.IntentTile;
 import com.android.systemui.qs.tiles.LocationTile;
+import com.android.systemui.qs.tiles.LteServiceTile;
 import com.android.systemui.qs.tiles.RotationLockTile;
 import com.android.systemui.qs.tiles.WifiTile;
 import com.android.systemui.statusbar.policy.BluetoothController;
@@ -47,10 +52,13 @@ import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.RotationLockController;
 import com.android.systemui.statusbar.policy.SecurityController;
+import com.android.systemui.statusbar.policy.SystemUIPluginsHelper;
 import com.android.systemui.statusbar.policy.UserSwitcherController;
 import com.android.systemui.statusbar.policy.ZenModeController;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.tuner.TunerService.Tunable;
+import com.android.systemui.qs.tiles.AudioProfileTile;
+import android.telephony.TelephonyManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +90,7 @@ public class QSTileHost implements QSTile.Host, Tunable {
     private final UserSwitcherController mUserSwitcherController;
     private final KeyguardMonitor mKeyguard;
     private final SecurityController mSecurity;
-
+    private static final boolean WCN_DISABLED = SystemProperties.get("ro.wcn").equals("disabled");
     private Callback mCallback;
 
     public QSTileHost(Context context, PhoneStatusBar statusBar,
@@ -131,6 +139,11 @@ public class QSTileHost implements QSTile.Host, Tunable {
     @Override
     public void startActivityDismissingKeyguard(final Intent intent) {
         mStatusBar.postStartActivityDismissingKeyguard(intent, 0);
+    }
+
+    @Override
+    public void startActivityDismissingKeyguard(PendingIntent intent) {
+        mStatusBar.postStartActivityDismissingKeyguard(intent);
     }
 
     @Override
@@ -243,24 +256,40 @@ public class QSTileHost implements QSTile.Host, Tunable {
     }
 
     protected QSTile<?> createTile(String tileSpec) {
-        if (tileSpec.equals("wifi")) return new WifiTile(this);
-        else if (tileSpec.equals("bt")) return new BluetoothTile(this);
+        boolean hasLocation = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION);
+        if (tileSpec.equals("wifi") && !WCN_DISABLED) return new WifiTile(this);
+        else if (tileSpec.equals("bt") && !WCN_DISABLED) return new BluetoothTile(this);
         else if (tileSpec.equals("inversion")) return new ColorInversionTile(this);
         else if (tileSpec.equals("cell")) return new CellularTile(this);
+        // SPRD: add for 4G and data connection quick setting
+        else if (tileSpec.equals("data")) return new DataConnectionTile(this);
         else if (tileSpec.equals("airplane")) return new AirplaneModeTile(this);
+        // SPRD: add for 4G and data connection quick setting
+        // SPRD: Add for BUG 510725 in reliance case.
+        else if (tileSpec.equals("lte") && TelephonyManager.isDeviceSupportLte()
+                && SystemUIPluginsHelper.getInstance().show4GInQS())
+                return new LteServiceTile(this);
         else if (tileSpec.equals("dnd")) return new DndTile(this);
         else if (tileSpec.equals("rotation")) return new RotationLockTile(this);
         else if (tileSpec.equals("flashlight")) return new FlashlightTile(this);
-        else if (tileSpec.equals("location")) return new LocationTile(this);
-        else if (tileSpec.equals("cast")) return new CastTile(this);
-        else if (tileSpec.equals("hotspot")) return new HotspotTile(this);
+        else if (tileSpec.equals("location") && !WCN_DISABLED && hasLocation) return new LocationTile(this);
+        else if (tileSpec.equals("cast") && !WCN_DISABLED && mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_enableWifiDisplay)) return new CastTile(this);
+        // Bug 474760 New feature add audio profile switch to status bar quick setting page.
+        else if (tileSpec.equals("audioprofile")) return new AudioProfileTile(this);
+        else if (tileSpec.equals("hotspot") && !WCN_DISABLED) return new HotspotTile(this);
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
         else throw new IllegalArgumentException("Bad tile spec: " + tileSpec);
     }
 
     protected List<String> loadTileSpecs(String tileList) {
         final Resources res = mContext.getResources();
-        final String defaultTileList = res.getString(R.string.quick_settings_tiles_default);
+        /* SPRD : fixbug 497122 @{ */
+        String defaultTileList = res.getString(R.string.quick_settings_tiles_default);
+        if (!TelephonyManager.isDeviceSupportLte()) {
+            defaultTileList = defaultTileList.replace(",lte", "");
+        }
+        /* SPRD : fixbug 497122 @} */
         if (tileList == null) {
             tileList = res.getString(R.string.quick_settings_tiles);
             if (DEBUG) Log.d(TAG, "Loaded tile specs from config: " + tileList);

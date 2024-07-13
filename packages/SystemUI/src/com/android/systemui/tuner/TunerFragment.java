@@ -25,6 +25,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -172,8 +173,10 @@ public class TunerFragment extends PreferenceFragment {
 
     private void updateBatteryPct() {
         mBatteryPct.setOnPreferenceChangeListener(null);
-        mBatteryPct.setChecked(System.getInt(getContext().getContentResolver(),
-                SHOW_PERCENT_SETTING, 0) != 0);
+        /* SPRD: Bug 577283 Battery percentage is not shown in statusbar icon when in Guest mode @{ */
+        mBatteryPct.setChecked(System.getIntForUser(getContext().getContentResolver(),
+                SHOW_PERCENT_SETTING, 0, UserHandle.USER_OWNER) != 0);
+        /* @} */
         mBatteryPct.setOnPreferenceChangeListener(mBatteryPctChange);
     }
 
@@ -194,7 +197,10 @@ public class TunerFragment extends PreferenceFragment {
         public boolean onPreferenceChange(Preference preference, Object newValue) {
             final boolean v = (Boolean) newValue;
             MetricsLogger.action(getContext(), MetricsLogger.TUNER_BATTERY_PERCENTAGE, v);
-            System.putInt(getContext().getContentResolver(), SHOW_PERCENT_SETTING, v ? 1 : 0);
+            /* SPRD: Bug 577283 Battery percentage is not shown in statusbar icon when in Guest mode @{ */
+            System.putIntForUser(getContext().getContentResolver(), SHOW_PERCENT_SETTING, v ? 1 : 0,
+                    UserHandle.USER_OWNER);
+            /* @} */
             return true;
         }
     };

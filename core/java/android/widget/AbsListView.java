@@ -19,6 +19,7 @@ package android.widget;
 import android.annotation.ColorInt;
 import android.annotation.DrawableRes;
 import android.annotation.NonNull;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -1863,6 +1864,13 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
+        // SPRD: Modify for Monkey Test. Avoid cannot be cast to android.widget.AbsListView$SavedState @{
+        if (!(state instanceof SavedState)) {
+            Log.d(TAG,"cast ERROR: state: "+state);
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        // @}
         SavedState ss = (SavedState) state;
 
         super.onRestoreInstanceState(ss.getSuperState());
@@ -3083,7 +3091,12 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                     }
                     if (handled) {
                         setPressed(false);
-                        v.setPressed(false);
+                        // SPRD: AndroidM Porting Bug 371782 - NullPointerException risk.
+                        if (v != null) {
+                            v.setPressed(false);
+                        } else {
+                            Log.w(TAG, "v is null !");
+                        }
                     }
                 } else {
                     setPressed(false);

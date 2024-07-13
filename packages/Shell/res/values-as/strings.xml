@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"বাগ্ ৰিপৰ্ট ধৰা পেলোৱা হৈছে"</string>
+<string name="bugreport_finished_text" product="watch">"আপোনাৰ bug প্ৰতিবেদন বিনিময় কৰিবলৈ বাওঁফালে পিছলাই দিয়ক"</string>
+<string name="bugreport_finished_text" product="default">"অপোনাৰ বাগ্ ৰিপৰ্ট শ্বেয়াৰ কৰিবলৈ টাছ্ কৰক"</string>
+<string name="bugreport_confirm">"বাগ্ ৰিপৰ্টত চিষ্টেমৰ ব্যক্তিগত তথা একান্ত তথ্যকে ধৰি বিভিন্ন ধৰণৰ লগ্ ফাইলৰ ডাটা থাকে ৷ আপুনি বিশ্বাস কৰিব পৰা ব্যক্তি আৰু এপচ্ ৰ লগতহে বাগ্ ৰিপৰ্ট শ্বেয়াৰ কৰিব"</string>
+<string name="bugreport_confirm_repeat">"পিছলৈ এই বাৰ্তা প্ৰদৰ্শন কৰক"</string>
+<string name="bugreport_storage_title">"বাগ প্ৰতিবেদন"</string>
+</resources>

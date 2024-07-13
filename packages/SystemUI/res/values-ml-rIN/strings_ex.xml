@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"പോര്‍ട്ടബിള്‍ വൈ-ഫൈ ഹോട്ട്സ്പോട്ടിന് മൊബൈല്‍ ഡാറ്റാ കണക്ട് ആവശ്യമാണ്, അധിക വിലകള്‍ വരുത്തിവച്ചേക്കും."</string>
+<string name="softap_bt_cannot_coexist">"ബ്ലൂത്ത്ടൂത്ത് എണേബിള്‍ ആയിരിക്കുമ്പോള്‍ അല്ലെങ്കില്‍ ഓണ്‍ ആകുമ്പോള്‍ സോഫ്ടാപ്പിന് പ്രവര്‍ത്തിക്കാനാവില്ല, സോഫ്ടാപ്പ് നിങ്ങള്‍ക്ക് സോപ്ടാപ്പ് ഉപയോഗിക്കണമെന്നുണ്ടെങ്കില്‍ ബ്ലൂടൂത്ത് ഡിസേബിള്‍ ആണെന്ന് ദയവായി ഉറപ്പാക്കുക"</string>
+<string name="bt_softap_cannot_coexist">"സോഫ്ടാപ്പ് എണേബിള്‍ ആയിരിക്കുമ്പോള്‍ അല്ലെങ്കില്‍ ഓണ്‍ ആകുമ്പോള്‍ ബ്ലൂത്ത്ടൂത്തിന് പ്രവര്‍ത്തിക്കാനാവില്ല, നിങ്ങള്‍ക്ക് ബ്ലൂടൂത്ത്  ഉപയോഗിക്കണമെന്നുണ്ടെങ്കില്‍ സോപ്ടാപ്പ് ഡിസേബിള്‍ ആണെന്ന് ദയവായി ഉറപ്പാക്കുക."</string>
+<string name="lte_service_error_airplane">"ഫോണ്‍ എയര്‍പ്ലെയിന്‍ മോഡിലായിരിക്കുമ്പോള്‍ നിങ്ങള്‍ക്ക് എല്‍റ്റിഇ ഉപയോഗിക്കാനാവില്ല."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ഓണാക്കി"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ഓഫാക്കി"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ഓണ്‍"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ഓഫ്"</string>
+<string name="toggle_data_error_airplane">"ഫോണ്‍ എയർപ്ലൈൻ മോഡിലായിരിക്കുമ്പോൾ നിങ്ങൾക്ക് മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കാൻ പറ്റില്ല."</string>
+<string name="quick_settings_data_connection_label">"ഡാറ്റ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ഡാറ്റ ഓണ്‍ ചെയ്തു"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ഡാറ്റ ഓഫ് ചെയ്തു"</string>
+<string name="accessibility_quick_settings_data_on">"ഡാറ്റ ഓണ്‍"</string>
+<string name="accessibility_quick_settings_data_off">"ഡാറ്റ ഓഫ്"</string>
+<string name="missing_sim_message">"SIM ഇല്ല"</string>
+    <string name="lte_service_error_incall">"കോൾ ചെയ്യുമ്പോള്‍, LTE സേവനം നിങ്ങൾക്ക് സ്വിച്ച് ചെയ്യാന്‍ സാധിക്കില്ല."</string>
+
+</resources>

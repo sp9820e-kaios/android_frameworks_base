@@ -24,6 +24,8 @@ import android.app.ActivityThread;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.os.Bundle;
@@ -31,6 +33,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemProperties;
 import android.telecom.PhoneAccount;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.internal.telecom.ITelecomService;
@@ -45,10 +48,20 @@ import com.android.internal.telephony.TelephonyProperties;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
+
+import android.os.UserHandle;
+import com.android.telephony.EmergencyAndLowBattaryCallUtils;
+
+import android.telecom.Call;
+import android.telecom.VideoProfile;
 /**
  * Provides access to information about the telephony services on
  * the device. Applications can use the methods in this class to
@@ -71,6 +84,15 @@ public class TelephonyManager {
     private static final String TAG = "TelephonyManager";
 
     private static ITelephonyRegistry sRegistry;
+
+    /** SPRD: @hide */
+    public static final int UNLOCK_PIN = 0;
+    /** SPRD: @hide */
+    public static final int UNLOCK_PIN2 = 1;
+    /** SPRD: @hide */
+    public static final int UNLOCK_PUK = 2;
+    /** SPRD: @hide */
+    public static final int UNLOCK_PUK2 = 3;
 
     /**
      * The allowed states of Wi-Fi calling.
@@ -726,7 +748,7 @@ public class TelephonyManager {
             IPhoneSubInfo info = getSubscriberInfo();
             if (info == null)
                 return null;
-            return info.getDeviceIdForPhone(slotId);
+            return info.getDeviceIdForPhone(slotId, mContext.getOpPackageName());
         } catch (RemoteException ex) {
             return null;
         } catch (NullPointerException ex) {
@@ -1334,6 +1356,9 @@ public class TelephonyManager {
     public static final int NETWORK_TYPE_TD_SCDMA = 17;
    /** Current network is IWLAN {@hide} */
     public static final int NETWORK_TYPE_IWLAN = 18;
+    /** SPRD Add For LTE_CA.
+     * Current network is LTE_CA {@hide} */
+    public static final int NETWORK_TYPE_LTE_CA = 19;
 
     /**
      * @return the NETWORK_TYPE_xxxx for current data connection.
@@ -1539,6 +1564,7 @@ public class TelephonyManager {
                 return NETWORK_CLASS_3_G;
             case NETWORK_TYPE_LTE:
             case NETWORK_TYPE_IWLAN:
+            case NETWORK_TYPE_LTE_CA:// SPRD Add For LTE_CA.
                 return NETWORK_CLASS_4_G;
             default:
                 return NETWORK_CLASS_UNKNOWN;
@@ -1602,6 +1628,9 @@ public class TelephonyManager {
                 return "TD_SCDMA";
             case NETWORK_TYPE_IWLAN:
                 return "IWLAN";
+            // SPRD Add For LTE_CA.
+            case NETWORK_TYPE_LTE_CA:
+                return "LTE_CA";
             default:
                 return "UNKNOWN";
         }
@@ -1644,6 +1673,52 @@ public class TelephonyManager {
      *@hide
      */
     public static final int SIM_STATE_CARD_IO_ERROR = 8;
+
+    /** @hide */
+    public static final int SIM_STATE_NETWORKSUBSET_LOCKED = 9;
+    /** @hide */
+    public static final int SIM_STATE_SERVICEPROVIDER_LOCKED = 10;
+    /** @hide */
+    public static final int SIM_STATE_CORPORATE_LOCKED = 11;
+    /** @hide */
+    public static final int SIM_STATE_SIM_LOCKED = 12;
+
+    /** @hide */
+    public static final int SIM_STATE_NETWORK_LOCKED_PUK = 13;
+    /** @hide */
+    public static final int SIM_STATE_NETWORK_SUBSET_LOCKED_PUK = 14;
+    /** @hide */
+    public static final int SIM_STATE_SERVICE_PROVIDER_LOCKED_PUK = 15;
+    /** @hide */
+    public static final int SIM_STATE_CORPORATE_LOCKED_PUK = 16;
+    /** @hide */
+    public static final int SIM_STATE_SIM_LOCKED_PUK = 17;
+    /** @hide */
+    public static final int SIM_STATE_SIM_LOCKED_FOREVER = 18;
+
+    /* Add for sim lock @{ */
+    private static final int SPRD_BASE = 0;
+    /** @hide */
+    public static final int UNLOCK_SIM = SPRD_BASE + 1;
+    /** @hide */
+    public static final int UNLOCK_NETWORK = SPRD_BASE + 2;
+    /** @hide */
+    public static final int UNLOCK_NETWORK_SUBSET = SPRD_BASE + 3;
+    /** @hide */
+    public static final int UNLOCK_SERVICE_PORIVDER = SPRD_BASE + 4;
+    /** @hide */
+    public static final int UNLOCK_CORPORATE = SPRD_BASE + 5;
+
+    /** @hide */
+    public static final int UNLOCK_SIM_PUK = SPRD_BASE + 6;
+    /** @hide */
+    public static final int UNLOCK_NETWORK_PUK = SPRD_BASE + 7;
+    /** @hide */
+    public static final int UNLOCK_NETWORK_SUBSET_PUK = SPRD_BASE + 8;
+    /** @hide */
+    public static final int UNLOCK_SERVICE_PORIVDER_PUK = SPRD_BASE + 9;
+    /** @hide */
+    public static final int UNLOCK_CORPORATE_PUK = SPRD_BASE + 10;
 
     /**
      * @return true if a ICC card is present
@@ -2147,6 +2222,22 @@ public class TelephonyManager {
                 return telephony.setLine1NumberForDisplayForSubscriber(subId, alphaTag, number);
         } catch (RemoteException ex) {
         } catch (NullPointerException ex) {
+        }
+        return false;
+    }
+
+    /**
+     * Uicc carrier privilege rules can't work fine now.
+     * This interface will ignore carrier privilege for caller.
+     * @hide
+     */
+    public boolean setLine1NumberForDisplayForSubscriberEx(int subId, String alphaTag, String number) {
+        try {
+            return getITelephony().setLine1NumberForDisplayForSubscriberEx(subId, alphaTag, number);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "RemoteException calling ITelephony#setLine1NumberForDisplayForSubscriberEx", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "NullPointerException calling ITelephony#setLine1NumberForDisplayForSubscriberEx", ex);
         }
         return false;
     }
@@ -3180,9 +3271,31 @@ public class TelephonyManager {
         return SubscriptionManager.getPhoneId(SubscriptionManager.getDefaultSubId());
     }
 
+    private static int sDefaultSimId = -1; // SPRD:add
+
     /** {@hide} */
     public int getDefaultSim() {
-        return SubscriptionManager.getSlotId(SubscriptionManager.getDefaultSubId());
+        // return SubscriptionManager.getSlotId(SubscriptionManager.getDefaultSubId());
+        /** SPRD:modify */
+        if (mSubscriptionManager == null)
+            return 0;
+        if (sDefaultSimId == -1) {
+            try {
+                List<SubscriptionInfo> records = mSubscriptionManager
+                        .getActiveSubscriptionInfoList();
+                if (records != null) {
+                    for (SubscriptionInfo record : records) {
+                        sDefaultSimId = record.getSimSlotIndex();
+                        return sDefaultSimId;
+                    }
+                }
+            } catch (SecurityException e) {
+                Log.e(TAG, "getDefaultSim SecurityException , the 3th part call return 0");
+            }
+            return 0;
+
+        }
+        return sDefaultSimId;
     }
 
     /**
@@ -4367,6 +4480,14 @@ public class TelephonyManager {
    }
 
    /**
+    * SPRD: add for volte @{
+    */
+   public boolean isVolteCallEnabled() {
+       return isVolteEnabled();
+   }
+   /** @} */
+
+   /**
     * Returns the Status of Wi-Fi Calling
     *@hide
     */
@@ -4779,5 +4900,901 @@ public class TelephonyManager {
             Log.e(TAG, "Error calling ITelephony#getModemActivityInfo", e);
         }
         return null;
+    }
+
+    /**
+     * SPRD:add invokeOemRilRequestRaw by phoneId. @{
+     * Returns the result and response from RIL for oem request
+     *
+     * @param phoneId user preferred phoneId.
+     * @param oemReq the data is sent to ril.
+     * @param oemResp the respose data from RIL.
+     * @return negative value request was not handled or get error
+     *         0 request was handled succesfully, but no response data
+     *         positive value success, data length of response
+     * @hide
+     */
+    public int invokeOemRilRequestRawByPhoneId(int phoneId, byte[] oemReq, byte[] oemResp) {
+        try {
+            ITelephony telephony = getITelephony();
+            if (telephony != null)
+                return telephony.invokeOemRilRequestRawByPhoneId(phoneId, oemReq, oemResp);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Error");
+        } catch (NullPointerException ex) {
+        }
+        return -1;
+    }
+    /** @} */
+
+    /**
+     * SPRD:add invokeOemRilRequestStrings by phoneId. @{
+     * Returns the result and response from RIL for oem request
+     *
+     * @param phoneId user preferred phoneId.
+     * @param oemReq the data is sent to ril.
+     * @param oemResp the respose data from RIL.
+     * @return negative value request was not handled or get error
+     *         0 request was handled succesfully, but no response data
+     *         positive value success, data length of response
+     * @hide
+     */
+    public int invokeOemRilRequestStrings(int phoneId, String[] oemReq, String[] oemResp) {
+        try {
+            ITelephony telephony = getITelephony();
+            if (telephony != null)
+                return telephony.invokeOemRilRequestStrings(phoneId, oemReq, oemResp);
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return -1;
+    }
+    /** @} */
+
+    /*SPRD: add by EXT */
+
+    /**
+     * The interface for LTE, including SvLTE, TDD CSFB, FDD CSFB. The group SvLTE and TDD CSFB is
+     * only for Chinese CMCC network and the group SvLTE and FDD CSFB is only for overseas network.
+     */
+    // general phone configs
+    private static String PROP_PHONE_COUNT = "persist.msms.phone_count";
+    private static String PROP_PHONE_DEFAULT = "persist.msms.phone_default";
+    private static String PROP_SSDA_MODE = "persist.radio.ssda.mode";
+
+    // properties for TD modem
+    private static String PROP_MODEM_T_ENABLE = "persist.modem.t.enable";
+
+    // properties for LTE modem
+    private static String PROP_MODEM_L_ENABLE = "persist.modem.l.enable";
+
+    // property for product model
+    private static String PROP_TEST_MODE = "persist.radio.ssda.testmode";
+
+    // ssda mode
+    private static String MODE_SVLTE = "svlte";
+    private static String MODE_TDD_CSFB = "tdd-csfb";
+    private static String MODE_FDD_CSFB = "fdd-csfb";
+    private static String MODE_CSFB = "csfb";
+
+    // properties for LTE nvp
+    private static String PROP_MODEM_L_NVP = "persist.modem.l.nvp";
+    private static String PROP_MODEM_SVLTE_NVP = "ro.modem.l.nvp";
+    private static String PROP_MODEM_TL_NVP = "ro.modem.tl.nvp";
+    private static String PROP_MODEM_LF_NVP = "ro.modem.lf.nvp";
+
+    public static enum RadioCapbility {
+        NONE, TDD_SVLTE, FDD_CSFB, TDD_CSFB, CSFB
+    };
+
+    public static enum RadioFeatures {
+        SVLET, TD_LTE, LTE_FDD, TD_LTE_AND_LTE_FDD, // TD-LTE/LTE-FDD
+        LTE_FDD_AND_W_AND_GSM_CSFB, // LTE-FDD/W/GSM-CSFB
+        TD_LTE_AND_W_AND_GSM_CSFB, // TD-LTE/W/GSM-CSFB
+        TD_LTE_AND_LTE_FDD_AND_W_AND_GSM_CSFB, // TD-LTE/LTE-FDD/W/GSM-CSFB
+        TD_LTE_AND_TD_AND_GSM_CSFB, // TD-LTE/TD/GSM-CSFB
+        TD_LTE_AND_LTE_FDD_AND_TD_AND_GSM_CSFB, // TD-LTE/LTE-FDD/TD/GSM-CSFB
+        TD_LTE_AND_LTE_FDD_AND_W_AND_TD_AND_GSM_CSFB, // TD-LTE/LTE-FDD/W/TD/GSM-CSFB
+        GSM_ONLY, // GSM
+        WCDMA_ONLY, // WCDMA
+        TD_ONLY, // TD
+        TD_AND_GSM, // T/G
+        WCDMA_AND_GSM, // W/G
+        TD_LTE_AND_LTE_FDD_AND_GSM,  // TD-LTE/LTE-FDD/GSM-CSFB
+        PRIMARY_GSM_ONLY,
+        TD_AND_WCDMA,//T/W
+        NONE
+    };
+
+    private static EnumSet<RadioFeatures> TDD_SVLTE_FEATURE_SET = EnumSet
+            .noneOf(RadioFeatures.class);
+    private static EnumSet<RadioFeatures> FDD_CSFB_FEATURE_SET = EnumSet
+            .noneOf(RadioFeatures.class);
+    private static EnumSet<RadioFeatures> TDD_CSFB_FEATURE_SET = EnumSet
+            .noneOf(RadioFeatures.class);
+
+    static {
+        TDD_SVLTE_FEATURE_SET.add(RadioFeatures.SVLET);
+        TDD_SVLTE_FEATURE_SET.add(RadioFeatures.GSM_ONLY);
+        TDD_SVLTE_FEATURE_SET.add(RadioFeatures.TD_ONLY);
+        TDD_SVLTE_FEATURE_SET.add(RadioFeatures.TD_AND_GSM);
+
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.LTE_FDD_AND_W_AND_GSM_CSFB);
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_LTE);
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.LTE_FDD);
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_LTE_AND_LTE_FDD);
+        FDD_CSFB_FEATURE_SET
+                .add(RadioFeatures.TD_LTE_AND_LTE_FDD_AND_W_AND_GSM_CSFB);
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.GSM_ONLY);
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.WCDMA_ONLY);
+        FDD_CSFB_FEATURE_SET.add(RadioFeatures.WCDMA_AND_GSM);
+
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_LTE_AND_TD_AND_GSM_CSFB);
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_LTE);
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.LTE_FDD);
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_LTE_AND_LTE_FDD);
+        TDD_CSFB_FEATURE_SET
+                .add(RadioFeatures.TD_LTE_AND_LTE_FDD_AND_TD_AND_GSM_CSFB);
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.GSM_ONLY);
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_ONLY);
+        TDD_CSFB_FEATURE_SET.add(RadioFeatures.TD_AND_GSM);
+    };
+
+    private static final String PREFERENCE_PACKAGE = "com.android.settings";
+    private static String SIMMANAGER = "SimManager";
+    private static String VOICE_SUB_ID = "VoiceSubId";
+    private static String SMS_SUB_ID = "SmsSubId";
+
+    public static RadioCapbility getRadioCapbility() {
+
+        String ssdaMode = SystemProperties.get(PROP_SSDA_MODE);
+        Log.d(TAG, "getRadioCapbility: ssdaMode=" + ssdaMode);
+        if (ssdaMode.equals(MODE_SVLTE)) {
+            return RadioCapbility.TDD_SVLTE;
+        } else if (ssdaMode.equals(MODE_TDD_CSFB)) {
+            return RadioCapbility.TDD_CSFB;
+        } else if (ssdaMode.equals(MODE_FDD_CSFB)) {
+            return RadioCapbility.FDD_CSFB;
+        } else if (ssdaMode.equals(MODE_CSFB)) {
+            return RadioCapbility.CSFB;
+        }
+
+        return RadioCapbility.NONE;
+    }
+
+    public static RadioFeatures getRadioFeatures(int phoneId) {
+        Log.d(TAG, "getRadioFeatures: phoneId=" + phoneId);
+        RadioCapbility rCapbility = getRadioCapbility();
+        final String radioTestMode = phoneId > 0 ? PROP_TEST_MODE + phoneId : PROP_TEST_MODE;
+        int testMode = SystemProperties.getInt(radioTestMode, -1);
+        Log.d(TAG, "getRadioFeatures: rCapbility=" + rCapbility + ", testMode=" + testMode);
+        if (testMode < 16) {
+            for (RadioFeatures feature : RadioFeatures.values()) {
+                if (feature.ordinal() == testMode) {
+                    return feature;
+                }
+            }
+        }
+        if (testMode == 255) {
+            return RadioFeatures.TD_AND_WCDMA;
+        } else if (testMode == 21) {
+            return RadioFeatures.TD_LTE_AND_LTE_FDD_AND_GSM;
+        }
+        return RadioFeatures.NONE;
+    }
+
+    public static EnumSet<RadioFeatures> getRadioFeatureSet(
+            RadioCapbility radioCap) {
+        if (radioCap == RadioCapbility.TDD_SVLTE) {
+            return TDD_SVLTE_FEATURE_SET;
+        } else if (radioCap == RadioCapbility.FDD_CSFB) {
+            return FDD_CSFB_FEATURE_SET;
+        } else if (radioCap == RadioCapbility.TDD_CSFB) {
+            return TDD_CSFB_FEATURE_SET;
+        }
+        return TDD_SVLTE_FEATURE_SET;
+    }
+
+    /*
+     * To switch radio capability to the specified capability.
+     */
+    public int switchRadioCapbility(Context context, RadioCapbility radioCap) {
+
+        RadioCapbility orgRadioCap = getRadioCapbility();
+        Log.d(TAG, "switchRadioFeatures: radioCap=" + orgRadioCap + " newRadioCap " + radioCap);
+
+        if (radioCap == RadioCapbility.TDD_SVLTE) {
+            setSystemString(context, PROP_SSDA_MODE, MODE_SVLTE);
+
+            setSystemString(context, PROP_MODEM_T_ENABLE, "1");
+
+            // setSystemProperties(PROP_PHONE_COUNT, "1");
+            // setSystemProperties(PROP_PHONE_DEFAULT, "0");
+            setSystemProperties(PROP_SSDA_MODE, MODE_SVLTE);
+            setSystemProperties(PROP_MODEM_T_ENABLE, "1");
+
+            if (!TextUtils.isEmpty(SystemProperties.get(PROP_MODEM_SVLTE_NVP, ""))) {
+                setSystemString(context, PROP_MODEM_L_NVP,
+                        SystemProperties.get(PROP_MODEM_SVLTE_NVP, ""));
+                setSystemProperties(PROP_MODEM_L_NVP,
+                        SystemProperties.get(PROP_MODEM_SVLTE_NVP, ""));
+            }
+        } else if (radioCap == RadioCapbility.FDD_CSFB) {
+            // setSystemProperties(PROP_PHONE_COUNT, "1");
+            // setSystemProperties(PROP_PHONE_DEFAULT, "0");
+            setSystemString(context, PROP_SSDA_MODE, MODE_FDD_CSFB);
+            setSystemString(context, PROP_MODEM_T_ENABLE, "0");
+            setSystemString(context, PROP_MODEM_L_ENABLE, "1");
+            setSystemProperties(PROP_SSDA_MODE, MODE_FDD_CSFB);
+            setSystemProperties(PROP_MODEM_T_ENABLE, "0");
+            setSystemProperties(PROP_MODEM_L_ENABLE, "1");
+            if (!TextUtils.isEmpty(SystemProperties.get(PROP_MODEM_TL_NVP, ""))) {
+                setSystemString(context, PROP_MODEM_L_NVP,
+                        SystemProperties.get(PROP_MODEM_TL_NVP, ""));
+                setSystemProperties(PROP_MODEM_L_NVP,
+                        SystemProperties.get(PROP_MODEM_TL_NVP, ""));
+            }
+        } else if (radioCap == RadioCapbility.TDD_CSFB) {
+            // setSystemProperties(PROP_PHONE_COUNT, "1");
+            // setSystemProperties(PROP_PHONE_DEFAULT, "0");
+            setSystemString(context, PROP_SSDA_MODE, MODE_TDD_CSFB);
+            setSystemString(context, PROP_MODEM_T_ENABLE, "0");
+            setSystemString(context, PROP_MODEM_L_ENABLE, "1");
+            setSystemProperties(PROP_SSDA_MODE, MODE_TDD_CSFB);
+            setSystemProperties(PROP_MODEM_T_ENABLE, "0");
+            setSystemProperties(PROP_MODEM_L_ENABLE, "1");
+            if (!TextUtils.isEmpty(SystemProperties.get(PROP_MODEM_LF_NVP, ""))) {
+                setSystemString(context, PROP_MODEM_L_NVP,
+                        SystemProperties.get(PROP_MODEM_LF_NVP, ""));
+                setSystemProperties(PROP_MODEM_L_NVP,
+                        SystemProperties.get(PROP_MODEM_LF_NVP, ""));
+            }
+        }
+        return 0;
+    }
+
+    /*
+     * To switch radio feature from current mode to the specified mode.
+     */
+    public int switchRadioFeatures(Context context, RadioFeatures radioFt) {
+        return switchRadioFeatures(context, getDefaultSim(), radioFt);
+    }
+
+    /*
+     * To switch radio feature from current mode to the specified mode.
+     */
+    public int switchRadioFeatures(Context context, int phoneId, RadioFeatures radioFt) {
+
+        RadioCapbility radioCap = getRadioCapbility();
+        Log.d(TAG, "switchRadioFeatures: radioCap: " + radioCap + " radioFt: " + radioFt
+                + " phoneId: " + phoneId);
+
+        if (radioCap == RadioCapbility.TDD_SVLTE) {
+            if (radioFt == RadioFeatures.SVLET) {
+                setSystemString(context, PROP_MODEM_L_ENABLE, "1");
+                setSystemString(context, PROP_TEST_MODE, "0");
+                setSystemProperties(PROP_MODEM_L_ENABLE, "1");
+                setSystemProperties(PROP_TEST_MODE, "0");
+            } else if (radioFt == RadioFeatures.GSM_ONLY) {
+                setSystemString(context, PROP_MODEM_L_ENABLE, "0");
+                setSystemString(context, PROP_TEST_MODE, "10");
+                setSystemProperties(PROP_MODEM_L_ENABLE, "0");
+                setSystemProperties(PROP_TEST_MODE, "10");
+            } else if (radioFt == RadioFeatures.TD_ONLY) {
+                setSystemString(context, PROP_MODEM_L_ENABLE, "0");
+                setSystemString(context, PROP_TEST_MODE, "12");
+                setSystemProperties(PROP_MODEM_L_ENABLE, "0");
+                setSystemProperties(PROP_TEST_MODE, "12");
+            } else if (radioFt == RadioFeatures.TD_AND_GSM) {
+                setSystemString(context, PROP_MODEM_L_ENABLE, "0");
+                setSystemString(context, PROP_TEST_MODE, "255");
+                setSystemProperties(PROP_MODEM_L_ENABLE, "0");
+                setSystemProperties(PROP_TEST_MODE, "255");
+            }
+            return 0;
+        } else {
+            final String radioTestMode = phoneId > 0 ? PROP_TEST_MODE + phoneId : PROP_TEST_MODE;
+            if (radioFt == RadioFeatures.TD_LTE) {
+                setSystemProperties(radioTestMode, "1");
+            } else if (radioFt == RadioFeatures.LTE_FDD) {
+                setSystemProperties(radioTestMode, "2");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_LTE_FDD) {
+                setSystemProperties(radioTestMode, "3");
+            } else if (radioFt == RadioFeatures.LTE_FDD_AND_W_AND_GSM_CSFB) {
+                setSystemProperties(radioTestMode, "4");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_W_AND_GSM_CSFB) {
+                setSystemProperties(radioTestMode, "5");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_LTE_FDD_AND_W_AND_GSM_CSFB) {
+                setSystemProperties(radioTestMode, "6");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_TD_AND_GSM_CSFB) {
+                setSystemProperties(radioTestMode, "7");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_LTE_FDD_AND_TD_AND_GSM_CSFB) {
+                setSystemProperties(radioTestMode, "8");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_LTE_FDD_AND_W_AND_TD_AND_GSM_CSFB) {
+                setSystemProperties(radioTestMode, "9");
+            } else if (radioFt == RadioFeatures.GSM_ONLY) {
+                setSystemProperties(radioTestMode, "10");
+            } else if (radioFt == RadioFeatures.WCDMA_ONLY) {
+                setSystemProperties(radioTestMode, "11");
+            } else if (radioFt == RadioFeatures.TD_ONLY) {
+                setSystemProperties(radioTestMode, "12");
+            } else if (radioFt == RadioFeatures.TD_AND_GSM) {
+                setSystemProperties(radioTestMode, "13");
+            } else if (radioFt == RadioFeatures.WCDMA_AND_GSM) {
+                setSystemProperties(radioTestMode, "14");
+            } else if (radioFt == RadioFeatures.PRIMARY_GSM_ONLY) {
+                setSystemProperties(radioTestMode, "15");
+            } else if (radioFt == RadioFeatures.TD_AND_WCDMA) {
+                setSystemProperties(radioTestMode, "255");
+            } else if (radioFt == RadioFeatures.TD_LTE_AND_LTE_FDD_AND_GSM) {
+                setSystemProperties(radioTestMode, "21");
+            } else if (radioFt == RadioFeatures.NONE) {
+                setSystemProperties(radioTestMode, "254");
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @hide
+     */
+    public static boolean isDeviceSupportLte() {
+        return RadioCapbility.TDD_CSFB.equals(getRadioCapbility()) ||
+                RadioCapbility.FDD_CSFB.equals(getRadioCapbility()) ||
+                RadioCapbility.TDD_SVLTE.equals(getRadioCapbility()) ||
+                RadioCapbility.CSFB.equals(getRadioCapbility());
+    }
+
+    private static void setSystemString(Context context, String string, String value) {
+        Settings.System.putString(context.getContentResolver(), string, value);
+    }
+
+    private static String getSystemString(Context context, String string) {
+        return Settings.System.getString(context.getContentResolver(), string);
+    }
+
+    public static void setSystemProperties(String key, String value) {
+        SystemProperties.set(key, value);
+    }
+
+    /**
+     * SPRD: add IccFdnEnabled interface for contactsprovider to read sim phonebook @{
+     * @return true if IccFdn enabled
+     */
+    public boolean getIccFdnEnabled() {
+        try {
+            return getITelephony().getIccFdnEnabled();
+        } catch (RemoteException ex) {
+            // Assume no ICC card if remote exception which shouldn't happen
+        } catch (NullPointerException ex) {
+            // This could happen before phone restarts due to crashing
+        }
+        return false;
+    }
+    /** }@ */
+
+    /* SPRD: BUG 510153 Add for FDN @{ */
+    public boolean getIccFdnEnabled(int subId) {
+        try {
+            return getITelephony().getIccFdnEnabledForSubscriber(subId);
+        } catch (RemoteException ex) {
+            // Assume no ICC card if remote exception which shouldn't happen
+        } catch (NullPointerException ex) {
+            // This could happen before phone restarts due to crashing
+        }
+        return false;
+    }
+    /* @} */
+
+    public int getMultiSimActiveDefaultVoiceSubId() {
+        SharedPreferences preference = getPreferences();
+        if (preference != null) {
+            return preference.getInt(
+                    VOICE_SUB_ID, SubscriptionManager.INVALID_SUBSCRIPTION_ID);
+        }
+        return SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+    }
+
+    public int getMultiSimActiveDefaultSmsSubId() {
+        SharedPreferences preference = getPreferences();
+        if (preference != null) {
+            return preference.getInt(
+                    SMS_SUB_ID, SubscriptionManager.INVALID_SUBSCRIPTION_ID);
+        }
+        return SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+    }
+
+    public void setMultiSimActiveDefaultVoiceSubId(int subId) {
+        if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID
+                && mSubscriptionManager != null) {
+            // SPRD: modify for bug535715
+            if (subId != SubscriptionManager.MAX_SUBSCRIPTION_ID_VALUE) {
+                mSubscriptionManager.setDefaultVoiceSubId(subId);
+            }
+            SharedPreferences spf = getPreferences();
+            if (spf != null) {
+                SharedPreferences.Editor editor = spf.edit();
+                editor.putInt(VOICE_SUB_ID, subId);
+                editor.commit();
+            }
+        }
+    }
+
+    public void setMultiSimActiveDefaultSmsSubId(int subId) {
+        if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID
+                && mSubscriptionManager != null) {
+            mSubscriptionManager.setDefaultSmsSubId(subId);
+            SharedPreferences spf = getPreferences();
+            if (spf != null) {
+                SharedPreferences.Editor editor = spf.edit();
+                editor.putInt(SMS_SUB_ID, subId);
+                editor.commit();
+            }
+        }
+    }
+
+    private SharedPreferences getPreferences() {
+        if (mContext == null)
+            return null;
+        Context packageContext = null;
+        try {
+            packageContext = mContext.createPackageContext(PREFERENCE_PACKAGE,
+                    Context.CONTEXT_IGNORE_SECURITY);
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageContext != null) {
+            return packageContext.getSharedPreferences(
+                    SIMMANAGER, Context.MODE_MULTI_PROCESS | Context.MODE_WORLD_READABLE
+                            | Context.MODE_WORLD_WRITEABLE);
+        }
+        return null;
+    }
+
+    /**
+     * @hide
+     */
+    public boolean isSimStandby(int phoneId) {
+        if (mContext == null)
+            return true;
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.SIM_STANDBY + phoneId, 1) == 1;
+    }
+
+    /**
+     * @hide
+     */
+    public void setSimStandby(int phoneId, boolean standby) {
+        try {
+            getITelephony().setSimStandby(phoneId, standby);
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error calling ITelephony#setRadioPower", e);
+        }
+    }
+
+    /**
+     * @hide
+     */
+    public boolean isAirplaneModeOn() {
+        if (mContext == null)
+            return true;
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.AIRPLANE_MODE_ON, 0) == 1;
+    }
+
+    /**
+     * @hide
+     */
+    public boolean isRadioBusy() {
+        if (mContext == null)
+            return false;
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.RADIO_OPERATION, 0) == 1;
+    }
+
+    /**
+     * @hide
+     */
+    public void setRadioBusy(boolean busy) {
+        if (mContext != null) {
+            Rlog.d(TAG, "setRadioBusy " + busy);
+            Settings.Global.putInt(mContext.getContentResolver(),
+                    Settings.Global.RADIO_OPERATION, busy ? 1 : 0);
+        }
+    }
+
+    public int getPrimaryCard() {
+        if (mContext == null)
+            return SubscriptionManager.INVALID_SIM_SLOT_INDEX;
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.SERVICE_PRIMARY_CARD, SubscriptionManager.INVALID_SIM_SLOT_INDEX);
+    }
+
+    /**
+     * @hide
+     */
+    public void setPrimaryCard(int phoneId) {
+        if (mContext != null) {// SPRD: add new feature for data switch on/off
+            if (SubscriptionManager.isValidPhoneId(phoneId)) {
+                try {
+                    getITelephony().setPrimaryCard(phoneId);
+                } catch (RemoteException e) {
+                    Log.e(TAG, "Error calling ITelephony#setRadioPower", e);
+                }
+            } else {
+                Settings.Global.putInt(
+                        mContext.getContentResolver(), Settings.Global.SERVICE_PRIMARY_CARD,
+                        phoneId);
+            }
+        }
+    }
+
+    public int getPhoneId(int subId) {
+        return SubscriptionManager.getPhoneId(subId);
+    }
+
+    public byte[] iccExchangeSimIOwithSubId(int fileID, int command, int p1, int p2, int p3,
+            String filePath, int subId) {
+        try {
+            ITelephony telephony = getITelephony();
+            if (telephony != null)
+                return telephony.iccExchangeSimIOwithSubId(fileID, command, p1, p2, p3, filePath, subId);
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return null;
+    }
+
+    public byte[] iccExchangeSimIOUpdate(int fileID, int command, int p1, int p2, int p3, String data,
+            String filePath, int subId) {
+        try {
+            return getITelephony().iccExchangeSimIOUpdate(fileID, command, p1, p2, p3, data, filePath, subId);
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return null;
+    }
+    /* SPRD: Porting CALL DETAIL ACTIONS FEATURE @{ */
+    /**
+     * @return ture for support VT,false for not supprot VT
+     * */
+    public static boolean isSupportVT() {
+        // SPRD:Add for bug522864
+        boolean battaryLow = EmergencyAndLowBattaryCallUtils.getInstance().isBatteryLow();
+
+        // SPRD:502459 disable VT for guester
+        return SystemProperties.getBoolean("persist.sys.support.vt", false)
+                && (UserHandle.myUserId() == 0);
+    }
+    /* @} */
+
+     /**
+     * @hide
+     */
+    public void setLteEnabled(boolean enabled) {
+        if (!isDeviceSupportLte()) {
+            Log.d(TAG,
+                    "Error calling ITelephony#setLteEnabled because device doesn't support lte.");
+            return;
+        }
+        try {
+            getITelephony().setLteEnabled(enabled);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Error calling ITelephony#setLteEnabled", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "Error calling ITelephony#setLteEnabled", ex);
+        }
+    }
+
+    /* SPRD: modify by bug450244 @{ */
+    public boolean getLteEnabled() {
+        if (!isDeviceSupportLte()) {
+            Log.d(TAG,
+                    "Error calling ITelephony#setLteEnabled because device doesn't support lte.");
+            return false;
+        }
+        try {
+            Log.d(TAG, " getLteEnabled : getITelephony().getLteEnabled()");
+            return getITelephony().getLteEnabled();
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Error calling ITelephony#getLteEnabled", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "Error calling ITelephony#getLteEnabled", ex);
+        }
+        return false;
+    }
+
+    /**
+     * @hide
+     */
+    public boolean isUsimCard(int phoneId) {
+        try {
+            return getITelephony().isUsimCard(phoneId);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Error calling ITelephony#isLteAvailable", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "Error calling ITelephony#isLteAvailable", ex);
+        }
+        return false;
+    }
+
+    /**
+     * SPRD: Added for simlock function @{
+     * @hide
+     */
+    public boolean checkSimLocked(int phoneId) {
+        int simState = getSimState(phoneId);
+        if (simState == SIM_STATE_NETWORK_LOCKED
+                || simState == SIM_STATE_NETWORKSUBSET_LOCKED
+                || simState == SIM_STATE_SERVICEPROVIDER_LOCKED
+                || simState == SIM_STATE_CORPORATE_LOCKED
+                || simState == SIM_STATE_SIM_LOCKED
+                || simState == SIM_STATE_NETWORK_LOCKED_PUK
+                || simState == SIM_STATE_NETWORK_SUBSET_LOCKED_PUK
+                || simState == SIM_STATE_SERVICE_PROVIDER_LOCKED_PUK
+                || simState == SIM_STATE_CORPORATE_LOCKED_PUK
+                || simState == SIM_STATE_SIM_LOCKED_PUK
+                || simState == SIM_STATE_SIM_LOCKED_FOREVER) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getSimLockStatus(int type) {
+        try {
+            return getITelephony().getSimLockStatus(type);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "Error calling ITelephony#getSimLockStatus", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "Error calling ITelephony#getSimLockStatus", ex);
+        }
+        return false;
+    }
+    /** @ } */
+
+    /**
+     * SPRD: show main/vice card for bug473889 @{
+     * @param phoneAccount
+     * @return
+     */
+    public int getSubIdViaPhoneAccount(PhoneAccount phoneAccount) {
+        return getSubIdForPhoneAccount(phoneAccount);
+    }
+    /** @} */
+
+    /**
+     * SPRD:add for Bug511233
+     */
+    public CellLocation getCellLocationForPhone(int phoneId) {
+        try {
+            Bundle bundle = getITelephony().getCellLocationForPhone(phoneId);
+            if (bundle.isEmpty())
+                return null;
+            CellLocation cl = CellLocation.newFromBundle(bundle);
+            if (cl.isEmpty())
+                return null;
+            return cl;
+        } catch (RemoteException ex) {
+            return null;
+        } catch (NullPointerException ex) {
+            return null;
+        }
+    }
+
+    public static String AddEmergencyNO(int key,String fastCall){
+      //SPRD:Add for bug522864
+        fastCall = EmergencyAndLowBattaryCallUtils.getInstance().AddEmergencyNO(key,fastCall);
+        return fastCall;
+    }
+
+    public static boolean isBatteryLow(){
+        return EmergencyAndLowBattaryCallUtils.getInstance().isBatteryLow();
+    }
+
+    /* SPRD: Add function for bug579975 @{ */
+    public static void showLowBatteryDialDialog(Context context,Intent intent,boolean isDialingByDialer) {
+        EmergencyAndLowBattaryCallUtils.getInstance().showLowBatteryDialDialog(context,intent,isDialingByDialer);
+    }
+
+    public static void showLowBatteryInCallDialog(Context context,android.telecom.Call call,int mpcMode) {
+        EmergencyAndLowBattaryCallUtils.getInstance().showLowBatteryInCallDialog(context,call,mpcMode);
+    }
+
+    public static void showLowBatteryChangeToVideoDialog(android.telecom.Call telecomCall,VideoProfile videoProfile) {
+        EmergencyAndLowBattaryCallUtils.getInstance().showLowBatteryChangeToVideoDialog(telecomCall,videoProfile);
+    }
+    /* @} */
+
+    /** SPRD: National Data Roaming. @{ */
+    public enum DataRoamType {
+        DISABLE, NATIONAL, ALL;
+
+        // return DataRoamType for int
+        public static DataRoamType fromInt(int value) {
+            for (DataRoamType type : DataRoamType.values()) {
+                if (value == type.ordinal()) {
+                    return type;
+                }
+            }
+            return NATIONAL;
+        }
+
+        public static boolean isNationalRoamType(DataRoamType type) {
+            return type == NATIONAL;
+        }
+    }
+    /* @} */
+
+    /**
+     * sprd add for smsc @{
+     *
+     * @hide
+     */
+    public String getSmsc() {
+        try {
+            return getITelephony().getSmsc();
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return null;
+    }
+
+    public boolean setSmsc(String smscAddr) {
+        try {
+            return getITelephony().setSmsc(smscAddr);
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return false;
+    }
+
+    public String getSmscForSubscriber(int subId) {
+        try {
+            return getITelephony().getSmscForSubscriber(subId);
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return null;
+    }
+
+    public boolean setSmscForSubscriber(String smscAddr, int subId) {
+        try {
+            return getITelephony().setSmscForSubscriber(smscAddr, subId);
+        } catch (RemoteException ex) {
+        } catch (NullPointerException ex) {
+        }
+        return false;
+    }
+    /** @} */
+
+    /**
+     * SPRD: [Bug538335]
+     * Returns the PNN home name.
+     * <p>
+     * Requires Permission:
+     *   {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
+     */
+    /** {@hide} */
+    public String getPnnHomeName(int subId) {
+        try {
+            return getITelephony().getPnnHomeName(subId, mContext.getOpPackageName());
+        } catch (RemoteException ex) {
+            Log.e(TAG, "RemoteException calling getPnnHomeName", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "NullPointerException calling getPnnHomeName", ex);
+        }
+        return null;
+    }
+
+    /**
+     * SPRD: [Bug450956]
+     * Returns the Service Provider Name (SPN).
+     *
+     */
+    public String getSimOperatorNameForPhoneEx(int phoneId) {
+         return getSimOperatorNameForPhone(phoneId);
+    }
+
+    /* SPRD: [Bug543427] Add interfaces for setting or getting internal preferred network type. */
+    /** {@hide} */
+    public static final int NT_UNKNOWN = -1;
+    /** {@hide} */
+    public static final int NT_TD_LTE = 1; // TD-LTE only
+    /** {@hide} */
+    public static final int NT_LTE_FDD = 2; // LTE-FDD only
+    /** {@hide} */
+    public static final int NT_LTE_FDD_TD_LTE = 3; // LTE-FDD/TD-LTE
+    /** {@hide} */
+    public static final int NT_LTE_FDD_WCDMA_GSM = 4; // LTE-FDD/WCDMA/GSM
+    /** {@hide} */
+    public static final int NT_TD_LTE_WCDMA_GSM = 5; // TD-LTE/WCDMA/GSM
+    /** {@hide} */
+    public static final int NT_LTE_FDD_TD_LTE_WCDMA_GSM = 6; // LTE-FDD/TD-LTE/WCDMA/GSM
+    /** {@hide} */
+    public static final int NT_TD_LTE_TDSCDMA_GSM = 7; // TD-LTE/TD/GSM
+    /** {@hide} */
+    public static final int NT_LTE_FDD_TD_LTE_TDSCDMA_GSM = 8; // LTE-FDD/TD-LTE/TD/GSM
+    /** {@hide} */
+    public static final int NT_LTE_FDD_TD_LTE_WCDMA_TDSCDMA_GSM = 9; // LTE-FDD/TD-LTE/WCDMA/TD/GSM
+    /** {@hide} */
+    public static final int NT_GSM = 10; // GSM only
+    /** {@hide} */
+    public static final int NT_WCDMA = 11; // WCDMA only
+    /** {@hide} */
+    public static final int NT_TDSCDMA = 12; // TD only
+    /** {@hide} */
+    public static final int NT_TDSCDMA_GSM = 13; // TD/GSM
+    /** {@hide} */
+    public static final int NT_WCDMA_GSM = 14; // WCDMA/GSM
+    /** {@hide} */
+    public static final int NT_WCDMA_TDSCDMA_GSM = 16; // WCDMA/TD/GSM
+    /** {@hide} */
+    public static final int NT_LTE_FDD_TD_LTE_GSM = 15;//LTE-FDD/TD-LTE/GSM
+
+    /**
+     * SPRD: [Bug543427] Set internal preferred network type for primary card.
+     * <p>
+     * Requires Permission: {@link android.Manifest.permission#MODIFY_PHONE_STATE
+     * MODIFY_PHONE_STATE}
+     */
+    /** {@hide} */
+    public void setInternalPreferredNetworkType(int networkType) {
+        setInternalPreferredNetworkTypeForPhone(getPrimaryCard(), networkType);
+    }
+
+    /**
+     * SPRD: [Bug543427] Set internal preferred network type.
+     * <p>
+     * Requires Permission: {@link android.Manifest.permission#MODIFY_PHONE_STATE
+     * MODIFY_PHONE_STATE}
+     */
+    /** {@hide} */
+    public void setInternalPreferredNetworkTypeForPhone(int phoneId, int networkType) {
+        try {
+            getITelephony().setInternalPreferredNetworkTypeForPhone(phoneId, networkType);
+        } catch (RemoteException ex) {
+            Log.e(TAG, "RemoteException calling setInternalPreferredNetworkType", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "NullPointerException calling setInternalPreferredNetworkType", ex);
+        }
+    }
+
+    /**
+     * SPRD: [Bug543427] Get internal preferred network type for primary card.
+     * <p>
+     * Requires Permission: {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
+     */
+    /** {@hide} */
+    public int getInternalPreferredNetworkType() {
+        return getInternalPreferredNetworkTypeForPhone(getPrimaryCard());
+    }
+
+    /**
+     * SPRD: [Bug543427] Get internal preferred network type.
+     * <p>
+     * Requires Permission: {@link android.Manifest.permission#READ_PHONE_STATE READ_PHONE_STATE}
+     *
+     * @param phoneId of which networkType is returned
+     */
+    /** {@hide} */
+    public int getInternalPreferredNetworkTypeForPhone(int phoneId) {
+        try {
+            return getITelephony().getInternalPreferredNetworkTypeForPhone(phoneId, mContext.getOpPackageName());
+        } catch (RemoteException ex) {
+            Log.e(TAG, "RemoteException calling getInternalPreferredNetworkType", ex);
+        } catch (NullPointerException ex) {
+            Log.e(TAG, "NullPointerException calling getInternalPreferredNetworkType", ex);
+        }
+        return NT_UNKNOWN;
+    }
+    /* @} */
+
+    /**
+     * SPRD: Add for Reliance simlock
+     *
+     **/
+    public boolean isRelianceSimlock(){
+        return "true".equals(SystemProperties.get("persist.sys.reliance.simlock"));
     }
 }

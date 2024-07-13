@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Indietro"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Avanti"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Ignora"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Nessuna corrispondenza"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Trova nella pagina"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> di <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 partita</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Fine"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Cancellazione dell\'archivio USB..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Cancellazione scheda SD..."</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> elementi selezionati</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> elemento selezionato</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"Internet Tethering USB attiva"</string>
+     <string name="ext_media_status_shared">"UMS condivisa"</string>
+     <string name="sim_ready_title_for_usb">Stai attento...</string>
+     <string name="sim_card_activation_warning">In caso di applicazioni installate da terzi, si prega di inserire la scheda SIM/USIM e attivare la USB</string>
+     <string name="usb_ok">OK</string>
+     <string name="usb_cdrom_notification_title">"Unità virtuale attiva"</string>
+     <string name="usb_charge_only_notification">"Solo come connettore di ricarica"</string>
+     <string name="global_action_restart">"Riavvia"</string>
+     <string name="reboot_device_title">"Riavvia"</string>
+     <string name="global_reboot_close_apps">Chiudi tutte le applicazioni e riavvia il telefono</string>
+     <string name="reboot_device_confirm">Si vuole riavviare il telefono adesso?</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">Il telefono verrà spento dopo <xliff:g id="NUMBER">%d</xliff:g> secondi.</item>
+<item quantity="other">"Il telefono si spegnerà tra <xliff:g id="NUMBER">%d</xliff:g> secondi"</item>
+    </plurals>
+
+    <string name="station_state_msg">%1$s è connessa, %2$s bloccata</string>
+     <string name="phoneFixedNumber">"NumeroFisso"</string>
+     <string name="gps_time_sync_fail_str">Non riesco ad ottenere il tempo GPS</string>
+     <string name="disable_touch_mode_title">"Disabilita Pocket Touch"</string>
+     <string name="disable_touch_mode_hint">"Non coprire la parte superiore del telefono"</string>
+     <string name="exit_disable_touch_mode_hint">"Puoi anche premere il tasto accensione e quello del volume per disabilitare questa modalità"</string>
+
 </resources>

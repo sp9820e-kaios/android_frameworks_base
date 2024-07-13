@@ -37,12 +37,14 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.telephony.DataConnectionRealTimeInfo;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.IntArray;
+import android.util.Log;
 import android.util.Slog;
 
 import android.util.TimeUtils;
@@ -436,6 +438,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteStartSensor(int uid, int sensor) {
+        if(getDeBugBatteryStatusLog()){
+             Log.d(TAG, "Start Sensor.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteStartSensorLocked(uid, sensor);
@@ -443,6 +448,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
     
     public void noteStopSensor(int uid, int sensor) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Stop Sensor.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteStopSensorLocked(uid, sensor);
@@ -464,6 +472,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteStartGps(int uid) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Start Gps.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteStartGpsLocked(uid);
@@ -471,6 +482,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
     
     public void noteStopGps(int uid) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Stop Gps.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteStopGpsLocked(uid);
@@ -563,6 +577,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteWifiOn() {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Wifi open.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteWifiOnLocked();
@@ -570,6 +587,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
     
     public void noteWifiOff() {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Wifi off.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteWifiOffLocked();
@@ -619,6 +639,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteFlashlightOn(int uid) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Flashlight open.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteFlashlightOnLocked(uid);
@@ -626,6 +649,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteFlashlightOff(int uid) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Flashlight off.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteFlashlightOffLocked(uid);
@@ -633,6 +659,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteStartCamera(int uid) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Start Camera.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteCameraOnLocked(uid);
@@ -640,6 +669,9 @@ public final class BatteryStatsService extends IBatteryStats.Stub
     }
 
     public void noteStopCamera(int uid) {
+        if(getDeBugBatteryStatusLog()){
+            Log.d(TAG, "Stop Camera.");
+        }
         enforceCallingPermission();
         synchronized (mStats) {
             mStats.noteCameraOffLocked(uid);
@@ -1380,5 +1412,11 @@ public final class BatteryStatsService extends IBatteryStats.Stub
                 }
             }
         }
+    }
+
+    private boolean getDeBugBatteryStatusLog() {
+        boolean DEBUG_BATTERY_STATUS = SystemProperties.getBoolean("debug.power.battery",
+                false) || SystemProperties.getBoolean("debug.power.all", false);
+        return DEBUG_BATTERY_STATUS;
     }
 }

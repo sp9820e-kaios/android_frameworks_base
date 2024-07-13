@@ -881,7 +881,8 @@ public class MediaSessionService extends SystemService implements Monitor {
             }
             if (session == null || preferSuggestedStream) {
                 if ((flags & AudioManager.FLAG_ACTIVE_MEDIA_ONLY) != 0
-                        && !AudioSystem.isStreamActive(AudioManager.STREAM_MUSIC, 0)) {
+                        && !AudioSystem.isStreamActive(AudioManager.STREAM_MUSIC, 0)
+                        && !AudioSystem.isStreamActive(AudioManager.STREAM_FM, 0)) {
                     if (DEBUG) {
                         Log.d(TAG, "No active session to adjust, skipping media only volume event");
                     }

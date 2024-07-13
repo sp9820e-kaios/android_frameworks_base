@@ -89,4 +89,9 @@
     <skip />
     <!-- no translation found for accessibility_wifi_signal_full (7061045677694702) -->
     <skip />
+    <string name="wifi_secured_first_item"><xliff:g>%1$s</xliff:g>-এর সাথে শক্ত করে আঁটকান;</string>
+     <string name="wifi_secured_second_item">,  <xliff:g>%1$s</xliff:g>শক্ত করে এর সাথে আঁটকানো থাকে;</string>
+     <string name="wifi_wps_available_first_item">"WPS উপলব্ধ"</string>
+     <string name="wifi_wps_available_second_item">" (WPS উপলব্ধ)"</string>
+
 </resources>

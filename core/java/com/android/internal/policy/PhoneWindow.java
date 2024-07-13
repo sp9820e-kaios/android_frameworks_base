@@ -80,6 +80,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -243,6 +244,8 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
     private int mNavigationBarColor = 0;
     private boolean mForcedStatusBarColor = false;
     private boolean mForcedNavigationBarColor = false;
+    //SPRD: Bug 474763 support transition on low-ram device.
+    private boolean mForcedUserColorView = false;
 
     private CharSequence mTitle = null;
 
@@ -304,6 +307,10 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
     public PhoneWindow(Context context) {
         super(context);
         mLayoutInflater = LayoutInflater.from(context);
+        /* SPRD: Bug 474763 support transition on low-ram device. @{ */
+        mForcedUserColorView = Resources.getSystem().getBoolean(
+                com.android.internal.R.bool.config_force_use_color_view);
+        /* @} */
     }
 
     @Override
@@ -2280,6 +2287,15 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             mBackgroundFallback.draw(mContentRoot, c, mContentParent);
         }
 
+        //SPRD:add setLayoutDirection is rewrite @{
+        @Override
+        public void setLayoutDirection(@LayoutDir int layoutDirection) {
+            super.setLayoutDirection(layoutDirection);
+            if (mTitleView != null) {
+                mTitleView.setLayoutDirection(layoutDirection);
+            }
+        }
+    //@}
         @Override
         public boolean dispatchKeyEvent(KeyEvent event) {
             final int keyCode = event.getKeyCode();
@@ -2876,8 +2892,8 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         private WindowInsets updateColorViews(WindowInsets insets, boolean animate) {
             WindowManager.LayoutParams attrs = getAttributes();
             int sysUiVisibility = attrs.systemUiVisibility | getWindowSystemUiVisibility();
-
-            if (!mIsFloating && ActivityManager.isHighEndGfx()) {
+            // SPRD: Bug 474763 support transition on low-ram device.
+            if (!mIsFloating && (ActivityManager.isHighEndGfx() || mForcedUserColorView)) {
                 boolean disallowAnimate = !isLaidOut();
                 disallowAnimate |= ((mLastWindowFlags ^ attrs.flags)
                         & FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS) != 0;
@@ -3231,6 +3247,27 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
             if (hasFeature(FEATURE_OPTIONS_PANEL) && !hasWindowFocus && mPanelChordingKey != 0) {
                 closePanel(FEATURE_OPTIONS_PANEL);
             }
+
+            /* SPRD: add for STK 27.22.7.5.1 @{ */
+            if (hasWindowFocus) {
+                try {
+                    WindowManager.LayoutParams layoutParams = ((WindowManager.LayoutParams) mDecor.mLayoutParams);
+                    IWindowManager wm = IWindowManager.Stub.asInterface(ServiceManager
+                            .getService("window"));
+                    if (layoutParams != null && layoutParams.idleScreenAvailable) {
+                        if (wm.isEventIdleScreenNeeded()) {
+                            Intent intent = new Intent("com.sprd.action.stk.idle_screen");
+                            mContext.sendBroadcast(intent);
+                        }
+                        wm.setInIdleScreen(true);
+                    } else {
+                        wm.setInIdleScreen(false);
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "Unable to cast layoutParams");
+                }
+            }
+            /* @} */
 
             final Callback cb = getCallback();
             if (cb != null && !isDestroyed() && mFeatureId < 0) {
@@ -3765,7 +3802,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
         // Non-floating windows on high end devices must put up decor beneath the system bars and
         // therefore must know about visibility changes of those.
-        if (!mIsFloating && ActivityManager.isHighEndGfx()) {
+        if (!mIsFloating && (ActivityManager.isHighEndGfx() || mForcedUserColorView)) {
             if (!targetPreL && a.getBoolean(
                     R.styleable.Window_windowDrawsSystemBarBackgrounds,
                     false)) {

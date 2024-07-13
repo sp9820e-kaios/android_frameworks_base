@@ -233,12 +233,13 @@ Layer* LayerRenderer::createRenderLayer(RenderState& renderState, uint32_t width
     // Initialize the texture if needed
     if (layer->isEmpty()) {
         layer->setEmpty(false);
+        while(glGetError() != GL_NO_ERROR);
         layer->allocateTexture();
-
+        GLenum perror;
         // This should only happen if we run out of memory
-        if (CC_UNLIKELY(GLUtils::dumpGLErrors())) {
-            LOG_ALWAYS_FATAL("Could not allocate texture for layer (fbo=%d %dx%d)",
-                    fbo, width, height);
+        if ((perror = glGetError()) != GL_NO_ERROR) {
+            ALOGE("Could not allocate texture for layer (fbo=%d %dx%d) error:%d",
+                    fbo, width, height,perror);
             renderState.bindFramebuffer(previousFbo);
             layer->decStrong(nullptr);
             return nullptr;

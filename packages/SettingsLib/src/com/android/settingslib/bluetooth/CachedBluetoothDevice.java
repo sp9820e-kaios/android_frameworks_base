@@ -44,7 +44,7 @@ import java.util.List;
  */
 public final class CachedBluetoothDevice implements Comparable<CachedBluetoothDevice> {
     private static final String TAG = "CachedBluetoothDevice";
-    private static final boolean DEBUG = Utils.V;
+    private static final boolean DEBUG = Utils.D;
 
     private final Context mContext;
     private final LocalBluetoothAdapter mLocalAdapter;
@@ -425,7 +425,8 @@ public final class CachedBluetoothDevice implements Comparable<CachedBluetoothDe
     public void setVisible(boolean visible) {
         if (mVisible != visible) {
             mVisible = visible;
-            dispatchAttributesChanged();
+            // SPRD: reduce the device list refresh freq
+            // dispatchAttributesChanged();
         }
     }
 
@@ -436,7 +437,8 @@ public final class CachedBluetoothDevice implements Comparable<CachedBluetoothDe
     void setRssi(short rssi) {
         if (mRssi != rssi) {
             mRssi = rssi;
-            dispatchAttributesChanged();
+            // SPRD: reduce the device list refresh freq
+            // dispatchAttributesChanged();
         }
     }
 
@@ -808,7 +810,12 @@ public final class CachedBluetoothDevice implements Comparable<CachedBluetoothDe
             // The pairing dialog now warns of phone-book access for paired devices.
             // No separate prompt is displayed after pairing.
             if (getPhonebookPermissionChoice() == CachedBluetoothDevice.ACCESS_UNKNOWN) {
-                setPhonebookPermissionChoice(CachedBluetoothDevice.ACCESS_ALLOWED);
+                if (mDevice.getBluetoothClass().getDeviceClass()
+                        == BluetoothClass.Device.AUDIO_VIDEO_HANDSFREE) {
+                    setPhonebookPermissionChoice(CachedBluetoothDevice.ACCESS_ALLOWED);
+                } else {
+                    setPhonebookPermissionChoice(CachedBluetoothDevice.ACCESS_REJECTED);
+                }
             }
         }
     }

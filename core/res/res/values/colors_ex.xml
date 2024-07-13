@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- SPRD: Add for SignalCluster colorful. @{ -->
+    <color name="Green">#009688</color>
+    <color name="Blue">#1055e9</color>
+    <color name="Indigo">#31409f</color>
+    <color name="Purple">#7b1fa2</color>
+    <color name="Yellow">#d9c830</color>
+    <color name="Pink">#e72ea4</color>
+    <color name="Red">#ee3a25</color>
+    <!-- @} -->
+</resources>

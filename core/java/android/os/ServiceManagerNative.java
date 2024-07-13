@@ -147,7 +147,19 @@ class ServiceManagerProxy implements IServiceManager {
         data.writeString(name);
         data.writeStrongBinder(service);
         data.writeInt(allowIsolated ? 1 : 0);
-        mRemote.transact(ADD_SERVICE_TRANSACTION, data, reply, 0);
+        if (SystemProperties.get("persist.support.securetest").equals("1"))
+        {
+            try{
+                mRemote.transact(ADD_SERVICE_TRANSACTION, data, reply, 0);
+            }
+            catch (SecurityException e)
+            {
+            }
+        }
+        else
+        {
+            mRemote.transact(ADD_SERVICE_TRANSACTION, data, reply, 0);
+        }
         reply.recycle();
         data.recycle();
     }

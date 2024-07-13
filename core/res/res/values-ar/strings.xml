@@ -1171,16 +1171,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"رجوع"</string>
     <string name="next_button_label" msgid="1080555104677992408">"التالي"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"تخطٍ"</string>
-    <string name="no_matches" msgid="8129421908915840737">"ليس هناك أية مطابقات"</string>
     <string name="find_on_page" msgid="1946799233822820384">"بحث في الصفحة"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="zero"><xliff:g id="INDEX">%d</xliff:g> من <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="two"><xliff:g id="INDEX">%d</xliff:g> من <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="few"><xliff:g id="INDEX">%d</xliff:g> من <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="many"><xliff:g id="INDEX">%d</xliff:g> من <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> من <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">مباراة واحدة</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"تم"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"‏جارٍ محو وحدة تخزين USB..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"‏جارٍ محو بطاقة SD..."</string>
@@ -1588,4 +1579,31 @@
       <item quantity="other">تم تحديد <xliff:g id="COUNT_1">%1$d</xliff:g> من العناصر</item>
       <item quantity="one">تم تحديد <xliff:g id="COUNT_0">%1$d</xliff:g> عنصر</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"ربط انترنت-USB نشط"</string>
+     <string name="ext_media_status_shared">"تم مشاركة UMS"</string>
+     <string name="sim_ready_title_for_usb">تحذير...</string>
+     <string name="sim_card_activation_warning">"في حالة تثبيت تطبيقات من جهة خارجية، يرجى إدخال بطاقة SIM/USIM لتنشيط USB.""</string>
+     <string name="usb_ok">"موافق"</string>
+     <string name="usb_cdrom_notification_title">"تم تشغيل محرك الأقراص الافتراضي"</string>
+     <string name="usb_charge_only_notification">"التوصيل كشاحن فقط"</string>
+     <string name="global_action_restart">"إعادة التشغيل"</string>
+     <string name="reboot_device_title">"إعادة التشغيل"</string>
+     <string name="global_reboot_close_apps">"إغلاق جميع التطبيقات وإعادة تشغيل الهاتف"</string>
+     <string name="reboot_device_confirm">"هل تريد إعادة تشغيل هاتفك الآن؟"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"سيتم إطفاء الهاتف بعد <xliff:g id="NUMBER">%d</xliff:g> ثانية"</item>
+<item quantity="other">"سوف يتم اغلاق الهاتف  خلال ثواني  <xliff:g id="NUMBER">%d</xliff:g>"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s متصل, %2$s محجوب"</string>
+     <string name="phoneFixedNumber">"الرقم المثبت"</string>
+     <string name="gps_time_sync_fail_str">"فشل الحصول على وقت GPS"</string>
+     <string name="disable_touch_mode_title">"تعطيل اللمس بالجيب"</string>
+     <string name="disable_touch_mode_hint">"لا تغطي أعلى الهاتف"</string>
+     <string name="exit_disable_touch_mode_hint">"يمكنك كذلك الضغط على أزرار الطاقة ورفع مستوى الصوت لتعطيل هذه الوضعية"</string>
+
 </resources>

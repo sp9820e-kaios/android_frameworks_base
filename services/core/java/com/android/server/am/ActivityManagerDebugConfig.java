@@ -119,6 +119,7 @@ class ActivityManagerDebugConfig {
     static final String POSTFIX_SERVICE = (APPEND_CATEGORY_NAME) ? "_Service" : "";
     static final String POSTFIX_SERVICE_EXECUTING =
             (APPEND_CATEGORY_NAME) ? "_ServiceExecuting" : "";
+    static final String POSTFIX_SERVICE_REJECT = (APPEND_CATEGORY_NAME) ? "_ServiceReject" : "";
     static final String POSTFIX_STACK = (APPEND_CATEGORY_NAME) ? "_Stack" : "";
     static final String POSTFIX_STATES = (APPEND_CATEGORY_NAME) ? "_States" : "";
     static final String POSTFIX_SWITCH = (APPEND_CATEGORY_NAME) ? "_Switch" : "";

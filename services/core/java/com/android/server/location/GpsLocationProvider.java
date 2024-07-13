@@ -56,6 +56,7 @@ import android.os.AsyncTask;
 import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -90,7 +91,13 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Properties;
+import com.android.internal.telephony.uicc.IccUtils;
 
+
+/* SPRD:support GPS automatic update time @{ */
+import android.provider.Settings.SettingNotFoundException;
+import java.util.Calendar;
+/* @} */
 import libcore.io.IoUtils;
 
 /**
@@ -102,7 +109,7 @@ public class GpsLocationProvider implements LocationProviderInterface {
 
     private static final String TAG = "GpsLocationProvider";
 
-    private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+    private static final boolean DEBUG = Debug.isDebug();
     private static final boolean VERBOSE = Log.isLoggable(TAG, Log.VERBOSE);
 
     private static final ProviderProperties PROPERTIES = new ProviderProperties(
@@ -341,6 +348,9 @@ public class GpsLocationProvider implements LocationProviderInterface {
 
     private int mPositionMode;
 
+    // SPRD:support AGPS settings
+    private int mPositionModeManual = -1;
+
     // Current request from underlying location clients.
     private ProviderRequest mProviderRequest = null;
     // Current list of underlying location clients.
@@ -397,6 +407,11 @@ public class GpsLocationProvider implements LocationProviderInterface {
 
     private final IAppOpsService mAppOpsService;
     private final IBatteryStats mBatteryStats;
+
+    /* SPRD:support GPS automatic update time @{ */
+    private boolean mGpsTimeSyncFlag = true;
+    private long mLastLocationUpdatesTime = 0;
+    /* @} */
 
     // only modified on handler thread
     private WorkSource mClientSource = new WorkSource();
@@ -505,8 +520,41 @@ public class GpsLocationProvider implements LocationProviderInterface {
     }
 
     private void checkWapSuplInit(Intent intent) {
-        byte[] supl_init = (byte[]) intent.getExtra("data");
-        native_agps_ni_message(supl_init,supl_init.length);
+        Log.d(TAG, "trace");
+        boolean case1 = false;
+        boolean case2 = false;
+        int i = 0;
+        byte[] header = (byte[])intent.getExtra("header");
+       // byte[] header = {0x61,0x70,0x70,0x6c,0x69,0x63,0x61,0x74,0x69,0x6f, \
+            //0x6e,0x2f,0x76,0x6e,0x64,0x2e,0x6f,0x6d,0x61,0x6c,0x6f,0x63,0x2d,0x73,0x75, \
+            //0x70,0x6c,0x2d,0x69,0x6e,0x69,0x74,0x00,(byte)0xaf,0x78,0x2d,0x6f,0x6d,0x61, \
+            //0x2d,0x61,0x70,0x70,0x6c,0x69,0x63,0x61,0x74,0x69,0x6f,0x6e,0x3a,0x75,0x6c, \
+            //0x70,0x2e,0x75,0x61,0x00};
+       // byte[] header = {0x03,0x02,0x03,0x12,(byte)0xaf,(byte)0x90};
+        String realHeader = IccUtils.bytesToHexString(header);
+        Log.d(TAG, "header is " + realHeader);
+        /*case 1*/
+        String case1Header = "03020312af90";
+        String case2Header = "6170706c69636174696f6e2f766e642e6f6d616c6f632d7375706c2d696e697400af782d6f6d612d6170706c69636174696f6e3a756c702e756100";
+        if(realHeader.compareTo(case1Header) == 0){
+            case1 = true;
+            Log.d(TAG, "it's case 1");
+        }
+        else if(realHeader.compareTo(case2Header) == 0){
+            case2 = true;
+            Log.d(TAG, "it's case 2");
+        }
+        else
+            Log.d(TAG, "neither case 1 nore case 2");
+
+        if(case1 || case2){
+            byte[] supl_init = (byte[]) intent.getExtra("data");
+            Log.d(TAG, "Wap Supl Init type is " + intent.getType());
+            if (supl_init != null) {
+                Log.d(TAG, "deliver to lib GPS");
+                native_agps_ni_message(supl_init, supl_init.length);
+            }
+        }
     }
 
     private void updateLowPowerMode() {
@@ -1226,6 +1274,20 @@ public class GpsLocationProvider implements LocationProviderInterface {
         }
     };
 
+    /* SPRD:support AGPS settings @{ */
+    public void setAgpsServer(int type, String hostname, int port) {
+        Log.d(TAG, "setAgpsServer  hostname = " + hostname + ", port = " + port);
+        native_set_agps_server(type, hostname, port);
+    }
+
+    public void setPostionMode(int mode) {
+        mPositionModeManual = mode;
+        Log.d(TAG, "setPostionMode  mPositionModeManual = " + mode);
+        native_set_position_mode(mode, GPS_POSITION_RECURRENCE_PERIODIC, mFixInterval, 0, 0);
+    }
+
+    /* @} */
+
     private boolean deleteAidingData(Bundle extras) {
         int flags;
 
@@ -1265,10 +1327,40 @@ public class GpsLocationProvider implements LocationProviderInterface {
             mSingleShot = singleShot;
             mPositionMode = GPS_POSITION_MODE_STANDALONE;
 
+            /* SPRD:support GPS automatic update time @{ */
+            if (LocationManager.SUPPORT_CMCC) {
+                mGpsTimeSyncFlag = true;
+            }
+            /* @} */
+
             boolean agpsEnabled =
                     (Settings.Global.getInt(mContext.getContentResolver(),
                                             Settings.Global.ASSISTED_GPS_ENABLED, 1) != 0);
             mPositionMode = getSuplMode(mProperties, agpsEnabled, singleShot);
+
+            /* SPRD:support AGPS settings @{ */
+            if (LocationManager.SUPPORT_CMCC) {
+                if (agpsEnabled) {
+                    if (mPositionModeManual != -1 && mPositionModeManual != mPositionMode) {
+                        mPositionMode = mPositionModeManual;
+                        Log.d(TAG, "Manual set mPositionMode = " + mPositionMode);
+                    }
+                }
+
+                int enableOption = Settings.Secure.getInt(mContext.getContentResolver(),
+                        "assisted_gps_enable_option", 0);
+                if (DEBUG)
+                    Log.d(TAG, "get the agps enable option is " + enableOption);
+
+                // if agps is enable set mode is 1 (assisted_gps_enable_option is 0
+                // or 1), and disable set 0 (assisted_gps_enable_option is 2).
+                if (enableOption == 2) {
+                    mPositionMode = GPS_POSITION_MODE_STANDALONE;
+                } else {
+                    mPositionMode = GPS_POSITION_MODE_MS_BASED;
+                }
+            }
+            /* @} */
 
             if (DEBUG) {
                 String mode;
@@ -1305,7 +1397,7 @@ public class GpsLocationProvider implements LocationProviderInterface {
 
             // reset SV count to zero
             updateStatus(LocationProvider.TEMPORARILY_UNAVAILABLE, 0);
-            mFixRequestTime = System.currentTimeMillis();
+            mFixRequestTime = SystemClock.elapsedRealtime();;
             if (!hasCapability(GPS_CAPABILITY_SCHEDULING)) {
                 // set timer to give up if we do not receive a fix within NO_FIX_TIMEOUT
                 // and our fix interval is not short
@@ -1354,6 +1446,28 @@ public class GpsLocationProvider implements LocationProviderInterface {
         if (VERBOSE) Log.v(TAG, "reportLocation lat: " + latitude + " long: " + longitude +
                 " timestamp: " + timestamp);
 
+        /* SPRD:support GPS automatic update time @{ */
+        if (LocationManager.SUPPORT_CMCC) {
+            long currentTime = System.currentTimeMillis() + 200;
+
+            // some one may change the system time after the last fix, if this happen, we reset the
+            // mLastLocationUpdatesTime
+            if (mLastLocationUpdatesTime >= currentTime) {
+                mLastLocationUpdatesTime = 0;
+                Log.d(TAG, "last > current");
+            }
+
+            Log.d(TAG, "GPS last updates: " + mLastLocationUpdatesTime + "currentTime: "
+                    + currentTime);
+            if (mFixInterval <= 1 || currentTime - mLastLocationUpdatesTime > mFixInterval) {
+                mLastLocationUpdatesTime = currentTime;
+            }
+            if (DEBUG)
+                Log.v(TAG, "reportLocation lat: " + latitude + " long: " + longitude +
+                        " timestamp: " + timestamp);
+        }
+        /* @} */
+
         synchronized (mLocation) {
             mLocationFlags = flags;
             if ((flags & LOCATION_HAS_LAT_LONG) == LOCATION_HAS_LAT_LONG) {
@@ -1393,7 +1507,33 @@ public class GpsLocationProvider implements LocationProviderInterface {
             }
         }
 
-        mLastFixTime = System.currentTimeMillis();
+        mLastFixTime = SystemClock.elapsedRealtime();
+
+        /* SPRD:support GPS automatic update time @{ */
+        if (LocationManager.SUPPORT_CMCC) {
+            Log.d(TAG, "GPS time sync is enabled, mGpsTimeSyncFlag=" + mGpsTimeSyncFlag
+                    + "mGpsTimeSyncFlag = " + mGpsTimeSyncFlag);
+            if (mGpsTimeSyncFlag && (flags & LOCATION_HAS_LAT_LONG) == LOCATION_HAS_LAT_LONG) {
+                // Add for "time auto-sync with Gps"
+                if (getAutoGpsState()) {
+                    mGpsTimeSyncFlag = false;
+                    Log.d(TAG, "GPS time sync is enabled");
+                    Log.d(TAG, "GPS time sync  Auto-sync time with GPS: timestamp = " + timestamp);
+                    Calendar c = Calendar.getInstance();
+                    c.setTimeInMillis(timestamp);
+                    long when = c.getTimeInMillis();
+                    if (when / 1000 < Integer.MAX_VALUE) {
+                        SystemClock.setCurrentTimeMillis(when);
+                    }
+                    mLastLocationUpdatesTime = System.currentTimeMillis();
+                } else {
+                    Log.d(TAG, "Auto-sync time with GPS is disabled by user settings!");
+                    Log.d(TAG, "GPS time sync is disabled");
+                }
+            }
+        }
+        /* @} */
+
         // report time to first fix
         if (mTimeToFirstFix == 0 && (flags & LOCATION_HAS_LAT_LONG) == LOCATION_HAS_LAT_LONG) {
             mTimeToFirstFix = (int)(mLastFixTime - mFixRequestTime);
@@ -1496,7 +1636,7 @@ public class GpsLocationProvider implements LocationProviderInterface {
         updateStatus(mStatus, Integer.bitCount(mSvMasks[USED_FOR_FIX_MASK]));
 
         if (mNavigating && mStatus == LocationProvider.AVAILABLE && mLastFixTime > 0 &&
-            System.currentTimeMillis() - mLastFixTime > RECENT_FIX_TIMEOUT) {
+            SystemClock.elapsedRealtime() - mLastFixTime > RECENT_FIX_TIMEOUT) {
             // send an intent to notify that the GPS is no longer receiving fixes.
             Intent intent = new Intent(LocationManager.GPS_FIX_CHANGE_ACTION);
             intent.putExtra(LocationManager.EXTRA_GPS_ENABLED, false);
@@ -2314,5 +2454,16 @@ public class GpsLocationProvider implements LocationProviderInterface {
 
     // GNSS Configuration
     private static native void native_configuration_update(String configData);
+
+    /* SPRD:support GPS automatic update time @{ */
+    private boolean getAutoGpsState() {
+        try {
+            return Settings.Global.getInt(mContext.getContentResolver(),
+                    Settings.Global.AUTO_TIME_GPS) > 0;
+        } catch (SettingNotFoundException snfe) {
+            return false;
+        }
+    }
+    /* @} */
 }
 

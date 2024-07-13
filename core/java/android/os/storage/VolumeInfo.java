@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.UserHandle;
+import android.os.SystemProperties;
 import android.provider.DocumentsContract;
 import android.text.TextUtils;
 import android.util.ArrayMap;
@@ -90,10 +91,15 @@ public class VolumeInfo implements Parcelable {
     public static final int STATE_UNMOUNTABLE = 6;
     public static final int STATE_REMOVED = 7;
     public static final int STATE_BAD_REMOVAL = 8;
+    /* @SPRD: add for UMS */
+    public static final int STATE_SHARED = 9;
 
     public static final int MOUNT_FLAG_PRIMARY = 1 << 0;
     public static final int MOUNT_FLAG_VISIBLE = 1 << 1;
-
+    /* SPRD: add for emulated storage */
+    public static final int MOUNT_FLAG_PRI_EMU = 1 << 2;
+    /* SPRD: set primary emulated flag for bug575895 */
+    private static boolean primaryPhysical = SystemProperties.getBoolean(StorageManager.PROP_PRIMARY_PHYSICAL, false);
     private static SparseArray<String> sStateToEnvironment = new SparseArray<>();
     private static ArrayMap<String, String> sEnvironmentToBroadcast = new ArrayMap<>();
     private static SparseIntArray sStateToDescrip = new SparseIntArray();
@@ -124,6 +130,8 @@ public class VolumeInfo implements Parcelable {
         sStateToEnvironment.put(VolumeInfo.STATE_UNMOUNTABLE, Environment.MEDIA_UNMOUNTABLE);
         sStateToEnvironment.put(VolumeInfo.STATE_REMOVED, Environment.MEDIA_REMOVED);
         sStateToEnvironment.put(VolumeInfo.STATE_BAD_REMOVAL, Environment.MEDIA_BAD_REMOVAL);
+        /* @SPRD: add for UMS */
+        sStateToEnvironment.put(VolumeInfo.STATE_SHARED, Environment.MEDIA_SHARED);
 
         sEnvironmentToBroadcast.put(Environment.MEDIA_UNMOUNTED, Intent.ACTION_MEDIA_UNMOUNTED);
         sEnvironmentToBroadcast.put(Environment.MEDIA_CHECKING, Intent.ACTION_MEDIA_CHECKING);
@@ -133,6 +141,8 @@ public class VolumeInfo implements Parcelable {
         sEnvironmentToBroadcast.put(Environment.MEDIA_UNMOUNTABLE, Intent.ACTION_MEDIA_UNMOUNTABLE);
         sEnvironmentToBroadcast.put(Environment.MEDIA_REMOVED, Intent.ACTION_MEDIA_REMOVED);
         sEnvironmentToBroadcast.put(Environment.MEDIA_BAD_REMOVAL, Intent.ACTION_MEDIA_BAD_REMOVAL);
+        /* @SPRD: add for UMS */
+        sEnvironmentToBroadcast.put(Environment.MEDIA_SHARED, Intent.ACTION_MEDIA_SHARED);
 
         sStateToDescrip.put(VolumeInfo.STATE_UNMOUNTED, R.string.ext_media_status_unmounted);
         sStateToDescrip.put(VolumeInfo.STATE_CHECKING, R.string.ext_media_status_checking);
@@ -143,6 +153,8 @@ public class VolumeInfo implements Parcelable {
         sStateToDescrip.put(VolumeInfo.STATE_UNMOUNTABLE, R.string.ext_media_status_unmountable);
         sStateToDescrip.put(VolumeInfo.STATE_REMOVED, R.string.ext_media_status_removed);
         sStateToDescrip.put(VolumeInfo.STATE_BAD_REMOVAL, R.string.ext_media_status_bad_removal);
+        /* @SPRD: add for UMS */
+        sStateToDescrip.put(VolumeInfo.STATE_SHARED, R.string.ext_media_status_shared);
     }
 
     /** vold state */
@@ -158,13 +170,29 @@ public class VolumeInfo implements Parcelable {
     public String fsLabel;
     public String path;
     public String internalPath;
+    /* SPRD: add for storage manage */
+    public String linkName;
+    /* @SPRD: add for UMS */
+    public int stateBeforeUMS = STATE_UNMOUNTED;
 
     public VolumeInfo(String id, int type, DiskInfo disk, String partGuid) {
         this.id = Preconditions.checkNotNull(id);
         this.type = type;
         this.disk = disk;
         this.partGuid = partGuid;
+        /* SPRD: add for storage manage */
+        this.linkName = "unknown";
     }
+
+    /* SPRD: add for storage manage @{ */
+    public VolumeInfo(String id, int type, DiskInfo disk, String partGuid, String linkName) {
+        this.id = Preconditions.checkNotNull(id);
+        this.type = type;
+        this.disk = disk;
+        this.partGuid = partGuid;
+        this.linkName = linkName;
+    }
+    /* @} */
 
     public VolumeInfo(Parcel parcel) {
         id = parcel.readString();
@@ -183,6 +211,8 @@ public class VolumeInfo implements Parcelable {
         fsLabel = parcel.readString();
         path = parcel.readString();
         internalPath = parcel.readString();
+        /* SPRD: add for storage manage */
+        linkName = parcel.readString();
     }
 
     public static @NonNull String getEnvironmentForState(int state) {
@@ -259,6 +289,12 @@ public class VolumeInfo implements Parcelable {
     public boolean isPrimary() {
         return (mountFlags & MOUNT_FLAG_PRIMARY) != 0;
     }
+
+    /* SPRD: add primary emulated flag for bug528133 @{ */
+    public boolean isPrimaryEmu() {
+        return (mountFlags & MOUNT_FLAG_PRI_EMU) != 0;
+    }
+    /* @} */
 
     public boolean isPrimaryPhysical() {
         return isPrimary() && (getType() == TYPE_PUBLIC);
@@ -358,6 +394,11 @@ public class VolumeInfo implements Parcelable {
             if (isPrimary()) {
                 mtpStorageId = StorageVolume.STORAGE_ID_PRIMARY;
             }
+            /* SPRD: set primary emulated flag for bug575895 @{ */
+            if (primaryPhysical) {
+                mtpStorageId = StorageVolume.STORAGE_ID_PRIMARY_EMU;
+            }
+            /* @} */
 
             mtpReserveSize = storage.getStorageLowBytes(userPath);
 
@@ -428,7 +469,12 @@ public class VolumeInfo implements Parcelable {
         final Uri uri;
         if (type == VolumeInfo.TYPE_PUBLIC) {
             uri = DocumentsContract.buildRootUri(DOCUMENT_AUTHORITY, fsUuid);
+        /* SPRD: modify for physical exteranl storage @{
+         * @orig
         } else if (type == VolumeInfo.TYPE_EMULATED && isPrimary()) {
+        */
+        } else if (type == VolumeInfo.TYPE_EMULATED) {
+        /* @} */
             uri = DocumentsContract.buildRootUri(DOCUMENT_AUTHORITY,
                     DOCUMENT_ROOT_PRIMARY_EMULATED);
         } else {
@@ -464,6 +510,8 @@ public class VolumeInfo implements Parcelable {
         pw.println();
         pw.printPair("path", path);
         pw.printPair("internalPath", internalPath);
+        /* SPRD: add for storage manage */
+        pw.printPair("linkName", linkName);
         pw.decreaseIndent();
         pw.println();
     }
@@ -530,5 +578,7 @@ public class VolumeInfo implements Parcelable {
         parcel.writeString(fsLabel);
         parcel.writeString(path);
         parcel.writeString(internalPath);
+        /* SPRD: add for storage manage */
+        parcel.writeString(linkName);
     }
 }

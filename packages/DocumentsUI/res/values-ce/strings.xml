@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">Dukomento</string>
+<string name="title_open">"Magabli gikan sa"</string>
+<string name="title_save">"Itigom sa"</string>
+<string name="menu_create_dir">"Maghimo ug sudlanan"</string>
+<string name="menu_grid">"Grid ang pagtanaw"</string>
+<string name="menu_list">"Lista ang pagtanaw"</string>
+<string name="menu_sort">Ayosa </string>
+<string name="menu_search">Pangita</string>
+<string name="menu_settings">Mga setting</string>
+<string name="menu_open">Abli</string>
+<string name="menu_save">Luwas</string>
+<string name="menu_share">bahagi</string>
+<string name="menu_delete">"Panas"</string>
+<string name="menu_select_all">Pili tanan</string>
+<string name="menu_copy">"Kopyaha ngadto sa\u2026"</string>
+<string name="menu_advanced_show" product="nosdcard">"Ipakita ang pangsulod nga imbakan"</string>
+<string name="menu_advanced_show" product="default">"Ipakita ang SD kard"</string>
+<string name="menu_advanced_hide" product="nosdcard">"Itago ang pangsulod nga imbakan"</string>
+<string name="menu_advanced_hide" product="default">"Itago ang SD kard"</string>
+<string name="menu_file_size_show">"Ipakita ang kadakon sa payl"</string>
+<string name="menu_file_size_hide">"Itago ang kadakon sa payl"</string>
+<string name="button_select">"Pili"</string>
+<string name="button_copy">"kopya"</string>
+<string name="sort_name">pinaagi sa ngalan</string>
+<string name="sort_date">"Ang petsa sa pagbago"</string>
+<string name="sort_size">pinaagi sa gidak-on</string>
+<string name="drawer_open">"Ipakita ang ugat"</string>
+<string name="drawer_close">"Itago ang ugat"</string>
+<string name="save_error">"Pakyas sa pagluwas sa dokumento"</string>
+<string name="create_error">"Pakyas sa paghimu sa sudlanan"</string>
+<string name="query_error">"Pakyas sa pagpangita sa mga dokumento"</string>
+<string name="root_recent">Bagohay</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g> libre"</string>
+<string name="root_type_service">"Serbisyo sa sudlanan"</string>
+<string name="root_type_shortcut">"Mga shortcut"</string>
+<string name="root_type_device">"Debays"</string>
+<string name="root_type_apps">"Daghan nga app"</string>
+<string name="empty">"Walay mga aytem"</string>
+<string name="toast_no_application">"Dili ma-abli ang payl"</string>
+<string name="toast_failed_delete">"Dili mapala ang ubang dukomento"</string>
+<string name="share_via">"Bahagi pinaagi sa"</string>
+<string name="copy_notification_title">"Nagkopya sa mga payl"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> nahabilin"</string>
+<string name="copy_preparing">"Nag-andam sa pagkopya\u2026"</string>
+<string name="notification_touch_for_details">"Hikapa aron makita ang mga detalye"</string>
+<string name="retry">Suway balik</string>
+<string name="copy_failure_alert_content">"Kining maong mga payl wala makopya: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"Dili mabahin ang payl"</string>
+<string name="documents_deleting">"Nagpapas sa mga dokumento"</string>
+<string name="cannot_copyfolder_itself">"Dili ka makakopya sa polder diha sa iyang kaugalingon"</string>
+    <string name="error_permissions">"Ang app walay kritikal nga pagtugot nga gikinahanglan aron mogana. Palihug susiha ang imong mga seting sa pagtugot."</string>
+     <string name="cannot_copy_drm">"Dili makakopya og mga payl nga DRM"</string>
+     <string name="cannot_copy_downloading">"Dili makakopya og mga payl sa pagkarga"</string>
+
+</resources>

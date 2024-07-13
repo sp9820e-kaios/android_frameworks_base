@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+       <string name= "feature_cmcc_app" translatable= "false">addon.sprd.providers.settings.cmcc.SprdCmccWorkspaceAddon</string>
+</resources>

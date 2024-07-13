@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<!-- SPRD:Feature 475356, Support multi-card carrier info display-->
+    <string name="kg_no_sim_message">未插卡</string>
+    <!-- SPRD: Feature 478270 Add EmergencyButton on the Lockscreen-->
+    <string name="kg_emergency_call_no_service">无可用网络</string>
+    <!-- SPRD:add PIN verify success prompt -->
+    <string name="kg_sim_pin_verify_success">PIN校验成功</string>
+    <string name="kg_sim_pin_delete">删除</string>
+    <string name="kg_sim_pin_ok">确认</string>
+</resources>

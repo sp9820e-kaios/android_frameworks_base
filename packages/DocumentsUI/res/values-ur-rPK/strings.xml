@@ -29,7 +29,7 @@
     <string name="menu_save" msgid="2394743337684426338">"محفوظ کریں"</string>
     <string name="menu_share" msgid="3075149983979628146">"اشتراک کریں"</string>
     <string name="menu_delete" msgid="8138799623850614177">"حذف کریں"</string>
-    <string name="menu_select_all" msgid="8323579667348729928">"سبھی کو منتخب کریں"</string>
+    <string name="menu_select_all" msgid="8323579667348729928">"سبھی غیر منتخب کریں"</string>
     <string name="menu_copy" msgid="3612326052677229148">"اس میں کاپی کریں…"</string>
     <string name="menu_advanced_show" product="nosdcard" msgid="4693652895715631401">"داخلی اسٹوریج دکھائیں"</string>
     <string name="menu_advanced_show" product="default" msgid="5792182900084144261">"‏SD کارڈ دکھائیں"</string>
@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"تفصیلات دیکھنے کیلئے ٹچ کریں"</string>
     <string name="retry" msgid="7564024179122207376">"دوبارہ کوشش کریں"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"یہ فائلز کاپی نہیں کی گئیں: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">فائل شیئر نہیں ہوسکتی۔</string>
+     <string name="documents_deleting">"دستاویزات کو حذف کرنا"</string>
+     <string name="cannot_copyfolder_itself">"آپ فولڈر کو اسی خود میں کاپی نہیں کر سکتے ہیں"</string>
+
+    <string name="error_permissions">"ایپ چلانے کیلئے درکار انتہائی اہم اجازتیں ایپ کے پاس نہیں ہیں۔ براہ کرم اپنی اجازتوں کی ترتیبات چیک کریں۔"</string>
+     <string name="cannot_copy_drm">"DRM فائلوں کی نقل نہیں کر سکتا ہے"</string>
+     <string name="cannot_copy_downloading">"ڈاؤن لوڈ فائلوں کی کاپی نہیں کر سکتا ہے"</string>
 </resources>

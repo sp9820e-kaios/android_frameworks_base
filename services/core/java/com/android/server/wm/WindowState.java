@@ -427,7 +427,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
                     + WindowManagerService.TYPE_LAYER_OFFSET;
             mSubLayer = mPolicy.subWindowTypeToLayerLw(a.type);
             mAttachedWindow = attachedWindow;
-            if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(TAG, "Adding " + this + " to " + mAttachedWindow);
+            if (WindowManagerService.DEBUG_ADD_REMOVE || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Adding " + this + " to " + mAttachedWindow);
 
             final WindowList childWindows = mAttachedWindow.mChildWindows;
             final int numChildWindows = childWindows.size();
@@ -712,7 +712,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             }
         }
 
-        if (DEBUG_LAYOUT || WindowManagerService.localLOGV) Slog.v(TAG,
+        if (DEBUG_LAYOUT || WindowManagerService.localLOGV || WindowManagerService.mIsPrintLogs) Slog.v(TAG,
                 "Resolving (mRequestedWidth="
                 + mRequestedWidth + ", mRequestedheight="
                 + mRequestedHeight + ") to" + " (pw=" + pw + ", ph=" + ph
@@ -1160,7 +1160,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         disposeInputChannel();
 
         if (mAttachedWindow != null) {
-            if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(TAG, "Removing " + this + " from " + mAttachedWindow);
+            if (WindowManagerService.DEBUG_ADD_REMOVE || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Removing " + this + " from " + mAttachedWindow);
             mAttachedWindow.mChildWindows.remove(this);
         }
         mWinAnimator.destroyDeferredSurfaceLocked();
@@ -1253,7 +1253,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             // Already showing.
             return false;
         }
-        if (DEBUG_VISIBILITY) Slog.v(TAG, "Policy visibility true: " + this);
+        if (DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Policy visibility true: " + this);
         if (doAnimation) {
             if (DEBUG_VISIBILITY) Slog.v(TAG, "doAnimation: mPolicyVisibility="
                     + mPolicyVisibility + " mAnimation=" + mWinAnimator.mAnimation);
@@ -1303,7 +1303,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         if (doAnimation) {
             mPolicyVisibilityAfterAnim = false;
         } else {
-            if (DEBUG_VISIBILITY) Slog.v(TAG, "Policy visibility false: " + this);
+            if (DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Policy visibility false: " + this);
             mPolicyVisibilityAfterAnim = false;
             mPolicyVisibility = false;
             // Window is no longer visible -- make sure if we were waiting
@@ -1311,7 +1311,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             // we allow the display to be enabled now.
             mService.enableScreenIfNeededLocked();
             if (mService.mCurrentFocus == this) {
-                if (WindowManagerService.DEBUG_FOCUS_LIGHT) Slog.i(TAG,
+                if (WindowManagerService.DEBUG_FOCUS_LIGHT || WindowManagerService.mIsPrintLogs) Slog.i(TAG,
                         "WindowState.hideLw: setting mFocusMayChange true");
                 mService.mFocusMayChange = true;
             }
@@ -1486,13 +1486,14 @@ final class WindowState implements WindowManagerPolicy.WindowState {
 
     void reportResized() {
         try {
-            if (DEBUG_RESIZE || DEBUG_ORIENTATION) Slog.v(TAG, "Reporting new frame to " + this
+            if (DEBUG_RESIZE || DEBUG_ORIENTATION || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Reporting new frame to " + this
                     + ": " + mCompatFrame);
             boolean configChanged = isConfigChanged();
             final TaskStack stack = getStack();
             final Configuration overrideConfig =
                     (stack != null) ? stack.mOverrideConfig : Configuration.EMPTY;
-            if ((DEBUG_RESIZE || DEBUG_ORIENTATION || DEBUG_CONFIGURATION) && configChanged) {
+            if ((DEBUG_RESIZE || DEBUG_ORIENTATION || DEBUG_CONFIGURATION)
+					&& configChanged || WindowManagerService.mIsPrintLogs) {
                 Slog.i(TAG, "Sending new config to window " + this + ": "
                         + mWinAnimator.mSurfaceW + "x" + mWinAnimator.mSurfaceH + " / config="
                         + mService.mCurConfiguration + " overrideConfig=" + overrideConfig);
@@ -1764,6 +1765,25 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         return Integer.toHexString(System.identityHashCode(this))
             + " " + mAttrs.getTitle();
     }
+
+    @Override
+    public void requestHideSurface(boolean hide) {
+        /* SPRD: Don't hide/show window when it's invisible  @{*/
+        if (mWinAnimator != null && mPolicyVisibility) {
+            mWinAnimator.requestHideSurface(hide);
+        }
+        /* @} */
+    }
+
+    /* SPRD: add for dynamic navigationbar @{ */
+    @Override
+    public void setLayoutNeeded(boolean needed) {
+        final DisplayContent displayContent = getDisplayContent();
+        if (displayContent != null) {
+            displayContent.layoutNeeded = needed;
+        }
+    }
+    /* @} */
 
     @Override
     public String toString() {

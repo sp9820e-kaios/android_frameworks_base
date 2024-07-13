@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"बग रिपोर्ट आव तुल्नः"</string>
+<string name="bugreport_finished_text" product="watch">"स्वाइप पथ पन्नुन बग रिपोर्ट बाँटनः खात्र"</string>
+<string name="bugreport_finished_text" product="default">"पन्नुन बग रिपोर्ट बाँटनः खात्र कर्यिव जीर"</string>
+<string name="bugreport_confirm">""बग रिपोर्ट्स मंज़ छु डाटा सिस्टम छाव वार्यह लोग फाइल्स,येथ मंज़ निजी तः राजदार ज़ानकारी ति छि. खाली बांटीव बग रिपोर्ट्स एप्पस तः लूख यिमन तुहुय बरोस छिव करान." "</string>
+<string name="bugreport_confirm_repeat">"हायिव येह मेसेज बे वक़्तह"</string>
+<string name="bugreport_storage_title">"बग तफसील"</string>
+</resources>

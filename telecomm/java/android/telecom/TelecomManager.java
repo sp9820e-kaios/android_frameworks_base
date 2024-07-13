@@ -1076,7 +1076,9 @@ public class TelecomManager {
     @SystemApi
     public void addNewUnknownCall(PhoneAccountHandle phoneAccount, Bundle extras) {
         try {
-            if (isServiceConnected()) {
+            // SPRD: Don't addNewUnknownCall if phoneaccount is null.
+            PhoneAccount pa = getPhoneAccount(phoneAccount);
+            if (isServiceConnected() && pa != null) {
                 getTelecomService().addNewUnknownCall(
                         phoneAccount, extras == null ? new Bundle() : extras);
             }
@@ -1265,4 +1267,19 @@ public class TelecomManager {
         }
         return isConnected;
     }
+
+    /**
+     * SPRD: add for bug512850 to get active call's phoneAccount @{
+     */
+    public PhoneAccountHandle getLivePhoneAccount() {
+        try {
+            if (isServiceConnected()) {
+                return getTelecomService().getLivePhoneAccount(mContext.getOpPackageName());
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "RemoteException calling getLivePhoneAccount().", e);
+        }
+        return null;
+    }
+    /** @} */
 }

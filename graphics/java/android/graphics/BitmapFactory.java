@@ -16,6 +16,8 @@
 
 package android.graphics;
 
+import android.drm.DrmManagerClient;
+import android.drm.DecryptHandle;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Trace;
@@ -34,6 +36,7 @@ import java.io.InputStream;
  */
 public class BitmapFactory {
     private static final int DECODE_BUFFER_SIZE = 16 * 1024;
+    private static final String TAG = "BitmapFactory";
 
     public static class Options {
         /**
@@ -372,6 +375,35 @@ public class BitmapFactory {
         }
     }
 
+    public static Bitmap decodeDrmStream(DrmManagerClient client, DecryptHandle handle, Options opts) {
+	Bitmap bm = null;
+//	boolean finish = true;
+        try {
+            if (opts == null || (opts.inScaled && opts.inBitmap == null)) {
+                float scale = 1.0f;
+                int targetDensity = 0;
+                if (opts != null) {
+                    final int density = opts.inDensity;
+                    targetDensity = opts.inTargetDensity;
+                    if (density != 0 && targetDensity != 0) {
+                        scale = targetDensity / (float) density;
+                    }
+                }
+
+		bm = nativeDecodeDrmStream(client, handle, opts, true, scale);
+                if (bm != null && targetDensity != 0) bm.setDensity(targetDensity);
+//                finish = false;
+            } else {
+                bm = nativeDecodeDrmStream(client, handle, opts, false, 0);
+	    }
+//	    return finish ? finishDecode(bm, null, opts) : bm;
+        return bm;
+        } catch (Exception e) {
+            Log.e(TAG, "decodeDrmStream: failed!", e);
+        }
+        return bm;
+    }
+    
     /**
      * Decode a file path into a bitmap. If the specified file name is null,
      * or cannot be decoded into a bitmap, the function returns null.
@@ -704,6 +736,7 @@ public class BitmapFactory {
         return decodeFileDescriptor(fd, null, null);
     }
 
+    private static native Bitmap nativeDecodeDrmStream(DrmManagerClient client, DecryptHandle handle, Options opts, boolean applyScale, float scale);
     private static native Bitmap nativeDecodeStream(InputStream is, byte[] storage,
             Rect padding, Options opts);
     private static native Bitmap nativeDecodeFileDescriptor(FileDescriptor fd,

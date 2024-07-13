@@ -18,7 +18,7 @@
     <item
         android:id="@+id/menu_open"
         android:title="@string/menu_open"
-        android:showAsAction="always" />
+        android:showAsAction="never" />
     <item
         android:id="@+id/menu_share"
         android:icon="@drawable/ic_menu_share"
@@ -32,6 +32,10 @@
     <item
         android:id="@+id/menu_select_all"
         android:title="@string/menu_select_all"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/menu_deselect_all"
+        android:title="@string/menu_deselect_all"
         android:showAsAction="never" />
     <item
         android:id="@+id/menu_copy"

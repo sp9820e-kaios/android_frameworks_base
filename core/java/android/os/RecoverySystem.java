@@ -77,6 +77,8 @@ public class RecoverySystem {
 
     // Length limits for reading files.
     private static int LOG_FILE_MAX_LENGTH = 64 * 1024;
+    //SPRD:forbid delete command after writing
+    private static boolean COMMAND_WRITEN = false;
 
     /**
      * Interface definition for a callback to be invoked regularly as
@@ -477,6 +479,9 @@ public class RecoverySystem {
             command.close();
         }
 
+        //SPRD:forbid delete command after writing
+        COMMAND_WRITEN = true;
+
         // Having written the command file, go ahead and reboot
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         pm.reboot(PowerManager.REBOOT_RECOVERY);
@@ -500,6 +505,13 @@ public class RecoverySystem {
         } catch (IOException e) {
             Log.e(TAG, "Error reading recovery log", e);
         }
+
+        /* SPRD:forbid delete command after writing @{ */
+        if (COMMAND_WRITEN) {
+            Log.i(TAG, "bootcommand is writen, do not delete the command file");
+            return log;
+        }
+        /* @} */
 
         // Delete everything in RECOVERY_DIR except those beginning
         // with LAST_PREFIX

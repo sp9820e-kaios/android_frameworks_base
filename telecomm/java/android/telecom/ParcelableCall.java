@@ -56,6 +56,15 @@ public final class ParcelableCall implements Parcelable {
     private final List<String> mConferenceableCallIds;
     private final Bundle mIntentExtras;
     private final Bundle mExtras;
+    /* SPRD: Use cpu time instead of system time when user dialing {@ */
+    private long mConnectRealTimeMillis;
+    public long getConnectRealTimeMillis() {
+        return mConnectRealTimeMillis;
+    }
+    public void setConnectRealTimeMillis(long connectRealTimeMillis) {
+        mConnectRealTimeMillis = connectRealTimeMillis;
+    }
+    /* @} */
 
     public ParcelableCall(
             String id,
@@ -291,7 +300,12 @@ public final class ParcelableCall implements Parcelable {
             source.readList(conferenceableCallIds, classLoader);
             Bundle intentExtras = source.readBundle(classLoader);
             Bundle extras = source.readBundle(classLoader);
-            return new ParcelableCall(
+            /* SPRD Use cpu time instead of system time when user dialing @{
+            * @orig
+            return new ParcelableCall( */
+            long connectRealTimeMillis = source.readLong();
+            ParcelableCall parcelableCall = new ParcelableCall(
+            /* @} */
                     id,
                     state,
                     disconnectCause,
@@ -314,6 +328,10 @@ public final class ParcelableCall implements Parcelable {
                     conferenceableCallIds,
                     intentExtras,
                     extras);
+            /* SPRD: Use cpu time instead of system time when user dialing {@ */
+            parcelableCall.setConnectRealTimeMillis(connectRealTimeMillis);
+            return parcelableCall;
+            /* @} */
         }
 
         @Override
@@ -354,6 +372,8 @@ public final class ParcelableCall implements Parcelable {
         destination.writeList(mConferenceableCallIds);
         destination.writeBundle(mIntentExtras);
         destination.writeBundle(mExtras);
+        // SPRD: Use cpu time instead of system time when user dialing
+        destination.writeLong(mConnectRealTimeMillis);
     }
 
     @Override

@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Xehetasunak ikusteko, ukitu hau."</string>
     <string name="retry" msgid="7564024179122207376">"Saiatu berriro"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Ez dira kopiatu fitxategi hauek: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">ezin izan da fitxategia partekatu</string>
+     <string name="documents_deleting">"Dokumentuak ezabatzen"</string>
+     <string name="cannot_copyfolder_itself">"Ezin duzu karpetaren kopia bere barnean gorde"</string>
+
+    <string name="error_permissions">"Aplikazioak ez du exekutatu ahal izateko derrigorrez beharrezko baimenik. Egiaztatu baimenen ezarpenak."</string>
+     <string name="cannot_copy_drm">"Ezin dira kopiatu DRM fitxategiak"</string>
+     <string name="cannot_copy_downloading">"Ezin dira kopiatu deskargatzen ari diren fitxategiak"</string>
 </resources>

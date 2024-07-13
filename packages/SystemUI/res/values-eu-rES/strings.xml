@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Zorionak! Sistemako erabiltzaile-interfazearen konfiguratzailea Ezarpenak atalean gehitu da"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Kendu Ezarpenak ataletik"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Sistemako erabiltzaile-interfazearen konfiguratzailea ezarpenetatik kendu nahi duzu, eta haren eginbide guztiak erabiltzeari utzi nahi diozu?"</string>
+    <string name="quick_settings_volume_label">Audioprofila</string>
+     <string name="assistant_key_home">Etxea</string>
+     <string name="assistant_key_search">"Bilatu"</string>
+     <string name="assistant_key_menu">Menua</string>
+     <string name="assistant_key_back">Atzera</string>
+
+    <string name="vibrate_hint">"Ezkerrerantz arrastratu Bibratzeko"</string>
+     <string name="battery_overtage_title">Segurtasun abisua</string>
+     <string name="battery_overtage_content">"Karga tentsioa altuegia da"</string>
+     <string name="battery_overtage_back">Atzera</string>
 </resources>

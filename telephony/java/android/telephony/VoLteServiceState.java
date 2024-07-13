@@ -23,8 +23,7 @@ import android.telephony.Rlog;
 
 /**
  * Contains LTE network state related information.
- *
- * @hide
+ * SPRD:remove hide for VoLTE
  */
 public final class VoLteServiceState implements Parcelable {
 
@@ -42,6 +41,10 @@ public final class VoLteServiceState implements Parcelable {
     public static final int HANDOVER_COMPLETED = 1;
     public static final int HANDOVER_FAILED    = 2;
     public static final int HANDOVER_CANCELED  = 3;
+    /* SPRD: Added for VoLTE @{ */
+    public static final int IMS_REG_STATE_NOT_EGISTERED = 4;
+    public static final int IMS_REG_STATE_REGISTERED  = 5;
+    /* @} */
 
     private int mSrvccState;
 

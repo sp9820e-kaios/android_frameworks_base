@@ -1962,11 +1962,19 @@ class ContextImpl extends Context {
                         final IMountService mount = IMountService.Stub.asInterface(
                                 ServiceManager.getService("mount"));
                         try {
-                            final int res = mount.mkdirs(getPackageName(), dir.getAbsolutePath());
-                            if (res != 0) {
-                                Log.w(TAG, "Failed to ensure " + dir + ": " + res);
+                            /* SPRD: modify for mkdir should in mounted state @{ */
+                            Log.w(TAG, "ensureDirsExistOrFilter, dir = " + dir);
+                            if(Environment.getExternalStorageState(dir).equals(Environment.MEDIA_MOUNTED)) {
+                                final int res = mount.mkdirs(getPackageName(), dir.getAbsolutePath());
+                                if (res != 0) {
+                                    Log.w(TAG, "Failed to ensure " + dir + ": " + res);
+                                    dir = null;
+                                }
+                            } else {
+                                Log.w(TAG, "ensureDirsExistOrFilter, dir " + dir + " is not mounted!");
                                 dir = null;
                             }
+                            /* @} */
                         } catch (Exception e) {
                             Log.w(TAG, "Failed to ensure " + dir + ": " + e);
                             dir = null;

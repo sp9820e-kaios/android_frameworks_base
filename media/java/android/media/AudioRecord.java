@@ -36,6 +36,8 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.os.Parcel;
+import android.os.SystemProperties;
 
 /**
  * The AudioRecord class manages the audio resources for Java applications
@@ -387,6 +389,22 @@ public class AudioRecord
         }
 
         mSessionId = session[0];
+        if(SystemProperties.get("service.project.sec").equals("1"))
+        {
+            int userId = Binder.getCallingUid();
+            int permission = 1 ;
+	    permission = Binder.dojudge(userId, "media.recorder",10,0,null);
+            if ( permission > 0)
+            {
+                Log.e(TAG,"AudioRecord  setup allow ");
+            }
+            else
+	    {
+                Log.e(TAG,"AudioRecord  setup  reject ");
+               return;
+            }
+        }
+
 
         mState = STATE_INITIALIZED;
     }

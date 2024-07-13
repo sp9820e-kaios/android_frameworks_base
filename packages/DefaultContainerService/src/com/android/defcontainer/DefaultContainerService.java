@@ -41,6 +41,7 @@ import android.os.ServiceManager;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStatVfs;
+import android.util.Log;
 import android.util.Slog;
 
 import com.android.internal.app.IMediaContainerService;
@@ -57,6 +58,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import static android.net.TrafficStats.MB_IN_BYTES;
 
 /**
  * Service that offers to inspect and copy files that may reside on removable
@@ -92,7 +95,10 @@ public class DefaultContainerService extends IntentService {
 
             if (isExternal) {
                 // Make sure the sdcard is mounted.
-                String status = Environment.getExternalStorageState();
+                /* SPRD: support double sdcard
+                 * change interface Environment.getExternalStorageState() -> Environment.getExternalStoragePathState()
+                 */
+                String status = Environment.getExternalStoragePathState();
                 if (!status.equals(Environment.MEDIA_MOUNTED)) {
                     Slog.w(TAG, "Make sure sdcard is mounted.");
                     return null;
@@ -189,7 +195,9 @@ public class DefaultContainerService extends IntentService {
             ret.recommendedInstallLocation = PackageHelper.resolveInstallLocation(context,
                     pkg.packageName, pkg.installLocation, sizeBytes, flags);
             ret.multiArch = pkg.multiArch;
-
+            /* SPRD: add log for debug @{ */
+            Log.d(TAG, "recommendedInstallLocation=" + ret.recommendedInstallLocation);
+            /* @} */
             return ret;
         }
 
@@ -318,10 +326,17 @@ public class DefaultContainerService extends IntentService {
         // extra MB for filesystem overhead
         final long sizeBytes = PackageHelper.calculateInstalledSize(pkg, handle,
                 isForwardLocked, abiOverride);
+        final int sizeMb = (int) ((sizeBytes + MB_IN_BYTES) / MB_IN_BYTES) + 1;
 
         // Create new container
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
         final String newMountPath = PackageHelper.createSdDir(sizeBytes, newCid, key,
                 Process.myUid(), isExternal);
+         */
+        final String newMountPath = PackageHelper.createSdDir(sizeMb, newCid, key,
+                Process.myUid(), isExternal, isForwardLocked);
+        /* @} */
         if (newMountPath == null) {
             throw new IOException("Failed to create container " + newCid);
         }

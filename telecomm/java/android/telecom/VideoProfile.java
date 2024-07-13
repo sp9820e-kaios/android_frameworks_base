@@ -358,7 +358,9 @@ public class VideoProfile implements Parcelable {
             mHeight = height;
             mZoomSupported = zoomSupported;
             mMaxZoom = maxZoom;
+            mCameraSwitching = false;//SPRD:add for bug493880
         }
+
 
         /**
          * Responsible for creating CallCameraCapabilities objects from deserialized Parcels.
@@ -377,8 +379,8 @@ public class VideoProfile implements Parcelable {
                         int height = source.readInt();
                         boolean supportsZoom = source.readByte() != 0;
                         float maxZoom = source.readFloat();
-
-                        return new CameraCapabilities(width, height, supportsZoom, maxZoom);
+                        boolean cameraSwitching = source.readByte() != 0;
+                        return new CameraCapabilities(width, height, supportsZoom, maxZoom,cameraSwitching);//SPRD:modify for bug493880
                     }
 
                     @Override
@@ -412,6 +414,7 @@ public class VideoProfile implements Parcelable {
             dest.writeInt(getHeight());
             dest.writeByte((byte) (isZoomSupported() ? 1 : 0));
             dest.writeFloat(getMaxZoom());
+            dest.writeByte((byte) (isCameraSwitching() ? 1 : 0));//SPRD:add for bug493880
         }
 
         /**
@@ -443,6 +446,26 @@ public class VideoProfile implements Parcelable {
         public float getMaxZoom() {
             return mMaxZoom;
         }
+        /* SPRD: add for bug493880
+         * Whether the camera is switching.
+         */
+        private boolean mCameraSwitching = false;
+        public boolean isCameraSwitching() {
+            return mCameraSwitching;
+        }
+        /**
+         * @param cameraSwitching Whether the camera is switching.
+         */
+        public CameraCapabilities(int width, int height,boolean zoomSupported, float maxZoom,
+                boolean cameraSwitching) {
+            mZoomSupported = zoomSupported;
+            mMaxZoom = maxZoom;
+            mWidth = width;
+            mHeight = height;
+            mCameraSwitching = cameraSwitching;
+        }
+
+        /* @} */
     }
 
 }

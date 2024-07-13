@@ -365,7 +365,9 @@ public class SwipeHelper {
                 && isValidSwipeDirection(translation)
                 && (childSwipedFastEnough || childSwipedFarEnough);
 
-        if (dismissChild) {
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        if (dismissChild && !mCallback.isLockedIcon(mCurrView)) {
+            /* @} */
             // flingadingy
             dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
         } else {
@@ -389,5 +391,10 @@ public class SwipeHelper {
         void onSnapBackCompleted(View v);
 
         void onDragCancelled(View v);
+
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        void onLockIcon(View v);
+        boolean isLockedIcon(View v);
+        /* @} */
     }
 }

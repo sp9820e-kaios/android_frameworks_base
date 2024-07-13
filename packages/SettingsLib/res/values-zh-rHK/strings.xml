@@ -89,4 +89,9 @@
     <skip />
     <!-- no translation found for accessibility_wifi_signal_full (7061045677694702) -->
     <skip />
+    <string name="wifi_secured_first_item">"透過 <xliff:g>%1$s</xliff:g> 進行保護"</string>
+     <string name="wifi_secured_second_item">"，透過 <xliff:g>%1$s</xliff:g> 進行保護"</string>
+     <string name="wifi_wps_available_first_item">"有 WPS 可供使用"</string>
+     <string name="wifi_wps_available_second_item">" (有 WPS 可供使用)"</string>
+
 </resources>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Kannettava Wi-Fi hotspot tarvitsee mobiilidataa yhdistääkseen, tästä voi tulla ylimääräisiä kulluja."</string>
+<string name="softap_bt_cannot_coexist">"Kun bluetooth on päällä tai käynnistymässä, softap ei välttämättä toimi. Jos haluat käyttää softapia, varmista ett\' bluetooth ei ole päällä."</string>
+<string name="bt_softap_cannot_coexist">"Kun softap on päällä tai käynnistymässä, bluetooth ei välttämättä toimi. Jos haluat käyttää bluetoothia, varmista että softap ei ole päällä."</string>
+<string name="lte_service_error_airplane">"Et voi käyttää LTE kun puhelin on lentotilassa."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G päällä"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G pois päältä"</string>
+<string name="accessibility_quick_settings_lte_on">"4G päällä"</string>
+<string name="accessibility_quick_settings_lte_off">"4G pois päältä"</string>
+<string name="toggle_data_error_airplane">"Et voi käyttää mobiilidataa kun puhelun on lentotilassa."</string>
+<string name="quick_settings_data_connection_label">"Tiedot"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Tiedot päällä"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Tiedot pois päältä"</string>
+<string name="accessibility_quick_settings_data_on">"Tiedot päällä"</string>
+<string name="accessibility_quick_settings_data_off">"Tiedot pois päältä"</string>
+<string name="missing_sim_message">"EI SIM"</string>
+    <string name="lte_service_error_incall">"Et voi vaihtaa LTE palvelua puhelun aikana"</string>
+
+</resources>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"可擕式WLAN熱點需開啟流動數據連接，可能會產生額外費用。"</string>
+<string name="softap_bt_cannot_coexist">"藍牙開啟時可擕式WLAN熱點不可用，如果您想使用可擕式WLAN熱點請關閉藍牙。"</string>
+<string name="bt_softap_cannot_coexist">"可擕式WLAN熱點開啟時藍牙不可用，如果您想使用藍牙請關閉可擕式WLAN熱點。"</string>
+<string name="lte_service_error_airplane">"手機處於飛行模式，您不能使用4G服務。"</string>
+<string name="lte_service_error_incall">"手機處於通話中，您不能切換4G服務。"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G已開啟"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G已關閉"</string>
+<string name="accessibility_quick_settings_lte_on">"4G開啟"</string>
+<string name="accessibility_quick_settings_lte_off">"4G關閉"</string>
+<string name="toggle_data_error_airplane">"手機處於飛行模式，您不能使用數據網絡業務。"</string>
+<string name="quick_settings_data_connection_label">"預設數據"</string>
+<string name="accessibility_quick_settings_data_changed_on">"數據已開啟"</string>
+<string name="accessibility_quick_settings_data_changed_off">"數據已關閉"</string>
+<string name="accessibility_quick_settings_data_on">"數據開啟"</string>
+<string name="accessibility_quick_settings_data_off">"數據關閉"</string>
+<string name="missing_sim_message">"未插卡"</string>
+</resources>

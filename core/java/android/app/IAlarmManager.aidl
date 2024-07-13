@@ -35,6 +35,13 @@ interface IAlarmManager {
     void remove(in PendingIntent operation);
     long getNextWakeFromIdleTime();
     AlarmManager.AlarmClockInfo getNextAlarmClock(int userId);
+    /* SPRD: Regular PowerOnOff Feature @{ */
+    void removeAlarm(in PendingIntent operation);
+
+    /* SPRD: add for power optimization */
+    boolean setHeartBeatAdjustEnable(boolean enable, boolean updated);
+    void setAlignLength(int length);
+    /* @} */
 }
 
 

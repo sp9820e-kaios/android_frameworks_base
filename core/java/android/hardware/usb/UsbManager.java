@@ -184,6 +184,24 @@ public class UsbManager {
     public static final String USB_FUNCTION_ADB = "adb";
 
     /**
+     * Name of the USB mass storage USB function.
+     * Used in extras for the {@link #ACTION_USB_STATE} broadcast
+     *
+     * {@hide}
+     */
+    public static final String USB_FUNCTION_MASS_STORAGE = "mass_storage";
+
+    /**
+     * SPRD: add for usb functions
+     * Name of the cdrom USB function.
+     * Used in extras for the {@link #ACTION_USB_STATE} broadcast
+     *
+     * {@hide}
+     */
+    public static final String USB_FUNCTION_CDROM = "cdrom";
+    /** @} */
+
+    /**
      * Name of the RNDIS ethernet USB function.
      * Used in extras for the {@link #ACTION_USB_STATE} broadcast
      *

@@ -1282,6 +1282,11 @@ public class UserManager {
         if (users == null) {
            return false;
         }
+        /* SPRD: do not switch user in monkey. bug 496484 @{ */
+        if(ActivityManager.isUserAMonkey()) {
+            return false;
+        }
+        /* @} */
         int switchableUserCount = 0;
         for (UserInfo user : users) {
             if (user.supportsSwitchTo()) {

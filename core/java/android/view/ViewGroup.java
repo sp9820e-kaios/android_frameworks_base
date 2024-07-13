@@ -17,6 +17,7 @@
 package android.view;
 
 import android.animation.LayoutTransition;
+import android.app.ActivityManager;
 import android.annotation.IdRes;
 import android.annotation.NonNull;
 import android.annotation.UiThread;
@@ -43,6 +44,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pools.SynchronizedPool;
 import android.util.SparseArray;
+import android.view.View;
 import android.util.SparseBooleanArray;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -2332,6 +2334,12 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      * Returns true if the flag was previously set.
      */
     private static boolean resetCancelNextUpFlag(View view) {
+        // SPRD:Bug #576688   Settings happens JavaCrash,is NullPointerException @{
+        if (view == null) {
+            Log.w(TAG, "resetCancelNextUpFlag with a null view");
+            return false;
+        }
+        // @}
         if ((view.mPrivateFlags & PFLAG_CANCEL_NEXT_UP_EVENT) != 0) {
             view.mPrivateFlags &= ~PFLAG_CANCEL_NEXT_UP_EVENT;
             return true;
@@ -3123,6 +3131,10 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         final View[] children = mChildren;
         for (int i = 0; i < count; i++) {
             View c = children[i];
+            if (c == null && ActivityManager.isUserAMonkey()) {
+                Log.d(TAG, "ViewGroup:" + this + ", child at index:" + i + " is null.");
+                continue;
+            }
             if ((c.mViewFlags & PARENT_SAVE_DISABLED_MASK) != PARENT_SAVE_DISABLED) {
                 c.dispatchRestoreInstanceState(container);
             }
@@ -5279,7 +5291,8 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
      */
     void offsetRectBetweenParentAndChild(View descendant, Rect rect,
             boolean offsetFromChildToParent, boolean clipToBounds) {
-
+        // Record descendant.
+        View record = descendant;
         // already in the same coord system :)
         if (descendant == this) {
             return;
@@ -5331,7 +5344,28 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
                         descendant.mScrollY - descendant.mTop);
             }
         } else {
-            throw new IllegalArgumentException("parameter must be a descendant of this view");
+            //throw new IllegalArgumentException("parameter must be a descendant of this view");
+             /*
+             * Path of descendant to root in viewtree has changed during passing parms.
+             * It can't be solved with low risk because of Android's mechanism.
+             * This exception only comes out in AT.
+             * However, CTS has case of testing throwing exception.
+             * SPRD: Bug 374314 - Monkey Test
+             * SPRD: Bug 390611 - UIAutomator Test
+             * SPRD: Bug 393367 - CTS Test
+             * @{
+             */
+            IllegalArgumentException e = new IllegalArgumentException(
+                    "parameter must be a descendant of this view");
+            Log.e(TAG, "descendant:" + record);
+            if (ActivityManager.isUserAMonkey()) {
+                Log.e(TAG, Log.getStackTraceString(e));
+                if (rect != null)
+                    rect.set(-1, -1, -1, -1);
+            } else {
+                throw e;
+            }
+            /* @} */
         }
     }
 
@@ -7727,7 +7761,16 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
         private void init(ViewGroup root, View view) {
             Rect viewLocation = mLocation;
             view.getDrawingRect(viewLocation);
-            root.offsetDescendantRectToMyCoords(view, viewLocation);
+            //root.offsetDescendantRectToMyCoords(view, viewLocation);
+            // SPRD: Bug 393367 - We should catch the exception here.
+            try {
+                root.offsetDescendantRectToMyCoords(view, viewLocation);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, Log.getStackTraceString(e));
+                if (viewLocation != null)
+                    viewLocation.set(-1, -1, -1, -1);
+            }
+
             mView = view;
             mLayoutDirection = root.getLayoutDirection();
         }

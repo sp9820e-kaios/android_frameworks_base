@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Pindutin upang tingnan ang mga detalye"</string>
     <string name="retry" msgid="7564024179122207376">"Subukang muli"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Hindi nakopya ang mga file na ito: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Hindi maibahagi ang payl"</string>
+     <string name="documents_deleting">"Pagtanggal ng mga dokumento"</string>
+     <string name="cannot_copyfolder_itself">"Hindi mo maaaring kopyahin ang folder sa sarili nito"</string>
+
+    <string name="error_permissions">"Walang mga kinakailangang kritikal na pahintulot ang app upang tumakbo. Pakitingnan ang mga setting ng iyong mga pahintulot."</string>
+     <string name="cannot_copy_drm">"Hindi makapagkopya ng DRM na mga payl"</string>
+     <string name="cannot_copy_downloading">"Hindi makapagkopya ng mga kinakargang  mga payl"</string>
 </resources>

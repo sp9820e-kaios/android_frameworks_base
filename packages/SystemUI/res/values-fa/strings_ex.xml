@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"هات اسپات WiFi قابل حمل به اینترنت نیاز دارد، ممکن است هزینه داشته باشد."</string>
+<string name="softap_bt_cannot_coexist">"هنگام فعال بودن بلوتوث، حالت softap کار نمی کند. اگر می خواهید از حالت softap استفاده کنید، از خاموش بودن بلوتوث مطمئن شوید."</string>
+<string name="bt_softap_cannot_coexist">"بلوتوث هنگام فعال بودن حالت softap کار نمی کند. اگر می خواهید از بلوتوث استفاده کنید حتما حالت softap را غیرفعال کنید."</string>
+<string name="lte_service_error_airplane">"شما نمی توانید هنگامی که تلفن در حالت پرواز است از LTE استفاده کنید."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G روشن شد"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G خاموش شد"</string>
+<string name="accessibility_quick_settings_lte_on">"4G روشن"</string>
+<string name="accessibility_quick_settings_lte_off">"4G خاموش"</string>
+<string name="toggle_data_error_airplane">"هنگامی که گوشی روی حالت پرواز است نمی توانید از داده های گوشی استفاده کنید."</string>
+<string name="quick_settings_data_connection_label">"داده ها"</string>
+<string name="accessibility_quick_settings_data_changed_on">"داده‌ها روشن شد"</string>
+<string name="accessibility_quick_settings_data_changed_off">"داده‌ها خاموش شد"</string>
+<string name="accessibility_quick_settings_data_on">"داده‌ها روشن"</string>
+<string name="accessibility_quick_settings_data_off">"داده‌ها خاموش"</string>
+<string name="missing_sim_message">"SIM موجود نیست"</string>
+    <string name="lte_service_error_incall">"شما نمی‌توانید در طول تماس به سرویس LTE بروید."</string>
+
+</resources>

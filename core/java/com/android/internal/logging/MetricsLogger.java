@@ -30,6 +30,14 @@ public class MetricsLogger implements MetricsConstants {
     // next value is 239;
     public static final int ACTION_ASSIST_LONG_PRESS = 239;
 
+    // SPRD Bug 475166 New feature add Touch Assistant.
+    public static final int TOUCH_ASSISTANT = 240;
+
+    // SPRD Bug 474760 New feature add audio profile switch to status bar quick setting page.
+    public static final int QS_AUDIOPROFILE = 241;
+    public static final int WIFI_HOTSPOT_CONTROL = 245;
+    public static final int WIFI_PASSPOINT_SETTINGS = 246;
+    public static final int WIFI_PASSPOINT_SAVE_CONFIG = 247;
     public static void visible(Context context, int category) throws IllegalArgumentException {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {
             throw new IllegalArgumentException("Must define metric category");

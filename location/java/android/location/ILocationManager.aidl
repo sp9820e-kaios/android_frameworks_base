@@ -87,7 +87,10 @@ interface ILocationManager
     void setTestProviderStatus(String provider, int status, in Bundle extras, long updateTime,
             String opPackageName);
     void clearTestProviderStatus(String provider, String opPackageName);
-
+    /* SPRD:support AGPS settings @{ */
+    void setAgpsServer(String provider, int type, String hostname, int port);
+    void setPostionMode(String provider, int mode);
+    /* @} */
     boolean sendExtraCommand(String provider, String command, inout Bundle extras);
 
     // --- internal ---

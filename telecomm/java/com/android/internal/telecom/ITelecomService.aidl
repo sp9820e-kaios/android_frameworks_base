@@ -232,4 +232,9 @@ interface ITelecomService {
      * @see TelecomServiceImpl#setDefaultDialer
      */
     boolean setDefaultDialer(in String packageName);
+
+    /**
+     * @see TelecomServiceImpl#getLivePhoneAccount
+     */
+    PhoneAccountHandle getLivePhoneAccount(String callingPackage);
 }

@@ -50,8 +50,14 @@ import android.system.Os;
 import com.android.internal.telephony.ITelephony;
 import com.android.server.pm.PackageManagerService;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
+import android.view.IWindowManager;
+import android.util.Slog;
+import android.os.Looper;
+
+import java.io.File;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -115,6 +121,14 @@ public final class ShutdownThread extends Thread {
     private static AlertDialog sConfirmDialog;
     private ProgressDialog mProgressDialog;
 
+    //SPRD: add shutdown reason for PhoneInfo feature @{ 
+    private static String mReason = "unkown";
+    // @}
+
+    // SPRD: add flag for PowerOffAlarm @{
+    private static boolean sIsPowerOffAlarm;
+    // @}
+
     private ShutdownThread() {
     }
 
@@ -129,8 +143,41 @@ public final class ShutdownThread extends Thread {
     public static void shutdown(final Context context, boolean confirm) {
         mReboot = false;
         mRebootSafeMode = false;
+        // SPRD: add log for debug @{
+        Slog.i(TAG, "shutdown goto shutdownInner");
+        // @}
         shutdownInner(context, confirm);
     }
+ 
+    /* SPRD: add shutdown reason for PhoneInfo feature @{ */
+    public static void shutdown(final Context context, boolean confirm,String reason) {
+        mReason = reason;
+        shutdown(context,confirm);
+   }
+    /* @} */
+
+    /* SPRD: add shutdown mode for PowerOffAlarm @{ */
+    public static void shutdownForAlarm(final Context context, boolean confirm, boolean isPowerOffAlarm) {
+        Slog.i(TAG, "shutdownForAlarm isPowerOffAlarm = " + isPowerOffAlarm);
+        sIsPowerOffAlarm = isPowerOffAlarm;
+        shutdown(context, confirm);
+    }
+
+    /* for 'cancel and reboot' of PowerOffAlarm */
+    public static void rebootAnimation(Context context){
+        try {
+            Slog.i(TAG, "play the bootanimation for alarm-boot");
+            SystemProperties.set("ctl.start", "bootanim");
+        } catch (Exception e){
+            Slog.e(TAG, "bootanimation command exe error!");
+        }
+        android.provider.Settings.Global.putInt(context.getContentResolver(), android.provider.Settings.Global.AIRPLANE_MODE_ON, 0);
+        Intent intent = new Intent(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        intent.putExtra("state", false);
+        context.sendBroadcast(intent);
+        Slog.i(TAG, "disable the AirPlane_Mode!");
+    }
+    /* @} */
 
     static void shutdownInner(final Context context, boolean confirm) {
         // ensure that only one thread is trying to power down.
@@ -164,6 +211,9 @@ public final class ShutdownThread extends Thread {
                     .setMessage(resourceId)
                     .setPositiveButton(com.android.internal.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
+                            // SPRD: add log for debug @{
+                            Slog.i(TAG, "shutdownInner goto beginShutdownSequence");
+                            // @}
                             beginShutdownSequence(context);
                         }
                     })
@@ -211,8 +261,14 @@ public final class ShutdownThread extends Thread {
     public static void reboot(final Context context, String reason, boolean confirm) {
         mReboot = true;
         mRebootSafeMode = false;
+        //SPRD: add shutdown reason for PhoneInfo feature @{
+        mReason = reason;
+        // @}
         mRebootUpdate = false;
         mRebootReason = reason;
+        // SPRD: add log for debug @{
+        Slog.i(TAG, "reboot goto shutdownInner");
+        // @}
         shutdownInner(context, confirm);
     }
 
@@ -233,8 +289,18 @@ public final class ShutdownThread extends Thread {
         mRebootSafeMode = true;
         mRebootUpdate = false;
         mRebootReason = null;
+        // SPRD: add log for debug @{
+        Slog.i(TAG, "rebootSafeMode goto shutdownInner");
+        // @}
         shutdownInner(context, confirm);
     }
+
+    /* SPRD: add shutdown reason for PhoneInfo feature @{ */
+    public static void rebootSafeMode(final Context context, boolean confirm, String reason) {
+        mReason = reason;
+        rebootSafeMode(context,confirm);
+    }
+    /* @} */
 
     private static void beginShutdownSequence(Context context) {
         synchronized (sIsStartedGuard) {
@@ -246,7 +312,7 @@ public final class ShutdownThread extends Thread {
         }
 
         // Throw up a system dialog to indicate the device is rebooting / shutting down.
-        ProgressDialog pd = new ProgressDialog(context);
+        ProgressDialog pd = null;
 
         // Path 1: Reboot to recovery and install the update
         //   Condition: mRebootReason == REBOOT_RECOVERY and mRebootUpdate == True
@@ -260,6 +326,8 @@ public final class ShutdownThread extends Thread {
         // Path 3: Regular reboot / shutdown
         //   Condition: Otherwise
         //   UI: spinning circle only (no progress bar)
+        if(!sIsPowerOffAlarm){
+        pd = new ProgressDialog(context);
         if (PowerManager.REBOOT_RECOVERY.equals(mRebootReason)) {
             mRebootUpdate = new File(UNCRYPT_PACKAGE_FILE).exists();
             if (mRebootUpdate) {
@@ -285,13 +353,45 @@ public final class ShutdownThread extends Thread {
         }
         pd.setCancelable(false);
         pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+        // SPRD: remove origin code
+        // pd.show();
+        }
 
-        pd.show();
+        /* SPRD: use origin shutdown in cmcc or native device,play shutdown animation in other devices @{ */
+        File fileDefault = new File("/system/media/shutdownanimation.zip");
+        File file = new File("/data/theme/overlay/shutdownanimation.zip");
+        boolean hasShutdownAnimation = file.exists() || fileDefault.exists();
+        if(sIsPowerOffAlarm){
+            Slog.i(TAG, "isPowerOffAlarm = " +sIsPowerOffAlarm + ". needn't anim");
+        } else if(!hasShutdownAnimation) {
+            if(pd != null){
+                pd.show();
+            }
+        } else {
+            // SPRD: Stop screen orientation before start shutdown animation
+            IWindowManager wm = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+            try {
+                wm.setForceOrientation(0);
+            } catch (RemoteException e) {
+                Log.e(TAG, "stop orientation failed!", e);
+            }
+
+            String[] bootcmd = {"bootanimation", "shutdown"} ;
+            try {
+                Log.i(TAG, "exec the bootanimation ");
+                SystemProperties.set("service.bootanim.exit", "0");
+                Runtime.getRuntime().exec(bootcmd);
+            } catch (Exception e){
+                Log.e(TAG,"bootanimation command exe err!");
+            }
+        }
+        /* @} */
 
         sInstance.mProgressDialog = pd;
         sInstance.mContext = context;
         sInstance.mPowerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-
+        // SPRD: call scheduleButtonTimeout(long now).
+        sInstance.mPowerManager.scheduleButtonLightTimeout(SystemClock.uptimeMillis());
         // make sure we never fall asleep again
         sInstance.mCpuWakeLock = null;
         try {
@@ -319,9 +419,17 @@ public final class ShutdownThread extends Thread {
         }
 
         // start the thread that initiates shutdown
-        sInstance.mHandler = new Handler() {
-        };
-        sInstance.start();
+        if(sIsPowerOffAlarm){
+            Looper.prepare();
+            sInstance.mHandler = new Handler();
+            Log.d(TAG,">>> before start <<<");
+            sInstance.start();
+            Looper.loop();
+        }else{
+            sInstance.mHandler = new Handler() {
+            };
+            sInstance.start();
+        }
     }
 
     void actionDone() {
@@ -367,6 +475,9 @@ public final class ShutdownThread extends Thread {
         mActionDone = false;
         Intent intent = new Intent(Intent.ACTION_SHUTDOWN);
         intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        //SPRD: add shutdown reason for PhoneInfo feature @{
+        intent.putExtra("shutdown_mode", mReason);
+        // @}
         mContext.sendOrderedBroadcastAsUser(intent,
                 UserHandle.ALL, null, br, mHandler, 0, null, null);
 

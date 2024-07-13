@@ -22,11 +22,15 @@ import com.android.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.android.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.android.i18n.phonenumbers.ShortNumberUtil;
 
+import android.annotation.Nullable;
+import android.app.ActivityThread;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.CountryDetector;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.os.SystemProperties;
 import android.provider.Contacts;
 import android.provider.ContactsContract;
@@ -42,6 +46,7 @@ import static com.android.internal.telephony.TelephonyProperties.PROPERTY_OPERAT
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import android.os.SystemProperties;
 
 /**
  * Various utilities for dealing with phone number strings.
@@ -1585,7 +1590,11 @@ public class PhoneNumberUtils
      *         listed in the RIL / SIM, otherwise return false.
      */
     public static boolean isEmergencyNumber(String number) {
-        return isEmergencyNumber(getDefaultVoiceSubId(), number);
+        /**
+         * SPRD: Return both fake e-call numbers and real e-call numbers.
+         * @orig: return isEmergencyNumber(getDefaultVoiceSubId(), number)
+         */
+        return isEmergencyNumber(getDefaultVoiceSubId(), number) || isFakeEmergencyNumber(number);
     }
 
     /**
@@ -1713,7 +1722,11 @@ public class PhoneNumberUtils
      * @hide
      */
     public static boolean isEmergencyNumber(String number, String defaultCountryIso) {
-            return isEmergencyNumber(getDefaultVoiceSubId(), number, defaultCountryIso);
+        /**
+         * SPRD: Return both fake e-call numbers and real e-call numbers.
+         * @orig return isEmergencyNumber(getDefaultVoiceSubId(), number, defaultCountryIso);
+         */
+        return isEmergencyNumber(getDefaultVoiceSubId(), number, defaultCountryIso) || isFakeEmergencyNumber(number);
     }
 
     /**
@@ -1847,16 +1860,24 @@ public class PhoneNumberUtils
                 ((defaultCountryIso == null) ? "NULL" : defaultCountryIso));
 
         String emergencyNumbers = "";
+        String emergencyNetworkNumbers = "";
         int slotId = SubscriptionManager.getSlotId(subId);
 
         // retrieve the list of emergency numbers
         // check read-write ecclist property first
         String ecclist = (slotId <= 0) ? "ril.ecclist" : ("ril.ecclist" + slotId);
-
+        /* SPRD: modify for Bug560610 @{ */
+        String eccNetworklist = (slotId <= 0) ? "ril.ecclist.net" : ("ril.ecclist.net" + slotId);
         emergencyNumbers = SystemProperties.get(ecclist, "");
-
+        emergencyNetworkNumbers = SystemProperties.get(eccNetworklist, "");
         Rlog.d(LOG_TAG, "slotId:" + slotId + ", emergencyNumbers: " +  emergencyNumbers);
-
+        Rlog.d(LOG_TAG, "slotId:" + slotId + ", emergencyNetworkNumbers: " +  emergencyNetworkNumbers);
+        if (!TextUtils.isEmpty(emergencyNumbers)) {
+            emergencyNumbers +=  "," +emergencyNetworkNumbers;
+        }else {
+            emergencyNumbers = emergencyNetworkNumbers;
+        }
+        /* @} */
         if (TextUtils.isEmpty(emergencyNumbers)) {
             // then read-only ecclist property since old RIL only uses this
             emergencyNumbers = SystemProperties.get("ro.ril.ecclist");
@@ -1924,7 +1945,11 @@ public class PhoneNumberUtils
      * is currently in.
      */
     public static boolean isLocalEmergencyNumber(Context context, String number) {
-        return isLocalEmergencyNumber(context, getDefaultVoiceSubId(), number);
+        /**
+         * SPRD: Return both fake e-call numbers and real e-call numbers.
+         * @orig return isLocalEmergencyNumber(context, getDefaultVoiceSubId(), number);
+         */
+        return isLocalEmergencyNumber(context, getDefaultVoiceSubId(), number) || isFakeEmergencyNumber(number);
     }
 
     /**
@@ -1966,7 +1991,11 @@ public class PhoneNumberUtils
      * @hide
      */
     public static boolean isPotentialLocalEmergencyNumber(Context context, String number) {
-        return isPotentialLocalEmergencyNumber(context, getDefaultVoiceSubId(), number);
+        /**
+         * SPRD: Return both fake e-call numbers and real e-call numbers.
+         * @orig isPotentialLocalEmergencyNumber(context, getDefaultVoiceSubId(), number);
+         */
+        return isPotentialLocalEmergencyNumber(context, getDefaultVoiceSubId(), number) || isFakeEmergencyNumber(number);
     }
 
     /**
@@ -2966,4 +2995,191 @@ public class PhoneNumberUtils
         return SubscriptionManager.getDefaultVoiceSubId();
     }
     //==== End of utility methods used only in compareStrictly() =====
+
+    // --------------------------------- SPRD --------------------------------------
+
+    /**
+     * SPRD: exchange P & W to , & ;
+     * @hide
+     */
+    public final static String pAndwToCommaAndSemicolon(String str) {
+        if (null != str) {
+            StringBuilder strBlder = new StringBuilder();
+            int len = str.length();
+            for (int i = 0; i < len; i++) {
+                switch (str.charAt(i)) {
+                case 'p':
+                case 'P':
+                    strBlder.append(PAUSE);
+                    break;
+                case 'w':
+                case 'W':
+                    strBlder.append(WAIT);
+                    break;
+                default:
+                    strBlder.append(str.charAt(i));
+                }
+            }
+            return strBlder.toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * SPRD:exchange , & ; to P & W
+     * @hide
+     */
+    public final static String CommaAndSemicolonTopAndw(String str) {
+        if (null != str) {
+            StringBuilder strBlder = new StringBuilder();
+            int len = str.length();
+            for (int i = 0; i < len; i++) {
+                switch (str.charAt(i)) {
+                case PAUSE:
+                    strBlder.append('P');
+                    break;
+                case WAIT:
+                    strBlder.append('W');
+                    break;
+                default:
+                    strBlder.append(str.charAt(i));
+                }
+            }
+            return strBlder.toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * SPRD: Porting send P/W to CP
+     * Strips separators from a phone number string.Except p w
+     * @param phoneNumber phone number to strip.
+     * @return phone string stripped of separators.
+     * @hide
+     */
+     public static String stripSeparatorsExceptPW(String phoneNumber) {
+         if (phoneNumber == null) {
+             return null;
+         }
+         int len = phoneNumber.length();
+         StringBuilder ret = new StringBuilder(len);
+         for (int i = 0; i < len; i++) {
+             char c = phoneNumber.charAt(i);
+             // Character.digit() supports ASCII and Unicode digits (fullwidth,Arabic-Indic, etc.)
+             int digit = Character.digit(c, 10);
+             if (digit != -1) {
+                 ret.append(digit);
+             }else if (isNonSeparator(c)) {
+                 ret.append(c);
+             }else if (c == 'P' || c == 'p' || c == 'W' || c == 'w') {
+                 ret.append(c);
+             }
+         }
+         return ret.toString();
+     }
+
+    /* SPRD: Porting CLEAR CALL LOG FEATURE. @{
+    * the original isVoiceMailNumber method cannot distinguish sim1 and sim2
+    * */
+    /**
+     * isVoiceMailNumber: checks a given number against the voicemail
+     *   number provided by the RIL and SIM card. The caller must have
+     *   the READ_PHONE_STATE credential.
+     *
+     * @param number the number to look up.
+     * @return true if the number is in the list of voicemail. False
+     * otherwise, including if the caller does not have the permission
+     * to read the VM number.
+     */
+    public static boolean isVoiceMailNumber(Context context, String number) {
+        int[] mSubIdList = SubscriptionManager.from(context).getActiveSubscriptionIdList();
+        boolean isVoiceMailNumber = false;
+        for (int mSubId : mSubIdList) {
+            isVoiceMailNumber = isVoiceMailNumber || isVoiceMailNumber(mSubId, number);
+        }
+        return isVoiceMailNumber;
+
+    }
+    /* @} */
+
+    /* SPRD: [bug476017] Load ecc list from carrier config. @{ */
+    /**
+     * Checks a given number against the list of
+     * fake emergency numbers provided by CarrierConfig.
+     * @hide
+     */
+    private static boolean isFakeEmergencyNumber(String number) {
+        if(SystemProperties.get("service.project.sec").equals("1")) {
+            if(TextUtils.isEmpty(number))
+                return false;
+            return "100,101,102".contains(number);
+        } else {
+            int defaultDataPhoneId = SubscriptionManager.getPhoneId(getDefaultVoiceSubId());
+            if (SubscriptionManager.isValidPhoneId(defaultDataPhoneId)) {
+                return isFakeEmergencyNumberForPhone(number, defaultDataPhoneId);
+            }
+            return false;
+        }
+    }
+
+    /**
+     * @hide
+     */
+    private static boolean isFakeEmergencyNumberForPhone(String number, int phoneId) {
+        if (number == null) return false;
+        PersistableBundle carrierConfig = getCarrierConfig(phoneId);
+        // Add not null judgement for carrierConfig
+        String fakeEmergencyNumbers = "";
+        if (carrierConfig != null) {
+            fakeEmergencyNumbers = carrierConfig.getString(CarrierConfigManager.KEY_GLO_CONF_FAKE_ECC_LIST_WITH_CARD);
+        }
+        Rlog.d(LOG_TAG, "Get fake ecc list from carrier config[" + phoneId + "]: " + fakeEmergencyNumbers);
+
+        if (!TextUtils.isEmpty(fakeEmergencyNumbers)) {
+            for (String emergencyNum : fakeEmergencyNumbers.split(",")) {
+                if (number.equals(emergencyNum)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get data bundle loaded from CarrierConfig by phoneId.
+     */
+    @Nullable
+    private static PersistableBundle getCarrierConfig(int phoneId) {
+        PersistableBundle config = new PersistableBundle();
+        Context context = ActivityThread.currentApplication().getApplicationContext();
+        if (context != null) {
+            final boolean hasReadPhoneStatePermission = context.checkSelfPermission(
+                    android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+            if (hasReadPhoneStatePermission) {
+                final CarrierConfigManager configManager =
+                        (CarrierConfigManager) context.getSystemService(Context.CARRIER_CONFIG_SERVICE);
+                config = configManager.getConfigForPhoneId(phoneId);
+            }
+        }
+        return config;
+    }
+    /* @} */
+
+    /**
+     * Checks a given number against the list of
+     * emergency numbers provided by the RIL and SIM card.
+     *
+     * @param number the number to look up.
+     * @param countryIso the specific country which the number should be checked against
+     *
+     * @return true if the number is an emergency number for the specified country.
+     */
+
+    public static boolean isLocalEmergencyNumberEx(String number,
+            String countryIso) {
+        return isEmergencyNumberInternal(getDefaultVoiceSubId(), number,
+                countryIso, true/*useExactMatch*/) || isFakeEmergencyNumber(number);
+    }
 }

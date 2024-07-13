@@ -43,6 +43,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+//SPRD: add for debug @{
+import android.os.Debug;
+//SPRD: add for debug @}
+
 /** This class calls its monitor every minute. Killing this process if they don't return **/
 public class Watchdog extends Thread {
     static final String TAG = "Watchdog";
@@ -395,6 +399,16 @@ public class Watchdog extends Thread {
                         pids.add(Process.myPid());
                         ActivityManagerService.dumpStackTraces(true, pids, null, null,
                                 NATIVE_STACKS_OF_INTEREST);
+
+                        // SPRD: add for debug watchdog @{
+                        // The system's been hanging for 30s, another five won't hurt much.
+                        SystemClock.sleep(3000);
+                        if (RECORD_KERNEL_THREADS) {
+                            dumpKernelStackTraces();
+                            SystemClock.sleep(2000);
+                        }
+                        // @}
+
                         waitedHalf = true;
                     }
                     continue;
@@ -421,16 +435,25 @@ public class Watchdog extends Thread {
 
             // Give some extra time to make sure the stack traces get written.
             // The system's been hanging for a minute, another second or two won't hurt much.
-            SystemClock.sleep(2000);
+            // SPRD: modify 2000 to 3000
+            SystemClock.sleep(3000);
 
             // Pull our own kernel thread stacks as well if we're configured for that
             if (RECORD_KERNEL_THREADS) {
                 dumpKernelStackTraces();
+                // SPRD: wait for dump info writen
+                SystemClock.sleep(2000);
             }
 
             // Trigger the kernel to dump all blocked threads, and backtraces on all CPUs to the kernel log
-            doSysRq('w');
-            doSysRq('l');
+            // SPRD: add debug check @{
+            if (Debug.isDebug()){
+            // @}
+                doSysRq('w');
+                doSysRq('l');
+            // SPRD: add debug check @{
+            }
+            // @}
 
             // Try to add the error to the dropbox, but assuming that the ActivityManager
             // itself may be deadlocked.  (which has happened, causing this statement to
@@ -496,12 +519,25 @@ public class Watchdog extends Thread {
     }
 
     private void doSysRq(char c) {
-        try {
-            FileWriter sysrq_trigger = new FileWriter("/proc/sysrq-trigger");
-            sysrq_trigger.write(c);
-            sysrq_trigger.close();
-        } catch (IOException e) {
+        FileWriter sysrq_trigger = null;
+        try
+        {
+            sysrq_trigger = new FileWriter("/proc/sysrq-trigger");
+            if (sysrq_trigger != null)
+            {
+                sysrq_trigger.write(c);
+            }
+        }
+        catch (IOException e)
+        {
             Slog.w(TAG, "Failed to write to /proc/sysrq-trigger", e);
+        } finally {
+            try{
+                if(sysrq_trigger != null)
+                {
+                    sysrq_trigger.close();
+                }
+            } catch(IOException e) {}
         }
     }
 

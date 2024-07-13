@@ -1150,13 +1150,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Natrag"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Dalje"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Preskoči"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Nema rezultata"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Pronađi na stranici"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="one"><xliff:g id="INDEX">%d</xliff:g> od <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="few"><xliff:g id="INDEX">%d</xliff:g> od <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> od <xliff:g id="TOTAL">%d</xliff:g></item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Gotovo"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Brisanje USB pohrane..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Brisanje SD kartice..."</string>
@@ -1534,4 +1528,31 @@
       <item quantity="few"><xliff:g id="COUNT_1">%1$d</xliff:g> odabrane</item>
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> odabranih</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-Dijeljenje internet veze aktivno"</string>
+     <string name="ext_media_status_shared">"Dijeljen UMS"</string>
+     <string name="sim_ready_title_for_usb">Upozorenje</string>
+     <string name="sim_card_activation_warning">"U slučaju instaliranja aplikacija od strane trećih osoba, molimo umetnite SIM/USIM karticu kako biste aktivirali USB."</string>
+     <string name="usb_ok">"U redu"</string>
+     <string name="usb_cdrom_notification_title">"Virtualni drajver je uključen"</string>
+     <string name="usb_charge_only_notification">"Povezano samo kao punjač"</string>
+     <string name="global_action_restart">"Ponovo pokreni"</string>
+     <string name="reboot_device_title">"Ponovo pokreni"</string>
+     <string name="global_reboot_close_apps">"Zatvorite sve aplikacije i ponovno pokrenite telefon"</string>
+     <string name="reboot_device_confirm">"Želite li sada ponovno pokrenuti telefon ?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Telefon će se ugasiti nakon <xliff:g id="NUMBER">%d</xliff:g> sekunde"</item>
+<item quantity="other">"Telefon će se ugasiti nakon <xliff:g id="NUMBER">%d</xliff:g> sekundi"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s povezano, %2$s blokirano"</string>
+     <string name="phoneFixedNumber">"Fiksni broj"</string>
+     <string name="gps_time_sync_fail_str">"Nismo dobili GPS vrijeme"</string>
+     <string name="disable_touch_mode_title">"Dodirni zaslon - onemogućen u džepu"</string>
+     <string name="disable_touch_mode_hint">"Ne pokrivajte vrh telefona"</string>
+     <string name="exit_disable_touch_mode_hint">"Također možete pritisnuti kombinaciju tipki za uključivanje i pojačavanje zvuka kako biste onemogućili ovaj način rada"</string>
+
 </resources>

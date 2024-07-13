@@ -70,7 +70,7 @@ static bool checkAndClearExceptionFromCallback(JNIEnv* env, const char* methodNa
 void android_server_PowerManagerService_userActivity(nsecs_t eventTime, int32_t eventType) {
     // Tell the power HAL when user activity occurs.
     if (gPowerModule && gPowerModule->powerHint) {
-        gPowerModule->powerHint(gPowerModule, POWER_HINT_INTERACTION, NULL);
+        //gPowerModule->powerHint(gPowerModule, POWER_HINT_INTERACTION, NULL);
     }
 
     if (gPowerManagerServiceObj) {
@@ -114,6 +114,8 @@ static void nativeInit(JNIEnv* env, jobject obj) {
 
 static void nativeAcquireSuspendBlocker(JNIEnv *env, jclass /* clazz */, jstring nameStr) {
     ScopedUtfChars name(env, nameStr);
+	ALOGD("native Acquire Suspend Blocker = %s", name.c_str());
+
     acquire_wake_lock(PARTIAL_WAKE_LOCK, name.c_str());
 }
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Преносни Wi-Fi приступ треба повезивање мобилних података, може проузроковати додатне трошкове."</string>
+<string name="softap_bt_cannot_coexist">"Када је Bluetooth омогућен или када се укључује, softap не може да ради, ако желите да користите softap молимо вас да проверите да ли је Bluetooth онемогућен."</string>
+<string name="bt_softap_cannot_coexist">"Када је softap омогућен или када се укључује, softap не може да ради, ако желите да користите softap молимо вас да проверите да ли је Bluetooth онемогућен."</string>
+<string name="lte_service_error_airplane">"Не можете користити 4G када је мобилни телефон на начину рада Авион"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G укључено"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G искључено"</string>
+<string name="accessibility_quick_settings_lte_on">"4G укључено"</string>
+<string name="accessibility_quick_settings_lte_off">"4G искључено"</string>
+<string name="toggle_data_error_airplane">"Не можете користити мобилни телефон када је мобилни телефон на начину рада Авион"</string>
+<string name="quick_settings_data_connection_label">"Подаци"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Подаци су укључени."</string>
+<string name="accessibility_quick_settings_data_changed_off">"Подаци су искључени."</string>
+<string name="accessibility_quick_settings_data_on">"Подаци су укључени."</string>
+<string name="accessibility_quick_settings_data_off">"Подаци су искључени."</string>
+<string name="missing_sim_message">"НЕМА SIM КАРТИЦЕ"</string>
+    <string name="lte_service_error_incall">""Не можете променити LTE услугу у току позива"."</string>
+
+</resources>

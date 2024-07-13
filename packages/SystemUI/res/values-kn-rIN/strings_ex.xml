@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ಪೊರ್ಟಬಲ್ ವೈ-ಫೈ ಹಾಟ್‌ಸ್ಪಾಟ್ ಡೇಟಾ ಸಂಪರ್ಕವನ್ನು ಅಗತ್ಯಪಡಿಸುತ್ತದೆ, ಇದು ಹೆಚ್ಚಿನ ಶುಲ್ಕಕ್ಕೆ ಕಾರಣವಾಗಬಹುದು."</string>
+<string name="softap_bt_cannot_coexist">"ಬ್ಲೂಟೂತ್ ಸಕ್ರಿಯವಾಗಿರುವಾಗ ಅಥವಾ ಆನ್ ಆಗಿರುವಾಗ, ಸಾಫ್ಟ್ಯಾಪ್ ಕೆಲಸ ಮಾಡುವುದಿಲ್ಲ, ನೀವು ಸಾಫ್ಟ್ಯಾಪ್ ಬಳಸಲು ಬಯಸಿದರೆ, ದಯವಿಟ್ಟು ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ."</string>
+<string name="bt_softap_cannot_coexist">"ಸಾಫ್ಟ್ಯಾಟ್ ಸಕ್ರಿಯವಾಗಿರುವಾಗ ಅಥವಾ ಆನ್ ಆಗಿರುವಾಗ, ಬ್ಲೂಟೂನ್ ಕಾರ್ಯನಿರ್ವಹಿಸದಿರಬಹುದು, ನೀವು ಬ್ಲೂಟೂತ್ ಬಳಸಲು ಬಯಸಿದರೆ, ದಯವಿಟ್ಟು ಸಾಫ್ಟ್ಯಾಪ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ."</string>
+<string name="lte_service_error_airplane">ನೀವು LTE ಯನ್ನು ಫೋನ್ ಏರೋಪ್ಲೇನ್ ಸ್ಠಿತಿಯಲ್ಲಿ ಇರುವಾಗ ಬಳಸುವಂತಿಲ್ಲ"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ಸಕ್ರಿಯಗೊಂಡಿದೆ"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ನಿಷ್ಕ್ರಿಯಗೊಂಡಿದೆ"</string>
+<string name="toggle_data_error_airplane">"ಫೋನ್ ಏರ್ ಪ್ಲೇನ್ ಮೋಡ್ದಲ್ಲಿರುವಾಗ ನೀವು ಮೊಬೈಲ್ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಆಗುವುದಿಲ್ಲ."</string>
+<string name="quick_settings_data_connection_label">"ದತ್ತ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ಡೇಟಾ ಆನ್ ಮಾಡಲಾಗಿದೆ"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ಡೇಟಾ ಆಫ್ ಮಾಡಲಾಗಿದೆ"</string>
+<string name="accessibility_quick_settings_data_on">"ಡೇಟಾ ಆನ್"</string>
+<string name="accessibility_quick_settings_data_off">"ಡೇಟಾ ಆಫ್"</string>
+<string name="missing_sim_message">"SIM ಇಲ್ಲ"</string>
+    <string name="lte_service_error_incall">"ಕರೆ ಮಾಡುತ್ತಿರುವಾಗ ನೀವು ಎಲ್ ಟಿಇ ಸೇವೆಯನ್ನು ಸ್ವಿಚ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ."</string>
+
+</resources>

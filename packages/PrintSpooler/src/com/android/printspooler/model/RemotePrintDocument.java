@@ -417,7 +417,12 @@ public final class RemotePrintDocument {
             // Keep going - best effort...
         }
 
-        mPrintDocumentAdapter.asBinder().unlinkToDeath(mDeathRecipient, 0);
+        // SPRD: 512762 linkToDeath appears RemoteException when screen pinning was opened
+        try {
+            mPrintDocumentAdapter.asBinder().unlinkToDeath(mDeathRecipient, 0);
+        } catch (Exception e) {
+            Log.w(LOG_TAG, "The printing process is dead.");
+        }
     }
 
     private void scheduleCommand(AsyncCommand command) {
@@ -724,6 +729,13 @@ public final class RemotePrintDocument {
         }
 
         private void handleOnLayoutFailed(CharSequence error, int sequence) {
+            /* SPRD: Modify bug 494863, PrintSpooler crash sometimes when cancel print. @{ */
+            if (isCanceling()) {
+                mDocument.laidout = false;
+                handleOnLayoutCanceled(sequence);
+                return;
+            }
+            /* }@ */
             if (sequence != mSequence) {
                 return;
             }
@@ -1001,6 +1013,12 @@ public final class RemotePrintDocument {
         }
 
         private void handleOnWriteFailed(CharSequence error, int sequence) {
+            /* SPRD: Modify 20150602 Spreadst of bug440768, PrintSpooler crash sometimes when cancel print. @{ */
+            if (isCanceling()) {
+                handleOnWriteCanceled(sequence);
+                return;
+            }
+            /* @} */
             if (sequence != mSequence) {
                 return;
             }

@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"برای مشاهده جزئیات لمس کنید"</string>
     <string name="retry" msgid="7564024179122207376">"امتحان مجدد"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"این فایل‌ها کپی نشدند: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"اشتراک گذاری فایل ممکن نیست"</string>
+     <string name="documents_deleting">"در حال حذف اسناد"</string>
+     <string name="cannot_copyfolder_itself">"نمی توانیم پوشه را درون خودش کپی کنید"</string>
+
+    <string name="error_permissions">"برنامه مجوزهای مهم مورد نیاز برای اجرا شدن را ندارد. لطفاً تنظیمات مجوزهایتان را بررسی کنید."</string>
+     <string name="cannot_copy_drm">"فایل‌های DRM قابل انتقال نیستند"</string>
+     <string name="cannot_copy_downloading">"فایل‌های در حال دانلود قابل انتقال نیستند"</string>
 </resources>

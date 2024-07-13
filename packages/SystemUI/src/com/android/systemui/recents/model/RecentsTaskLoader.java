@@ -19,6 +19,7 @@ package com.android.systemui.recents.model;
 import android.app.ActivityManager;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -30,8 +31,11 @@ import android.util.Log;
 
 import com.android.systemui.R;
 import com.android.systemui.recents.Constants;
+import com.android.systemui.recents.RecentsActivity;
 import com.android.systemui.recents.RecentsConfiguration;
 import com.android.systemui.recents.misc.SystemServicesProxy;
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
+import com.sprd.systemui.SystemUILockAppUtils;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -209,6 +213,16 @@ class TaskResourceLoader implements Runnable {
                             final Drawable newIcon = cachedIcon;
                             final Bitmap newThumbnail = cachedThumbnail == mDefaultThumbnail
                                     ? null : cachedThumbnail;
+                            /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+                            if (PhoneStatusBar.mSupportLockApp) {
+                                SharedPreferences sharedPreference = mContext.getSharedPreferences(
+                                        Task.PREFERENCE_NAME,
+                                        Context.MODE_WORLD_READABLE | Context.MODE_WORLD_WRITEABLE);
+                                if (sharedPreference.contains(t.key.toStringKey())) {
+                                    t.isLocked = true;
+                                }
+                            }
+                            /* @} */
                             mMainThreadHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -272,9 +286,15 @@ public class RecentsTaskLoader {
 
     BitmapDrawable mDefaultApplicationIcon;
     Bitmap mDefaultThumbnail;
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    Context mContext;
+    /* @} */
 
     /** Private Constructor */
     private RecentsTaskLoader(Context context) {
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        mContext = context;
+        /* @} */
         mMaxThumbnailCacheSize = context.getResources().getInteger(
                 R.integer.config_recents_max_thumbnail_count);
         mMaxIconCacheSize = context.getResources().getInteger(
@@ -496,6 +516,15 @@ public class RecentsTaskLoader {
         if (requiresLoad) {
             mLoadQueue.addTask(t);
         }
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        if (PhoneStatusBar.mSupportLockApp) {
+            SharedPreferences sharedPreference = mContext.getSharedPreferences(Task.PREFERENCE_NAME,
+                    Context.MODE_WORLD_READABLE | Context.MODE_WORLD_WRITEABLE);
+            if (sharedPreference.contains(t.key.toStringKey())) {
+                t.isLocked = true;
+            }
+        }
+        /* @} */
         t.notifyTaskDataLoaded(thumbnail == mDefaultThumbnail ? null : thumbnail, applicationIcon);
     }
 

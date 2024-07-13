@@ -70,11 +70,19 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import android.app.PowerGuruAlarmInfo;
 
+import android.net.NetworkInfo;
+import android.net.ConnectivityManager;
 import static android.app.AlarmManager.RTC_WAKEUP;
 import static android.app.AlarmManager.RTC;
 import static android.app.AlarmManager.ELAPSED_REALTIME_WAKEUP;
 import static android.app.AlarmManager.ELAPSED_REALTIME;
+//SPRD: Regular PowerOnOff Feature
+import static android.app.AlarmManager.POWER_OFF_WAKEUP;
+import static android.app.AlarmManager.POWER_ON_WAKEUP;
+import static android.app.AlarmManager.POWER_OFF_ALARM;
+import android.content.ComponentName;
 
 import com.android.internal.util.LocalLog;
 
@@ -84,7 +92,17 @@ class AlarmManagerService extends SystemService {
     private static final int ELAPSED_REALTIME_WAKEUP_MASK = 1 << ELAPSED_REALTIME_WAKEUP;
     private static final int ELAPSED_REALTIME_MASK = 1 << ELAPSED_REALTIME;
     static final int TIME_CHANGED_MASK = 1 << 16;
+    /* SPRD: Regular PowerOnOff Feature
+     * @orig {
     static final int IS_WAKEUP_MASK = RTC_WAKEUP_MASK|ELAPSED_REALTIME_WAKEUP_MASK;
+     * }
+     * @{
+     */
+    private static final int POWER_OFF_ALARM_MASK = 1<< POWER_OFF_ALARM;
+    private static final int POWER_OFF_WAKEUP_MASK = 1 << POWER_OFF_WAKEUP;
+    private static final int IS_WAKEUP_MASK = RTC_WAKEUP_MASK | ELAPSED_REALTIME_WAKEUP_MASK
+            | POWER_OFF_WAKEUP_MASK | POWER_OFF_ALARM_MASK;
+    /* @} */
 
     // Mask for testing whether a given alarm type is wakeup vs non-wakeup
     static final int TYPE_NONWAKEUP_MASK = 0x1; // low bit => non-wakeup
@@ -95,6 +113,7 @@ class AlarmManagerService extends SystemService {
     static final boolean DEBUG_VALIDATE = localLOGV || false;
     static final boolean DEBUG_ALARM_CLOCK = localLOGV || false;
     static final boolean RECORD_ALARMS_IN_HISTORY = true;
+    static final boolean DEBUG_POWER_ISSUE = true;
     static final int ALARM_EVENT = 1;
     static final String TIMEZONE_PROPERTY = "persist.sys.timezone";
 
@@ -113,6 +132,11 @@ class AlarmManagerService extends SystemService {
 
     long mNativeData;
     private long mNextWakeup;
+    // SPRD: next poweroff. @{
+    private long mNextPoweroffWakeup;
+    private long mNextPoweronWakeup;
+    private long mNextPoweroffAlarm;
+    // @}
     private long mNextNonWakeup;
     int mBroadcastRefCount = 0;
     PowerManager.WakeLock mWakeLock;
@@ -122,6 +146,7 @@ class AlarmManagerService extends SystemService {
     final AlarmHandler mHandler = new AlarmHandler();
     ClockReceiver mClockReceiver;
     InteractiveStateReceiver mInteractiveStateReceiver;
+    NetworkStateReceiver mNetworkStateReceiver;
     private UninstallReceiver mUninstallReceiver;
     final ResultReceiver mResultReceiver = new ResultReceiver();
     PendingIntent mTimeTickSender;
@@ -156,6 +181,8 @@ class AlarmManagerService extends SystemService {
     private final SparseBooleanArray mPendingSendNextAlarmClockChangedForUser =
             new SparseBooleanArray();
     private boolean mNextAlarmClockMayChange;
+    private AlarmAlignHelper mAlignHelper;
+    private static final boolean DEBUG_POWER_OPT = localLOGV || true;
 
     // May only use on mHandler's thread, locking not required.
     private final SparseArray<AlarmManager.AlarmClockInfo> mHandlerSparseAlarmClockArray =
@@ -496,6 +523,107 @@ class AlarmManagerService extends SystemService {
             return false;
         }
 
+        /**
+         * SPRD: Regular PowerOnOff Feature @{
+         */
+        boolean removePowerOffWakeup(final PendingIntent operation) {
+            boolean didRemove = false;
+            long newStart = 0;  // recalculate endpoints as we go
+            long newEnd = Long.MAX_VALUE;
+            for (int i = 0; i < alarms.size(); ) {
+                Alarm alarm = alarms.get(i);
+                if ((alarm.type == POWER_OFF_ALARM || alarm.type == POWER_ON_WAKEUP) &&
+                        alarm.operation.getCreatorPackage().equals(operation.getCreatorPackage())) {
+                    alarms.remove(i);
+                    didRemove = true;
+                    if (alarm.alarmClock != null) {
+                        mNextAlarmClockMayChange = true;
+                    }
+                } else {
+                    if (alarm.whenElapsed > newStart) {
+                        newStart = alarm.whenElapsed;
+                    }
+                    if (alarm.maxWhenElapsed < newEnd) {
+                        newEnd = alarm.maxWhenElapsed;
+                    }
+                    i++;
+                }
+            }
+            if (didRemove) {
+                // commit the new batch bounds
+                start = newStart;
+                end = newEnd;
+            }
+            return didRemove;
+        }
+
+        boolean hasPowerOffWakeup() {
+            final int N = alarms.size();
+            for (int i = 0; i < N; i++) {
+                Alarm a = alarms.get(i);
+                if (a.type == POWER_OFF_WAKEUP) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        Alarm findPowerOffWakeup() {
+            final int N = alarms.size();
+            for (int i = 0; i < N; i++) {
+                Alarm a = alarms.get(i);
+                if (a.type == POWER_OFF_WAKEUP) {
+                    return a;
+                }
+            }
+            return null;
+        }
+
+        boolean hasPowerOnWakeup() {
+            final int N = alarms.size();
+            for (int i = 0; i < N; i++) {
+                Alarm a = alarms.get(i);
+                if (a.type == POWER_ON_WAKEUP) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        Alarm findPowerOnWakeup() {
+            final int N = alarms.size();
+            for (int i = 0; i < N; i++) {
+                Alarm a = alarms.get(i);
+                if (a.type == POWER_ON_WAKEUP) {
+                    return a;
+                }
+            }
+            return null;
+        }
+
+        boolean hasPowerOffAlarm(){
+            final int N = alarms.size();
+            for (int i = 0; i < N; i++) {
+                Alarm a = alarms.get(i);
+                if (a.type == POWER_OFF_ALARM) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        Alarm findPowerOffAlarm() {
+            final int N = alarms.size();
+            for (int i = 0; i < N; i++) {
+                Alarm a = alarms.get(i);
+                if (a.type == POWER_OFF_ALARM) {
+                    return a;
+                }
+            }
+            return null;
+        }
+        /** @} */
+
         @Override
         public String toString() {
             StringBuilder b = new StringBuilder(40);
@@ -602,7 +730,14 @@ class AlarmManagerService extends SystemService {
     }
 
     static long convertToElapsed(long when, int type) {
+        /* SPRD: Regular PowerOnOff Feature
+         * @orig
         final boolean isRtc = (type == RTC || type == RTC_WAKEUP);
+         * @{
+         */
+        final boolean isRtc = (type == RTC || type == RTC_WAKEUP || type == POWER_OFF_WAKEUP
+            || type == POWER_ON_WAKEUP || type == POWER_OFF_ALARM);
+        /* @} */
         if (isRtc) {
             when -= System.currentTimeMillis() - SystemClock.elapsedRealtime();
         }
@@ -682,6 +817,12 @@ class AlarmManagerService extends SystemService {
     void reAddAlarmLocked(Alarm a, long nowElapsed, boolean doValidate) {
         a.when = a.origWhen;
         long whenElapsed = convertToElapsed(a.when, a.type);
+        // SPRD: change for bug539750 @ {
+        final long minTrigger = nowElapsed + mConstants.MIN_FUTURITY;
+        if(whenElapsed < minTrigger){
+            whenElapsed = a.whenElapsed;
+        }
+        // @ }
         final long maxElapsed;
         if (a.windowLength == AlarmManager.WINDOW_EXACT) {
             // Exact
@@ -796,6 +937,10 @@ class AlarmManagerService extends SystemService {
         mNativeData = init();
         mNextWakeup = mNextNonWakeup = 0;
 
+        // SPRD: Regular PowerOnOff Feature. @{
+        mNextPoweroffWakeup = mNextPoweronWakeup = mNextPoweroffAlarm = 0;
+        // @}
+        mAlignHelper = new AlarmAlignHelper(getContext());
         // We have to set current TimeZone info to kernel
         // because kernel doesn't keep this after reboot
         setTimeZoneImpl(SystemProperties.get(TIMEZONE_PROPERTY));
@@ -819,7 +964,7 @@ class AlarmManagerService extends SystemService {
         mClockReceiver.scheduleDateChangedEvent();
         mInteractiveStateReceiver = new InteractiveStateReceiver();
         mUninstallReceiver = new UninstallReceiver();
-        
+        mNetworkStateReceiver = new NetworkStateReceiver();
         if (mNativeData != 0) {
             AlarmThread waitThread = new AlarmThread();
             waitThread.start();
@@ -916,9 +1061,18 @@ class AlarmManagerService extends SystemService {
             interval = minInterval;
         }
 
+        /* SPRD: Regular PowerOnOff Feature
+         * @orig {
         if (type < RTC_WAKEUP || type > ELAPSED_REALTIME) {
             throw new IllegalArgumentException("Invalid alarm type " + type);
         }
+         * }
+         * @{
+         */
+        if (type < RTC_WAKEUP || type > POWER_OFF_ALARM) {
+            throw new IllegalArgumentException("Invalid alarm type " + type);
+        }
+        /* @} */
 
         if (triggerAtTime < 0) {
             final long what = Binder.getCallingPid();
@@ -927,6 +1081,12 @@ class AlarmManagerService extends SystemService {
             triggerAtTime = 0;
         }
 
+        // SPRD: Bug 431081. power-off alarm can't be set to past time. so check it here.
+        if(type == POWER_OFF_ALARM && triggerAtTime < System.currentTimeMillis()){
+            Slog.w(TAG, "Invalid alarm clock!! trigger time :"+triggerAtTime+ " is past-time. current time :"+System.currentTimeMillis());
+            return;
+        }
+        // @}
         final long nowElapsed = SystemClock.elapsedRealtime();
         final long nominalTrigger = convertToElapsed(triggerAtTime, type);
         // Try to prevent spamming by making sure we aren't firing alarms in the immediate future
@@ -951,6 +1111,32 @@ class AlarmManagerService extends SystemService {
                         + " tElapsed=" + triggerElapsed + " maxElapsed=" + maxElapsed
                         + " interval=" + interval + " flags=0x" + Integer.toHexString(flags));
             }
+
+            /* Add Debug log @{ */
+            if (DEBUG_POWER_ISSUE) {
+                Intent intent = null;
+                String action = null;
+                ComponentName cn = null;
+                long whenClock = triggerElapsed;
+                try{
+                    if(operation != null){
+                        intent = operation.getIntent();
+                    }
+                    if(intent != null){
+                        action = intent.getAction();
+                        cn = intent.getComponent();
+                    }
+                    whenClock += (System.currentTimeMillis() - SystemClock.elapsedRealtime());
+                    Slog.d(TAG, "setImpl() action = "+action+", component = "+cn+", type = "+ type + ", when = "+triggerAtTime
+                     + ", tElapsed=" + triggerElapsed + ", maxElapsed=" + maxElapsed + ", interval=" + interval
+                     + ", triggerTime = " + DateFormat.format("yyyy-MM-dd HH:mm:ss", whenClock) + ", operation = "+operation + ", flags=0x" + Integer.toHexString(flags));
+                }catch(Exception e){
+                    Slog.d(TAG, "ignore this exception :", e);
+                }
+            }
+            /* @} */
+
+            mAlignHelper.notifyPowerGuru(type, triggerAtTime, triggerElapsed, windowLength, maxElapsed, interval, operation);
             setImplLocked(type, triggerAtTime, triggerElapsed, windowLength, maxElapsed,
                     interval, operation, flags, true, workSource, alarmClock, callingUid);
         }
@@ -1003,6 +1189,51 @@ class AlarmManagerService extends SystemService {
                     == 0) {
                 mPendingWhileIdleAlarms.add(a);
                 return;
+            }
+        }
+
+        // Here start to align alarm. It just adjust the 3rd-party alarm without any flag.
+        if ((a.flags&(AlarmManager.FLAG_ALLOW_WHILE_IDLE
+                    | AlarmManager.FLAG_ALLOW_WHILE_IDLE_UNRESTRICTED
+                    | AlarmManager.FLAG_WAKE_FROM_IDLE
+                    | AlarmManager.FLAG_IDLE_UNTIL)) == 0){
+
+
+            final PowerGuruAlarmInfo guruAlarm = mAlignHelper.matchBeatListPackage(a.operation);
+            if(mAlignHelper.isUnavailableGMS(guruAlarm)){
+                return;
+            }
+            if(mAlignHelper.isEnabled() && mAlignHelper.checkAlignEnable(a.type, guruAlarm)){
+                final long alignTime = mAlignHelper.adjustTriggerTime(a.when, a.type);
+                if(alignTime > SystemClock.elapsedRealtime()){
+                    a.maxWhenElapsed = alignTime + (a.maxWhenElapsed - a.whenElapsed);
+                    a.whenElapsed = alignTime;
+                    a.tiggerTimeAdjusted = true;
+                }else{
+                    Slog.w(TAG, "the adjusted time is in the past, ignore it");
+                    a.tiggerTimeAdjusted = false;
+                }
+            }
+
+            try{
+                if(DEBUG_POWER_OPT && a.tiggerTimeAdjusted){
+                    Intent intent = null;
+                    String action = null;
+                    ComponentName cn = null;
+                    if(a.operation != null){
+                        intent = a.operation.getIntent();
+                        if(intent != null){
+                            action = intent.getAction();
+                            cn = intent.getComponent();
+                       }
+                    }
+                    long adjustedTime = a.whenElapsed + (System.currentTimeMillis() - SystemClock.elapsedRealtime());
+                    Slog.d(TAG, "setImplLocked() Action = "+action+", Component = "+cn+", type = "
+                    +a.type +", interval = "+ a.repeatInterval +", when = "+a.when+", whenElapsed:"+a.whenElapsed
+                    +", maxWhenElapsed:"+a.maxWhenElapsed+", triggerTime = "+DateFormat.format("yyyy-MM-dd HH:mm:ss", adjustedTime)+", adjusted = "+a.tiggerTimeAdjusted);
+                }
+            }catch(Exception e){
+                Slog.w(TAG, "here is some Exception!!", e);
             }
         }
 
@@ -1108,6 +1339,10 @@ class AlarmManagerService extends SystemService {
                 flags |= AlarmManager.FLAG_WAKE_FROM_IDLE | AlarmManager.FLAG_STANDALONE;
             }
 
+            if(type == POWER_OFF_ALARM || type == POWER_OFF_WAKEUP){
+                flags |= AlarmManager.FLAG_WAKE_FROM_IDLE | AlarmManager.FLAG_STANDALONE;
+            }
+
             setImpl(type, triggerAtTime, windowLength, interval, operation,
                     flags, workSource, alarmClock, callingUid);
         }
@@ -1153,6 +1388,24 @@ class AlarmManagerService extends SystemService {
             return getNextWakeFromIdleTimeImpl();
         }
 
+        /**
+         * SPRD: Regular PowerOnOff Feature
+         * Remove Poweron Alarm and Poweroff Alarm
+         * @param operation
+         * @{
+         */
+
+        @Override
+        public void removeAlarm(PendingIntent operation) {
+            if (operation == null) {
+                return;
+            }
+            synchronized (mLock) {
+                removeAlarmLocked(operation);
+            }
+        }
+        /* @} */
+
         @Override
         public AlarmManager.AlarmClockInfo getNextAlarmClock(int userId) {
             userId = ActivityManager.handleIncomingUser(Binder.getCallingPid(),
@@ -1173,6 +1426,37 @@ class AlarmManagerService extends SystemService {
             }
 
             dumpImpl(pw);
+        }
+
+        @Override
+        public boolean setHeartBeatAdjustEnable(boolean enable, boolean updated) {
+            try{
+                synchronized (mLock) {
+                    if(DEBUG_POWER_OPT){
+                        Slog.d(TAG, "setHeartBeatAdjustEnable() enable = "+enable+ ", updated = "+updated);
+                    }
+                    if(mAlignHelper != null){
+                        if(updated){
+                            mAlignHelper.updateBeatlist();
+                        }
+                        mAlignHelper.setAlignEnable(enable);
+                    }
+                    rebatchAllAlarmsLocked(true);
+                }
+            }catch(Exception ex){
+                Slog.d(TAG, "setHeartBeatAdjustEnable occurs Exception!!", ex);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void setAlignLength(int length){
+            synchronized(mLock){
+                if(mAlignHelper != null && mAlignHelper.setAlignLength(length)){
+                    rebatchAllAlarmsLocked(true);
+                }
+            }
         }
     };
 
@@ -1469,6 +1753,48 @@ class AlarmManagerService extends SystemService {
         return null;
     }
 
+    /**
+     * SPRD: Regular PowerOnOff Feature.
+     * Find the first Poweroff/Poweron/clock Alarm in the alarm list.
+     * @{
+     */
+    private Alarm findFirstPoweroffWakupLocked() {
+        final int N = mAlarmBatches.size();
+        for (int i = 0; i < N; i++) {
+            Batch b = mAlarmBatches.get(i);
+            Alarm a = b.findPowerOffWakeup();
+            if (a != null) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    private Alarm findFirstPoweronWakupLocked() {
+        final int N = mAlarmBatches.size();
+        for (int i = 0; i < N; i++) {
+            Batch b = mAlarmBatches.get(i);
+            Alarm a = b.findPowerOnWakeup();
+            if (a != null) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    private Alarm findFirstPoweroffAlarmLocked() {
+        final int N = mAlarmBatches.size();
+        for (int i = 0; i < N; i++) {
+            Batch b = mAlarmBatches.get(i);
+            Alarm a = b.findPowerOffAlarm();
+            if (a != null) {
+                return a;
+            }
+        }
+        return null;
+    }
+    /* @} */
+
     long getNextWakeFromIdleTimeImpl() {
         synchronized (mLock) {
             return mNextWakeFromIdle != null ? mNextWakeFromIdle.whenElapsed : Long.MAX_VALUE;
@@ -1611,13 +1937,58 @@ class AlarmManagerService extends SystemService {
         if (mAlarmBatches.size() > 0) {
             final Batch firstWakeup = findFirstWakeupBatchLocked();
             final Batch firstBatch = mAlarmBatches.get(0);
-            if (firstWakeup != null && mNextWakeup != firstWakeup.start) {
+            // SPRD: Regular PowerOnOff Feature.
+            final Alarm firstPoweroffWakeup = findFirstPoweroffWakupLocked();
+            final Alarm firstPoweronWakeup = findFirstPoweronWakupLocked();
+            final Alarm firstPoweroffAlarm = findFirstPoweroffAlarmLocked();
+
+            if (firstWakeup != null && mNextWakeup != firstWakeup.start
+               && !firstWakeup.hasPowerOffWakeup() && !firstWakeup.hasPowerOffAlarm()) {
                 mNextWakeup = firstWakeup.start;
                 setLocked(ELAPSED_REALTIME_WAKEUP, firstWakeup.start);
             }
+
             if (firstBatch != firstWakeup) {
                 nextNonWakeup = firstBatch.start;
             }
+
+            if (firstPoweroffWakeup != null && mNextPoweroffWakeup != firstPoweroffWakeup.when) {
+               if (DEBUG_POWER_ISSUE){
+                    try{
+                        Slog.d(TAG, "set regular shutdown alarm <"+DateFormat.format("yyyy-MM-dd HH:mm:ss", firstPoweroffWakeup.when)+"> to kernel");
+                    } catch(Exception e) {
+                        /* ignore this exception */
+                    }
+                }
+                mNextPoweroffWakeup = firstPoweroffWakeup.when;
+                setLocked(POWER_OFF_WAKEUP, firstPoweroffWakeup.when);
+            }
+
+            /* POWER_ON_WAKEUP is nonwakeup alarm. */
+            if (firstPoweronWakeup != null && mNextPoweronWakeup != firstPoweronWakeup.when) {
+                if (DEBUG_POWER_ISSUE){
+                    try{
+                        Slog.d(TAG, "set regular bootup alarm <"+DateFormat.format("yyyy-MM-dd HH:mm:ss", firstPoweroffWakeup.when)+"> to kernel");
+                    } catch(Exception e) {
+                        /* ignore this exception */
+                    }
+                }
+                mNextPoweronWakeup = firstPoweronWakeup.when;
+                setLocked(POWER_ON_WAKEUP, firstPoweronWakeup.when);
+            }
+
+            if (firstPoweroffAlarm != null && mNextPoweroffAlarm != firstPoweroffAlarm.when) {
+                if (DEBUG_POWER_ISSUE){
+                    try{
+                        Slog.d(TAG, "set PowerOff alarm <"+DateFormat.format("yyyy-MM-dd HH:mm:ss", firstPoweroffAlarm.when)+"> to kernel");
+                    } catch(Exception e) {
+                        /* ignore this exception */
+                    }
+                }
+                mNextPoweroffAlarm = firstPoweroffAlarm.when;
+                setLocked(POWER_OFF_ALARM, firstPoweroffAlarm.when);
+            }
+            /* @} */
         }
         if (mPendingNonWakeupAlarms.size() > 0) {
             if (nextNonWakeup == 0 || mNextNonWakeupDeliveryTime < nextNonWakeup) {
@@ -1804,6 +2175,11 @@ class AlarmManagerService extends SystemService {
         case RTC_WAKEUP : return "RTC_WAKEUP";
         case ELAPSED_REALTIME : return "ELAPSED";
         case ELAPSED_REALTIME_WAKEUP: return "ELAPSED_WAKEUP";
+        // SPRD: Regular PowerOnOff Feature. @{
+        case POWER_OFF_WAKEUP : return "POWER_OFF_WAKEUP";
+        case POWER_ON_WAKEUP : return "POWER_ON_WAKEUP";
+        case POWER_OFF_ALARM : return "POWER_OFF_ALARM";
+        // @}
         default:
             break;
         }
@@ -1821,12 +2197,16 @@ class AlarmManagerService extends SystemService {
         }
     }
 
+    private native void pollingNTPTime();
     private native long init();
     private native void close(long nativeData);
     private native void set(long nativeData, int type, long seconds, long nanoseconds);
     private native int waitForAlarm(long nativeData);
     private native int setKernelTime(long nativeData, long millis);
     private native int setKernelTimezone(long nativeData, int minuteswest);
+    /* SPRD: SPRD: Regular PowerOnOff Feature @{ */
+    private native void clear(long fd, int type);
+    /* @} */
 
     boolean triggerAlarmsLocked(ArrayList<Alarm> triggerList, final long nowELAPSED,
             final long nowRTC) {
@@ -1959,6 +2339,9 @@ class AlarmManagerService extends SystemService {
         public long maxWhenElapsed; // also in the elapsed time base
         public long repeatInterval;
         public PriorityClass priorityClass;
+        // Add for alarm alignment
+        public boolean tiggerTimeAdjusted;
+
 
         public Alarm(int _type, long _when, long _whenElapsed, long _windowLength, long _maxWhen,
                 long _interval, PendingIntent _op, WorkSource _ws, int _flags,
@@ -1978,10 +2361,14 @@ class AlarmManagerService extends SystemService {
             flags = _flags;
             alarmClock = _info;
             uid = _uid;
+            tiggerTimeAdjusted = false;
         }
 
         public static String makeTag(PendingIntent pi, int type) {
             return pi.getTag(type == ELAPSED_REALTIME_WAKEUP || type == RTC_WAKEUP
+                    // SPRD: Regular PowerOnOff Feature @{
+                    || type == POWER_OFF_WAKEUP || type == POWER_OFF_ALARM
+                    // @}
                     ? "*walarm*:" : "*alarm*:");
         }
 
@@ -2002,7 +2389,16 @@ class AlarmManagerService extends SystemService {
 
         public void dump(PrintWriter pw, String prefix, long nowRTC, long nowELAPSED,
                 SimpleDateFormat sdf) {
+            /**
+             * SPRD: Regular PowerOnOff Feature
+             * @orig {
+             *
             final boolean isRtc = (type == RTC || type == RTC_WAKEUP);
+             * }
+             * @{
+             */
+            final boolean isRtc = (type == RTC || type == RTC_WAKEUP || type == POWER_OFF_WAKEUP || type == POWER_ON_WAKEUP || type == POWER_OFF_ALARM);
+            /** @} */
             pw.print(prefix); pw.print("tag="); pw.println(tag);
             pw.print(prefix); pw.print("type="); pw.print(type);
                     pw.print(" whenElapsed="); TimeUtils.formatDuration(whenElapsed,
@@ -2111,6 +2507,20 @@ class AlarmManagerService extends SystemService {
                                 alarm.operation, -1, alarm.tag);
                     }
                 }
+                /* SPRD: Add Debug log @{ */
+                if (DEBUG_POWER_ISSUE) {
+                    String action = null;
+                    ComponentName cn = null;
+                    if(alarm.operation != null){
+                        Intent intent = alarm.operation.getIntent();
+                        if(intent != null){
+                            action = intent.getAction();
+                            cn = intent.getComponent();
+                        }
+                    }
+                    Slog.d(TAG, "sending alarm.type = " + alarm.type + ", action = "+ action +", cn = "+ cn + ", operation = " + alarm.operation);
+                }
+                /* @} */
                 alarm.operation.send(getContext(), 0,
                         mBackgroundIntent.putExtra(
                                 Intent.EXTRA_ALARM_COUNT, alarm.count),
@@ -2149,7 +2559,16 @@ class AlarmManagerService extends SystemService {
                     fs.nesting++;
                 }
                 if (alarm.type == ELAPSED_REALTIME_WAKEUP
+                        /* SPRD: Regular PowerOnOff Feature
+                         * @orig {
                         || alarm.type == RTC_WAKEUP) {
+                         * }
+                         * @{
+                         */
+                        || alarm.type == RTC_WAKEUP
+                        || alarm.type == POWER_OFF_WAKEUP
+                        || alarm.type == POWER_OFF_ALARM) {
+                        /* @} */
                     bs.numWakeup++;
                     fs.numWakeup++;
                     if (alarm.workSource != null && alarm.workSource.size() > 0) {
@@ -2194,6 +2613,11 @@ class AlarmManagerService extends SystemService {
 
                 final long nowRTC = System.currentTimeMillis();
                 final long nowELAPSED = SystemClock.elapsedRealtime();
+                /* Add Debug log @{ */
+                if (DEBUG_POWER_ISSUE) {
+                    Slog.d(TAG, "waitForAlarm result:" + result+", nowELAPSED:"+nowELAPSED+", nowRTC:"+nowRTC);
+                }
+                /* @} */
 
                 if ((result & TIME_CHANGED_MASK) != 0) {
                     // The kernel can give us spurious time change notifications due to
@@ -2256,6 +2680,17 @@ class AlarmManagerService extends SystemService {
                         }
 
                         boolean hasWakeup = triggerAlarmsLocked(triggerList, nowELAPSED, nowRTC);
+                        /* Add Debug log @{ */
+                        if (DEBUG_POWER_ISSUE) {
+                            Slog.d(TAG, "triggerList.size = " + triggerList.size() + ", hasWakeup = " + hasWakeup);
+                        }
+                        // Modify for bug 437883 @ {
+                        if(0 == triggerList.size()){
+                            Slog.w(TAG, "triggerList.size = 0, just continue!!!");
+                            continue;
+                        }
+                        /* @ } */
+
                         if (!hasWakeup && checkAllowNonWakeupDelayLocked(nowELAPSED)) {
                             // if there are no wakeup alarms and the screen is off, we can
                             // delay what we have so far until the future.
@@ -2439,6 +2874,26 @@ class AlarmManagerService extends SystemService {
         }
     }
 
+    class NetworkStateReceiver extends BroadcastReceiver {
+        public NetworkStateReceiver() {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION); // "android.net.conn.CONNECTIVITY_CHANGE"
+            filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+            getContext().registerReceiver(this, filter);
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                Slog.d(TAG, "drm_ntp, onReceive get CONNECTIVITY_ACTION.");
+                NetworkInfo info = (NetworkInfo)intent.getExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
+                if (info != null && info.getState() == NetworkInfo.State.CONNECTED) {
+                    Slog.d(TAG, "drm_ntp, AlarmManagerService accept connected broadcast !");
+                       pollingNTPTime();
+                }
+            }
+        }
+    }
     class UninstallReceiver extends BroadcastReceiver {
         public UninstallReceiver() {
             IntentFilter filter = new IntentFilter();
@@ -2594,4 +3049,74 @@ class AlarmManagerService extends SystemService {
             }
         }
     }
+
+    /**
+     * SPRD: Regular PowerOnOff Feature @{
+     */
+    private boolean lookForPowerOnWakeupLocked() {
+        for (int i = 0; i < mAlarmBatches.size(); i++) {
+            Batch b = mAlarmBatches.get(i);
+            if (b.hasPowerOnWakeup()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean lookForPowerOffAlarmLocked() {
+        for (int i = 0; i < mAlarmBatches.size(); i++) {
+            Batch b = mAlarmBatches.get(i);
+            if (b.hasPowerOffAlarm()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void removeAlarmLocked(PendingIntent operation) {
+        final boolean hasPowerOnWakeup = lookForPowerOnWakeupLocked();
+        final boolean hasPowerOffAlarm = lookForPowerOffAlarmLocked();
+        if (!hasPowerOnWakeup && !hasPowerOffAlarm) {
+            removeLocked(operation);
+            return;
+        }
+
+        boolean didRemove = false;
+        for (int i = mAlarmBatches.size() - 1; i >= 0; i--) {
+            Batch b = mAlarmBatches.get(i);
+            didRemove |= b.removePowerOffWakeup(operation);
+            if (b.size() == 0) {
+                mAlarmBatches.remove(i);
+            }
+        }
+
+        if (didRemove) {
+            if (DEBUG_BATCH) {
+                Slog.v(TAG, "removeAlarmLocked (operation) changed bounds; rebatching");
+            }
+            if (mNextWakeFromIdle != null && mNextWakeFromIdle.operation.equals(operation)) {
+                mNextWakeFromIdle = null;
+            }
+            rebatchAllAlarmsLocked(true);
+            updateNextAlarmClockLocked();
+        }
+
+        if (hasPowerOnWakeup && !lookForPowerOnWakeupLocked()) {
+            if (DEBUG_POWER_ISSUE) {
+                Slog.d(TAG, "Alarm Batches has no POWER_ON_WAKEUP alarm!");
+            }
+            clear(mNativeData, POWER_ON_WAKEUP);
+            mNextPoweronWakeup = 0;
+        }
+
+        if(hasPowerOffAlarm && !lookForPowerOffAlarmLocked()){
+            if (DEBUG_POWER_ISSUE) {
+                Slog.d(TAG, "Alarm Batches has no POWER_OFF_ALARM !");
+            }
+            clear(mNativeData, POWER_OFF_ALARM);
+            mNextPoweroffAlarm = 0;
+
+        }
+    }
+
 }

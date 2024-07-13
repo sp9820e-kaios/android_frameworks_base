@@ -110,8 +110,32 @@ public class DataConnectionStats extends BroadcastReceiver {
                 mSimState = IccCardConstants.State.PIN_REQUIRED;
             } else if (IccCardConstants.INTENT_VALUE_LOCKED_ON_PUK.equals(lockedReason)) {
                 mSimState = IccCardConstants.State.PUK_REQUIRED;
-            } else {
+            /** SPRD: modified for simlock status {@ */
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK.equals(lockedReason)) {
                 mSimState = IccCardConstants.State.NETWORK_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NS.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.NETWORK_SUBSET_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SP.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SERVICE_PROVIDER_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_CP.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.CORPORATE_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SIM.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SIM_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.NETWORK_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NS_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.NETWORK_SUBSET_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SP_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SERVICE_PROVIDER_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_CP_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.CORPORATE_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SIM_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SIM_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_FOREVER.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SIM_LOCKED_FOREVER;
+            } else {
+                mSimState = IccCardConstants.State.UNKNOWN;
+            /** @} */
             }
         } else {
             mSimState = IccCardConstants.State.UNKNOWN;

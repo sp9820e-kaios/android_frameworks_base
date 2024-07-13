@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"تبریک می‌گوییم! «تنظیم‌کننده واسط کاربری سیستم» به «تنظیمات» اضافه شد"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"حذف از تنظیمات"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"«تنظیم‌کننده واسط کاربری سیستم» از تنظیمات حذف شود و همه ویژگی‌های آن متوقف شوند؟"</string>
+    <string name="quick_settings_volume_label">"پروفایل صوتی"</string>
+     <string name="assistant_key_home">"صفحه اصلی"</string>
+     <string name="assistant_key_search">"جستجو"</string>
+     <string name="assistant_key_menu">"منو"</string>
+     <string name="assistant_key_back">"برگشت"</string>
+
+    <string name="vibrate_hint">"برای لرزش به چپ بلغزانید"</string>
+     <string name="battery_overtage_title">"اخطار امنیتی"</string>
+     <string name="battery_overtage_content">"ولتاژ شارژ بسیار بالاست!"</string>
+     <string name="battery_overtage_back">"برگشت"</string>
 </resources>

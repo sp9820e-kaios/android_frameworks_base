@@ -2644,6 +2644,26 @@
     <permission android:name="android.permission.DISPATCH_NFC_MESSAGE"
                 android:protectionLevel="signature|privileged" />
 
+    <!-- @SystemApi Indicates that this OMAPI Terminal is a "system terminal".
+     <p>Not for use by third-party applications. -->
+    <permission android:name="org.simalliance.openmobileapi.SYSTEM_TERMINAL"
+        android:protectionLevel="signature|privileged"
+        android:label="@string/permlab_systemTerminal"
+        android:description="@string/permdesc_systemTerminal" />
+
+    <!-- @SystemApi Permission used by SmartcardService to be able to bind to
+         system terminals.
+    <p>Not for use by third-party applications. -->
+    <permission android:name="org.simalliance.openmobileapi.BIND_TERMINAL"
+        android:protectionLevel="signature|privileged"
+        android:label="@string/permlab_bindTerminal"
+        android:description="@string/permdesc_bindTerminal" />
+
+    <!-- Allow to receive commlog
+        @hide-->
+    <permission android:name="com.android.permission.RECEIVE_SPRD_COMMLOG"
+                android:protectionLevel="system|signature" />
+
     <!-- The system process is explicitly the only one allowed to launch the
          confirmation UI for full backup/restore -->
     <uses-permission android:name="android.permission.CONFIRM_FULL_BACKUP"/>
@@ -2764,8 +2784,10 @@
         </activity>
 
         <activity android:name="com.android.internal.app.ShutdownActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:windowSoftInputMode="stateHidden"
             android:permission="android.permission.SHUTDOWN"
-            android:theme="@style/Theme.NoDisplay"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.ACTION_REQUEST_SHUTDOWN" />

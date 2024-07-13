@@ -36,10 +36,12 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
+import android.os.SystemProperties;
 import android.os.WorkSource;
 import android.os.Messenger;
 import android.util.Log;
 import android.util.SparseArray;
+import android.provider.Settings;
 
 import java.net.InetAddress;
 import java.util.concurrent.CountDownLatch;
@@ -75,6 +77,86 @@ public class WifiManager {
 
     private static final String TAG = "WifiManager";
     // Supplicant error codes:
+
+    /* SPRD: add strings for wifi function db key @{ */
+    /** @hide add for auto roam function */
+    public static final String WIFI_AUTO_ROAM_SWITCH = "wifi_auto_roam_switch";
+    /* @} */
+
+    // Broadcom, WAPI
+    /** @hide */
+    public static final String SUPPLICANT_WAPI_EVENT = "android.net.wifi.supplicant.WAPI_EVENT";
+    /** @hide */
+    public static final int WAPI_EVENT_AUTH_FAIL_CODE = 16;
+    /** @hide */
+    public static final int WAPI_EVENT_CERT_FAIL_CODE = 17;
+    /** @hide */
+    public static final int WAPI_EVENT_CERT_LOST_CODE = 18;
+    //Broadcom, WAPI
+
+    /**
+     * SPRD: flag for cmcc versions.
+     * @hide
+     */
+    public static final boolean SUPPORT_CMCC = SystemProperties.get("ro.operator").equals("cmcc");
+
+    /**
+     * SPRD: add for cmcc wifi feature, 0 is auto switch, 1 is manual switch, 2 is always ask.
+     * @hide
+     */
+    public static final String WIFI_MOBILE_TO_WLAN_POLICY = "wifi_mobile_to_wlan_policy";
+
+    /**
+     * SPRD: Broadcast intent action indicating the ap is removed from scan_results.
+     * @hide
+     */
+    public static final String WIFI_SCAN_RESULT_BSS_REMOVED_ACTION
+        = "sprd.net.wifi.BSS_REMOVED_ACTION";
+
+    /**
+     * SPRD: Broadcast intent action indicating the connected ap is absent.
+     * @hide
+     */
+    public static final String WIFI_CONNECTED_AP_ABSENT_ACTION
+        = "sprd.net.wifi.WIFI_CONNECTED_AP_ABSENT";
+
+    /**
+     * SPRD: Broadcast intent action indicating wifi is disabling with connected state.
+     * @hide
+     */
+    public static final String WIFI_DISABLED_WHEN_CONNECTED_ACTION
+        = "sprd.net.wifi.WIFI_DISABLED_WHEN_CONNECTED";
+
+    /**
+     * SPRD: intent action indicating setting alarm to connect wifi
+     * @hide
+     */
+    public static final String ALARM_FOR_CONNECT_WIFI_ACTION = "sprd.wifi.alarm.CONNECT_WIFI";
+
+    /**
+     * SPRD: intent action indicating setting alarm to disconnect wifi
+     * @hide
+     */
+    public static final String ALARM_FOR_DISCONNECT_WIFI_ACTION = "sprd.wifi.alarm.DISCONNECT_WIFI";
+
+    // wifi connect alarm flag, and its hour and minute flags.
+    /** @hide */
+    public static final String WIFI_CONNECT_ALARM_FLAG = "wifi_connect_alarm_flag";
+    /** @hide */
+    public static final String WIFI_CONNECT_ALARM_HOUR = "wifi_connect_alarm_hour";
+    /** @hide */
+    public static final String WIFI_CONNECT_ALARM_MINUTE = "wifi_connect_alarm_minute";
+
+    // wifi disconnect alarm flag, and its hour and minute flags.
+    /** @hide */
+    public static final String WIFI_DISCONNECT_ALARM_FLAG = "wifi_disconnect_alarm_flag";
+    /** @hide */
+    public static final String WIFI_DISCONNECT_ALARM_HOUR = "wifi_disconnect_alarm_hour";
+    /** @hide */
+    public static final String WIFI_DISCONNECT_ALARM_MINUTE = "wifi_disconnect_alarm_minute";
+    /** @hide */
+    public static final int INTERVAL_MILLIS = 1000 * 60 * 60 * 24; //24h
+
     /**
      * The error code if there was a problem authenticating.
      */
@@ -628,6 +710,52 @@ public class WifiManager {
     // TODO: Introduce refcounting and make this a per-process static callback, instead of a
     // per-WifiManager callback.
     private PinningNetworkCallback mNetworkCallback;
+
+    // NOTE: Add for SoftAp Advance feature -->
+    /**
+     * Broadcast intent action indicating that a STA has connected to /disconnected from  Wi-Fi AP
+     *
+     * @hide
+     */
+    public static final String WIFI_AP_CONNECTION_CHANGED_ACTION =
+        "android.net.wifi.WIFI_AP_CONNECTION_CHANGED_ACTION";
+
+    /**
+     * The lookup key for an boolean that indicates a STA  has connected to /disconnected from
+     * Wi-Fi AP
+     * if true, that is a station is connected.Otherwise, a station is disconnected.
+     *
+     * @hide
+     */
+    public static final String EXTRA_WIFI_AP_CONNECTED_STATION = "wifiap_station_is_connected";
+
+    /**
+     * The lookup key for an string that indicates the MAC STRING of the STA  that connected to /disconnected from
+     * Wi-Fi AP
+     *
+     * @hide
+     */
+    public static final String EXTRA_WIFI_AP_CONNCTION_STA_MAC = "wifiap_station_mac";
+
+
+    /**
+     * Getting/setting block list is available from the hostapd.
+     *
+     * @hide
+     */
+    public static final String SOFTAP_BLOCKLIST_AVAILABLE_ACTION = "android.net.wifi.SOFTAP_BLOCKLIST_AVAILABLE_ACTION";
+
+
+    /**
+     * Broadcast intent action indicating that the detail information of STAs connected to Wi-Fi AP are available
+     *
+     * @hide
+     */
+    public static final String WIFI_AP_CLIENT_DETAILINFO_AVAILABLE_ACTION =
+        "android.net.wifi.WIFI_AP_CLIENT_DETAILINFO_AVAILABLE_ACTION";
+
+    // <-- Add for SoftAp Advance feature
+
 
     /**
      * Create a new WifiManager instance.
@@ -1785,6 +1913,15 @@ public class WifiManager {
     /** @hide */
     public static final int RSSI_PKTCNT_FETCH_FAILED        = BASE + 22;
 
+    /* < Sprd: Add for SoftAp Wps */
+    /** @hide */
+    public static final int SOFTAP_START_WPS        = BASE + 23;
+    /** @hide */
+    public static final int SOFTAP_CANCEL_WPS        = BASE + 24;
+    /** @hide */
+    public static final int SOFTAP_WPS_CHECK_PIN        = BASE + 25;
+    /* Sprd: Add for SoftAp Wps > */
+
     /**
      * Passed with {@link ActionListener#onFailure}.
      * Indicates that the operation failed due to an internal error.
@@ -2881,4 +3018,348 @@ public class WifiManager {
         }
         return 0;
     }
+
+    //NOTE: Add for SoftAp Advance feature -->
+    /**
+     * To block a station with a mac string. Then this station will can not connected to our softap
+     * @param mac
+     * @return
+     * @hide
+     */
+    public boolean softApBlockStation(String mac) {
+        try {
+            return mService.softApBlockStation(mac);
+        } catch (RemoteException e) {
+            return false;
+        }
+   }
+
+    /**
+     * To ublock the statition
+     * @param mac
+     * @return
+     * @hide
+     */
+    public boolean softApUnblockStation(String mac) {
+        try {
+            return mService.softApUnblockStation(mac);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /**
+     * get the current connected station, return a string with format:
+     * XX:XX:XX:XX:XX:XX XX:XX:XX:XX:XX:XX ...
+     * each mac string separate with a blank
+     * @return
+     * @hide
+     */
+    public String softApGetConnectedStations() {
+        try {
+            return mService.softApGetConnectedStations();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
+     * get the current blocked station, return a string with format:
+     * XX:XX:XX:XX:XX:XX XX:XX:XX:XX:XX:XX ...
+     * each mac string separate with a blank
+     * @hide
+     */
+    public String softApGetBlockedStations() {
+        try {
+            return mService.softApGetBlockedStations();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * Get the detail info of the connected client
+     * return:
+     *      return the detail info list.
+     *      Format of each string info:
+     *      MAC IP DEV_NAME
+     * such as:
+     *      00:08:22:0e:2d:fc 192.168.43.37 android-9dfb76a944bd077a
+     * @hide
+     */
+    public List<String> softApGetConnectedStationsDetail() {
+        try {
+            return mService.softApGetConnectedStationsDetail();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+
+    /**
+     * Get the detail info of the blocked client
+     * return:
+     *      return the detail info list.
+     *      Format of each string info:
+     *      MAC IP DEV_NAME
+     * such as:
+     *      00:08:22:0e:2d:fc 192.168.43.37 android-9dfb76a944bd077a
+     * @hide
+     */
+    public List<String> softApGetBlockedStationsDetail() {
+        try {
+            return mService.softApGetBlockedStationsDetail();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
+     * add the client to white list
+     * in: mac
+     *      contain the mac that want to add to white list. Format: xx:xx:xx:xx:xx:xx
+     * in: name
+     *      the name of the client, may be null
+     * in softapStarted
+     *      tell if the softap has started or not
+     * return:
+     *      return true for success.
+     * @hide
+     */
+    public boolean softApAddClientToWhiteList(String mac, String name) {
+        try {
+            return mService.softApAddClientToWhiteList(mac, name);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /**
+     * remove the client from white list
+     * in: mac
+     *      contain the mac that want to remove from white list. Format: xx:xx:xx:xx:xx:xx
+     * in: name
+     *      the name of the client, may be null
+     * in softapStarted
+     *      tell if the softap has started or not
+     * return:
+     *      return true for success.
+     * @hide
+     */
+    public boolean softApDelClientFromWhiteList(String mac, String name) {
+        try {
+            return mService.softApDelClientFromWhiteList(mac, name);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /**
+     * To enable the white list or not
+     * in enabled
+     *      true: enable white list
+     *      false: disable white list
+     * @hide
+     */
+    public boolean softApSetClientWhiteListEnabled(boolean enabled) {
+        try {
+            return mService.softApSetClientWhiteListEnabled(enabled);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Get the detail info of the white client list
+     * return:
+     *      return the detail info list.
+     *      Format of each string info:
+     *      MAC DEV_NAME
+     * such as:
+     *      00:08:22:0e:2d:fc android-9dfb76a944bd077a
+     * @hide
+     */
+    public List<String> softApGetClientWhiteList() {
+        try {
+            return mService.softApGetClientWhiteList();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Check if White list is enabled or not
+     * return:
+     *      true: white list is enabled, that is in white list mode
+     *      false: disabled
+     * @hide
+     */
+    public boolean softApIsWhiteListEnabled() {
+        try {
+            return mService.softApIsWhiteListEnabled();
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+   /**
+     * Start SoftAp Wi-fi Protected Setup
+     *
+     * @param config WPS configuration
+     * @param listener for callbacks on success or failure. Can be null.
+     * @throws IllegalStateException if the WifiManager instance needs to be
+     * initialized again
+     *
+     * @hide
+     */
+    public void softApStartWps(WpsInfo config, WpsCallback listener) {
+        if (config == null) throw new IllegalArgumentException("config cannot be null");
+        validateChannel();
+        sAsyncChannel.sendMessage(SOFTAP_START_WPS, 0, putListener(listener), config);
+    }
+
+    /**
+     * Cancel any ongoing Wi-fi Protected Setup
+     *
+     * @param listener for callbacks on success or failure. Can be null.
+     * @throws IllegalStateException if the WifiManager instance needs to be
+     * initialized again
+     *
+     * @hide
+     */
+    public void softApCancelWps(WpsCallback listener) {
+        validateChannel();
+        sAsyncChannel.sendMessage(SOFTAP_CANCEL_WPS, 0, putListener(listener));
+    }
+    /**
+     * SoftAp check wps pin
+     *
+     * @param listener for callbacks on success or failure. Can be null.
+     * @throws IllegalStateException if the WifiManager instance needs to be
+     * initialized again
+     *
+     * @hide
+     */
+    public boolean softApWpsCheckPin(String wpsPin) {
+        try {
+            return mService.softApWpsCheckPin(wpsPin);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+    // <-- Add for SoftAp Advance feature
+
+    /**
+     * Get wifi soft ap state
+     * @hide
+     * @return
+     */
+    public boolean isSoftapEnablingOrEnabled() {
+        return Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.SOFTAP_ENABLING_OR_ENABLED, 0) == 1
+                || Settings.Global.getInt(mContext.getContentResolver(),
+                        Settings.Global.SOFTAP_REENABLING, 0) == 1;
+    }
+
+
+    //NOTE: Add for SPRD Passpoint R1 Feature -->
+    /**
+     * Enable or disable Wi-Fi passpoint.
+     * @param enabled {@code true} to enable, {@code false} to disable.
+     * @return {@code true} if the operation succeeds (or if the existing state
+     *         is the same as the requested state).
+     * @hide
+     */
+    public boolean setPasspointEnable(boolean enable) {
+        try {
+            return mService.setPasspointEnable(enable);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Add a new passpoint cred config
+     * The {@code id} field of the supplied configuration object
+     * is ignored.
+     * <p/>
+     *
+     * @param config the set of variables that describe the configuration,
+     *            contained in a {@link WifiPasspointConfig} object.
+     * @return the String ID of the newly created cred description. This is used in
+     *         other operations to specified the network to be acted upon.
+     *         Returns {@code null} on failure.
+     * @hide
+     */
+    public String addPasspointCred(WifiConfiguration config) {
+        if (config == null) {
+            return null;
+        }
+        config.networkId = -1;
+        try {
+            return mService.addPasspointCred(config);
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
+     * remove Wi-Fi passpoint cred config.
+     * @param cred String Id
+     * @return {@code true} if the operation succeeds
+     * @hide
+     */
+    public boolean removePasspointCred(String credStringID) {
+        try {
+            return mService.removePasspointCred(credStringID);
+        } catch (RemoteException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Return the results of the latest passpoint access point scan.
+     * @return the list of access points found in the most recent scan.
+     * @hide
+     */
+    public List<ScanResult> getPasspointApList() {
+        try {
+            return mService.getPasspointApList();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Return the passpoint configured creds
+     * @return the list of configured creds.
+     * @hide
+     */
+    public List<WifiConfiguration> getPasspointConfiguredCreds() {
+        try {
+            return mService.getPasspointConfiguredCreds();
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Return the passpoint configured cred identified by credStringID
+     * @return the configured cred.
+     * @hide
+     */
+    public WifiConfiguration getPasspointConfiguredCred(String credStringID) {
+        try {
+            return mService.getPasspointConfiguredCred(credStringID);
+        } catch (RemoteException e) {
+            return null;
+        }
+    }
+
+    //<-- Add for SPRD Passpoint R1 Feature
+
+
+
+
 }

@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Podrobnosti zobrazíte klepnutím"</string>
     <string name="retry" msgid="7564024179122207376">"Opakovat"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Tyto soubory nebyly zkopírovány: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Nelze sdílet soubor"</string>
+     <string name="documents_deleting">"Vymazování dokumentů"</string>
+     <string name="cannot_copyfolder_itself">"Nemůžete kopírovat adresář do sebe"</string>
+
+    <string name="error_permissions">"Aplikace nemá důležitá oprávnění potřebná ke spuštění. Zkontrolujte nastavení oprávnění."</string>
+     <string name="cannot_copy_drm">"Nelze zkopírovat DRM soubory"</string>
+     <string name="cannot_copy_downloading">"Nelze zkopírovat stahované soubory"</string>
 </resources>

@@ -135,7 +135,7 @@
     <!-- Instructions for using the SIM PIN unlock screen -->
     <string name="kg_sim_pin_instructions">Enter SIM PIN</string>
     <!-- Instructions for using the SIM PIN unlock screen when there's more than one SIM -->
-    <string name="kg_sim_pin_instructions_multi">Enter SIM PIN for \"<xliff:g id="carrier" example="CARD 1">%1$s</xliff:g>\"</string>
+    <string name="kg_sim_pin_instructions_multi">Enter <xliff:g id="carrier" example="CARD 1">%1$s</xliff:g> PIN.Remaining times(<xliff:g id="number">%2$d</xliff:g>)."</string>
     <!-- Instructions for using the PIN unlock screen -->
     <string name="kg_pin_instructions">Enter PIN</string>
     <!-- Instructions for using the password unlock screen -->
@@ -143,7 +143,7 @@
     <!-- Hint shown in the PUK screen that asks the user to enter the PUK code given to them by their provider -->
     <string name="kg_puk_enter_puk_hint">SIM is now disabled. Enter PUK code to continue. Contact carrier for details.</string>
     <!-- Hint shown when there are multiple SIMs in the device to ask the user to enter the PUK code given to them by their provider -->
-    <string name="kg_puk_enter_puk_hint_multi">SIM \"<xliff:g id="carrier" example="CARD 1">%1$s</xliff:g>\" is now disabled. Enter PUK code to continue. Contact carrier for details.</string>
+    <string name="kg_puk_enter_puk_hint_multi"> <xliff:g id="carrier" example="CARD 1">%1$s</xliff:g> is now disabled. Enter PUK code to continue. Remaining times(<xliff:g id="number">%2$d</xliff:g>).Contact carrier for details.</string>
     <!-- Hint shown in the PUK unlock screen PIN TextView -->
     <string name="kg_puk_enter_pin_hint">Enter desired PIN code</string>
     <!-- Message shown when the user needs to confirm the PIN they just entered in the PUK screen -->
@@ -338,4 +338,6 @@
     <!-- Fingerprint hint message when finger was not recognized.-->
     <string name="fingerprint_not_recognized">Not recognized</string>
 
+    <!-- bug：622394 -->
+    <string name="in_calling">In Calling ...</string>
 </resources>

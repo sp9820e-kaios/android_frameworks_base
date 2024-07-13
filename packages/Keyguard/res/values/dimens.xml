@@ -21,6 +21,7 @@
 
     <!-- Size of the generic status lines keyguard's status view  -->
     <dimen name="kg_status_line_font_size">14sp</dimen>
+    <dimen name="kg_status_line_font_size_ex">20sp</dimen>
 
     <!-- Width of the sliding KeyguardSecurityContainer (includes 2x keyguard_security_view_margin) -->
     <dimen name="keyguard_security_width">320dp</dimen>
@@ -39,7 +40,7 @@
     <dimen name="eca_overlap">-10dip</dimen>
 
     <!-- Default clock parameters -->
-    <dimen name="bottom_text_spacing_digital">-10dp</dimen>
+    <dimen name="bottom_text_spacing_digital">2dp</dimen>
     <dimen name="widget_label_font_size">14sp</dimen>
     <dimen name="widget_big_font_size">88dp</dimen>
 
@@ -53,8 +54,14 @@
     <dimen name="password_char_padding">8dp</dimen>
 
     <!-- The vertical margin between the date and the owner info. -->
-    <dimen name="date_owner_info_margin">6dp</dimen>
+    <!-- SPRD: bug 614855 -->
+    <dimen name="date_owner_info_margin">-3dp</dimen>
 
     <!-- The translation for disappearing security views after having solved them. -->
     <dimen name="disappear_y_translation">-32dp</dimen>
+    <!-- SPR: 609454 -->
+    <dimen name="date_view_label_font_size">27px</dimen>
+    <dimen name="clock_view_big_font_size">70px</dimen>
+    <!-- SPR: 626492 -->
+    <dimen name="clock_view_middle_font_size">50px</dimen>
 </resources>

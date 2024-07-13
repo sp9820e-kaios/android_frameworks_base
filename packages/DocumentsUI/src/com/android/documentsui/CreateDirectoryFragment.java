@@ -40,6 +40,11 @@ import android.widget.Toast;
 
 import com.android.documentsui.model.DocumentInfo;
 
+/* SPRD: ADD for bug 567461 {@ */
+import android.text.TextWatcher;
+import android.text.Editable;
+import android.widget.Button;
+/* @} */
 /**
  * Dialog to create a new directory.
  */
@@ -65,6 +70,10 @@ public class CreateDirectoryFragment extends DialogFragment {
 
         final View view = dialogInflater.inflate(R.layout.dialog_create_dir, null, false);
         final EditText text1 = (EditText) view.findViewById(android.R.id.text1);
+        /* SPRD: ADD for bug 567461 {@ */
+        text1.setText(R.string.menu_create_dir);
+        text1.setSelection(text1.getText().length());
+        /* @} */
 
         builder.setTitle(R.string.menu_create_dir);
         builder.setView(view);
@@ -83,7 +92,32 @@ public class CreateDirectoryFragment extends DialogFragment {
         });
         builder.setNegativeButton(android.R.string.cancel, null);
 
-        return builder.create();
+        /* SPRD: ADD for bug 567461 {@ */
+        final AlertDialog dialog = builder.create();
+        text1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Button okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                if(okButton != null) {
+                    if(s.toString().trim().isEmpty()) {
+                        okButton.setEnabled(false);
+                    } else {
+                        okButton.setEnabled(true);
+                    }
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        return dialog;
+        /* @} */
     }
 
     private class CreateDirectoryTask extends AsyncTask<Void, Void, DocumentInfo> {

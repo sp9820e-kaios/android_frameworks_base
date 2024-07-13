@@ -427,4 +427,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Apsveicam! Sistēmas saskarnes regulators ir pievienots iestatījumiem."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Noņemt no iestatījumiem"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Vai noņemt sistēmas saskarnes regulatoru no iestatījumiem un pārtraukt izmantot visas tā funkcijas?"</string>
+    <string name="quick_settings_volume_label">"Audio Profils"</string>
+     <string name="assistant_key_home">"Sākums"</string>
+     <string name="assistant_key_search">"Meklēt"</string>
+     <string name="assistant_key_menu">"Izvēlne"</string>
+     <string name="assistant_key_back">"Atpakaļ"</string>
+
+    <string name="vibrate_hint">"Vilkt pa kreisi Vibrēšanai"</string>
+     <string name="battery_overtage_title">"Drošības brīdinājums"</string>
+     <string name="battery_overtage_content">"Lādēšanas voltāža ir pārāk augsta!"</string>
+     <string name="battery_overtage_back">"Atpakaļ"</string>
 </resources>

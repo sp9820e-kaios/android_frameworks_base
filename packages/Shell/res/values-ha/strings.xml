@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"An samu rahoton matsalar Bug"</string>
+<string name="bugreport_finished_text" product="watch">"Ja zuwa hagu don musayar rahoton cire kuskurenka"</string>
+<string name="bugreport_finished_text" product="default">"Taba a yi musayar rahoton matsalar bug"</string>
+<string name="bugreport_confirm">"Rahoton matsalar Bug ya kunshi bayanai daga jerin tsarin fayiloli, da suka hada da bayanan kashin kai da na sirri. Ka yi musayar rahoton matsalar bug da masarrafai da mutanen da ka aminta."</string>
+<string name="bugreport_confirm_repeat">"Nuna wannan sakon nan gaba"</string>
+<string name="bugreport_storage_title">"Rahotannin kaskar na\'ura"</string>
+</resources>

@@ -13,3 +13,11 @@
 -keep class com.android.systemui.statusbar.phone.PhoneStatusBar
 -keep class com.android.systemui.statusbar.tv.TvStatusBar
 -keep class com.android.systemui.recents.*
+-keep class com.android.systemui.R { *; }
+-keep class com.android.keyguard.R { *; }
+-keepclassmembers class **.R$* {
+        public static <fields>;
+}
+-keep class com.android.systemui.R$drawable
+-keep class com.android.systemui.R$string
+-keep class com.android.systemui.R$layout

@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"முந்தையது"</string>
     <string name="next_button_label" msgid="1080555104677992408">"அடுத்து"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"தவிர்"</string>
-    <string name="no_matches" msgid="8129421908915840737">"பொருத்தம் ஏதுமில்லை"</string>
     <string name="find_on_page" msgid="1946799233822820384">"பக்கத்தில் கண்டறி"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> / <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 பொருத்தம்</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"முடிந்தது"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"USB சேமிப்பிடத்தை அழிக்கிறது…"</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"SD கார்டை அழிக்கிறது…"</string>
@@ -1516,4 +1511,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> தேர்ந்தெடுக்கப்பட்டன</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> தேர்ந்தெடுக்கப்பட்டது</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"யுஎஸ்பி-இணைய டிதெரிங்  செயல்பாட்டில் உள்ளது"</string>
+     <string name="ext_media_status_shared">"UMS பகிர்ந்துகொள்ளப்பட்டது"</string>
+     <string name="sim_ready_title_for_usb">எச்சரிக்கை</string>
+     <string name="sim_card_activation_warning">மூன்றாம் தரப்புகளால் பயன்பாடுகள் நிறுவப்படும் பட்சத்தில், தயவு செய்து USBஐ செயல்படுத்துவதற்கு SIM/USIM கார்ட உள்ளிடவும். </string>
+     <string name="usb_ok">சரி</string>
+     <string name="usb_cdrom_notification_title">"விர்ச்சுவல் டிரைவர் ஆன் ஆக உள்ளது"</string>
+     <string name="usb_charge_only_notification">சார்ஜ் ஆக  மட்டும் இணைக்கப்பட்ட்து</string>
+     <string name="global_action_restart">மறு துவக்கம் செய்க</string>
+     <string name="reboot_device_title">மறு துவக்கம் செய்க</string>
+     <string name="global_reboot_close_apps">"அனைத்து பயன்பாடுகளையும் மூடி, ஃபோனை மீண்டும் துவக்கவும்"</string>
+     <string name="reboot_device_confirm">"நீங்கள் உங்கள் ஃபோனை இப்பொழுது மீண்டும் துவங்க விரும்புகிறீர்களா?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"<xliff:g id="NUMBER">%d</xliff:g> விநாடிக்குப் பிறகு ஃபோன் ஆஃப் ஆகிவிடும்"</item>
+<item quantity="other">"<xliff:g id="NUMBER">%d</xliff:g> வினாடிகளுக்குப் பிறகு ஃபோன் ஆஃப் ஆகும்"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s இணைக்கப்பட்டது, %2$s தடைசெய்யப்பட்டது"</string>
+     <string name="phoneFixedNumber">"நிரந்தர எண்"</string>
+     <string name="gps_time_sync_fail_str">"GPS நேரத்தைப் பெறுவதில் தோல்வி"</string>
+     <string name="disable_touch_mode_title">"பாக்கட் தொடு-முடக்கு"</string>
+     <string name="disable_touch_mode_hint">"தயவுசெய்து போனின் மேல் பாகத்தை மூடி வேண்டாம்"</string>
+     <string name="exit_disable_touch_mode_hint">""இந்த மோடை முடக்குவதற்கு நீங்கள் பவர் மற்றும் வால்யும் அப் பட்டண்களை அழுத்தலாம்"</string>
+
 </resources>

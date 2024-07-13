@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">Bayanai</string>
+<string name="title_open">"Bude daga"</string>
+<string name="title_save">"adana a"</string>
+<string name="menu_create_dir">"Kirkiri makunshi"</string>
+<string name="menu_grid">"Kallo mai layi"</string>
+<string name="menu_list">"Gudun rariyar bayani"</string>
+<string name="menu_sort">"Jera ta"</string>
+<string name="menu_search">"Bincika"</string>
+<string name="menu_settings">"Saituna"</string>
+<string name="menu_open">Bude</string>
+<string name="menu_save">"Adana"</string>
+<string name="menu_share">"Raba"</string>
+<string name="menu_delete">"Goge"</string>
+<string name="menu_select_all">"Zabi duk"</string>
+<string name="menu_copy">"Kwafe zuwa \u2026"</string>
+<string name="menu_advanced_show" product="nosdcard">"Nuna ma\'adanar ciki"</string>
+<string name="menu_advanced_show" product="default">"Nuna katin SD"</string>
+<string name="menu_advanced_hide" product="nosdcard">"Boye ma\'adanar ciki"</string>
+<string name="menu_advanced_hide" product="default">"Boye katin SD"</string>
+<string name="menu_file_size_show">"Nuna girman fayil"</string>
+<string name="menu_file_size_hide">"Boye girman fayil"</string>
+<string name="button_select">"Zabi"</string>
+<string name="button_copy">"kwafe"</string>
+<string name="sort_name">"Ta suna"</string>
+<string name="sort_date">"Ta sauya kwanan wata"</string>
+<string name="sort_size">"Ta girma"</string>
+<string name="drawer_open">"Nuna asali"</string>
+<string name="drawer_close">"Boye asali"</string>
+<string name="save_error">"Gaza adana bayanai"</string>
+<string name="create_error">"Gaza kirkirar jaka"</string>
+<string name="query_error">"Gaza bincikar bayanai"</string>
+<string name="root_recent">"Na kwanan nan"</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g> kyauta"</string>
+<string name="root_type_service">"Wurin ma\'adana"</string>
+<string name="root_type_shortcut">"Hanyoyin ratse"</string>
+<string name="root_type_device">"Na\'urori"</string>
+<string name="root_type_apps">"Karin masarrafai"</string>
+<string name="empty">"Babu komai"</string>
+<string name="toast_no_application">"Ba za a iya bude fayil ba"</string>
+<string name="toast_failed_delete">"Gaza goge wasu bayanan"</string>
+<string name="share_via">"Raba ta cikin"</string>
+<string name="copy_notification_title">"Ana kwafe fayiloli"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> hagu"</string>
+<string name="copy_preparing">"Ana shirin kwafewa\u2026"</string>
+<string name="notification_touch_for_details">"Taba don duba cikakkun bayanai"</string>
+<string name="retry">"Kuma jarraba"</string>
+<string name="copy_failure_alert_content">"Wadannan fayilolin ba a kwafe su ba: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"Ba zai iya rarraba fayil ba"</string>
+<string name="documents_deleting">"Ana goge daftarai"</string>
+<string name="cannot_copyfolder_itself">"Ba za ka iya kwafe makunshi zuwa cikin shi kansa ba"</string>
+    <string name="error_permissions">"Manhajar ba ta da tabbataccen izinin da ake bukata don tafiyarwa. Duba saitukan izinin ka."</string>
+     <string name="cannot_copy_drm">"Ba za a iya kwafar fayal din DRM ba"</string>
+     <string name="cannot_copy_downloading">"Ba za a iya kwafar fayal din da ake saukewa ba"</string>
+
+</resources>

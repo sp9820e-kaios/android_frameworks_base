@@ -46,6 +46,18 @@ public class MediaFile {
     private static final int FIRST_AUDIO_FILE_TYPE = FILE_TYPE_MP3;
     private static final int LAST_AUDIO_FILE_TYPE = FILE_TYPE_FLAC;
 
+    //More audio file types
+    public static final int FILE_TYPE_OPUS    = 300;//SPRD:Add for opus
+    public static final int FILE_TYPE_AUDIO_BP3       = 301; //SPRD: add for drm
+    public static final int FILE_TYPE_AUDIO_MP4       = 302; //SPRD: add for mp4
+    public static final int FILE_TYPE_AUDIO_M4R       = 303; //SPRD: add for m4r
+    public static final int FILE_TYPE_AUDIO_M4B       = 304; //SPRD: add for m4b
+    public static final int FILE_TYPE_AUDIO_3GP       = 305; //SPRD: add for 3gp
+    public static final int FILE_TYPE_AUDIO_3G2       = 306; //SPRD: add for 3g2
+    public static final int FILE_TYPE_AUDIO_OGA       = 307; //SPRD: add for oga
+    private static final int FIRST_AUDIO_FILE_TYPE2 = FILE_TYPE_OPUS;
+    private static final int LAST_AUDIO_FILE_TYPE2 = FILE_TYPE_AUDIO_OGA;
+
     // MIDI file types
     public static final int FILE_TYPE_MID     = 11;
     public static final int FILE_TYPE_SMF     = 12;
@@ -69,8 +81,16 @@ public class MediaFile {
     
     // More video file types
     public static final int FILE_TYPE_MP2PS   = 200;
+    public static final int FILE_TYPE_FLV     = 201;//SPRD:Add for flv
+    public static final int FILE_TYPE_F4V     = 202; // SPRD: add for f4v
+    public static final int FILE_TYPE_DIVX    = 203; // SPRD: add for divx
+    public static final int FILE_TYPE_K3G     = 204; //SPRD: add for drm
+    public static final int FILE_TYPE_AMC     = 205; //SPRD: add for drm
+    public static final int FILE_TYPE_VOB     = 206; //SPRD: add for vob
+
     private static final int FIRST_VIDEO_FILE_TYPE2 = FILE_TYPE_MP2PS;
-    private static final int LAST_VIDEO_FILE_TYPE2 = FILE_TYPE_MP2PS;
+    //private static final int LAST_VIDEO_FILE_TYPE2 = FILE_TYPE_DIVX;
+    private static final int LAST_VIDEO_FILE_TYPE2 = FILE_TYPE_AMC; //SPRD: update for drm
 
     // Image file types
     public static final int FILE_TYPE_JPEG    = 31;
@@ -92,9 +112,9 @@ public class MediaFile {
     private static final int LAST_PLAYLIST_FILE_TYPE = FILE_TYPE_HTTPLIVE;
 
     // Drm file types
-    public static final int FILE_TYPE_FL      = 51;
-    private static final int FIRST_DRM_FILE_TYPE = FILE_TYPE_FL;
-    private static final int LAST_DRM_FILE_TYPE = FILE_TYPE_FL;
+    public static final int FILE_TYPE_DCF      = 51;
+    private static final int FIRST_DRM_FILE_TYPE = FILE_TYPE_DCF;
+    private static final int LAST_DRM_FILE_TYPE = FILE_TYPE_DCF;
 
     // Other popular file types
     public static final int FILE_TYPE_TEXT          = 100;
@@ -168,11 +188,21 @@ public class MediaFile {
 
     static {
         addFileType("MP3", FILE_TYPE_MP3, "audio/mpeg", MtpConstants.FORMAT_MP3);
+        addFileType("MP3", FILE_TYPE_MP3, "audio/mp3");//SPRD:add for bug 519475
+        addFileType("MP3", FILE_TYPE_MP3, "audio/mpg3");//SPRD:add for bug 519475
         addFileType("MPGA", FILE_TYPE_MP3, "audio/mpeg", MtpConstants.FORMAT_MP3);
         addFileType("M4A", FILE_TYPE_M4A, "audio/mp4", MtpConstants.FORMAT_MPEG);
         addFileType("WAV", FILE_TYPE_WAV, "audio/x-wav", MtpConstants.FORMAT_WAV);
+		addFileType("WAV", FILE_TYPE_WAV, "audio/wav", MtpConstants.FORMAT_WAV);
         addFileType("AMR", FILE_TYPE_AMR, "audio/amr");
         addFileType("AWB", FILE_TYPE_AWB, "audio/amr-wb");
+        addFileType("MP4", FILE_TYPE_AUDIO_MP4, "audio/mp4");//SPRD:Add for mp4
+        addFileType("M4R", FILE_TYPE_AUDIO_M4R, "audio/mp4");//SPRD:Add for m4r
+        addFileType("M4B", FILE_TYPE_AUDIO_M4B, "audio/mp4");//SPRD:Add for m4b
+        addFileType("3GP", FILE_TYPE_AUDIO_3GP, "audio/3gpp");//SPRD:Add for 3gp
+        addFileType("3G2", FILE_TYPE_AUDIO_3G2, "audio/3gpp2");//SPRD:Add for 3g2
+        addFileType("OPUS", FILE_TYPE_OPUS, "audio/opus");//SPRD:Add for opus
+        addFileType("OGA", FILE_TYPE_AUDIO_OGA, "audio/ogg");//SPRD:Add for oga
         if (isWMAEnabled()) {
             addFileType("WMA", FILE_TYPE_WMA, "audio/x-ms-wma", MtpConstants.FORMAT_WMA);
         }
@@ -181,6 +211,7 @@ public class MediaFile {
         addFileType("OGA", FILE_TYPE_OGG, "application/ogg", MtpConstants.FORMAT_OGG);
         addFileType("AAC", FILE_TYPE_AAC, "audio/aac", MtpConstants.FORMAT_AAC);
         addFileType("AAC", FILE_TYPE_AAC, "audio/aac-adts", MtpConstants.FORMAT_AAC);
+        addFileType("AAC", FILE_TYPE_AAC, "audio/x-aac", MtpConstants.FORMAT_AAC);
         addFileType("MKA", FILE_TYPE_MKA, "audio/x-matroska");
  
         addFileType("MID", FILE_TYPE_MID, "audio/midi");
@@ -188,10 +219,12 @@ public class MediaFile {
         addFileType("XMF", FILE_TYPE_MID, "audio/midi");
         addFileType("RTTTL", FILE_TYPE_MID, "audio/midi");
         addFileType("SMF", FILE_TYPE_SMF, "audio/sp-midi");
+        addFileType("IMY", FILE_TYPE_IMY, "audio/imy"); // SPRD:add for drm
         addFileType("IMY", FILE_TYPE_IMY, "audio/imelody");
         addFileType("RTX", FILE_TYPE_MID, "audio/midi");
         addFileType("OTA", FILE_TYPE_MID, "audio/midi");
         addFileType("MXMF", FILE_TYPE_MID, "audio/midi");
+        addFileType("BP3", FILE_TYPE_AUDIO_BP3, "audio/bp3"); //SPRD: add for drm
         
         addFileType("MPEG", FILE_TYPE_MP4, "video/mpeg", MtpConstants.FORMAT_MPEG);
         addFileType("MPG", FILE_TYPE_MP4, "video/mpeg", MtpConstants.FORMAT_MPEG);
@@ -199,23 +232,32 @@ public class MediaFile {
         addFileType("M4V", FILE_TYPE_M4V, "video/mp4", MtpConstants.FORMAT_MPEG);
         addFileType("3GP", FILE_TYPE_3GPP, "video/3gpp",  MtpConstants.FORMAT_3GP_CONTAINER);
         addFileType("3GPP", FILE_TYPE_3GPP, "video/3gpp", MtpConstants.FORMAT_3GP_CONTAINER);
+        addFileType("3G2", FILE_TYPE_3GPP2, "video/3g2"); // SPRD: add for drm
         addFileType("3G2", FILE_TYPE_3GPP2, "video/3gpp2", MtpConstants.FORMAT_3GP_CONTAINER);
         addFileType("3GPP2", FILE_TYPE_3GPP2, "video/3gpp2", MtpConstants.FORMAT_3GP_CONTAINER);
         addFileType("MKV", FILE_TYPE_MKV, "video/x-matroska");
         addFileType("WEBM", FILE_TYPE_WEBM, "video/webm");
         addFileType("TS", FILE_TYPE_MP2TS, "video/mp2ts");
         addFileType("AVI", FILE_TYPE_AVI, "video/avi");
-
+		addFileType("AVI", FILE_TYPE_AVI, "video/x-msvideo");
+        addFileType("FLV", FILE_TYPE_FLV, "video/flv");//SPRD:Add for flv
+        addFileType("F4V", FILE_TYPE_F4V, "video/mp4"); // SPRD: add for f4v
+        addFileType("DIVX", FILE_TYPE_DIVX, "video/avi"); // SPRD: add for divx
+        addFileType("AMC", FILE_TYPE_AMC, "video/amc"); // SPRD: add for drm
+        addFileType("K3G", FILE_TYPE_K3G, "video/k3g"); // SPRD: add for drm
+        addFileType("VOB", FILE_TYPE_VOB, "video/mp2p"); // SPRD: add for vob
         if (isWMVEnabled()) {
             addFileType("WMV", FILE_TYPE_WMV, "video/x-ms-wmv", MtpConstants.FORMAT_WMV);
             addFileType("ASF", FILE_TYPE_ASF, "video/x-ms-asf");
         }
 
         addFileType("JPG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG);
+        addFileType("JPE", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG);
         addFileType("JPEG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG);
         addFileType("GIF", FILE_TYPE_GIF, "image/gif", MtpConstants.FORMAT_GIF);
         addFileType("PNG", FILE_TYPE_PNG, "image/png", MtpConstants.FORMAT_PNG);
         addFileType("BMP", FILE_TYPE_BMP, "image/x-ms-bmp", MtpConstants.FORMAT_BMP);
+        addFileType("DRMBMP", FILE_TYPE_BMP, "image/bmp");// SPRD: add for another bmp
         addFileType("WBMP", FILE_TYPE_WBMP, "image/vnd.wap.wbmp");
         addFileType("WEBP", FILE_TYPE_WEBP, "image/webp");
  
@@ -227,7 +269,7 @@ public class MediaFile {
         addFileType("M3U8", FILE_TYPE_HTTPLIVE, "audio/mpegurl");
         addFileType("M3U8", FILE_TYPE_HTTPLIVE, "audio/x-mpegurl");
 
-        addFileType("FL", FILE_TYPE_FL, "application/x-android-drm-fl");
+        addFileType("DCF", FILE_TYPE_DCF, "application/vnd.oma.drm.content");
 
         addFileType("TXT", FILE_TYPE_TEXT, "text/plain", MtpConstants.FORMAT_TEXT);
         addFileType("HTM", FILE_TYPE_HTML, "text/html", MtpConstants.FORMAT_HTML);
@@ -246,7 +288,9 @@ public class MediaFile {
         return ((fileType >= FIRST_AUDIO_FILE_TYPE &&
                 fileType <= LAST_AUDIO_FILE_TYPE) ||
                 (fileType >= FIRST_MIDI_FILE_TYPE &&
-                fileType <= LAST_MIDI_FILE_TYPE));
+                fileType <= LAST_MIDI_FILE_TYPE) ||
+                (fileType >= FIRST_AUDIO_FILE_TYPE2 &&
+                fileType <= LAST_AUDIO_FILE_TYPE2));
     }
 
     public static boolean isVideoFileType(int fileType) {

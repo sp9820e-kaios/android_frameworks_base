@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- SPRD: Add for dealing with SS notification @{ -->
+    <string name="ActiveUnconCf">Call forwarded unconditional</string>
+    <string name="ActiveConCf">Call forwarded conditional</string>
+    <string name="CallForwarded">Call forwarded</string>
+    <string name="CallWaiting">Call waiting</string>
+    <string name="OutCallBarred">Outgoing call barred</string>
+    <string name="InCallBarred">Incoming call barred</string>
+    <string name="ForwardedCall">Forwarded call</string>
+    <string name="CallHold">Call held</string>
+    <string name="CallRetrieved">Call retrieved</string>
+    <string name="IncomingCallForwarded">Additional incoming call forwarded</string>
+    <!-- SPRD: @} -->
+    <!-- SPRD: modify for bug479433 @{ -->
+    <string-array name="videophone_fallback_menu">
+        <item>@string/videophone_fallback_menu_videocall</item>
+        <item>@string/videophone_fallback_menu_voicecall</item>
+        <item>@string/videophone_fallback_menu_cancel</item>
+    </string-array>
+
+    <string name="videophone_fallback_title">Video call fall back</string>
+    <string name="videophone_never_fallback">Receiver request voice call. Give up redial automatically.</string>
+    <string name="videophone_always_fallback">Receiver request voice call. Redial voice call automatically.</string>
+    <string name="videophone_notin3g_never_fallback">"Current network doesn't support video call. Give up redial automatically."</string>
+    <string name="videophone_notin3g_always_fallback">"Current network doesn't support video call. Redial voice call automatically."</string>
+    <string name="videophone_fallback_menu_videocall">Video Call</string>
+    <string name="videophone_fallback_menu_voicecall">Voice Call</string>
+    <string name="videophone_fallback_menu_cancel">Cancel</string>
+    <string name="videophone_fallback_question">What do you want to do?</string>
+    <string name="videophone_failcause_1000">"Last video call hasn't normally ended, please retry after a while"</string>
+    <string name="videophone_failcause_1">The number you have dialed is not in service</string>
+    <string name="videophone_failcause_3">User is unavailable</string>
+    <string name="videophone_failcause_8">Call bared</string>
+    <string name="videophone_failcause_17">User busy</string>
+    <string name="videophone_failcause_19">"User you dialed isn't responding"</string>
+    <string name="videophone_failcause_27">User can not be reached</string>
+    <string name="videophone_failcause_34">Connection disconnected</string>
+    <string name="videophone_failcause_63_modify">Video phone could not be established</string>
+    <string name="videophone_failcause_79">VT unsupported by the other</string>
+    <string name="videophone_failcause_default">User is unavailable</string>
+    <string name="videophone_failcause_47">Sorry, video call unavailable</string>
+    <string name="videophone_failcause_50">VT is unsupported</string>
+    <string name="videophone_failcause_57_remote">The number you dialed does not support VT</string>
+    <string name="videophone_failcause_58">VT unsupported by the other</string>
+    <string name="videophone_failcause_157">"The mobile phone hasn't start the VT service"</string>
+    <string name="videophone_failcause_88">User chooses voice call</string>
+    <string name="videophone_failcause_minus_1">3G service not available</string>
+    <string name="net_connection_disconnect">Net Connection Disconnect</string>
+    <string name="no_vt_service">"Cannot make video calls"</string>
+    <!-- Telecom plugin name -->
+    <string name="telecom_plugin_name">plugin.sprd.logEmergencyCalls.AddonTelecomPlugin</string>
+    <string name="remote_request_change">Remote request media change</string>
+    <string name="choose_accept_reject">Please choose accept or reject</string>
+    <string name="remote_request_change_accept">Accept</string>
+    <string name="remote_request_change_reject">Reject</string>
+    <string name="reject_remote_audio_to_video">Remote request media change has been reject</string>
+    <string name="accept_remote_audio_to_video">Remote request media change has been accept</string>
+    <string name="video_fall_to_audio_automatic">Video automatically fall to audio </string>
+    <!-- SPRD: @} -->
+    <!-- SPRD: add pin2/puk2 string @{-->
+    <string name="Pin2Mmi">PIN2 change</string>
+    <string name="PukMmi">PIN unlock</string>
+    <string name="Puk2Mmi">PIN2 unlock</string>
+    <string name="badPin2">The old PIN2 you typed is not correct.</string>
+    <string name="badPuk2">The PUK2 you typed is not correct.</string>
+    <string name="mismatchPin2">The PIN2 you entered do not match.</string>
+    <string name="mismatchPuk">The PUK you entered do not match.</string>
+    <string name="mismatchPuk2">The PUK2 you entered do not match.</string>
+    <!-- @}-->
+    <!-- SPRD: modify for bug 514467 @{ -->
+    <string name="puklengthlimit">Type a PUK that is 8 numbers.</string>
+    <!-- @} -->
+
+    <!-- SPRD: Add to clear code.  @{ -->
+    <string name="failcause_user_authentication">AUTHENTICATION FAILURE -29-</string>
+    <string name="failcause_service_option_not_subscribed">NO SUBSCRIPTION SERVICE -33-</string>
+    <!-- @} -->
+    <!-- SPRD: add for bug569865 -->
+    <string name="data_unavailable">Current Data service is unavailable, please check the data switch and roaming switch.</string>
+</resources>

@@ -16,6 +16,8 @@
 
 package com.android.commands.sm;
 
+import android.content.pm.IPackageManager;
+import android.content.pm.PackageInfo;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemProperties;
@@ -123,6 +125,17 @@ public final class Sm {
     }
 
     public void runHasAdoptable() {
+        try {
+            IPackageManager mPm = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
+            PackageInfo pi = mPm.getPackageInfo("android.deviceadmin.cts", 0, 0);
+            Log.d(TAG, "pi=" + pi);
+            if (pi != null) {
+                System.out.println(false);
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println(SystemProperties.getBoolean(StorageManager.PROP_HAS_ADOPTABLE, false));
     }
 

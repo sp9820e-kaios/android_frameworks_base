@@ -144,6 +144,11 @@ public class TaskStackViewLayoutAlgorithm {
         int taskCount = tasks.size();
         for (int i = 0; i < taskCount; i++) {
             Task task = tasks.get(i);
+            /* SPRD 564425 Add null object reference processing @{*/
+            if (task == null || task.group == null) {
+                continue;
+            }
+            /* @} */
             mTaskProgressMap.put(task.key, pAtFrontMostCardTop);
 
             if (i < (taskCount - 1)) {

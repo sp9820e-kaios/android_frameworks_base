@@ -30,10 +30,12 @@ import java.util.Set;
 
 import android.app.ActivityThread;
 import android.app.AppOpsManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.DeadObjectException;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.os.TransactionTooLargeException;
 import android.util.ArrayMap;
@@ -72,12 +74,15 @@ import android.util.Slog;
 import android.util.SparseArray;
 import android.util.TimeUtils;
 
-public final class ActiveServices {
+public class ActiveServices {
     private static final String TAG = TAG_WITH_CLASS_NAME ? "ActiveServices" : TAG_AM;
     private static final String TAG_MU = TAG + POSTFIX_MU;
     private static final String TAG_SERVICE = TAG + POSTFIX_SERVICE;
     private static final String TAG_SERVICE_EXECUTING = TAG + POSTFIX_SERVICE_EXECUTING;
+    // Log tag for service reject to start
+    private static final String TAG_RS2S = TAG + POSTFIX_SERVICE_REJECT;
 
+    static final boolean DEBUG_SERVICE = false;//follow ActivityManagerService.DEBUG_SERVICE;
     private static final boolean DEBUG_DELAYED_SERVICE = DEBUG_SERVICE;
     private static final boolean DEBUG_DELAYED_STARTS = DEBUG_DELAYED_SERVICE;
 
@@ -152,6 +157,10 @@ public final class ActiveServices {
 
     /** Amount of time to allow a last ANR message to exist before freeing the memory. */
     static final int LAST_ANR_LIFETIME_DURATION_MSECS = 2 * 60 * 60 * 1000; // Two hours
+
+    // The default value of allowed for reject process record.
+    protected static final int ALLOW_TO_START = SystemProperties.
+            getInt("persist.rejects2s.allowed", 1);
 
     String mLastAnrDump;
 
@@ -290,7 +299,7 @@ public final class ActiveServices {
         return smap != null ? smap.mStartingBackground.size() >= mMaxStartingBackground : false;
     }
 
-    private ServiceMap getServiceMap(int callingUser) {
+    public ServiceMap getServiceMap(int callingUser) {
         ServiceMap smap = mServiceMap.get(callingUser);
         if (smap == null) {
             smap = new ServiceMap(mAm.mHandler.getLooper(), callingUser);
@@ -310,8 +319,9 @@ public final class ActiveServices {
                 + " type=" + resolvedType + " args=" + service.getExtras());
 
         final boolean callerFg;
+        final ProcessRecord callerApp;
         if (caller != null) {
-            final ProcessRecord callerApp = mAm.getRecordForAppLocked(caller);
+            callerApp = mAm.getRecordForAppLocked(caller);
             if (callerApp == null) {
                 throw new SecurityException(
                         "Unable to find app for caller " + caller
@@ -321,6 +331,7 @@ public final class ActiveServices {
             callerFg = callerApp.setSchedGroup != Process.THREAD_GROUP_BG_NONINTERACTIVE;
         } else {
             callerFg = true;
+            callerApp = null;
         }
 
 
@@ -350,6 +361,9 @@ public final class ActiveServices {
         r.lastActivity = SystemClock.uptimeMillis();
         r.startRequested = true;
         r.delayedStop = false;
+        if(callerApp != null && !r.callingApps.contains(callerApp)){
+            r.callingApps.add(callerApp);
+        }
         r.pendingStarts.add(new ServiceRecord.StartItem(r, false, r.makeNextStartId(),
                 service, neededGrants));
 
@@ -1026,6 +1040,7 @@ public final class ActiveServices {
             String resolvedType, String callingPackage, int callingPid, int callingUid, int userId,
             boolean createIfNeeded, boolean callingFromFg) {
         ServiceRecord r = null;
+        String servicePackageName = null;
         if (DEBUG_SERVICE) Slog.v(TAG_SERVICE, "retrieveServiceLocked: " + service
                 + " type=" + resolvedType + " callingUid=" + callingUid);
 
@@ -1036,10 +1051,12 @@ public final class ActiveServices {
         final ComponentName comp = service.getComponent();
         if (comp != null) {
             r = smap.mServicesByName.get(comp);
+            servicePackageName = comp.getPackageName();
         }
         if (r == null) {
             Intent.FilterComparison filter = new Intent.FilterComparison(service);
             r = smap.mServicesByIntent.get(filter);
+            if (r!= null) servicePackageName = r.packageName;
         }
         if (r == null) {
             try {
@@ -1056,6 +1073,7 @@ public final class ActiveServices {
                 }
                 ComponentName name = new ComponentName(
                         sInfo.applicationInfo.packageName, sInfo.name);
+                servicePackageName = sInfo.applicationInfo.packageName;
                 if (userId > 0) {
                     if (mAm.isSingleton(sInfo.processName, sInfo.applicationInfo,
                             sInfo.name, sInfo.flags)
@@ -1129,6 +1147,57 @@ public final class ActiveServices {
                     resolvedType, r.appInfo)) {
                 return null;
             }
+
+            // The service of package is reject to start up by particular app in background
+            boolean isRejectToStart = false;
+            boolean isRejectRecordCached = false;
+            if (servicePackageName != null) {
+                isRejectToStart = mAm.isRejectToStart(servicePackageName, callingPackage);
+                isRejectRecordCached = mAm.isRejectRecordCached(servicePackageName);
+            }else {
+                Slog.i(TAG_RS2S, "The Service Packge Name is null, can not to check !");
+            }
+
+            try {
+                if (isRejectToStart) {
+                    Slog.i(TAG_RS2S, "Reject to start service:" + servicePackageName
+                                    + " By " + callingPackage);
+                    return null;
+                }else if (!isRejectRecordCached
+                        && servicePackageName != null
+                        && !callingFromFg    /* Call from background */
+                        && ((AppGlobals.getPackageManager().getFlagsForUid(callingUid)
+                        & ApplicationInfo.FLAG_SYSTEM) == 0)) /* Not system app */{
+                    //Add to Reject Process Record List
+                    final RejectProcessRecord tmp = new RejectProcessRecord();
+                    tmp.packageName = servicePackageName;
+                    tmp.allowed = ALLOW_TO_START;
+                    tmp.callerPackage = callingPackage;
+                    tmp.insertTime = System.currentTimeMillis();
+                    tmp.lastUpdateTime= System.currentTimeMillis();
+
+                    AsyncTask.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (tmp.packageName != null
+                                    && tmp.callerPackage != null
+                                    && !tmp.packageName.equals(tmp.callerPackage)
+                                    && mAm.mRejectProcessManager != null
+                                    && mAm.mRejectProcessRecords != null
+                                    && mAm.mRejectProcessManager.insertRejectProcessRecord(tmp)) {
+                                Slog.i(TAG_RS2S, "Insert successful, the Observer will " +
+                                        "re-initial the " + "mRejectProcessRecords, no " +
+                                        "need to add it here!");
+                            }
+                        }
+                    });
+                }
+            }catch(RemoteException e) {
+                Slog.d(TAG_RS2S, "Occur RemoteException while get caller " +
+                        "application flags from PMS");
+                e.printStackTrace();
+            }
+
             return new ServiceLookupResult(r, null);
         }
         return null;
@@ -1196,7 +1265,7 @@ public final class ActiveServices {
         return true;
     }
 
-    private final boolean scheduleServiceRestartLocked(ServiceRecord r,
+    final boolean scheduleServiceRestartLocked(ServiceRecord r,
             boolean allowCancel) {
         boolean canceled = false;
 
@@ -1310,7 +1379,7 @@ public final class ActiveServices {
         return canceled;
     }
 
-    final void performServiceRestartLocked(ServiceRecord r) {
+    void performServiceRestartLocked(ServiceRecord r) {
         if (!mRestartingServices.contains(r)) {
             return;
         }
@@ -1340,7 +1409,7 @@ public final class ActiveServices {
         return true;
     }
 
-    private void clearRestartingIfNeededLocked(ServiceRecord r) {
+    void clearRestartingIfNeededLocked(ServiceRecord r) {
         if (r.restartTracker != null) {
             // If this is the last restarting record with this tracker, then clear
             // the tracker's restarting state.
@@ -1678,7 +1747,7 @@ public final class ActiveServices {
         bringDownServiceLocked(r);
     }
 
-    private final void bringDownServiceLocked(ServiceRecord r) {
+    final void bringDownServiceLocked(ServiceRecord r) {
         //Slog.i(TAG, "Bring down service:");
         //r.dump("  ");
 
@@ -2186,7 +2255,7 @@ public final class ActiveServices {
         }
     }
 
-    final void killServicesLocked(ProcessRecord app, boolean allowRestart) {
+    void killServicesLocked(ProcessRecord app, boolean allowRestart) {
         // Report disconnected services.
         if (false) {
             // XXX we are letting the client link to the service for
@@ -2229,6 +2298,9 @@ public final class ActiveServices {
             synchronized (sr.stats.getBatteryStats()) {
                 sr.stats.stopLaunchedLocked();
             }
+            //SPRD:clear the calling App of the Service.@{
+            sr.callingApps.remove(app);
+            //}
             if (sr.app != app && sr.app != null && !sr.app.persistent) {
                 sr.app.services.remove(sr);
             }

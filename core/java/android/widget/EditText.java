@@ -16,6 +16,7 @@
 
 package android.widget;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -88,6 +89,12 @@ public class EditText extends TextView {
      * Convenience for {@link Selection#setSelection(Spannable, int, int)}.
      */
     public void setSelection(int start, int stop) {
+        /* SPRD: modify 20161031 Spreadtrum of 610250, check text span@{ */
+        if(getText().length() == 0) {
+            android.util.Log.d("EditText","Text's len is Zero! start: "+start+", stop: "+stop+", getText: "+String.valueOf(getText()));
+            return;
+        }
+        /* @} */
         Selection.setSelection(getText(), start, stop);
     }
 

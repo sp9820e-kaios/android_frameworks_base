@@ -18,24 +18,45 @@ package com.android.keyguard;
 
 import android.app.ActivityManager;
 import android.app.AlarmManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
+import android.net.Uri;
 import android.os.UserHandle;
+import android.provider.BaseColumns;
+import android.provider.CallLog;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Slog;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.android.internal.widget.LockPatternUtils;
 
+import java.util.Locale;
+import android.os.Handler;
+import android.telecom.TelecomManager;
+import android.telephony.CarrierConfigManager;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import java.util.Locale;
 
 public class KeyguardStatusView extends GridLayout {
@@ -50,6 +71,24 @@ public class KeyguardStatusView extends GridLayout {
     private TextClock mClockView;
     private TextView mOwnerInfo;
 
+    /*bug: 623120 add missCall and missMms notification on lockscreen @{*/
+    private LinearLayout mNotificationArea = null;
+    private ImageView callImageView = null;
+    private ImageView mmsImageView = null;
+    private TextView callTextView = null;
+    private TextView mmsTextView = null;
+    private int miss_calls = 0;
+    private int unread_msg = 0;
+    private final Handler mHandler = new Handler();
+    private static final int QUERY_MISSCALL_MISSMMS_DELAY_MILLIS = 1500;
+    private static final String MMS_ACTION = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String CALL_ACTION = "android.intent.action.PHONE_STATE";
+    private static final String CALL_OUT_ACTION ="android.intent.action.NEW_OUTGOING_CALL";
+    /* @} */
+    /*bug: 622394 add inCalling notification on lockscreen @{*/
+    private TelecomManager telecomManager = null;
+    private String mIncomingNumber = null;
+    /* @} */
     private KeyguardUpdateMonitorCallback mInfoCallback = new KeyguardUpdateMonitorCallback() {
 
         @Override
@@ -68,6 +107,21 @@ public class KeyguardStatusView extends GridLayout {
 
         @Override
         public void onStartedWakingUp() {
+            if (DEBUG) Log.d(TAG, "onStartedWakingUp getCallState: "+telecomManager.getCallState());
+            /*bug: 622394 add inCalling notification on lockscreen @{*/
+            if (telecomManager.isInCall()) {
+                Log.d(TAG, "KeyguardUpdateMonitorCallback isInCall");
+                notificationInCall();
+            }else if (telecomManager.endCall()) {
+                Log.d(TAG, "KeyguardUpdateMonitorCallback endCall");
+            }else{
+                Log.d(TAG, "KeyguardUpdateMonitorCallback not isInCall");
+                /*bug: 623120 add missCall and missMms notification on lockscreen @{*/
+                notificationNotInCall();
+                updateMissCallAndMissMms();
+                /* @} */
+            }
+            /* @} */
             setEnableMarquee(true);
         }
 
@@ -112,8 +166,43 @@ public class KeyguardStatusView extends GridLayout {
         mDateView.setShowCurrentUserTime(true);
         mClockView.setShowCurrentUserTime(true);
         mOwnerInfo = (TextView) findViewById(R.id.owner_info);
+        /*bug: 623120 add missCall and missMms notification on lockscreen @{*/
+        mNotificationArea = (LinearLayout) findViewById(R.id.notification_area);
+        callImageView = (ImageView) findViewById(R.id.unread_incall);
+        mmsImageView = (ImageView) findViewById(R.id.unread_mms);
+        callTextView = (TextView) findViewById(R.id.unread_incall_number);
+        mmsTextView = (TextView) findViewById(R.id.unread_mms_number);
 
-        boolean shouldMarquee = KeyguardUpdateMonitor.getInstance(mContext).isDeviceInteractive();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(MMS_ACTION);
+        filter.addAction(CALL_ACTION);
+        mContext.registerReceiver(MmsCallReceiver, filter);
+        /* @} */
+        /* sprd: 626492 @{*/
+        if(isTaiMiErLanguage())
+        {
+            mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.clock_view_middle_font_size));
+        }else
+        {
+            mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.clock_view_big_font_size));
+        }
+        /* @} */
+        /* sprd: 622733 @{*/
+        if(isSpecialLanguage())
+        {
+            mAlarmStatusView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.alarm_view_middle_font_size));
+        }else
+        {
+            mAlarmStatusView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.alarm_view_big_font_size));
+        }
+        /* @} */
+        telecomManager = (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
+        boolean shouldMarquee = KeyguardUpdateMonitor.getInstance(mContext)
+                .isDeviceInteractive();
         setEnableMarquee(shouldMarquee);
         refresh();
         updateOwnerInfo();
@@ -126,21 +215,264 @@ public class KeyguardStatusView extends GridLayout {
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimensionPixelSize(R.dimen.widget_big_font_size));
-        mDateView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimensionPixelSize(R.dimen.widget_label_font_size));
-        mOwnerInfo.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                getResources().getDimensionPixelSize(R.dimen.widget_label_font_size));
+        /* SPRD: Bug 609454 @{ */
+//        mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+//                getResources().getDimensionPixelSize(R.dimen.widget_big_font_size));
+//        mDateView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+//                getResources().getDimensionPixelSize(R.dimen.widget_label_font_size));
+//        mOwnerInfo.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+//                getResources().getDimensionPixelSize(R.dimen.widget_label_font_size));
+        /* @{ */
     }
 
+    /* sprd: 626492 @{*/
+    private boolean isTaiMiErLanguage()
+    {
+        String locale = Locale.getDefault().toString();
+        Log.d(TAG, " current locale: " + locale);
+        if(locale.equalsIgnoreCase("ta_IN") || locale.equalsIgnoreCase("kn_IN"))
+        {
+            return true;
+        }
+        return false;
+    }
+    /* @} */
+    /* sprd: 622733 @{*/
+    private boolean isSpecialLanguage()
+    {
+        String locale = Locale.getDefault().toString();
+        Log.d(TAG, " current locale: " + locale);
+        if(locale.equalsIgnoreCase("ur_PK"))
+        {
+            return true;
+        }
+        return false;
+    }
+    /* @} */
+    /*bug: 622394 add inCalling notification on lockscreen @{*/
+    private void notificationInCall()
+    {
+        callTextView.setText(getResources().getString(R.string.in_calling, "calling..."));
+        callImageView.setVisibility(View.VISIBLE);
+        mmsImageView.setVisibility(View.GONE);
+        mmsTextView.setVisibility(View.GONE);
+        callTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void notificationNotInCall()
+    {
+        callImageView.setVisibility(View.INVISIBLE);
+        mmsImageView.setVisibility(View.INVISIBLE);
+        mmsTextView.setVisibility(View.INVISIBLE);
+        callTextView.setVisibility(View.INVISIBLE);
+    }
+    /* @{ */
+
+    /*bug: 623120 add missCall and missMms notification on lockscreen @{*/
+    private BroadcastReceiver MmsCallReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+            if (DEBUG) Log.d(TAG, "MmsCallReceiver action:"+intent.getAction());
+
+            if(intent.getAction().equals(CALL_ACTION)){
+                TelephonyManager tManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                switch (tManager.getCallState()) {
+                case TelephonyManager.CALL_STATE_RINGING:
+                    mIncomingNumber = intent.getStringExtra("incoming_number");
+                    if (DEBUG) Log.i(TAG, "RINGING :" + mIncomingNumber);
+                    break;
+                case TelephonyManager.CALL_STATE_OFFHOOK:
+                    if (DEBUG) Log.i(TAG, "incoming ACCEPT :" + mIncomingNumber);
+                    break;
+                case TelephonyManager.CALL_STATE_IDLE:
+                    updateMissCallAndMissMms();
+                    if (DEBUG) Log.i(TAG, "incoming IDLE");
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateMissCallAndMissMms();
+                        }
+                    }, QUERY_MISSCALL_MISSMMS_DELAY_MILLIS);
+                    break;
+                }
+            }else{
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateMissCallAndMissMms();
+                    }
+                }, QUERY_MISSCALL_MISSMMS_DELAY_MILLIS);
+            }
+        }
+    };
+
+    private void updateMissCallAndMissMms() {
+        miss_calls = getMissCallCount();
+        unread_msg = getUnReadMmsCount() + getUnReadSmsCount();
+        Log.d(TAG, "updateMissCallAndMissMms miss_calls:" + miss_calls
+                + " unread_msg:" + unread_msg);
+        if (miss_calls > 0 && unread_msg > 0) {
+            callTextView.setText(Integer.toString(miss_calls));
+            mmsTextView.setText(Integer.toString(unread_msg));
+            callImageView.setVisibility(View.VISIBLE);
+            mmsImageView.setVisibility(View.VISIBLE);
+            callTextView.setVisibility(View.VISIBLE);
+            mmsTextView.setVisibility(View.VISIBLE);
+        } else if (miss_calls == 0 && unread_msg == 0) {
+            // RightBtn.setVisibility(View.INVISIBLE);
+            callImageView.setVisibility(View.GONE);
+            mmsImageView.setVisibility(View.GONE);
+            callTextView.setVisibility(View.GONE);
+            mmsTextView.setVisibility(View.GONE);
+            // callTextView.setText(Integer.toString(miss_calls));
+            // mmsTextView.setText(Integer.toString(unread_msg));
+        } else if (miss_calls == 0 && unread_msg > 0) {
+            // RightBtn.setVisibility(View.INVISIBLE);
+            mmsTextView.setText(Integer.toString(unread_msg));
+            callImageView.setVisibility(View.INVISIBLE);
+            mmsImageView.setVisibility(View.VISIBLE);
+            callTextView.setVisibility(View.GONE);
+            mmsTextView.setVisibility(View.VISIBLE);
+            // callTextView.setText(Integer.toString(miss_calls));
+        } else if (miss_calls > 0 && unread_msg == 0) {
+            // RightBtn.setVisibility(View.INVISIBLE);
+            callTextView.setText(Integer.toString(miss_calls));
+            callImageView.setVisibility(View.VISIBLE);
+            mmsImageView.setVisibility(View.GONE);
+            callTextView.setVisibility(View.VISIBLE);
+            mmsTextView.setVisibility(View.GONE);
+            // mmsTextView.setText(Integer.toString(unread_msg));
+        } else {
+            Log.d(TAG, "updateMissCallAndMissMms else");
+        }
+    }
+
+    private int getMissCallCount() {
+        Cursor cur = null;
+        int unRead = 3;
+        try {
+            ContentResolver cr = mContext.getContentResolver();
+            cur = cr.query(CallLog.Calls.CONTENT_URI, new String[] {
+                    CallLog.Calls.NUMBER, CallLog.Calls.CACHED_NAME,
+                    CallLog.Calls.DATE, CallLog.Calls.NEW }, "(type = "
+                    + unRead + " AND new = 1)", null, "calls.date desc");// limit
+            // ?distinct?
+            if (cur != null) {
+                return cur.getCount();
+            }
+        } catch (SQLiteException ex) {
+        } finally {
+            if (cur != null && !cur.isClosed()) {
+                cur.close();
+            }
+        }
+        return 0;
+    }
+
+    private int getUnReadMmsCount() {
+        String selection = "(read=0 AND m_type != 134)";
+        Cursor cur = null;
+        try {
+            ContentResolver cr = mContext.getContentResolver();
+            cur = cr.query(Uri.parse("content://mms/inbox"), new String[] {
+                    BaseColumns._ID, "date" }, selection, null, "date desc");// limit
+            if (cur != null) {
+                return cur.getCount();
+            }
+        } catch (SQLiteException ex) {
+        } finally {
+            if (cur != null && !cur.isClosed()) {
+                cur.close();
+            }
+        }
+        return 0;
+    }
+
+    private int getUnReadSmsCount() {
+        String selection = "(read=0 OR seen=0)";
+        Cursor cur = null;
+        try {
+            ContentResolver cr = mContext.getContentResolver();
+            cur = cr.query(Uri.parse("content://sms/inbox"), new String[] {
+                    BaseColumns._ID, "address", "person", "body", "date" },
+                    selection, null, "date desc");// limit
+            if (cur != null) {
+                return cur.getCount();
+            }
+        } catch (SQLiteException ex) {
+        } finally {
+            if (cur != null && !cur.isClosed()) {
+                cur.close();
+            }
+        }
+        return 0;
+    }
+    /* @} */
     public void refreshTime() {
         mDateView.setFormat24Hour(Patterns.dateView);
         mDateView.setFormat12Hour(Patterns.dateView);
-
-        mClockView.setFormat12Hour(Patterns.clockView12);
+        /* sprd: 626492 @{*/
+        if(isTaiMiErLanguage())
+        {
+            mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.clock_view_middle_font_size));
+        }else
+        {
+            mClockView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.clock_view_big_font_size));
+        }
+        /* @{ */
+        /* sprd: 622733 @{*/
+        if(isSpecialLanguage())
+        {
+            mAlarmStatusView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.alarm_view_middle_font_size));
+        }else
+        {
+            mAlarmStatusView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(R.dimen.alarm_view_big_font_size));
+        }
+        /* @{ */
+        /* SPRD: Bug 609454 @{ */
+        /* SPRD: Bug 474774 set am/pm label @{ */
+        // mClockView.setFormat12Hour(Patterns.clockView12);
+        mClockView.setFormat12Hour(get12ModeFormat(
+                (int) getResources().getDimension(R.dimen.date_view_label_font_size)));
+        /* @{ */
+        /* @{ */
         mClockView.setFormat24Hour(Patterns.clockView24);
     }
+
+    /* SPRD: Bug 474774 set am/pm label @{ */
+    /**
+     * @param amPmFontSize - size of am/pm label (label removed is size is 0).
+     * @return format string for 12 hours mode time
+     */
+    public static CharSequence get12ModeFormat(int amPmFontSize) {
+        String skeleton = "hma";
+        String pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton);
+        // Remove the am/pm
+        if (amPmFontSize <= 0) {
+            pattern.replaceAll("a", "").trim();
+        }
+        // Replace spaces with "Hair Space"
+        pattern = pattern.replaceAll(" ", "\u200A");
+        // Build a spannable so that the am/pm will be formatted
+        int amPmPos = pattern.indexOf('a');
+        if (amPmPos == -1) {
+            return pattern;
+        }
+        Spannable sp = new SpannableString(pattern);
+        sp.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), amPmPos, amPmPos + 1,
+                Spannable.SPAN_POINT_MARK);
+        sp.setSpan(new AbsoluteSizeSpan(amPmFontSize), amPmPos, amPmPos + 1,
+                Spannable.SPAN_POINT_MARK);
+        sp.setSpan(new TypefaceSpan("sans-serif-condensed"), amPmPos, amPmPos + 1,
+                Spannable.SPAN_POINT_MARK);
+        return sp;
+    }
+    /* @} */
 
     private void refresh() {
         AlarmManager.AlarmClockInfo nextAlarm =

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"Informe de error capturado"</string>
+<string name="bugreport_finished_text" product="watch">"Deslizar a la izquierda para compartir su informe de error"</string>
+<string name="bugreport_finished_text" product="default">"Tocar para compartir su informe de error"</string>
+<string name="bugreport_confirm">"Los informes de errores contienen datos de los distintos archivos de registro del sistema, incluyendo la información personal y privada. Comparta los informes de errores únicamente con aplicaciones y personas en las que confíe."</string>
+<string name="bugreport_confirm_repeat">"Mostrar este mensaje la próxima vez"</string>
+<string name="bugreport_storage_title">"Informes de errores"</string>
+</resources>

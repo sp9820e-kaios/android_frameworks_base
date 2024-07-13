@@ -2756,6 +2756,13 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     public static final int SYSTEM_UI_FLAG_LIGHT_STATUS_BAR = 0x00002000;
 
     /**
+    * SPRD: Flag for {@link #setSystemUiVisibility(int)}: View can use this
+    * flag to hide the Surface of window it attached to. This is usally
+    * used when VideoPlayer is playing and wanting to hide its main window
+    */
+    public static final int SYSTEM_UI_FLAG_HIDE_SURFACE = 0x00000040;
+
+    /**
      * @deprecated Use {@link #SYSTEM_UI_FLAG_LOW_PROFILE} instead.
      */
     public static final int STATUS_BAR_HIDDEN = SYSTEM_UI_FLAG_LOW_PROFILE;
@@ -9291,9 +9298,17 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
                 result = true;
             }
 
-            if (!result && onTouchEvent(event)) {
+            // SPRD: Bug 520198 - MotionEvent brings IllegalArgumentException.@{
+            try {
+                if (!result && onTouchEvent(event)) {
+                result = true;
+                }
+            } catch (IllegalArgumentException e) {
+                Log.d(VIEW_LOG_TAG, "this:" + this + " MotionEvent:" + event);
+                Log.d(VIEW_LOG_TAG, Log.getStackTraceString(e));
                 result = true;
             }
+            // @}
         }
 
         if (!result && mInputEventConsistencyVerifier != null) {

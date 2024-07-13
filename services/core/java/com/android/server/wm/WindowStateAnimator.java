@@ -78,6 +78,9 @@ class WindowStateAnimator {
     final Context mContext;
     final boolean mIsWallpaper;
 
+    final int WINDOW_WIDTH_LIMIT = 4096;
+    final int WINDOW_HEIGHT_LIMIT = 4096;
+
     // Currently running animation.
     boolean mAnimating;
     boolean mLocalAnimating;
@@ -185,6 +188,12 @@ class WindowStateAnimator {
 
     /** Was this window last hidden? */
     boolean mLastHidden;
+
+    /**
+     * SPRD: If this window has request to the hide its Surface.
+     * @see #requestHideSurface(boolean)
+     */
+    boolean mRequestHide;
 
     int mAttrType;
 
@@ -380,7 +389,7 @@ class WindowStateAnimator {
         } else if (mIsWallpaper) {
             mAnimLayer += mService.mWallpaperAnimLayerAdjustment;
         }
-        if (DEBUG_LAYERS) Slog.v(TAG, "Stepping win " + this
+        if (DEBUG_LAYERS || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Stepping win " + this
                 + " anim layer: " + mAnimLayer);
         mHasTransformation = false;
         mHasLocalTransformation = false;
@@ -395,7 +404,7 @@ class WindowStateAnimator {
             }
             if (!mWin.mPolicyVisibility) {
                 if (mService.mCurrentFocus == mWin) {
-                    if (WindowManagerService.DEBUG_FOCUS_LIGHT) Slog.i(TAG,
+                    if (WindowManagerService.DEBUG_FOCUS_LIGHT || WindowManagerService.mIsPrintLogs) Slog.i(TAG,
                             "setAnimationLocked: setting mFocusMayChange true");
                     mService.mFocusMayChange = true;
                 }
@@ -768,7 +777,7 @@ class WindowStateAnimator {
     SurfaceControl createSurfaceLocked() {
         final WindowState w = mWin;
         if (mSurfaceControl == null) {
-            if (DEBUG_ANIM || DEBUG_ORIENTATION) Slog.i(TAG,
+            if (DEBUG_ANIM || DEBUG_ORIENTATION || WindowManagerService.mIsPrintLogs) Slog.i(TAG,
                     "createSurface " + this + ": mDrawState=DRAW_PENDING");
             mDrawState = DRAW_PENDING;
             if (w.mAppToken != null) {
@@ -821,7 +830,7 @@ class WindowStateAnimator {
             left -= attrs.surfaceInsets.left;
             top -= attrs.surfaceInsets.top;
 
-            if (DEBUG_VISIBILITY) {
+            if (DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) {
                 Slog.v(TAG, "Creating surface in session "
                         + mSession.mSurfaceSession + " window " + this
                         + " w=" + width + " h=" + height
@@ -856,6 +865,23 @@ class WindowStateAnimator {
                     flags |= SurfaceControl.OPAQUE;
                 }
 
+                /* SPRD: Add for Surface creation flag: {@ */
+                if (isHwAccelerated) {
+                    flags |= SurfaceControl.HARDWARE_ACCE;
+                }
+                /* @} */
+
+                /* SPRD: Add log to keep looking at surface size: {@ */
+                if(width > WINDOW_WIDTH_LIMIT || height > WINDOW_HEIGHT_LIMIT || width < 0 || height < 0) {
+                    //Layer might exceed RenderNode's allowance.
+                    Slog.w(TAG, " Warning: Window " + mWin + ", SurfaceControl size unacceptable ["+ width + "x" + height + "]"
+                            + " Max=["+ WINDOW_WIDTH_LIMIT +"x"+ WINDOW_HEIGHT_LIMIT +"]"
+                            + " ,attrs.surfaceInsets (l,t,r,b) ["
+                            + "," +  attrs.surfaceInsets.left + "," +  attrs.surfaceInsets.top
+                            + "," +  attrs.surfaceInsets.right + "," +  attrs.surfaceInsets.bottom + "]");
+                }
+                /* @}*/
+
                 mSurfaceFormat = format;
                 if (DEBUG_SURFACE_TRACE) {
                     mSurfaceControl = new SurfaceTrace(
@@ -871,7 +897,7 @@ class WindowStateAnimator {
 
                 w.mHasSurface = true;
 
-                if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC) {
+                if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC || WindowManagerService.mIsPrintLogs) {
                     Slog.i(TAG, "  CREATE SURFACE "
                             + mSurfaceControl + " IN SESSION "
                             + mSession.mSurfaceSession
@@ -954,7 +980,7 @@ class WindowStateAnimator {
             }
 
             try {
-                if (DEBUG_VISIBILITY) {
+                if (DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) {
                     RuntimeException e = null;
                     if (!WindowManagerService.HIDE_STACK_CRAWLS) {
                         e = new RuntimeException();
@@ -966,7 +992,7 @@ class WindowStateAnimator {
                 if (mSurfaceDestroyDeferred) {
                     if (mSurfaceControl != null && mPendingDestroySurface != mSurfaceControl) {
                         if (mPendingDestroySurface != null) {
-                            if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC) {
+                            if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC || WindowManagerService.mIsPrintLogs) {
                                 RuntimeException e = null;
                                 if (!WindowManagerService.HIDE_STACK_CRAWLS) {
                                     e = new RuntimeException();
@@ -979,7 +1005,7 @@ class WindowStateAnimator {
                         mPendingDestroySurface = mSurfaceControl;
                     }
                 } else {
-                    if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC) {
+                    if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC || WindowManagerService.mIsPrintLogs) {
                         RuntimeException e = null;
                         if (!WindowManagerService.HIDE_STACK_CRAWLS) {
                             e = new RuntimeException();
@@ -1006,7 +1032,7 @@ class WindowStateAnimator {
     void destroyDeferredSurfaceLocked() {
         try {
             if (mPendingDestroySurface != null) {
-                if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC) {
+                if (SHOW_TRANSACTIONS || SHOW_SURFACE_ALLOC || WindowManagerService.mIsPrintLogs) {
                     RuntimeException e = null;
                     if (!WindowManagerService.HIDE_STACK_CRAWLS) {
                         e = new RuntimeException();
@@ -1043,7 +1069,7 @@ class WindowStateAnimator {
                     wallpaperAnimator.mAnimation != null &&
                     !wallpaperAnimator.mAnimation.getDetachWallpaper()) {
                 attachedTransformation = wallpaperAnimator.mTransformation;
-                if (WindowManagerService.DEBUG_WALLPAPER && attachedTransformation != null) {
+                if (WindowManagerService.DEBUG_WALLPAPER && attachedTransformation != null || WindowManagerService.mIsPrintLogs) {
                     Slog.v(TAG, "WP target attached xform: " + attachedTransformation);
                 }
             }
@@ -1053,7 +1079,7 @@ class WindowStateAnimator {
                     && wpAppAnimator.animation != null
                     && !wpAppAnimator.animation.getDetachWallpaper()) {
                 appTransformation = wpAppAnimator.transformation;
-                if (WindowManagerService.DEBUG_WALLPAPER && appTransformation != null) {
+                if (WindowManagerService.DEBUG_WALLPAPER && appTransformation != null || WindowManagerService.mIsPrintLogs) {
                     Slog.v(TAG, "WP target app xform: " + appTransformation);
                 }
             }
@@ -1064,6 +1090,8 @@ class WindowStateAnimator {
                 mAnimator.getScreenRotationAnimationLocked(displayId);
         final boolean screenAnimation =
                 screenRotationAnimation != null && screenRotationAnimation.isAnimating();
+
+        mHasClipRect = false;
         if (selfTransformation || attachedTransformation != null
                 || appTransformation != null || screenAnimation) {
             // cache often used attributes locally
@@ -1139,7 +1167,6 @@ class WindowStateAnimator {
             // transforming since it is more important to have that
             // animation be smooth.
             mShownAlpha = mAlpha;
-            mHasClipRect = false;
             if (!mService.mLimitedAlphaCompositing
                     || (!PixelFormat.formatHasAlpha(mWin.mAttrs.format)
                     || (mWin.isIdentityMatrix(mDsDx, mDtDx, mDsDy, mDtDy)
@@ -1448,7 +1475,7 @@ class WindowStateAnimator {
         final WindowState w = mWin;
         if (mSurfaceControl == null) {
             if (w.mOrientationChanging) {
-                if (DEBUG_ORIENTATION) {
+                if (DEBUG_ORIENTATION || WindowManagerService.mIsPrintLogs) {
                     Slog.v(TAG, "Orientation change skips hidden " + w);
                 }
                 w.mOrientationChanging = false;
@@ -1477,7 +1504,7 @@ class WindowStateAnimator {
             // new orientation.
             if (w.mOrientationChanging) {
                 w.mOrientationChanging = false;
-                if (DEBUG_ORIENTATION) Slog.v(TAG,
+                if (DEBUG_ORIENTATION || WindowManagerService.mIsPrintLogs) Slog.v(TAG,
                         "Orientation change skips hidden " + w);
             }
         } else if (mLastLayer != mAnimLayer
@@ -1514,10 +1541,10 @@ class WindowStateAnimator {
                             mDsDx * w.mHScale, mDtDx * w.mVScale,
                             mDsDy * w.mHScale, mDtDy * w.mVScale);
 
-                    if (mLastHidden && mDrawState == HAS_DRAWN) {
+                    if (mLastHidden && mDrawState == HAS_DRAWN && !mRequestHide) {
                         if (WindowManagerService.SHOW_TRANSACTIONS) WindowManagerService.logSurface(w,
                                 "SHOW (performLayout)", null);
-                        if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(TAG, "Showing " + w
+                        if (WindowManagerService.DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(TAG, "Showing " + w
                                 + " during relayout");
                         if (showSurfaceRobustlyLocked()) {
                             mLastHidden = false;
@@ -1673,12 +1700,13 @@ class WindowStateAnimator {
     // This must be called while inside a transaction.
     boolean performShowLocked() {
         if (mWin.isHiddenFromUserLocked()) {
-            if (DEBUG_VISIBILITY) Slog.w(TAG, "hiding " + mWin + ", belonging to " + mWin.mOwnerUid);
+            if (DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.w(TAG, "hiding " + mWin + ", belonging to " + mWin.mOwnerUid);
             mWin.hideLw(false);
             return false;
         }
         if (DEBUG_VISIBILITY || (DEBUG_STARTING_WINDOW &&
-                mWin.mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_STARTING)) {
+                mWin.mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_STARTING) ||
+				WindowManagerService.mIsPrintLogs) {
             Slog.v(TAG, "performShow on " + this
                     + ": mDrawState=" + drawStateToString() + " readyForDisplay="
                     + mWin.isReadyForDisplayIgnoringKeyguard()
@@ -1698,7 +1726,8 @@ class WindowStateAnimator {
             if (SHOW_TRANSACTIONS || DEBUG_ORIENTATION)
                 WindowManagerService.logSurface(mWin, "SHOW (performShowLocked)", null);
             if (DEBUG_VISIBILITY || (DEBUG_STARTING_WINDOW &&
-                    mWin.mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_STARTING)) {
+                    mWin.mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_STARTING) ||
+					WindowManagerService.mIsPrintLogs) {
                 Slog.v(TAG, "Showing " + this
                         + " during animation: policyVis=" + mWin.mPolicyVisibility
                         + " attHidden=" + mWin.mAttachedHidden
@@ -1783,7 +1812,7 @@ class WindowStateAnimator {
                 mSurfaceShown = true;
                 mSurfaceControl.show();
                 if (mWin.mTurnOnScreen) {
-                    if (DEBUG_VISIBILITY) Slog.v(TAG,
+                    if (DEBUG_VISIBILITY || WindowManagerService.mIsPrintLogs) Slog.v(TAG,
                             "Show surface turning screen on: " + mWin);
                     mWin.mTurnOnScreen = false;
                     mAnimator.mBulkUpdateParams |= SET_TURN_ON_SCREEN;
@@ -1965,6 +1994,23 @@ class WindowStateAnimator {
                     pw.print(" mDsDy="); pw.print(mDsDy);
                     pw.print(" mDtDy="); pw.println(mDtDy);
         }
+    }
+
+    /**
+     * SPRD: request to the hide the Surface of this window.
+     * @param hide set true to hide Surface and false to show
+     */
+    void requestHideSurface(boolean hide) {
+       if (hide == mRequestHide)
+           return;
+
+       Slog.i(TAG, "requestHideSurface " + hide + ", " + this);
+       mRequestHide = hide;
+       if (hide) {
+           hide();
+       } else if(mService.mPowerManager.isScreenOn()){
+           showSurfaceRobustlyLocked();
+       }
     }
 
     @Override

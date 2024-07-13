@@ -46,6 +46,8 @@
        <item><xliff:g id="id">alarm_clock</xliff:g></item>
        <item><xliff:g id="id">secure</xliff:g></item>
        <item><xliff:g id="id">clock</xliff:g></item>
+       <!-- SPRD: Bug 474781 ADD headset icon in statusbar -->
+       <item><xliff:g id="id">headset</xliff:g></item>
     </string-array>
 
     <!-- Flag indicating whether the surface flinger has limited
@@ -194,6 +196,7 @@
         <item>"wifi_p2p,13,1,0,-1,true"</item>
         <item>"mobile_ia,14,0,2,-1,true"</item>
         <item>"mobile_emergency,15,0,2,-1,true"</item>
+        <item>"usb_ether,9,9,2,-1,true"</item>
     </string-array>
 
     <!-- Array of ConnectivityManager.TYPE_xxxx constants for networks that may only
@@ -236,12 +239,14 @@
          USB interfaces.  If the device doesn't want to support tething over USB this should
          be empty.  An example would be "usb.*" -->
     <string-array translatable="false" name="config_tether_usb_regexs">
+        <item>"rndis\\d"</item>
     </string-array>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
          Wifi interfaces.  If the device doesn't want to support tethering over Wifi this
          should be empty.  An example would be "softap.*" -->
     <string-array translatable="false" name="config_tether_wifi_regexs">
+         <item>"wlan0"</item>
     </string-array>
 
     <!-- List of regexpressions describing the interface (if any) that represent tetherable
@@ -254,6 +259,7 @@
          bluetooth interfaces.  If the device doesn't want to support tethering over bluetooth this
          should be empty. -->
     <string-array translatable="false" name="config_tether_bluetooth_regexs">
+         <item>"bt-pan"</item>
     </string-array>
 
     <!-- Max number of Bluetooth tethering connections allowed. If this is
@@ -710,7 +716,7 @@
          if the sensor HAL correctly handles the proximity sensor as a wake-up source.
          Otherwise, the device may fail to wake out of suspend reliably.
          The default is false. -->
-    <bool name="config_suspendWhenScreenOffDueToProximity">false</bool>
+    <bool name="config_suspendWhenScreenOffDueToProximity">true</bool>
 
     <!-- Control the behavior when the user long presses the power button.
             0 - Nothing
@@ -726,7 +732,9 @@
             2 - Really go to sleep (don't doze)
             3 - Really go to sleep and go home (don't doze)
     -->
-    <integer name="config_shortPressOnPowerBehavior">1</integer>
+    <!--SPRD:Bug 579909 shortPressPowerGohome first @{-->
+    <integer name="config_shortPressOnPowerBehavior">5</integer>
+    <!--@}-->
 
     <!-- Control the behavior when the user double presses the power button.
             0 - Nothing
@@ -845,7 +853,7 @@
     <integer name="config_criticalBatteryWarningLevel">5</integer>
 
     <!-- Shutdown if the battery temperature exceeds (this value * 0.1) Celsius. -->
-    <integer name="config_shutdownBatteryTemperature">680</integer>
+    <integer name="config_shutdownBatteryTemperature">600</integer>
 
     <!-- Display low battery warning when battery level dips to this value -->
     <integer name="config_lowBatteryWarningLevel">15</integer>
@@ -867,7 +875,7 @@
     <integer name="config_notificationsBatteryLowARGB">0xFFFF0000</integer>
 
     <!-- Default value for led color when battery is medium charged -->
-    <integer name="config_notificationsBatteryMediumARGB">0xFFFFFF00</integer>
+    <integer name="config_notificationsBatteryMediumARGB">0xFFFF0000</integer>
 
     <!-- Default value for led color when battery is fully charged -->
     <integer name="config_notificationsBatteryFullARGB">0xFF00FF00</integer>
@@ -876,7 +884,7 @@
     <integer name="config_notificationsBatteryLedOn">125</integer>
 
     <!-- Is the notification LED intrusive? Used to decide if there should be a disable option -->
-    <bool name="config_intrusiveNotificationLed">false</bool>
+    <bool name="config_intrusiveNotificationLed">true</bool>
 
     <!-- Default value for LED off time when the battery is low on charge in miliseconds -->
     <integer name="config_notificationsBatteryLedOff">2875</integer>
@@ -930,7 +938,7 @@
 
     <!-- Minimum screen brightness setting allowed by the power manager.
          The user is forbidden from setting the brightness below this level. -->
-    <integer name="config_screenBrightnessSettingMinimum">10</integer>
+    <integer name="config_screenBrightnessSettingMinimum">1</integer>
 
     <!-- Maximum screen brightness allowed by the power manager.
          The user is forbidden from setting the brightness above this level. -->
@@ -1010,16 +1018,51 @@
          backlight values for LUX levels between these control points.
 
          Must be overridden in platform specific overlays -->
+    <!-- SPRD: config_autoBrightnessLcdBacklightValues add values @{ -->
     <integer-array name="config_autoBrightnessLevels">
+	<item>16</item>
+        <item>32</item>
+        <item>50</item>
+        <item>100</item>
+        <item>140</item>
+        <item>180</item>
+        <item>240</item>
+        <item>300</item>
+        <item>600</item>
+        <item>1000</item>
+        <item>2000</item>
+        <item>3000</item>
+        <item>4000</item>
+        <item>8000</item>
+        <item>10000</item>
     </integer-array>
+    <!-- @} -->
 
     <!-- Array of output values for LCD backlight corresponding to the LUX values
          in the config_autoBrightnessLevels array.  This array should have size one greater
          than the size of the config_autoBrightnessLevels array.
          The brightness values must be between 0 and 255 and be non-decreasing.
          This must be overridden in platform specific overlays -->
+    <!-- SPRD: config_autoBrightnessLcdBacklightValues add values @{ -->
     <integer-array name="config_autoBrightnessLcdBacklightValues">
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+        <item>80</item>
+        <item>102</item>
+        <item>102</item>
+        <item>102</item>
+        <item>102</item>
+        <item>102</item>
+        <item>180</item>
+        <item>200</item>
+        <item>210</item>
+        <item>230</item>
+        <item>255</item>
     </integer-array>
+    <!-- @} -->
 
     <!-- Array of output values for button backlight corresponding to the LUX values
          in the config_autoBrightnessLevels array.  This array should have size one greater
@@ -1392,10 +1435,9 @@
     <bool name="config_mms_content_disposition_support">true</bool>
 
     <!-- MMS user agent string -->
-    <string name="config_mms_user_agent" translatable="false"></string>
-
+    <string name="config_mms_user_agent" translatable="false">Android-Mms/2.0</string>
     <!-- MMS user agent prolfile url -->
-    <string name="config_mms_user_agent_profile_url" translatable="false"></string>
+    <string name="config_mms_user_agent_profile_url" translatable="false">http://www.google.com/oha/rdf/ua-profile-kila.xml</string>
 
     <!-- National Language Identifier codes for the following two config items.
          (from 3GPP TS 23.038 V9.1.1 Table 6.2.1.2.4.1):
@@ -1723,7 +1765,7 @@
          * The remote submix module "audio.r_submix.default" must be installed on the device.
          * The device must be provisioned with HDCP keys (for protected content).
     -->
-    <bool name="config_enableWifiDisplay">false</bool>
+    <bool name="config_enableWifiDisplay">true</bool>
 
     <!-- When true use the linux /dev/input/event subsystem to detect the switch changes
          on the headphone/microphone jack. When false use the older uevent framework. -->
@@ -1747,7 +1789,7 @@
     <bool name="config_wifiDisplaySupportsProtectedBuffers">false</bool>
 
     <!-- Whether camera shutter sound is forced or not  (country specific). -->
-    <bool name="config_camera_sound_forced">false</bool>
+    <bool name="config_camera_sound_forced">true</bool>
 
     <!-- Set to true if we need to not prefer an APN.
          This is being added to enable a simple scenario of pre-paid
@@ -1971,6 +2013,9 @@
         <item>power</item>
         <item>bugreport</item>
         <item>users</item>
+        <!-- SPRD: add the reboot -->
+        <item>reboot</item>
+        <item>airplane</item>
     </string-array>
 
     <!-- Number of milliseconds to hold a wake lock to ensure that drawing is fully
@@ -2011,7 +2056,7 @@
     </string-array>
 
     <!-- Flag indicating which package name can access the persistent data partition -->
-    <string name="config_persistentDataPackageName" translatable="false"></string>
+    <string name="config_persistentDataPackageName" translatable="false">com.google.android.gms</string>
 
     <!-- Flag indicating apps will skip sending hold request before merge. In this case
         IMS service implementation will do both.i.e.hold followed by merge. -->
@@ -2236,6 +2281,45 @@
     <!-- Whether device supports double tap to wake -->
     <bool name="config_supportDoubleTapWake">false</bool>
 
+    <!-- SPRD: Bug 511228 Smart Controls in Settings @{ -->
+    <bool name="config_supportSmartWake">true</bool>
+
+    <bool name="config_supportEasyDial">true</bool>
+
+    <bool name="config_supportEasyAnswer">true</bool>
+
+    <bool name="config_supportHandsfreeSwitch">true</bool>
+
+    <bool name="config_supportSmartCallRecorder">true</bool>
+
+    <bool name="config_supportEasyBell">true</bool>
+
+    <bool name="config_supportMuteIncomingCalls">true</bool>
+
+    <bool name="config_supportPlayControl">true</bool>
+
+    <bool name="config_supportMusicSwitch">true</bool>
+
+    <bool name="config_supportLockMusicSwitch">true</bool>
+
+    <bool name="config_supportEasyStart">true</bool>
+
+    <bool name="config_supportMuteAlarms">true</bool>
+
+    <bool name="config_supportShakeToSwitch">true</bool>
+
+    <bool name="config_supportQuickBrowse">true</bool>
+
+    <!-- SPRD: Bug 539959 remove Easy clear memory in smart Controls -->
+    <bool name="config_supportEasyClearMemory">false</bool>
+
+    <bool name="config_supportTouchDisable">true</bool>
+
+    <bool name="config_supportSmartBell">true</bool>
+
+    <bool name="config_supportPowerSaving">true</bool>
+    <!-- @} -->
+
     <!-- The RadioAccessFamilies supported by the device.
          Empty is viewed as "all".  Only used on devices which
          don't support RIL_REQUEST_GET_RADIO_CAPABILITY
@@ -2270,4 +2354,42 @@
     <string-array name="config_cell_retries_per_error_code">
     </string-array>
 
+    <!-- SPRD: Bug 474763 support transition on low-ram device. -->
+    <!-- whether we would force to use color view in status bar -->
+    <bool name="config_force_use_color_view">true</bool>
+    <!--  SPRD services we want to restart  {-->
+    <string-array translatable="false" name="restartServiceInterval">
+    </string-array>
+    <string-array translatable="false" name="restartAppServiceInterval">
+    </string-array>
+    <!-- } -->
+
+    <string-array name="usim_notify_packages" translatable="false">
+    </string-array>
+    <string name="addon_usim_notify" translatable="false">plugin.sprd.usim.UsimNotifierImpl</string>
+    <!-- work around for Screen Pinning -->
+    <bool name="config_force_user_navigationbar">true</bool>
+    <!-- @} -->
+
+    <!-- SPRD: @{ -->
+    <string-array name="config_actions_to_hook" translatable="false">
+       <!-- <item>com.android.setupwizard.EXIT:com.example.app1</item> -->
+    </string-array>
+    <string-array name="config_components_to_hook" translatable="false">
+    </string-array>
+    <!-- SPRD: @} -->
+
+    <!-- support for hotspot wps -->
+    <bool name="config_enableSoftApWPS">false</bool>
+
+    <!-- SPRD: Bug 565443 add broadcast to cts queue -->
+    <string-array name="special_broadcast_actions" translatable="false">
+       <item>com.android.providers.calendar.intent.CalendarProvider2</item>
+       <item>android.app.action.DEVICE_ADMIN_DISABLED</item>
+    </string-array>
+
+    <!-- SPRD: Bug 569231 add broadcast to foreground queue -->
+    <string-array name="broadcast_put_foreground_actions" translatable="false">
+        <item>android.intent.action.DOWNLOAD_COMPLETED</item>
+    </string-array>
 </resources>

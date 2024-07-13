@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Selamat! Penyetel Antarmuka Pengguna Sistem telah ditambahkan ke Setelan"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Hapus dari Setelan"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Hapus Penyetel Antarmuka Pengguna Sistem dari Setelan dan berhenti menggunakan semua fiturnya?"</string>
+    <string name="quick_settings_volume_label">"Profilaudio"</string>
+     <string name="assistant_key_home">"Layar Utama"</string>
+     <string name="assistant_key_search">"telusuri"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Kembali"</string>
+
+    <string name="vibrate_hint">"Geser ke kiri untuk getar"</string>
+     <string name="battery_overtage_title">"Peringatan sertifikat"</string>
+     <string name="battery_overtage_content">"Voltase pengisian terlalu tinggi!"</string>
+     <string name="battery_overtage_back">"Kembali"</string>
 </resources>

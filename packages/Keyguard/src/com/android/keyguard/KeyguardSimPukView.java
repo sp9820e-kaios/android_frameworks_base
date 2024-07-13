@@ -56,6 +56,8 @@ public class KeyguardSimPukView extends KeyguardPinBasedInputView {
     private AlertDialog mRemainingAttemptsDialog;
     private int mSubId;
     private ImageView mSimImageView;
+    // SPRD :Show pin/puk remaining times.
+    private int mRemainTimes;
 
     KeyguardUpdateMonitorCallback mUpdateMonitorCallback = new KeyguardUpdateMonitorCallback() {
         @Override
@@ -127,8 +129,13 @@ public class KeyguardSimPukView extends KeyguardPinBasedInputView {
                     msg = rez.getString(R.string.kg_puk_enter_puk_hint);
                 } else {
                     SubscriptionInfo info = monitor.getSubscriptionInfoForSubId(mSubId);
-                    CharSequence displayName = info != null ? info.getDisplayName() : "";
-                    msg = rez.getString(R.string.kg_puk_enter_puk_hint_multi, displayName);
+                    /* SPRD :Show pin/puk remaining times. @{ */
+                    CharSequence displayName = info != null ? "SIM"+Integer.toString(SubscriptionManager
+                            .getPhoneId(mSubId)+1) : "";
+                    // SPRD: Add puk unlock remain times for bug 495310.
+                    mRemainTimes = monitor.getRemainstimes(TelephonyManager.UNLOCK_PUK, mSubId);
+                    msg = rez.getString(R.string.kg_puk_enter_puk_hint_multi, displayName, mRemainTimes);
+                    /* @} */
                     if (info != null) {
                         color = info.getIconTint();
                     }
@@ -188,6 +195,8 @@ public class KeyguardSimPukView extends KeyguardPinBasedInputView {
             ((EmergencyCarrierArea) mEcaView).setCarrierTextVisible(true);
         }
         mSimImageView = (ImageView) findViewById(R.id.keyguard_sim);
+        // SPRD:add for bug 597244 for limit 8 numbers
+        mPasswordEntry.setLimit(true);
     }
 
     @Override
@@ -209,10 +218,21 @@ public class KeyguardSimPukView extends KeyguardPinBasedInputView {
     @Override
     public void onPause() {
         // dismiss the dialog.
-        if (mSimUnlockProgressDialog != null) {
-            mSimUnlockProgressDialog.dismiss();
-            mSimUnlockProgressDialog = null;
-        }
+        /* SPRD:add PIN verify success prompt @{ */
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "onPause-postDelayed : mSimUnlockProgressDialog ="
+                        + mSimUnlockProgressDialog);
+                if (mSimUnlockProgressDialog != null) {
+                    mSimUnlockProgressDialog.dismiss();
+                    mSimUnlockProgressDialog = null;
+                    Log.d(TAG, "onPause(); "
+                            + "prompt subscribers PIN unlock success for one second");
+                }
+            }
+        }, 500);
+        /* @} */
     }
 
     /**
@@ -319,16 +339,26 @@ public class KeyguardSimPukView extends KeyguardPinBasedInputView {
                 void onSimLockChangedResponse(final int result, final int attemptsRemaining) {
                     post(new Runnable() {
                         public void run() {
-                            if (mSimUnlockProgressDialog != null) {
-                                mSimUnlockProgressDialog.hide();
-                            }
                             resetPasswordText(true /* animate */);
                             if (result == PhoneConstants.PIN_RESULT_SUCCESS) {
+                                /* SPRD:add PIN verify success prompt @{ */
+                                if (mSimUnlockProgressDialog != null) {
+                                    mSimUnlockProgressDialog.setMessage(
+                                            mContext.getString(R.string.kg_sim_pin_verify_success));
+                                }
+                                /* @} */
                                 KeyguardUpdateMonitor.getInstance(getContext())
                                         .reportSimUnlocked(mSubId);
                                 mCallback.dismiss(true);
                             } else {
+                                if (mSimUnlockProgressDialog != null) {
+                                    mSimUnlockProgressDialog.hide();
+                                }
                                 if (result == PhoneConstants.PIN_PASSWORD_INCORRECT) {
+                                    /* SPRD :Show pin/puk remaining times.@{ */
+                                    mRemainTimes = attemptsRemaining;
+                                    resetState();
+                                    /* @} */
                                     if (attemptsRemaining <= 2) {
                                         // this is getting critical - show dialog
                                         getPukRemainingAttemptsDialog(attemptsRemaining).show();

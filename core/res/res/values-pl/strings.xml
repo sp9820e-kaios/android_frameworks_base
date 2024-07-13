@@ -1157,14 +1157,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Wróć"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Dalej"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Pomiń"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Brak wyników"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Znajdź na stronie"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="few"><xliff:g id="INDEX">%d</xliff:g> z <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="many"><xliff:g id="INDEX">%d</xliff:g> z <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> z <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 dopasowanie</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Gotowe"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Czyszczenie nośnika USB..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Czyszczenie karty SD..."</string>
@@ -1552,4 +1545,31 @@
       <item quantity="other">Wybrano <xliff:g id="COUNT_1">%1$d</xliff:g></item>
       <item quantity="one">Wybrano <xliff:g id="COUNT_0">%1$d</xliff:g></item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"Tethering USB-Internet aktywny"</string>
+     <string name="ext_media_status_shared">"Dzielone UMS"</string>
+     <string name="sim_ready_title_for_usb">Ostrzeżenie</string>
+     <string name="sim_card_activation_warning">"W przypadku instalacji aplikacji przez strony trzecie, włóż kartę SIM/USIM by aktywować USB."</string>
+     <string name="usb_ok">OK</string>
+     <string name="usb_cdrom_notification_title">"Sterownik wirtualny jest uruchomiony"</string>
+     <string name="usb_charge_only_notification">"Podłączono tylko do ładowania"</string>
+     <string name="global_action_restart">"Uruchom ponownie"</string>
+     <string name="reboot_device_title">"Uruchom ponownie"</string>
+     <string name="global_reboot_close_apps">"Zamknij wszystkie aplikacje i zrestartuj telefon."</string>
+     <string name="reboot_device_confirm">"Czy chcesz teraz ponownie uruchomić telefon?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Telefon wyłączy się po <xliff:g id="NUMBER">%d</xliff:g> sekundach"</item>
+<item quantity="other">"Telefon zamknie się po <xliff:g id="NUMBER">%d</xliff:g> sekundach"</item>
+    </plurals>
+
+    <string name="station_state_msg">"Połączono %1$s, zablokowano %2$s"</string>
+     <string name="phoneFixedNumber">"UstalonaLiczba"</string>
+     <string name="gps_time_sync_fail_str">"Nieudane pobranie czasu GPS"</string>
+     <string name="disable_touch_mode_title">"Kieszonkowe Dotknięcie-Wyłącz"</string>
+     <string name="disable_touch_mode_hint">"Nie osłaniaj górnej części telefonu"</string>
+     <string name="exit_disable_touch_mode_hint">"Aby wyłączyć ten tryb,możesz również nacisnąć przyciski włączenia i podgłaśniania."</string>
+
 </resources>

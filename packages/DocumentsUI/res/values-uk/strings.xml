@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Торкніться, щоб дізнатися більше"</string>
     <string name="retry" msgid="7564024179122207376">"Повторити"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Ці файли не скопійовано: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Не вдалося поділитися файлом"</string>
+     <string name="documents_deleting">"Видалення документів"</string>
+     <string name="cannot_copyfolder_itself">"Ви не можете скопіювати папку саму в себе"</string>
+
+    <string name="error_permissions">"Додаток не має обов’язкових дозволів, потрібних для роботи. Перегляньте налаштування дозволів."</string>
+     <string name="cannot_copy_drm">"Неможливо скопіювати файли DRM"</string>
+     <string name="cannot_copy_downloading">"Неможливо скопіювати файли, що завантажуються"</string>
 </resources>

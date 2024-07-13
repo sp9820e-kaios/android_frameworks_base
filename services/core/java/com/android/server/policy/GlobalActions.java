@@ -41,6 +41,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -101,6 +102,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private static final String GLOBAL_ACTION_KEY_LOCKDOWN = "lockdown";
     private static final String GLOBAL_ACTION_KEY_VOICEASSIST = "voiceassist";
     private static final String GLOBAL_ACTION_KEY_ASSIST = "assist";
+    /* SPRD: add reboot function @{ */
+    private static final String GLOBAL_ACTION_KEY_REBOOT = "reboot";
+    private static final boolean ADD_REBOOT_FUNCTION = true;
+    /* @} */
+    GlobalActions.SinglePressAction mRebootAction;
 
     private final Context mContext;
     private final WindowManagerFuncs mWindowManagerFuncs;
@@ -296,6 +302,15 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mItems.add(getVoiceAssistAction());
             } else if (GLOBAL_ACTION_KEY_ASSIST.equals(actionKey)) {
                 mItems.add(getAssistAction());
+            } else if (GLOBAL_ACTION_KEY_REBOOT.equals(actionKey)
+                    && ADD_REBOOT_FUNCTION) { // SPRD: add reboot function
+                if (mRebootAction == null) {
+                    mRebootAction = new RebootSinglePressAction(
+                            com.android.internal.R.drawable.ic_lock_reboot,
+                            R.string.global_action_restart);
+                }
+                ((RebootSinglePressAction) mRebootAction).dismiss();
+                mItems.add(mRebootAction);
             } else {
                 Log.e(TAG, "Invalid global action key " + actionKey);
             }
@@ -345,6 +360,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
             if (!um.hasUserRestriction(UserManager.DISALLOW_SAFE_BOOT)) {
                 mWindowManagerFuncs.rebootSafeMode(true);
+                //SPRD: add reboot reason for PhoneInfo feature @{ 
+                mWindowManagerFuncs.rebootSafeMode(true,"power_longpress_reboot");
+                // @}
                 return true;
             }
             return false;
@@ -363,7 +381,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         @Override
         public void onPress() {
             // shutdown by making sure radio and power are handled accordingly.
-            mWindowManagerFuncs.shutdown(false /* confirm */);
+            // mWindowManagerFuncs.shutdown(false /* confirm */);
+            //SPRD: add shutdown reason for PhoneInfo feature @{
+            mWindowManagerFuncs.shutdown(true,"power_shutdown");
+            // @}
         }
     }
 
@@ -1048,7 +1069,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         @Override
         public void onServiceStateChanged(ServiceState serviceState) {
             if (!mHasTelephony) return;
-            final boolean inAirplaneMode = serviceState.getState() == ServiceState.STATE_POWER_OFF;
+            /* SPRD: modify for bug494089 @{ */
+            // final boolean inAirplaneMode = serviceState.getState() ==
+            // ServiceState.STATE_POWER_OFF;
+            final boolean inAirplaneMode = Settings.Global.getInt(mContext.getContentResolver(),
+                    Settings.Global.AIRPLANE_MODE_ON, 0) == 1;
+            /* @} */
             mAirplaneState = inAirplaneMode ? ToggleAction.State.On : ToggleAction.State.Off;
             mAirplaneModeOn.updateState(mAirplaneState);
             mAdapter.notifyDataSetChanged();
@@ -1098,8 +1124,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private void onAirplaneModeChanged() {
         // Let the service state callbacks handle the state.
-        if (mHasTelephony) return;
-
+        /* SPRD: modify for bug494089 @{ */
+        // if (mHasTelephony) return;
+        /* @} */
         boolean airplaneModeOn = Settings.Global.getInt(
                 mContext.getContentResolver(),
                 Settings.Global.AIRPLANE_MODE_ON,
@@ -1264,4 +1291,67 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             return super.onKeyUp(keyCode, event);
         }
     }
+
+    /* SPRD: add reboot function @{ */
+    private class RebootSinglePressAction extends SinglePressAction {
+        private AlertDialog mConfirmDialog = null;
+
+        protected RebootSinglePressAction(int iconResId, int messageResId) {
+            super(iconResId, messageResId);
+        }
+
+        @Override
+        public View create(Context context, View convertView, ViewGroup parent,
+                LayoutInflater inflater) {
+            View v = super.create(context, convertView, parent, inflater);
+            TextView statusView = (TextView) v.findViewById(R.id.status);
+            statusView.setText(R.string.global_reboot_close_apps);
+            v.findViewById(R.id.status).setVisibility(View.VISIBLE);
+            return v;
+        }
+
+        public void onPress() {
+            /*SPRD: fix bug494324 dismiss the repeat dialog @{ */
+            dismiss();
+            /* @} */
+            mConfirmDialog = new AlertDialog.Builder(mContext)
+                    .setTitle(com.android.internal.R.string.reboot_device_title)
+                    .setMessage(com.android.internal.R.string.reboot_device_confirm)
+                    .setPositiveButton(com.android.internal.R.string.yes,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dismiss();
+                                    PowerManager pm = (PowerManager) mContext
+                                            .getSystemService(Context.POWER_SERVICE);
+                                    // SPRD: add reboot reason for PhoneInfo
+                                    // feature @{
+                                    pm.reboot("power_reboot");
+                                    // @}
+                                }
+                            })
+                    .setNegativeButton(com.android.internal.R.string.no, null)
+                    .create();
+            mConfirmDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+            mConfirmDialog.show();
+        }
+
+        public boolean onLongPress() {
+            return true;
+        }
+
+        public boolean showDuringKeyguard() {
+            return true;
+        }
+
+        public boolean showBeforeProvisioning() {
+            return true;
+        }
+
+        public void dismiss() {
+            if (mConfirmDialog != null && mConfirmDialog.isShowing()) {
+                mConfirmDialog.dismiss();
+            }
+        }
+    }
+    /* @} */
 }

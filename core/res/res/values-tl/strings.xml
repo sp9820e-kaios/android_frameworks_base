@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Bumalik"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Susunod"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Laktawan"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Walang mga tugma"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Maghanap sa pahina"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="one"><xliff:g id="INDEX">%d</xliff:g> ng <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> ng <xliff:g id="TOTAL">%d</xliff:g></item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Tapos na"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Binubura ang USB storage..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Binubura ang SD card..."</string>
@@ -1516,4 +1511,31 @@
       <item quantity="one"><xliff:g id="COUNT_1">%1$d</xliff:g> ang napili</item>
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> ang napili</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-Internet Tethering aktibo"</string>
+     <string name="ext_media_status_shared">"UMS Ibinahagi"</string>
+     <string name="sim_ready_title_for_usb">Babala</string>
+     <string name="sim_card_activation_warning">"Sa kaso ng aplikasyong na-instol ng pangatlong partido, mangyari i-input ang SIM/USIM na kard upang gumana ang USB."</string>
+     <string name="usb_ok">"OK"</string>
+     <string name="usb_cdrom_notification_title">"Ang Birtuwal na Drayber ay naka-ON"</string>
+     <string name="usb_charge_only_notification">"Nakakonekta bilang pang-charge lamang"</string>
+     <string name="global_action_restart">"I-restart"</string>
+     <string name="reboot_device_title">"I-restart"</string>
+     <string name="global_reboot_close_apps">"Isara ang lahat ng apps at i-restart ang telepono"</string>
+     <string name="reboot_device_confirm">"Gusto mo bang i-restart ang iyong telepono ngayon?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Ang telepono ay mapapatay pagkatapos ng <xliff:g id="NUMBER">%d</xliff:g> segundo"</item>
+<item quantity="other">"Telepono ay mamamatay pagkatapos ng <xliff:g id="NUMBER">%d</xliff:g> segundo"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s ay konektado, %2$s ay naharang"</string>
+     <string name="phoneFixedNumber">"NakapirmingNumero"</string>
+     <string name="gps_time_sync_fail_str">"Nabigong makuha ang oras ng GPS"</string>
+     <string name="disable_touch_mode_title">"Pocket Touch-Huwag paganahin"</string>
+     <string name="disable_touch_mode_hint">"Huwag takpan ang tuktok ng telepono"</string>
+     <string name="exit_disable_touch_mode_hint">"Maaari mo ring pindutin ang pawer at lakasan ang tunog ng mga buton upang huwag paganahin ang modo na ito"</string>
+
 </resources>

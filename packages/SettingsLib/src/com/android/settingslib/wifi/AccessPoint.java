@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.UserHandle;
+import android.os.SystemProperties;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -52,6 +53,8 @@ import java.util.Map;
 
 public class AccessPoint implements Comparable<AccessPoint> {
     static final String TAG = "SettingsLib.AccessPoint";
+
+    private static final boolean RESET_DEFAULT_HTTP_RESPONSE = SystemProperties.getBoolean("reset_default_http_response",true);
 
     /**
      * Lower bound on the 2.4 GHz (802.11b/g/n) WLAN channels
@@ -98,6 +101,14 @@ public class AccessPoint implements Comparable<AccessPoint> {
     public static final int SECURITY_WEP = 1;
     public static final int SECURITY_PSK = 2;
     public static final int SECURITY_EAP = 3;
+    public static final int SECURITY_FT_PSK = 4;
+    public static final int SECURITY_FT_EAP = 5;
+    // Broadcom, WAPI
+    public static final int SECURITY_WAPI_PSK = 6;
+    public static final int SECURITY_WAPI_CERT = 7;
+    // Broadcom, WAPI
+    public static final int SECURITY_PSK_SHA256 = 8;
+    public static final int SECURITY_EAP_SHA256 = 9;
 
     private static final int PSK_UNKNOWN = 0;
     private static final int PSK_WPA = 1;
@@ -110,6 +121,7 @@ public class AccessPoint implements Comparable<AccessPoint> {
     private String ssid;
     private int security;
     private int networkId = WifiConfiguration.INVALID_NETWORK_ID;
+    private boolean wpsAvailable;
 
     private int pskType = PSK_UNKNOWN;
 
@@ -117,6 +129,31 @@ public class AccessPoint implements Comparable<AccessPoint> {
 
     private int mRssi = Integer.MAX_VALUE;
     private long mSeen = 0;
+
+
+    //NOTE: Add for SPRD Passpoint R1 Feature -->
+
+    /**
+     * If a configed passpoint cred match this accesspoint
+     */
+    private boolean mHasPasspointMatches = false;
+
+    /**
+     * corresponding HomeSP configkey
+     */
+    private String mPasspointCredIdentifier = null;
+
+    /**
+     * The BSSID for Passpoint cred matched
+    */
+    private String mPasspointMatchedBSSID = null;
+
+    /**
+     * The BSSID for Passpoint scanResult
+    */
+    private String mCachedPasspointBSSID = null;
+    //<-- Add for SPRD Passpoint R1 Feature
+
 
     private WifiInfo mInfo;
     private NetworkInfo mNetworkInfo;
@@ -154,9 +191,17 @@ public class AccessPoint implements Comparable<AccessPoint> {
         update(mConfig, mInfo, mNetworkInfo);
         mRssi = getRssi();
         mSeen = getSeen();
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        mHasPasspointMatches = false;
+        mPasspointCredIdentifier = null;
+        mCachedPasspointBSSID = null;
+        mPasspointMatchedBSSID = null;
+        //<-- Add for SPRD Passpoint R1 Feature
+
     }
 
-    AccessPoint(Context context, ScanResult result) {
+    public AccessPoint(Context context, ScanResult result) {
         mContext = context;
         initWithScanResult(result);
     }
@@ -164,6 +209,14 @@ public class AccessPoint implements Comparable<AccessPoint> {
     AccessPoint(Context context, WifiConfiguration config) {
         mContext = context;
         loadConfig(config);
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        mHasPasspointMatches = false;
+        mPasspointCredIdentifier = null;
+        mCachedPasspointBSSID = null;
+        mPasspointMatchedBSSID = null;
+        //<-- Add for SPRD Passpoint R1 Feature
+
     }
 
     @Override
@@ -249,6 +302,10 @@ public class AccessPoint implements Comparable<AccessPoint> {
         networkId = WifiConfiguration.INVALID_NETWORK_ID;
     }
 
+    public void clearRssi() {
+        mRssi = Integer.MAX_VALUE;
+    }
+
     public WifiInfo getInfo() {
         return mInfo;
     }
@@ -297,6 +354,14 @@ public class AccessPoint implements Comparable<AccessPoint> {
                 context.getString(R.string.wifi_security_eap);
         }
         switch(security) {
+            case SECURITY_EAP_SHA256:
+                return context.getString(R.string.wifi_security_eap_sha256);
+            case SECURITY_PSK_SHA256:
+                return context.getString(R.string.wifi_security_psk_sha256);
+            case SECURITY_FT_EAP:
+                return context.getString(R.string.wifi_security_ft_eap);
+            case SECURITY_FT_PSK:
+                return context.getString(R.string.wifi_security_ft_psk);
             case SECURITY_EAP:
                 return concise ? context.getString(R.string.wifi_security_short_eap) :
                     context.getString(R.string.wifi_security_eap);
@@ -319,6 +384,12 @@ public class AccessPoint implements Comparable<AccessPoint> {
             case SECURITY_WEP:
                 return concise ? context.getString(R.string.wifi_security_short_wep) :
                     context.getString(R.string.wifi_security_wep);
+            // Broadcom, WAPI
+            case SECURITY_WAPI_PSK:
+                return context.getString(R.string.wifi_security_wapi_psk);
+            case SECURITY_WAPI_CERT:
+                return context.getString(R.string.wifi_security_wapi_cert);
+            // Broadcom, WAPI
             case SECURITY_NONE:
             default:
                 return concise ? "" : context.getString(R.string.wifi_security_none);
@@ -404,6 +475,8 @@ public class AccessPoint implements Comparable<AccessPoint> {
                     summary.append(mContext.getString(R.string.wifi_disabled_network_failure));
                 } else if (mConfig.disableReason == WifiConfiguration.DISABLED_AUTH_FAILURE) {
                     summary.append(mContext.getString(R.string.wifi_disabled_password_failure));
+                } else if (mConfig.disableReason == WifiConfiguration.DISABLED_BY_WIFI_MANAGER) {
+                    summary.append(mContext.getString(R.string.wifi_disabled_generic));
                 } else {
                     summary.append(mContext.getString(R.string.wifi_disabled_wifi_failure));
                 }
@@ -428,6 +501,27 @@ public class AccessPoint implements Comparable<AccessPoint> {
             if (mConfig != null) { // Is saved network
                 summary.append(mContext.getString(R.string.wifi_remembered));
             }
+            /* SPRD: add ap summary for cmcc wifi features @{ */
+            if (mConfig == null && WifiManager.SUPPORT_CMCC) {
+                if (security != SECURITY_NONE) {
+                    String securityStrFormat;
+                    if (summary.length() == 0) {
+                        securityStrFormat = mContext.getString(R.string.wifi_secured_first_item);
+                    } else {
+                        securityStrFormat = mContext.getString(R.string.wifi_secured_second_item);
+                    }
+                    summary.append(String.format(securityStrFormat, getSecurityString(true)));
+                }
+                // Only list WPS available for unsaved networks
+                if (wpsAvailable) {
+                    if (summary.length() == 0) {
+                        summary.append(mContext.getString(R.string.wifi_wps_available_first_item));
+                    } else {
+                        summary.append(mContext.getString(R.string.wifi_wps_available_second_item));
+                    }
+                }
+            }
+            /* @} */
         }
 
         if (WifiTracker.sVerboseLogging > 0) {
@@ -626,7 +720,7 @@ public class AccessPoint implements Comparable<AccessPoint> {
     }
 
     public boolean isPasspoint() {
-        return mConfig != null && mConfig.isPasspoint();
+        return (mConfig != null && mConfig.isPasspoint()) || (mCachedPasspointBSSID != null); //
     }
 
     /**
@@ -674,6 +768,47 @@ public class AccessPoint implements Comparable<AccessPoint> {
         mConfig.allowedKeyManagement.set(KeyMgmt.NONE);
     }
 
+
+
+    //NOTE: Add for SPRD Passpoint R1 Feature -->
+
+    /**
+     * Generate and save a default wifiConfiguration with common values.
+     * Can only for a passpoint network.
+     */
+    public boolean generateSimplePasspointNetworkConfig() {
+        if (security != SECURITY_EAP || !mHasPasspointMatches || mPasspointCredIdentifier == null)
+            return false;
+        if (mConfig != null)
+            return true;
+        mConfig = new WifiConfiguration();
+        mConfig.SSID = AccessPoint.convertToQuotedString(ssid);
+        //this is probably wrong, as we don't have a way to enter the enterprise config
+        mConfig.allowedKeyManagement.set(KeyMgmt.WPA_EAP);
+        //mConfig.allowedKeyManagement.set(KeyMgmt.IEEE8021X);
+        mConfig.createdFromPasspointCred = true;
+        mConfig.passpointCredIdentifier = mPasspointCredIdentifier;
+        return true;
+    }
+
+    public boolean hasPasspointMatch() {
+        Log.w(TAG, "SSID:" + ssid + " hasPasspointMatch: (security: " + security + " mHasPasspointMatches:" + " id:" + mPasspointCredIdentifier + ")");
+
+        return (security == SECURITY_EAP && mHasPasspointMatches  && mPasspointCredIdentifier != null);
+    }
+
+    public void clearPasspointMatch() {
+        mHasPasspointMatches = false;
+        mPasspointCredIdentifier = null;
+    }
+
+    public String getPasspointCredID() {
+        return mPasspointCredIdentifier;
+    }
+    //<-- Add for SPRD Passpoint R1 Feature
+
+
+
     void loadConfig(WifiConfiguration config) {
         if (config.isPasspoint())
             ssid = config.providerFriendlyName;
@@ -688,10 +823,21 @@ public class AccessPoint implements Comparable<AccessPoint> {
     private void initWithScanResult(ScanResult result) {
         ssid = result.SSID;
         security = getSecurity(result);
+        wpsAvailable = security != SECURITY_EAP && result.capabilities.contains("WPS");
         if (security == SECURITY_PSK)
             pskType = getPskType(result);
         mRssi = result.level;
         mSeen = result.timestamp;
+
+        //NOTE: Add for SPRD Passpoint R1 Feature -->
+        mHasPasspointMatches = result.hasPasspointMatches;
+        mPasspointCredIdentifier = result.passpointCredIdentifier;
+        if (result.hasPasspointMatches)
+            mPasspointMatchedBSSID = result.BSSID;
+        if (result.isPasspointNetwork())
+            mCachedPasspointBSSID = result.BSSID;
+        //<-- Add for SPRD Passpoint R1 Feature
+
     }
 
     public void saveWifiState(Bundle savedState) {
@@ -737,6 +883,28 @@ public class AccessPoint implements Comparable<AccessPoint> {
                 mAccessPointListener.onAccessPointChanged(this);
             }
 
+            //NOTE: Add for SPRD Passpoint R1 Feature -->
+            if (result.hasPasspointMatches && !mHasPasspointMatches) {
+                mHasPasspointMatches = result.hasPasspointMatches;
+                mPasspointCredIdentifier = result.passpointCredIdentifier;
+                mPasspointMatchedBSSID = result.BSSID;
+                Log.w(TAG, "Update SSID:" + ssid + " hasPasspointMatch: (security: " + security + " mHasPasspointMatches:" +mHasPasspointMatches + " id:" + mPasspointCredIdentifier + ")");
+            } else if (mPasspointMatchedBSSID != null && mPasspointMatchedBSSID.equals(result.BSSID)
+                && !result.hasPasspointMatches) {
+                mHasPasspointMatches = false;
+                mPasspointCredIdentifier = null;
+                mPasspointMatchedBSSID = null;
+            }
+
+            if (result.isPasspointNetwork()) {
+                mCachedPasspointBSSID = result.BSSID;
+                Log.w(TAG, "Update SSID:" + ssid + " isPasspointAP ");
+            } else if (mCachedPasspointBSSID != null && mCachedPasspointBSSID.equals(result.BSSID)
+                && !result.isPasspointNetwork()) {
+                mCachedPasspointBSSID = null;
+            }
+            //<-- Add for SPRD Passpoint R1 Feature
+
             return true;
         }
         return false;
@@ -773,6 +941,10 @@ public class AccessPoint implements Comparable<AccessPoint> {
 
     public static String getSummary(Context context, String ssid, DetailedState state,
             boolean isEphemeral, String passpointProvider) {
+        if(state == null){
+            return "";
+        }
+
         if (state == DetailedState.CONNECTED && ssid == null) {
             if (TextUtils.isEmpty(passpointProvider) == false) {
                 // Special case for connected + passpoint networks.
@@ -787,7 +959,7 @@ public class AccessPoint implements Comparable<AccessPoint> {
         // Case when there is wifi connected without internet connectivity.
         final ConnectivityManager cm = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (state == DetailedState.CONNECTED) {
+        if (state == DetailedState.CONNECTED && !RESET_DEFAULT_HTTP_RESPONSE) {
             IWifiManager wifiManager = IWifiManager.Stub.asInterface(
                     ServiceManager.getService(Context.WIFI_SERVICE));
             Network nw;
@@ -842,6 +1014,26 @@ public class AccessPoint implements Comparable<AccessPoint> {
     }
 
     private static int getSecurity(ScanResult result) {
+        if (result.capabilities.contains("PSK-SHA256")) {
+            return SECURITY_PSK_SHA256;
+        }
+        if (result.capabilities.contains("EAP-SHA256")) {
+            return SECURITY_EAP_SHA256;
+        }
+        if (result.capabilities.contains("FT/PSK")) {
+            return SECURITY_FT_PSK;
+        }
+        if (result.capabilities.contains("FT/EAP")) {
+            return SECURITY_FT_EAP;
+        }
+        // Broadcom, WAPI
+        if (result.capabilities.contains("WAPI-PSK")) {
+            return SECURITY_WAPI_PSK;
+        } else if (result.capabilities.contains("WAPI-CERT")) {
+            return SECURITY_WAPI_CERT;
+        } else
+        // Broadcom, WAPI
+
         if (result.capabilities.contains("WEP")) {
             return SECURITY_WEP;
         } else if (result.capabilities.contains("PSK")) {
@@ -853,6 +1045,18 @@ public class AccessPoint implements Comparable<AccessPoint> {
     }
 
     static int getSecurity(WifiConfiguration config) {
+        if (config.allowedKeyManagement.get(KeyMgmt.PSK_SHA256)) {
+            return SECURITY_PSK_SHA256;
+        }
+        if (config.allowedKeyManagement.get(KeyMgmt.EAP_SHA256)) {
+            return SECURITY_EAP_SHA256;
+        }
+        if (config.allowedKeyManagement.get(KeyMgmt.FT_PSK)) {
+            return SECURITY_FT_PSK;
+        }
+        if (config.allowedKeyManagement.get(KeyMgmt.FT_EAP)) {
+            return SECURITY_FT_EAP;
+        }
         if (config.allowedKeyManagement.get(KeyMgmt.WPA_PSK)) {
             return SECURITY_PSK;
         }
@@ -860,10 +1064,38 @@ public class AccessPoint implements Comparable<AccessPoint> {
                 config.allowedKeyManagement.get(KeyMgmt.IEEE8021X)) {
             return SECURITY_EAP;
         }
-        return (config.wepKeys[0] != null) ? SECURITY_WEP : SECURITY_NONE;
+
+        // Broadcom, WAPI
+        if (config.allowedKeyManagement.get(KeyMgmt.WAPI_PSK)) {
+            return SECURITY_WAPI_PSK;
+        }
+        if (config.allowedKeyManagement.get(KeyMgmt.WAPI_CERT)) {
+            return SECURITY_WAPI_CERT;
+        }
+        // Broadcom, WAPI
+
+        for (int i = 0; i < config.wepKeys.length; i++) {
+            if (config.wepKeys[i] != null) {
+                return SECURITY_WEP;
+            }
+        }
+        return SECURITY_NONE;
     }
 
     public static String securityToString(int security, int pskType) {
+        if (security == SECURITY_FT_PSK) {
+            return "FT-PSK";
+        } else if (security == SECURITY_FT_EAP) {
+            return "FT-EAP";
+        } else
+        // Broadcom, WAPI
+        if (security == SECURITY_WAPI_PSK) {
+            return "WAPI-PSK";
+        } else if (security == SECURITY_WAPI_CERT) {
+            return "WAPI-CERT";
+        } else
+        // Broadcom, WAPI
+
         if (security == SECURITY_WEP) {
             return "WEP";
         } else if (security == SECURITY_PSK) {

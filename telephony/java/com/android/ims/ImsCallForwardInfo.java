@@ -35,6 +35,11 @@ public class ImsCallForwardInfo implements Parcelable {
     public String mNumber;
     // No reply timer for CF
     public int mTimeSeconds;
+    /* SPRD: Added for VoLTE @{ */
+    public String  mRuleset;
+    public int mNumberType;
+    public int mServiceClass;
+    /* @} */
 
     public ImsCallForwardInfo() {
     }
@@ -55,6 +60,11 @@ public class ImsCallForwardInfo implements Parcelable {
         out.writeInt(mToA);
         out.writeString(mNumber);
         out.writeInt(mTimeSeconds);
+        /* SPRD: Added for VoLTE @{ */
+        out.writeString(mRuleset);
+        out.writeInt(mNumberType);
+        out.writeInt(mServiceClass);
+        /* @} */
     }
 
     @Override
@@ -62,7 +72,12 @@ public class ImsCallForwardInfo implements Parcelable {
         return super.toString() + ", Condition: " + mCondition
             + ", Status: " + ((mStatus == 0) ? "disabled" : "enabled")
             + ", ToA: " + mToA + ", Number=" + mNumber
-            + ", Time (seconds): " + mTimeSeconds;
+            + ", Time (seconds): " + mTimeSeconds
+            /* SPRD: Added for VoLTE @{ */
+            + ", mRuleset:"+mRuleset
+            + ", mNumberType:"+mNumberType
+            + ", mServiceClass:"+mServiceClass;
+            /* @} */
     }
 
     private void readFromParcel(Parcel in) {
@@ -71,6 +86,11 @@ public class ImsCallForwardInfo implements Parcelable {
         mToA = in.readInt();
         mNumber = in.readString();
         mTimeSeconds = in.readInt();
+        /* SPRD: Added for VoLTE @{ */
+        mRuleset = in.readString();
+        mNumberType = in.readInt();
+        mServiceClass = in.readInt();
+        /* @} */
     }
 
     public static final Creator<ImsCallForwardInfo> CREATOR =

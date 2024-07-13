@@ -13,17 +13,17 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License
-  -->
+-->
 
-<com.android.systemui.statusbar.phone.KeyguardBottomAreaView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.android.systemui.statusbar.phone.KeyguardBottomAreaView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:systemui="http://schemas.android.com/apk/res/com.android.systemui"
     android:id="@+id/keyguard_bottom_area"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:outlineProvider="none"
-    android:elevation="5dp" > <!-- Put it above the status bar header -->
-
+    android:layout_height="match_parent"
+    android:elevation="5dp"
+    android:outlineProvider="none" > <!-- Put it above the status bar header -->
+    <!--
+    SPRD: Feature 478270 Add EmergencyButton on the Lockscreen@{
     <com.android.systemui.statusbar.phone.KeyguardIndicationTextView
         android:id="@+id/keyguard_indication_text"
         android:layout_width="match_parent"
@@ -35,39 +35,93 @@
         android:textColor="#ffffff"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:accessibilityLiveRegion="polite" />
+    -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/keyguard_indication_margin_bottom"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <com.android.systemui.statusbar.phone.KeyguardIndicationTextView
+            android:id="@+id/keyguard_indication_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:accessibilityLiveRegion="polite"
+            android:gravity="center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#ffffff"
+            android:textStyle="italic" />
+
+        <com.android.keyguard.EmergencyButton
+            android:id="@+id/emergency_call_button_slide"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/eca_overlap"
+            android:drawablePadding="8dip"
+            android:text="@*android:string/lockscreen_emergency_call"
+            android:textAllCaps="@bool/kg_use_all_caps"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="@dimen/kg_status_line_font_size" />
+    </LinearLayout>
+    <!-- @} -->
 
     <FrameLayout
         android:id="@+id/preview_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="gone" >
+
+        <com.android.systemui.statusbar.KeyguardAffordanceView
+            android:id="@+id/camera_button"
+            android:layout_width="@dimen/keyguard_affordance_width"
+            android:layout_height="@dimen/keyguard_affordance_height"
+            android:layout_gravity="bottom|end"
+            android:contentDescription="@string/accessibility_camera_button"
+            android:scaleType="center"
+            android:src="@drawable/ic_camera_alt_24dp"
+            android:tint="#ffffffff" />
+
+        <com.android.systemui.statusbar.KeyguardAffordanceView
+            android:id="@+id/left_button"
+            android:layout_width="@dimen/keyguard_affordance_width"
+            android:layout_height="@dimen/keyguard_affordance_height"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@string/accessibility_phone_button"
+            android:scaleType="center"
+            android:src="@drawable/ic_phone_24dp"
+            android:tint="#ffffffff" />
+
+        <com.android.systemui.statusbar.phone.LockIcon
+            android:id="@+id/lock_icon"
+            android:layout_width="@dimen/keyguard_affordance_width"
+            android:layout_height="@dimen/keyguard_affordance_height"
+            android:layout_gravity="bottom|center_horizontal"
+            android:scaleType="center"
+            android:src="@drawable/ic_lock_24dp" />
     </FrameLayout>
 
-    <com.android.systemui.statusbar.KeyguardAffordanceView
-        android:id="@+id/camera_button"
-        android:layout_height="@dimen/keyguard_affordance_height"
-        android:layout_width="@dimen/keyguard_affordance_width"
-        android:layout_gravity="bottom|end"
-        android:tint="#ffffffff"
-        android:src="@drawable/ic_camera_alt_24dp"
-        android:scaleType="center"
-        android:contentDescription="@string/accessibility_camera_button" />
-
-    <com.android.systemui.statusbar.KeyguardAffordanceView
-        android:id="@+id/left_button"
-        android:layout_height="@dimen/keyguard_affordance_height"
-        android:layout_width="@dimen/keyguard_affordance_width"
-        android:layout_gravity="bottom|start"
-        android:tint="#ffffffff"
-        android:src="@drawable/ic_phone_24dp"
-        android:scaleType="center"
-        android:contentDescription="@string/accessibility_phone_button" />
-
-    <com.android.systemui.statusbar.phone.LockIcon
-        android:id="@+id/lock_icon"
-        android:layout_width="@dimen/keyguard_affordance_width"
-        android:layout_height="@dimen/keyguard_affordance_height"
+    <!-- SPR: 609454 -->
+    <!-- bug: 623120 add missCall and missMms notification on lockscreen @{-->
+    <TextView
+        android:id="@+id/keyguard_indication_star_unlock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:src="@drawable/ic_lock_24dp"
-        android:scaleType="center" />
-
+        android:accessibilityLiveRegion="polite"
+        android:gravity="center_horizontal"
+        android:text="@string/label_star_unlock"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/keyguard_star_text_size"
+        android:layout_marginBottom="@dimen/keyguard_star_text_margin_bottom"
+        />
+        <!-- @} -->
 </com.android.systemui.statusbar.phone.KeyguardBottomAreaView>

@@ -109,6 +109,7 @@ public final class PageAdapter extends Adapter {
 
     private int mPageContentWidth;
     private int mPageContentHeight;
+    private boolean mIsOnBind = false;
 
     public interface ContentCallbacks {
         public void onRequestContentUpdate();
@@ -266,7 +267,9 @@ public final class PageAdapter extends Adapter {
             updatePreviewAreaPageSizeAndEmptyState();
         }
 
-        if (documentChanged) {
+        //SPRD: 516291 Add tag to controller notifyDataSetChanged
+        if (documentChanged && !mIsOnBind) {
+            Log.i(LOG_TAG,"update begin to notifyDataSetChanged");
             notifyDataSetChanged();
         }
     }
@@ -288,6 +291,9 @@ public final class PageAdapter extends Adapter {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        //SPRD 512733 Add tag to controller notifyDataSetChanged
+        mIsOnBind = true;
+        Log.i(LOG_TAG,"onBindViewHolder start, mIsOnBind = "+mIsOnBind);
         if (DEBUG) {
             Log.i(LOG_TAG, "Binding holder: " + holder + " with id: " + getItemId(position)
                     + " for position: " + position);
@@ -342,6 +348,9 @@ public final class PageAdapter extends Adapter {
         String text = mContext.getString(R.string.current_page_template,
                 pageInDocument + 1, mDocumentPageCount);
         pageNumberView.setText(text);
+        //SPRD 512733 Add tag to controller notifyDataSetChanged
+        mIsOnBind = false;
+        Log.i(LOG_TAG,"onBindViewHolder end, mIsOnBind = "+mIsOnBind);
     }
 
     @Override
@@ -374,7 +383,11 @@ public final class PageAdapter extends Adapter {
             mSelectedPageCount = PageRangeUtils.getNormalizedPageCount(
                     mSelectedPages, mDocumentPageCount);
             updatePreviewAreaPageSizeAndEmptyState();
-            notifyDataSetChanged();
+            //SPRD 512733 Add tag to controller notifyDataSetChanged
+            if(!mIsOnBind){
+                Log.i(LOG_TAG,"begin to notifyDataSetChanged");
+                notifyDataSetChanged();
+            }
         }
         return mSelectedPages;
     }

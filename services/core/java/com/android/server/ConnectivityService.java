@@ -21,6 +21,7 @@ import static android.net.ConnectivityManager.CONNECTIVITY_ACTION;
 import static android.net.ConnectivityManager.NETID_UNSET;
 import static android.net.ConnectivityManager.TYPE_NONE;
 import static android.net.ConnectivityManager.TYPE_VPN;
+import static android.net.ConnectivityManager.TYPE_ETHERNET;
 import static android.net.ConnectivityManager.getNetworkTypeName;
 import static android.net.ConnectivityManager.isNetworkTypeValid;
 import static android.net.NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL;
@@ -33,6 +34,9 @@ import static android.net.NetworkPolicyManager.RULE_REJECT_ALL;
 import static android.net.NetworkPolicyManager.RULE_REJECT_METERED;
 
 import android.annotation.Nullable;
+import android.net.LocalSocketAddress;
+import android.net.LocalSocket;
+import java.io.OutputStream;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -173,6 +177,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
     // system property that can override the above value
     private static final String NETWORK_RESTORE_DELAY_PROP_NAME =
             "android.telephony.apn-restore";
+    private static final boolean IS_SUPPORT_USB_REVERSE_TETHER = SystemProperties.getBoolean("persist.sys.usb-pc.tethering",true);
 
     // How long to wait before putting up a "This network doesn't have an Internet connection,
     // connect anyway?" dialog after the user selects a network that doesn't validate.
@@ -193,6 +198,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
     private boolean mLockdownEnabled;
     private LockdownVpnTracker mLockdownTracker;
+    private OutputStream mDrmSocketStream;
 
     /** Lock around {@link #mUidRules} and {@link #mMeteredIfaces}. */
     private Object mRulesLock = new Object();
@@ -219,6 +225,11 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
     private static final int ENABLED  = 1;
     private static final int DISABLED = 0;
+
+    /* SRPD: Add for Commlog feature @{ */
+    private static final String ACTION_REPORT_ERRLOG = "com.sprd.intent.action.UPDATE_NETWORK_PARAMETERS_FAIL";
+    private static final String PERMISSION_RECEIVE_ERRLOG = "com.android.permission.RECEIVE_SPRD_COMMLOG";
+    /* @} */
 
     private enum ReapUnvalidatedNetworks {
         // Tear down networks that have no chance (e.g. even if validated) of becoming
@@ -717,6 +728,12 @@ public class ConnectivityService extends IConnectivityManager.Stub
             mNetworksDefined++;  // used only in the log() statement below.
         }
 
+        //SPRD : if support USB Internet PC, Forcibly add TYPE_ETHERNET as a supported type
+        if (IS_SUPPORT_USB_REVERSE_TETHER && mNetConfigs[TYPE_ETHERNET] == null) {
+            mLegacyTypeTracker.addSupportedType(TYPE_ETHERNET);
+            mNetworksDefined++;  // used only in the log() statement below.
+        }
+
         if (VDBG) log("mNetworksDefined=" + mNetworksDefined);
 
         mProtectedNetworks = new ArrayList<Integer>();
@@ -757,7 +774,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
         mSettingsObserver = new SettingsObserver(mContext, mHandler);
         registerSettingsCallbacks();
-
         mDataConnectionStats = new DataConnectionStats(mContext);
         mDataConnectionStats.startMonitoring();
 
@@ -887,7 +903,13 @@ public class ConnectivityService extends IConnectivityManager.Stub
         Network network = null;
         String subscriberId = null;
 
-        NetworkAgentInfo nai = getDefaultNetwork();
+        NetworkAgentInfo nai = null;
+        try {
+            nai = getDefaultNetwork();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            nai = null;
+        }
 
         final Network[] networks = getVpnUnderlyingNetworks(uid);
         if (networks != null) {
@@ -3828,6 +3850,20 @@ public class ConnectivityService extends IConnectivityManager.Stub
         updateNetworkInfo(na, networkInfo);
     }
 
+    /* SRPD: Add for Commlog feature @{ */
+    private void sendErrReport(String errType, String message) {
+        try {
+            Intent intent = new Intent(ACTION_REPORT_ERRLOG);
+            intent.putExtra("ErrorType", errType);
+            intent.putExtra("Exception", message);
+            mContext.sendBroadcast(intent,PERMISSION_RECEIVE_ERRLOG);
+        } catch (Exception e) {
+            loge("commlog ConnectivityService sendErrReport exception " + e);
+        }
+    }
+    /* @} */
+
+
     private void updateLinkProperties(NetworkAgentInfo networkAgent, LinkProperties oldLp) {
         LinkProperties newLp = networkAgent.linkProperties;
         int netId = networkAgent.network.netId;
@@ -3893,6 +3929,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 mNetd.addInterfaceToNetwork(iface, netId);
             } catch (Exception e) {
                 loge("Exception adding interface: " + e);
+                //SRPD: Add for Commlog feature
+                sendErrReport("AddingInterface", e.getMessage());
             }
         }
         for (String iface : interfaceDiff.removed) {
@@ -3901,6 +3939,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 mNetd.removeInterfaceFromNetwork(iface, netId);
             } catch (Exception e) {
                 loge("Exception removing interface: " + e);
+                //SRPD: Add for Commlog feature
+                sendErrReport("RemovingInterface", e.getMessage());
             }
         }
     }
@@ -3929,6 +3969,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 if ((route.getDestination().getAddress() instanceof Inet4Address) || VDBG) {
                     loge("Exception in addRoute for non-gateway: " + e);
                 }
+                //SRPD: Add for Commlog feature
+                sendErrReport("AddRouteForNongateway", e.getMessage());
             }
         }
         for (RouteInfo route : routeDiff.added) {
@@ -3940,6 +3982,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 if ((route.getGateway() instanceof Inet4Address) || VDBG) {
                     loge("Exception in addRoute for gateway: " + e);
                 }
+                //SRPD: Add for Commlog feature
+                sendErrReport("AddRouteForgateway", e.getMessage());
             }
         }
 
@@ -3949,8 +3993,24 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 mNetd.removeRoute(netId, route);
             } catch (Exception e) {
                 loge("Exception in removeRoute: " + e);
+                //SRPD: Add for Commlog feature
+                sendErrReport("RemoveRoute", e.getMessage());
             }
         }
+        /* SPRD: just change static ip for wifi connection, the route is dropped @{ */
+        if (newLp != null && routeDiff.added.isEmpty() && routeDiff.removed.isEmpty()) {
+            for (RouteInfo route : newLp.getAllRoutes()) {
+                if (DBG) log("add Route [" + route + "] from network " + netId);
+                try {
+                    mNetd.addRoute(netId, route);
+                } catch (Exception e) {
+                    loge("The Route has been added!");
+                    //SRPD: Add for Commlog feature
+                    sendErrReport("ExcepButRouteadded", e.getMessage());
+                }
+            }
+        }
+        /* @} */
         return !routeDiff.added.isEmpty() || !routeDiff.removed.isEmpty();
     }
 
@@ -3971,6 +4031,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
                     newLp.getDomains());
             } catch (Exception e) {
                 loge("Exception in setDnsServersForNetwork: " + e);
+                //SRPD: Add for Commlog feature
+                sendErrReport("SetDnsServersForNetwork", e.getMessage());
             }
             final NetworkAgentInfo defaultNai = getDefaultNetwork();
             if (defaultNai != null && defaultNai.network.netId == netId) {
@@ -3982,6 +4044,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 mNetd.flushNetworkDnsCache(netId);
             } catch (Exception e) {
                 loge("Exception in flushNetworkDnsCache: " + e);
+                //SRPD: Add for Commlog feature
+                sendErrReport("FlushNetworkDnsCache", e.getMessage());
             }
             flushVmDnsCache();
         }
@@ -4753,4 +4817,28 @@ public class ConnectivityService extends IConnectivityManager.Stub
         return new NetworkMonitor(context, handler, nai, defaultRequest);
     }
 
+    public int enableTetherPCInternet(String hostAddress) {
+        enforceTetherAccessPermission();
+        log("Tethering enableTetherPCInternet enter..");
+        if (isTetheringSupported()) {
+            return mTethering.enableTetherPCInternet(hostAddress);
+        } else {
+            return ConnectivityManager.TETHER_ERROR_UNSUPPORTED;
+        }
+    }
+
+    public int disableTetherPCInternet() {
+        enforceTetherAccessPermission();
+        log("Tethering disableTetherPCInternet enter..");
+        if (isTetheringSupported()) {
+            return mTethering.disableTetherPCInternet();
+        } else {
+            return ConnectivityManager.TETHER_ERROR_UNSUPPORTED;
+        }
+    }
+
+    public boolean getPCNetTether() {
+        enforceTetherAccessPermission();
+        return mTethering.getPCNetTether();
+    }
 }

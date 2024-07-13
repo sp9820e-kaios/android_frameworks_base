@@ -25,12 +25,14 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.util.AsyncChannel;
 import com.android.systemui.statusbar.policy.NetworkController.IconState;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,6 +42,7 @@ public class WifiSignalController extends
     private final WifiManager mWifiManager;
     private final AsyncChannel mWifiChannel;
     private final boolean mHasMobileData;
+    private static final boolean WIFI_SIGNAL_OPTIMIZED = SystemProperties.getBoolean("ro.wifi.signal.optimized", true);
 
     public WifiSignalController(Context context, boolean hasMobileData,
             CallbackHandler callbackHandler, NetworkControllerImpl networkController) {
@@ -77,15 +80,21 @@ public class WifiSignalController extends
         // only show wifi in the cluster if connected or if wifi-only
         boolean wifiVisible = mCurrentState.enabled
                 && (mCurrentState.connected || !mHasMobileData);
+        if (WifiManager.SUPPORT_CMCC) {
+            wifiVisible = mCurrentState.enabled;
+        }
         String wifiDesc = wifiVisible ? mCurrentState.ssid : null;
         boolean ssidPresent = wifiVisible && mCurrentState.ssid != null;
         String contentDescription = getStringIfExists(getContentDescription());
-
+        if (WIFI_SIGNAL_OPTIMIZED) {
+            mCurrentState.inetCondition = 1;
+        }
         IconState statusIcon = new IconState(wifiVisible, getCurrentIconId(), contentDescription);
         IconState qsIcon = new IconState(mCurrentState.connected, getQsCurrentIconId(),
                 contentDescription);
         mCallbackHandler.setWifiIndicators(mCurrentState.enabled, statusIcon, qsIcon,
-                ssidPresent && mCurrentState.activityIn, ssidPresent && mCurrentState.activityOut,
+                WIFI_SIGNAL_OPTIMIZED && ssidPresent && mCurrentState.activityIn,
+                WIFI_SIGNAL_OPTIMIZED && ssidPresent && mCurrentState.activityOut,
                 wifiDesc);
     }
 
@@ -173,6 +182,16 @@ public class WifiSignalController extends
                     break;
             }
         }
+    }
+
+    public void updateConnectivity(BitSet connectedTransports, BitSet validatedTransports) {
+        if (WIFI_SIGNAL_OPTIMIZED) {
+            mCurrentState.inetCondition = 1;
+        } else {
+            mCurrentState.inetCondition =
+                    validatedTransports.get(mTransportType) ? 1 : 0;
+        }
+        notifyListenersIfNecessary();
     }
 
     static class WifiState extends SignalController.State {

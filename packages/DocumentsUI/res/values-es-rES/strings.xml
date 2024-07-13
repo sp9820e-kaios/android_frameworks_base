@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"Documentos"</string>
+<string name="title_open">"Abrir desde"</string>
+<string name="title_save">"Guardar a"</string>
+<string name="menu_create_dir">"Crear carpeta"</string>
+<string name="menu_grid">"Ver cuadrícula"</string>
+<string name="menu_list">"Ver listado"</string>
+<string name="menu_sort">"Ordenar por"</string>
+<string name="menu_search">"Buscar"</string>
+<string name="menu_settings">"Configuraciones"</string>
+<string name="menu_open">"Abrir"</string>
+<string name="menu_save">"Guardar"</string>
+<string name="menu_share">"Compartir"</string>
+<string name="menu_delete">"eliminar"</string>
+<string name="menu_select_all">"Seleccionar todo"</string>
+<string name="menu_copy">"Copiar a\u2026"</string>
+<string name="menu_advanced_show" product="nosdcard">"Mostrar el almacenamiento interno"</string>
+<string name="menu_advanced_show" product="default">"Mostrar la tarjeta SD"</string>
+<string name="menu_advanced_hide" product="nosdcard">"Ocultar almacenamiento interno"</string>
+<string name="menu_advanced_hide" product="default">"Ocultar la tarjeta SD"</string>
+<string name="menu_file_size_show">"Mostrar el tamaño del archivo"</string>
+<string name="menu_file_size_hide">"Ocultar el tamaño del archivo"</string>
+<string name="button_select">"Seleccionar"</string>
+<string name="button_copy">"Copiar"</string>
+<string name="sort_name">"Por nombre"</string>
+<string name="sort_date">"Por fecha de modificación"</string>
+<string name="sort_size">"Por tamaño"</string>
+<string name="drawer_open">"Mostrar raíces"</string>
+<string name="drawer_close">"Ocultar raíces"</string>
+<string name="save_error">"No se pudo guardar el documento"</string>
+<string name="create_error">"No se pudo crear la carpeta"</string>
+<string name="query_error">"No se pudo consultar los documentos"</string>
+<string name="root_recent">"Reciente"</string>
+<string name="root_available_bytes">"<xliff:g id="size" example="3GB">%1$s</xliff:g>  libre"</string>
+<string name="root_type_service">"Servicios de almacenamiento"</string>
+<string name="root_type_shortcut">"Accesos directos"</string>
+<string name="root_type_device">"Dispositivos"</string>
+<string name="root_type_apps">"Más aplicaciones"</string>
+<string name="empty">"No hay elementos"</string>
+<string name="toast_no_application">"No se puede abrir el archivo"</string>
+<string name="toast_failed_delete">"No se puede eliminar algunos documentos"</string>
+<string name="share_via">"Compartir vía"</string>
+<string name="copy_notification_title">"Copiando archivos"</string>
+<string name="copy_remaining">"<xliff:g id="duration" example="3 minutes">%s</xliff:g> restante"</string>
+<string name="copy_preparing">"Preparación para la copia\u2026"</string>
+<string name="notification_touch_for_details">"Tocar para ver detalles"</string>
+<string name="retry">"Volver a procesar"</string>
+<string name="copy_failure_alert_content">"Estos archivos no se copiaron: <xliff:g id="list">%1$s</xliff:g>"</string>
+<string name="shared_error">"No se puede compartir el archivo"</string>
+<string name="documents_deleting">"Eliminando documentos"</string>
+<string name="error_permissions">"La aplicación no tiene permisos críticos necesarios para funcionar. Se recomienda consultar los permisos de configuración."</string>
+<string name="cannot_copyfolder_itself">"No puede copiar la carpeta en sí misma"</string>
+<string name="cannot_copy_drm">"No se puede copiar archivos DRM"</string>
+<string name="cannot_copy_downloading">"No se puede copiar la descarga de archivos"</string>
+</resources>

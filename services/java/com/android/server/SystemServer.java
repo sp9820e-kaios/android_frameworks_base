@@ -91,8 +91,15 @@ import com.android.server.usb.UsbService;
 import com.android.server.wallpaper.WallpaperManagerService;
 import com.android.server.webkit.WebViewUpdateService;
 import com.android.server.wm.WindowManagerService;
+import android.hardware.boardScore.BoardScoreService;
+import com.android.security.SecurityService;
 
 import dalvik.system.VMRuntime;
+
+// SPRD: secure start
+import com.android.server.secure.TsIpTableService;
+import com.thundersoft.secure.TsIpTableManager;
+
 
 import java.io.File;
 import java.util.Locale;
@@ -152,6 +159,7 @@ public final class SystemServer {
     private PackageManagerService mPackageManagerService;
     private PackageManager mPackageManager;
     private ContentResolver mContentResolver;
+    private SecurityService security;
 
     private boolean mOnlyCore;
     private boolean mFirstBoot;
@@ -348,6 +356,12 @@ public final class SystemServer {
         // starts up.
         mDisplayManagerService = mSystemServiceManager.startService(DisplayManagerService.class);
 
+        if (SystemProperties.get("persist.support.securetest").equals("1")){
+                        Slog.i(TAG, "Security Service");
+                        security = new SecurityService();
+                        ServiceManager.addService(Context.SECURITY_SERVICE, security);
+        }
+
         // We need the default display before we can initialize the package manager.
         mSystemServiceManager.startBootPhase(SystemService.PHASE_WAIT_FOR_DEFAULT_DISPLAY);
 
@@ -430,6 +444,9 @@ public final class SystemServer {
         EntropyMixer entropyMixer = null;
         CameraService cameraService = null;
 
+	//SPRD: Add heartbeat powerguru
+	PowerGuruService powerguru = null;
+
         boolean disableStorage = SystemProperties.getBoolean("config.disable_storage", false);
         boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", false);
         boolean disableLocation = SystemProperties.getBoolean("config.disable_location", false);
@@ -485,6 +502,17 @@ public final class SystemServer {
             consumerIr = new ConsumerIrService(context);
             ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
 
+	//SPRD: add for heartbeat powerguru
+	try {
+		if (PowerGuruService.isEnabled()) {
+		Slog.i(TAG, "PowerGuru Manager");
+		powerguru = new PowerGuruService(context);
+		ServiceManager.addService(Context.POWERGURU_SERVICE, powerguru);
+		}
+	} catch (Throwable e) {
+		Slog.e(TAG, "Failure PowerGuruService", e);
+	}
+
             mSystemServiceManager.startService(AlarmManagerService.class);
             alarm = IAlarmManager.Stub.asInterface(
                     ServiceManager.getService(Context.ALARM_SERVICE));
@@ -527,6 +555,14 @@ public final class SystemServer {
                 Slog.i(TAG, "Bluetooth Service");
                 mSystemServiceManager.startService(BluetoothService.class);
             }
+
+            // SPRD: secure start
+            if ("cmcc".equals(SystemProperties.get("ro.operator"))) {
+                Slog.i(TAG, "TsIpTableService Service");
+                TsIpTableService ipTableService = new TsIpTableService(context);
+                ServiceManager.addService(TsIpTableManager.TSIPTABLE_SERVICE, ipTableService);
+            }
+            // SPRD: secure end
         } catch (RuntimeException e) {
             Slog.e("System", "******************************************");
             Slog.e("System", "************ Failure starting core service", e);
@@ -859,6 +895,15 @@ public final class SystemServer {
                 }
             }
 
+            if ("1".equals(SystemProperties.get("persist.sys.bsservice.enable"))) {
+                try {
+                    Slog.i(TAG, "BoardScore Service");
+                    ServiceManager.addService(Context.BoardScore_SERVICE, new BoardScoreService(context));
+                } catch (Throwable e) {
+                    reportWtf("starting BoardScore Service", e);
+                }
+            }
+
             mSystemServiceManager.startService(TwilightService.class);
 
             mSystemServiceManager.startService(JobSchedulerService.class);
@@ -1082,6 +1127,7 @@ public final class SystemServer {
         final MediaRouterService mediaRouterF = mediaRouter;
         final AudioService audioServiceF = audioService;
         final MmsServiceBroker mmsServiceF = mmsService;
+        final SecurityService securityF = security;
 
         // We now tell the activity manager it is okay to run third party
         // code.  It will call back into us once it has gotten to the state
@@ -1210,6 +1256,15 @@ public final class SystemServer {
                     if (mmsServiceF != null) mmsServiceF.systemRunning();
                 } catch (Throwable e) {
                     reportWtf("Notifying MmsService running", e);
+                }
+                if (SystemProperties.get("persist.support.securetest").equals("1")) {
+                    if (securityF != null) {
+                        try {
+                            securityF.systemReady(context);
+                        } catch (Throwable e) {
+                            reportWtf("Security Service ready", e);
+                        }
+                    }
                 }
             }
         });

@@ -412,7 +412,15 @@ public final class PrintManager {
      * @see PrintJob
      */
     public PrintJob print(String printJobName, PrintDocumentAdapter documentAdapter,
-            PrintAttributes attributes) {
+        PrintAttributes attributes) {
+        return print(printJobName, documentAdapter, attributes, null);
+    }
+
+    /**
+     * @hide
+     */
+    public PrintJob print(String printJobName, PrintDocumentAdapter documentAdapter,
+            PrintAttributes attributes, Looper looper) {
         if (mService == null) {
             Log.w(LOG_TAG, "Feature android.software.print not available");
             return null;
@@ -427,7 +435,7 @@ public final class PrintManager {
             throw new IllegalArgumentException("documentAdapter cannot be null");
         }
         PrintDocumentAdapterDelegate delegate = new PrintDocumentAdapterDelegate(
-                (Activity) mContext, documentAdapter);
+                (Activity) mContext, documentAdapter, looper);
         try {
             Bundle result = mService.print(printJobName, delegate,
                     attributes, mContext.getPackageName(), mAppId, mUserId);
@@ -521,9 +529,18 @@ public final class PrintManager {
 
         public PrintDocumentAdapterDelegate(Activity activity,
                 PrintDocumentAdapter documentAdapter) {
+            this(activity, documentAdapter, null);
+        }
+
+        public PrintDocumentAdapterDelegate(Activity activity,
+                PrintDocumentAdapter documentAdapter, Looper looper) {
             mActivity = activity;
             mDocumentAdapter = documentAdapter;
-            mHandler = new MyHandler(mActivity.getMainLooper());
+            if(looper != null){
+                mHandler = new MyHandler(looper);
+            }else{
+                mHandler = new MyHandler(mActivity.getMainLooper());
+            }
             mActivity.getApplication().registerActivityLifecycleCallbacks(this);
         }
 

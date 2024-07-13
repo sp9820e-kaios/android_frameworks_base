@@ -55,6 +55,7 @@ import android.content.pm.ServiceInfo;
 import android.content.pm.UserInfo;
 import android.content.pm.VerificationParams;
 import android.content.pm.VerifierDeviceIdentity;
+import android.content.pm.AppCloneUserInfo;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 import android.graphics.Bitmap;
@@ -64,6 +65,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -73,9 +75,11 @@ import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
 import android.os.storage.VolumeInfo;
 import android.util.ArrayMap;
 import android.util.Log;
+import android.util.Slog;
 import android.view.Display;
 
 import dalvik.system.VMRuntime;
@@ -593,6 +597,16 @@ final class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    /** @hide */
+    @Override
+    public List<String> getOemPackageList() {
+        try {
+            return mPM.getOemPackageList();
+        } catch (RemoteException e) {
+            throw new RuntimeException("Package manager has died", e);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<PackageInfo> getPackagesHoldingPermissions(
@@ -812,6 +826,23 @@ final class ApplicationPackageManager extends PackageManager {
         }
     }
 
+    public Drawable getDrawableForUser(String userName, @DrawableRes int resId,
+            int userHandle){
+        final ResourceName name = new ResourceName(userName, resId);
+        final Drawable cachedIcon = getCachedIcon(name);
+        if (cachedIcon != null) {
+            return cachedIcon;
+        }
+
+        final Bitmap userIconBitmap = getUserManager().getUserIcon(userHandle);
+        if(userIconBitmap == null) return null;
+        final Drawable dr =new BitmapDrawable(userIconBitmap);
+        if (dr != null) {
+            putCachedIcon(name, dr);
+        }
+        return dr;
+    }
+
     @Nullable
     @Override
     public Drawable getDrawable(String packageName, @DrawableRes int resId,
@@ -976,6 +1007,18 @@ final class ApplicationPackageManager extends PackageManager {
     public Drawable getUserBadgedIcon(Drawable icon, UserHandle user) {
         final int badgeResId = getBadgeResIdForUser(user.getIdentifier());
         if (badgeResId == 0) {
+            UserInfo userInfo = getUserIfProfile(user.getIdentifier());
+            if(userInfo != null){
+                AppCloneUserInfo appCloneUserInfo = new AppCloneUserInfo(userInfo);
+                if(appCloneUserInfo.isAppClone()){
+                    Drawable badgeIconForUser = getDrawableForUser(appCloneUserInfo.name, badgeResId, user.getIdentifier());
+                    if(badgeIconForUser != null){
+                        return getBadgedDrawable(icon, badgeIconForUser, null, true);
+                    } else {
+                        Log.w(TAG,"Warning, no badgeIcon found for user :"+appCloneUserInfo+".use orig ");
+                    }
+                }
+            }
             return icon;
         }
         Drawable badgeIcon = getDrawable("system", badgeResId, null);
@@ -1573,7 +1616,16 @@ final class ApplicationPackageManager extends PackageManager {
             if (VolumeInfo.ID_PRIVATE_INTERNAL.equals(vol.id)) {
                 volumeUuid = StorageManager.UUID_PRIVATE_INTERNAL;
             } else if (vol.isPrimaryPhysical()) {
-                volumeUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+                /* SPRD: support double sdcard
+                 * Add support for install apk to internal sdcard @{
+                 * @orig volumeUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+                 */
+                  if(Environment.getStorageType() == Environment.STORAGE_PRIMARY_EXTERNAL){
+                     volumeUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+                  }else{
+                     volumeUuid = Preconditions.checkNotNull(vol.fsUuid);
+                  }
+                  /* @} */
             } else {
                 volumeUuid = Preconditions.checkNotNull(vol.fsUuid);
             }
@@ -1587,10 +1639,30 @@ final class ApplicationPackageManager extends PackageManager {
     @Override
     public @Nullable VolumeInfo getPackageCurrentVolume(ApplicationInfo app) {
         final StorageManager storage = mContext.getSystemService(StorageManager.class);
-        if (app.isInternal()) {
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         */
+        if(app.isInternalSd()){
+           StorageVolume internalSdVolume = storage.getStorageVolume(Environment.getInternalStoragePath());
+           if(internalSdVolume == null) {
+              return null;
+           }else {
+              return storage.findVolumeById(internalSdVolume.getId());
+            }
+        } else/* @} */ if (app.isInternal()) {
             return storage.findVolumeById(VolumeInfo.ID_PRIVATE_INTERNAL);
         } else if (app.isExternalAsec()) {
-            return storage.getPrimaryPhysicalVolume();
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * @orig return storage.getPrimaryPhysicalVolume();
+             */
+            StorageVolume sdcardVolume = storage.getStorageVolume(Environment.getExternalStoragePath());
+            if(sdcardVolume == null) {
+               return null;
+            }else {
+               return storage.findVolumeById(sdcardVolume.getId());
+             }
+              /* @} */
         } else {
             return storage.findVolumeByUuid(app.volumeUuid);
         }
@@ -1622,6 +1694,11 @@ final class ApplicationPackageManager extends PackageManager {
                 || app.installLocation == PackageInfo.INSTALL_LOCATION_INTERNAL_ONLY) {
             return false;
         }
+        /* SPRD: can't move preloadpp and vital-app {@ */
+        if(app.sourceDir != null && (app.sourceDir.startsWith("/system/preloadapp") || app.sourceDir.startsWith("/system/vital-app"))) {
+            return false;
+        }
+        /* @} */
 
         // Gotta be able to write there
         if (!vol.isMountedWritable()) {
@@ -1629,9 +1706,17 @@ final class ApplicationPackageManager extends PackageManager {
         }
 
         // Moving into an ASEC on public primary is only option internal
-        if (vol.isPrimaryPhysical()) {
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         * @orig if (vol.isPrimaryPhysical()) {
+         *          return app.isInternal();
+          *         }
+          */
+        if (vol.type == VolumeInfo.TYPE_PUBLIC && ((Environment.internalIsEmulated() && Objects.equals(vol.linkName,"sdcard0"))
+        		|| (!Environment.internalIsEmulated() && Objects.equals(vol.linkName,"sdcard1")))) {
             return app.isInternal();
-        }
+         }
+        /* @} */
 
         // Otherwise we can move to any private volume
         return (vol.getType() == VolumeInfo.TYPE_PRIVATE);
@@ -1661,6 +1746,33 @@ final class ApplicationPackageManager extends PackageManager {
         final String volumeUuid = storage.getPrimaryStorageUuid();
         return storage.findVolumeByQualifiedUuid(volumeUuid);
     }
+
+    /* SPRD: add for emulated storage @{ */
+    @Override
+    public int movePrimaryEmulatedStorage(VolumeInfo vol) {
+        try {
+            final String volumeUuid;
+            if (VolumeInfo.ID_PRIVATE_INTERNAL.equals(vol.id)) {
+                volumeUuid = StorageManager.UUID_PRIVATE_INTERNAL;
+            } else if (vol.isPrimaryPhysical()) {
+                volumeUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+            } else {
+                volumeUuid = Preconditions.checkNotNull(vol.fsUuid);
+            }
+
+            return mPM.movePrimaryEmulatedStorage(volumeUuid);
+        } catch (RemoteException e) {
+            throw e.rethrowAsRuntimeException();
+        }
+    }
+
+    @Override
+    public @Nullable VolumeInfo getPrimaryEmulatedStorageCurrentVolume() {
+        final StorageManager storage = mContext.getSystemService(StorageManager.class);
+        final String volumeUuid = storage.getPrimaryEmulatedStorageUuid();
+        return storage.findVolumeByQualifiedUuid(volumeUuid);
+    }
+    /* @} */
 
     @Override
     public @NonNull List<VolumeInfo> getPrimaryStorageCandidateVolumes() {
@@ -1852,6 +1964,30 @@ final class ApplicationPackageManager extends PackageManager {
         return null;
     }
 
+    /* SPRD: update label and icon for app @{ */
+    @Override
+    public void setComponentEnabledSettingForSetupMenu(ComponentName componentName,
+        int flags, Intent attr) {
+        try {
+            mPM.setComponentEnabledSettingForSetupMenu(componentName,flags,mContext.getUserId(), attr);
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+    }
+    /* @} */
+    /* SPRD: update label and icon for app @{ */
+    @Override
+    public void setComponentEnabledSettingForSpecific(ComponentName componentName,
+            int newState, int flags, Intent attr) {
+        try {
+            mPM.setComponentEnabledSettingForSpecific(componentName, newState, flags,
+                    mContext.getUserId(), attr);
+        } catch (RemoteException e) {
+            // Should never happen!
+        }
+    }
+
+    /* @} */
     @Override
     public void setComponentEnabledSetting(ComponentName componentName,
                                            int newState, int flags) {
@@ -2239,4 +2375,30 @@ final class ApplicationPackageManager extends PackageManager {
             return false;
         }
     }
+    /*
+     * SPRD: add for backup app
+     * @{
+     */
+    @Override
+    public int backupAppData(String pkgName, String destDir) {
+        try {
+            return mPM.backupAppData(pkgName, destDir);
+        } catch (RemoteException e) {
+            // Should never happen!
+            return BACKUPAPP_FAILED_UNKNOWN;
+        }
+    }
+
+    @Override
+    public int restoreAppData(String srcDir, String pkgName) {
+        try {
+            return mPM.restoreAppData(srcDir, pkgName);
+        } catch (RemoteException e) {
+            // Should never happen!
+            return BACKUPAPP_FAILED_UNKNOWN;
+        }
+    }
+    /*
+     * @}
+     */
 }

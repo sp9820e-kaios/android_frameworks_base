@@ -86,6 +86,8 @@ public class MtpDatabase {
     private static final String[] PATH_PROJECTION = new String[] {
             Files.FileColumns._ID, // 0
             Files.FileColumns.DATA, // 1
+            "title_key", //2
+            "_display_name", //3
     };
     private static final String[] FORMAT_PROJECTION = new String[] {
             Files.FileColumns._ID, // 0
@@ -739,16 +741,21 @@ public class MtpDatabase {
     }
 
     private int renameFile(int handle, String newName) {
+        Log.d(TAG,"renameFile: handle="+handle+", newName="+newName);
         Cursor c = null;
 
         // first compute current path
         String path = null;
+        String titleKey = null;
+        String displayName = null;
         String[] whereArgs = new String[] {  Integer.toString(handle) };
         try {
             c = mMediaProvider.query(mPackageName, mObjectsUri, PATH_PROJECTION, ID_WHERE,
                     whereArgs, null, null);
             if (c != null && c.moveToNext()) {
                 path = c.getString(1);
+                titleKey = c.getString(2);
+                displayName = c.getString(3);
             }
         } catch (RemoteException e) {
             Log.e(TAG, "RemoteException in getObjectFilePath", e);
@@ -784,6 +791,20 @@ public class MtpDatabase {
         // finally update database
         ContentValues values = new ContentValues();
         values.put(Files.FileColumns.DATA, newPath);
+        if (newFile.isFile()) {
+            String title = computeFileTitle(newName);
+            values.put("title", title);
+            if (displayName != null) {
+                values.put("_display_name", newName);
+            }
+            if (titleKey != null) {
+                values.put("title_key", MediaStore.Audio.keyFor(title));
+            }
+            if (newName != null && newName.endsWith(".pla")) {
+                values.put("name", title);
+            }
+        }
+
         int updated = 0;
         try {
             // note - we are relying on a special case in MediaProvider.update() to update
@@ -823,6 +844,16 @@ public class MtpDatabase {
         }
 
         return MtpConstants.RESPONSE_OK;
+    }
+
+    //SPRD: add this method to update name in database
+    private String computeFileTitle(String name) {
+        // truncate the file extension (if any)
+        int lastDot = name.lastIndexOf('.');
+        if (lastDot > 0) {
+            name = name.substring(0, lastDot);
+        }
+        return name;
     }
 
     private int setObjectProperty(int handle, int property,

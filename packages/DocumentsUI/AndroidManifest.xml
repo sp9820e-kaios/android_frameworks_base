@@ -3,6 +3,9 @@
 
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.REMOVE_TASKS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_ALL_DOWNLOADS" />
 
     <application
         android:name=".DocumentsApplication"
@@ -12,7 +15,8 @@
         <activity
             android:name=".DocumentsActivity"
             android:theme="@style/DocumentsTheme"
-            android:icon="@drawable/ic_doc_text">
+            android:icon="@drawable/ic_doc_text"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.OPEN_DOCUMENT" />
                 <category android:name="android.intent.category.DEFAULT" />

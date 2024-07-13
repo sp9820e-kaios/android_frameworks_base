@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ବହନୀୟ ୱାଇ-ଫାଇ ହଟସ୍ପଟ ମୋବାଇଲ ତଥ୍ୟ ସଂଯୋଗ ହେବା ଦରକାର କରୁଛି, ଅତିରିକ୍ତ ଖର୍ଚ ସୃଷ୍ଟି କରିପାରେ ।"</string>
+<string name="softap_bt_cannot_coexist">"ବ୍ଲୁଟୁଥ ସକ୍ଷମ ହୋଇଥିଲେ କିମ୍ବା ଖୋଲା ଯାଉଥିଲେ ସଫ୍ଟ ଏପ କାମ କରିପାରିବ ନାହିଁ, ଯଦି ଆପଣ ସଫ୍ଟ ଏପ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି, ଦୟାକରି ବ୍ଲୁଟୁଥ ଅକ୍ଷମ ହୋଇଛି ବୋଲି ନିଶ୍ଚିତ ହୁଅନ୍ତୁ ।"</string>
+<string name="bt_softap_cannot_coexist">"ସଫ୍ଟ ଏପ ସକ୍ଷମ ହୋଇଥିଲେ କିମ୍ବା ଖୋଲା ଯାଉଥିଲେ ବ୍ଲୁଟୁଥ କାମ କରିପାରିବ ନାହିଁ, ଯଦି ଆପଣ ବ୍ଲୁଟୁଥ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି, ଦୟାକରି ସଫ୍ଟ ଏପ ଅକ୍ଷମ ହୋଇଛି ବୋଲି ନିଶ୍ଚିତ ହୁଅନ୍ତୁ ।"</string>
+<string name="lte_service_error_airplane">"ଫୋନଟି ଏଇରପ୍ଳେନ ରୀତିରେ ଥିଲା ବେଳେ ଆପଣ LTE ବ୍ୟବହାର କରିପାରିବେ ନାହିଁ ।"</string>
+<string name="lte_service_error_incall">"ଡାକ ସମୟରେ ଆପଣ LTE ସେବା ଅଦଳବଦଳ କରିପାରିବେ ନାହିଁ ।"</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ଖୋଲାଯାଇଛି"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ବନ୍ଦ କରାଯାଇଛି"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ଖୋଲା"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ବନ୍ଦ"</string>
+<string name="toggle_data_error_airplane">"ଏଇରପ୍ଳେନ ରୀତିରେ ଫୋନ ଥିବା ବେଳେ ଆପଣ ମୋବାଇଲ ତଥ୍ୟ ବ୍ୟବହାର କରିପାରିବେ ନାହିଁ ।"</string>
+<string name="quick_settings_data_connection_label">"ତଥ୍ୟ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ତଥ୍ୟ ଖୋଲା କରାଗଲା"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ତଥ୍ୟ ବନ୍ଦ କରାଗଲା"</string>
+<string name="accessibility_quick_settings_data_on">"ତଥ୍ୟ ଖୋଲା"</string>
+<string name="accessibility_quick_settings_data_off">"ତଥ୍ୟ ବନ୍ଦ"</string>
+<string name="missing_sim_message">"ସିମ ନାହିଁ"</string>
+</resources>

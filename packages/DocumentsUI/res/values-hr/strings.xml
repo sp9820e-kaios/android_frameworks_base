@@ -73,4 +73,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Dodirnite da biste vidjeli pojedinosti"</string>
     <string name="retry" msgid="7564024179122207376">"Pokušaj ponovo"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Ove datoteke nisu kopirane: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Nije moguće dijeliti datoteku"</string>
+     <string name="documents_deleting">"Brisanje datoteka"</string>
+     <string name="cannot_copyfolder_itself">"Ne možete kopirati folder sam u sebe"</string>
+
+    <string name="error_permissions">"Aplikacija nema važna dopuštenja potrebna za pokretanje. Provjerite svoje postavke dopuštenja."</string>
+     <string name="cannot_copy_drm">"DRM datoteke se ne mogu kopirati"</string>
+     <string name="cannot_copy_downloading">"Datoteke koje se preuzimaju se ne mogu kopirati"</string>
 </resources>

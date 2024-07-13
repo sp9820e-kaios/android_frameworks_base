@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="keyguard_password_enter_pin_code">"करिव टाइप PIN कोड"</string>
+<string name="keyguard_password_enter_puk_code">"टाइप करिव SIM PUK बेय नोव PIN  कोड"</string>
+<string name="keyguard_password_enter_puk_prompt">"SIM PUK कोड"</string>
+<string name="keyguard_password_enter_pin_prompt">"नोव SIM PIN कोड"</string>
+<string name="keyguard_password_entry_touch_hint">"<font size="17">करिव ज़ीर पासवर्ड टाइप करनः खात्र</font>"</string>
+<string name="keyguard_password_enter_password_code">"टाइप करिव पासवर्ड येल्लह त्रावनः खात्र"</string>
+<string name="keyguard_password_enter_pin_password_code">"टाइप करिव PIN येल्लह त्रावनः खात्र"</string>
+<string name="keyguard_password_wrong_pin_code">"गलत PIN कोड"</string>
+<string name="keyguard_charged">"चार्ज गमुत"</string>
+<string name="keyguard_plugged_in">"चार्ज गस्सन"</string>
+<string name="keyguard_low_battery">"जूडिव पनुन चार्जर"</string>
+<string name="keyguard_instructions_when_pattern_disabled">"दबयिव मेनू येल्लह त्रावनः खात्र"</string>
+<string name="keyguard_network_locked_message">"नेटवर्क बंद गोमुत"</string>
+<string name="keyguard_missing_sim_message_short">"कहेंह ति SIM कार्ड छु नः"</string>
+<string name="keyguard_missing_sim_message" product="tablet">"कहेंह ति SIM कार्ड छु नः टेबलेट्स मंज़"</string>
+<string name="keyguard_missing_sim_message" product="default">"कहेंह ति SIM कार्ड छु नः फ़ोन्स मंज़""</string>
+<string name="keyguard_missing_sim_instructions">"त्राविव SIM कार्ड"</string>
+<string name="keyguard_missing_sim_instructions_long">"SIM कार्ड छु रोमुत या छु न पडून लायख. त्रविव SIM कार्ड"</string>
+<string name="keyguard_permanent_disabled_sim_message_short">"बेफहिद SIM कार्ड"</string>
+<string name="keyguard_permanent_disabled_sim_instructions">"तुहुंद SIM कार्ड छु आमुत हमेश खात्र बंद करनः .\nकरिव राबतह पननिस वायरलेस सहूलियात फराहम करन वालिस सीथ बेयिस SIM कार्ड खात्र."</string>
+<string name="keyguard_sim_locked_message">"SIM कार्ड छु बंद गोमुत"</string>
+<string name="keyguard_sim_puk_locked_message">"SIM कार्ड छु PUK -बंद गोमुत"</string>
+<string name="keyguard_sim_unlock_progress_dialog_message">"SIM कार्ड येल्लह गसन"</string>
+<string name="keyguard_accessibility_pattern_unlock">"पैटर्न अनलॉक."</string>
+<string name="keyguard_accessibility_pin_unlock">"PIN अनलॉक."</string>
+<string name="keyguard_accessibility_password_unlock">"पासवर्ड अनलॉक."</string>
+<string name="keyguard_accessibility_pattern_area">"पैटर्न जगह"</string>
+<string name="keyguard_accessibility_slide_area">"स्लाइड एरिया."</string>
+<string name="keyguard_accessibility_pin_area">"PIN जगह"</string>
+<string name="keyguard_accessibility_sim_pin_area">"SIM PIN जगह"</string>
+<string name="keyguard_accessibility_sim_puk_area">"SIM PUK जगह"</string>
+<string name="keyguard_accessibility_next_alarm">"ब्याख अलाराम आव थावनः <xliff:g id="alarm" example="Fri 8:30 AM">%1$s</xliff:g>"</string>
+<string name="kg_forgot_pattern_button_text">"पैटर्न गोमुत मशित"</string>
+<string name="kg_wrong_pattern">"गलत पैटर्न"</string>
+<string name="kg_wrong_password">"गलत पासवर्ड"</string>
+<string name="kg_wrong_pin">"गलत PIN"</string>
+<string name="kg_too_many_failed_attempts_countdown">"बेय करिव कूशिश <xliff:g id="number">%d</xliff:g> सेकंड्स."</string>
+<string name="kg_pattern_instructions">"बनायिव पन्नुन पैटर्न"</string>
+<string name="kg_sim_pin_instructions">"एंटर कर्येव SIM PIN"</string>
+<string name="kg_sim_pin_instructions_multi">"दाखिल करिव  <xliff:g id="carrier" example="CARD 1">%1$s</xliff:g> PIN.पथ रोदमुत वक़्त(<xliff:g id="number">%2$d</xliff:g>).""</string>
+<string name="kg_pin_instructions">"एंटर कर्येव PIN"</string>
+<string name="kg_password_instructions">"एंटर कर्येव पासवर्ड"</string>
+<string name="kg_puk_enter_puk_hint">""SIM छि वोयन नाकार सप्देमिच. एंटर कर्येव PUK कोड जारी थावनः खात्र.  राबितः कर्येव केरियरस तफसील खात्र." "</string>
+<string name="kg_puk_enter_puk_hint_multi">"<xliff:g id="carrier" example="CARD 1">%1$s</xliff:g> छु वोयन नाकार. दाखिल कर्यिव PUK कोड जारी थावनः खात्र. पथ रोदमुत वक़्त(<xliff:g id="number">%2$d</xliff:g>).राबितः करिव केर्रिअर सीथ तफ्सुर खात्र."</string>
+<string name="kg_puk_enter_pin_hint">"एंटर कर्येव पसंद कोर्मुत PIN कोड"</string>
+<string name="kg_enter_confirm_pin_hint">"वाज़िय्ह कर्येव पसंद कोर्मुत PIN कोड"</string>
+<string name="kg_sim_unlock_progress_dialog_message">"SIM कार्ड येल्लह गसन"</string>
+<string name="kg_invalid_sim_pin_hint">"लिखियेव अख PIN युस 4 पेठ 8 नम्बरन त्यान."</string>
+<string name="kg_invalid_sim_puk_hint">"PUK कोड गसि आसुन 8 या ज़्याद: नम्ब्रण हुन्द."</string>
+<string name="kg_invalid_puk">"बे कर्येव एंटर सही PUK कोड. बार-बार कोशिश करेन मुस्तकिल पांठ SIM नकार."</string>
+<string name="kg_invalid_confirm_pin_hint" product="default">"PIN कोड छुनः रलान"</string>
+<string name="kg_login_too_many_attempts">"वार्या ज़्यादः पैटर्न कूशिशि "</string>
+<string name="kg_too_many_failed_pin_attempts_dialog_message">"तुही छु पनुन PIN गलत टाइप कोर्मुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\nबेय कूशिश <xliff:g id="number">%d</xliff:g> सेकंड्स."</string>
+<string name="kg_too_many_failed_password_attempts_dialog_message">"तुही छु पनुन पासवर्ड गलत टाइप कोर्मुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\n कूशिश बेय <xliff:g id="number">%d</xliff:g> सेकंड्स"</string>
+<string name="kg_too_many_failed_pattern_attempts_dialog_message">"तुही छुव येल्लह त्रावनुक पैटर्न गलत बनोवमुत <xliff:g id="number">%d</xliff:g> वक़्त.\n\n कूशिश बेयि <xliff:g id="number">%d</xliff:g> सेकंड्स. "</string>
+<string name="kg_failed_attempts_almost_at_wipe" product="tablet">"तुही छि गलत पअठ कूशिश कर्मिच टेबलेट य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त. अमिपत <xliff:g id="number">%d</xliff:g> ज़्याद: गलत कूशिश:,यि टेबलेट यियि नोव थावनः ,युस हटायि अम्युक सोरुय मवाद."</string>
+<string name="kg_failed_attempts_almost_at_wipe" product="default">"तुही छि गलत पअठ कूशिश कर्मिच फ़ोन  य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त. अमिपत <xliff:g id="number">%d</xliff:g> ज़्याद: गलत कूशिश:,यि फ़ोन यियि नोव थावनः ,युस हटायि अम्युक सोरुय मवाद."</string>
+<string name="kg_failed_attempts_now_wiping" product="tablet">""तुही छि गलत पअठ कूशिश कर्मिच टेबलेट य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त.यि टेबलेट यियि नोव थावनः ,युस हटायि अम्युक तमाम मवाद." "</string>
+<string name="kg_failed_attempts_now_wiping" product="default">""तुही छि गलत पअठ कूशिश कर्मिच फ़ोन य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त.यि फ़ोन यियि नोव थावनः ,युस हटायि अम्युक तमाम मवाद." "</string>
+<string name="kg_failed_attempts_almost_at_erase_user" product="tablet">"तुही छु गलत पअठ कूशिश कर्मिच टेबलेट य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त. अमिपत <xliff:g id="number">%d</xliff:g> ज़्याद: नाकाम कुशिशि, यि ग्राख यियि बदलावनः , युस हटाय: तमाम ग्राख सुन्द मवाद."</string>
+<string name="kg_failed_attempts_almost_at_erase_user" product="default">"तुही छु गलत पअठ कूशिश कर्मिच फ़ोन य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त. अमिपत <xliff:g id="number">%d</xliff:g> ज़्याद: नाकाम कुशिशि, यि ग्राख यियि बदलावनः , युस हटाय: तमाम ग्राख सुन्द मवाद."</string>
+<string name="kg_failed_attempts_now_erasing_user" product="tablet">"तुही छि गलत पअठ कूशिश कर्मिच टेबलेट य्ल्लह तरावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त.यि ग्राख यियि बदलावनः , युस हटाय तमाम ग्राख सुन्द मवाद."</string>
+<string name="kg_failed_attempts_now_erasing_user" product="default">"तुही छि गलत पअठ कूशिश कर्मिच फ़ोन य्ल्लह तरावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त.यि ग्राख यियि बदलावनः, युस हटाय तमाम ग्राख सुन्द मवाद."</string>
+<string name="kg_failed_attempts_almost_at_erase_profile" product="tablet">"तुही छि गलत पअठ कूशिश कर्मिच टेबलेट य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त. अमिपत <xliff:g id="number">%d</xliff:g> ज़्याद: गलत कूशिशि ,कामि हुन्द तरीक यियि बदलावनः ,युस हटाय तमाम तरीक मवाद."</string>
+<string name="kg_failed_attempts_almost_at_erase_profile" product="default">"तुही छि गलत पअठ कूशिश कर्मिच फ़ोन य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त. अमिपत <xliff:g id="number">%d</xliff:g> ज़्याद: गलत कूशिशि ,कामि हुन्द तरीक यियि बदलावनः ,युस हटाय तमाम तरीक मवाद."</string>
+<string name="kg_failed_attempts_now_erasing_profile" product="tablet">"तुही छि गलत पअठ कूशिश कर्मिच टेबलेट य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त.यि कामि हुन्द तरीक यियि बदलावनः ,युस हटाय तमाम तरीक मवाद."</string>
+<string name="kg_failed_attempts_now_erasing_profile" product="default">"तुही छि गलत पअठ कूशिश कर्मिच फ़ोन य्ल्लह त्रावनः खात्र <xliff:g id="number">%d</xliff:g> वक़्त.यि कामि हुन्द तरीक यियि बदलावनः ,युस हटाय तमाम तरीक मवाद."</string>
+<string name="kg_failed_attempts_almost_at_login" product="tablet">"तुहुय छुव गलत पांठ बनोवमुत पन्नुन अनलॉक पैटर्न <xliff:g id="number">%d</xliff:g> वक्तह. अमि पत <xliff:g id="number">%d</xliff:g> वार्याह नाकाम कोशिशह, तुहुय यियः वन्नः अनलॉक कर्येव पन्नुन टेबलेट अकि ईमेल एकाउंट इस्तेमाल करनः सीत.\n\n दुबारह कर्यिव कोशिश येथ <xliff:g id="number">%d</xliff:g> सेकंड्स मंज़."</string>
+<string name="kg_failed_attempts_almost_at_login" product="default">"तुहुय छुव गलत पांठ बनोवमुत पन्नुन अनलॉक पैटर्न <xliff:g id="number">%d</xliff:g> वक्तह. अमि पत <xliff:g id="number">%d</xliff:g> वार्याह नाकाम कोशिशह, तुहुय यियः वन्नः अनलॉक कर्येव पन्नुन फ़ोन अकि ईमेल एकाउंट इस्तेमाल करनः सीत.\n\n दुबारह कर्यिव कोशिश येथ <xliff:g id="number">%d</xliff:g> सेकंड्स मंज़."</string>
+<string name="kg_password_wrong_pin_code_pukked">"गलत SIM PIN कोड तुही छु वनि राबितः करुन पन्निस केरियरस सीथ पनुन आल्ह य्ल्लह त्रावनः बापथ."</string>
+<plurals name="kg_password_wrong_pin_code">
+<item quantity="one">"गलत SIM PIN कोड ,तुही छु <xliff:g id="number">%d</xliff:g> बकायः कूशिश ब्रोंठ तुही छु ज़रूरी राबितः करुन पन्निस केरियरस सीथ पनुन आल्ह य्ल्लह त्रावनः बापथ."</item>
+<item quantity="other">"गलत SIM PIN कोड ,तुही छु <xliff:g id="number">%d</xliff:g> बकायः कूशिशि."</item>
+</plurals>
+<string name="kg_password_wrong_puk_code_dead">"SIM छि नाकार.राबितः करिव पन्निस केरियरस सीथ."</string>
+<plurals name="kg_password_wrong_puk_code">
+<item quantity="one">"गलत SIM PUK कोड, तुही छि <xliff:g id="number">%d</xliff:g> बकायः कूशिश अम्मि ब्रोंठ कि SIM गसि हमेश खात्र नाकार."</item>
+<item quantity="other">"गलत SIM PUK कोड, तुही छि <xliff:g id="number">%d</xliff:g> बकायः कूशिशि अम्मि ब्रोंठ कि SIM गसि हमेश खात्र नाकार."</item>
+</plurals>
+<string name="kg_password_pin_failed">"SIM PIN अमल नाकामयाब!"</string>
+<string name="kg_password_puk_failed">"SIM PUK अमल नाकामयाब!"</string>
+<string name="kg_pin_accepted">"कोड मंज़ूर गमुत!"</string>
+<string name="keyguard_carrier_default">"कंह सहूलियात न."</string>
+<string name="accessibility_ime_switch_button">"स्विच करिव इनपुट तरीक बटन."</string>
+<string name="airplane_mode">"एयरप्लेन मोड"</string>
+<string name="kg_prompt_reason_restart_pattern">"पैटर्न छु ज़रूरत येल तुही दुबार शुरू करिव पनुन आल्ह."</string>
+<string name="kg_prompt_reason_restart_pin">"PIN छु ज़रूरत येल तुही दुबार शुरू करिव पनुन आल्ह."</string>
+<string name="kg_prompt_reason_restart_password">"पासवर्डछु ज़रूरत येल तुही दुबार शुरू करिव पनुन आल्ह."</string>
+<string name="kg_prompt_reason_switch_profiles_pattern">"पैटर्न छु ज़रूरत येल तुही स्विच करिव तरीक."</string>
+<string name="kg_prompt_reason_switch_profiles_pin">"PIN छु ज़रूरत येल तुही स्विच करिव तरीक."</string>
+<string name="kg_prompt_reason_switch_profiles_password">"पासवर्ड छु ज़रूरत येल तुही स्विच करिव तरीक."</string>
+<plurals name="kg_prompt_reason_time_pattern">
+<item quantity="one">"आल्ह छु न य्ल्लह त्रावनः आमुत <xliff:g id="number">%d</xliff:g> गनटन खात्र.तस्दीक करिव पैटर्न."</item>
+<item quantity="other">"आल्ह छु न य्ल्लह त्रावनः आमुत <xliff:g id="number">%d</xliff:g> गनटन खात्र.तस्दीक करिव पैटर्न."</item>
+</plurals>
+<plurals name="kg_prompt_reason_time_pin">
+<item quantity="one">"आल्ह छु न य्ल्लह त्रावनः आमुत <xliff:g id="number">%d</xliff:g> गनटन खात्र.तस्दीक करिव PIN."</item>
+<item quantity="other">"आल्ह छु न य्ल्लह त्रावनः आमुत <xliff:g id="number">%d</xliff:g> गनटन खात्र.तस्दीक करिव PIN."</item>
+</plurals>
+<plurals name="kg_prompt_reason_time_password">
+<item quantity="one">"आल्ह छु न य्ल्लह त्रावनः आमुत <xliff:g id="number">%d</xliff:g> गनटन खात्र.तस्दीक करिव पासवर्ड."</item>
+<item quantity="other">"आल्ह छु न य्ल्लह त्रावनः आमुत <xliff:g id="number">%d</xliff:g> घनटन खात्र.तस्दीक करिव पासवर्ड."</item>
+</plurals>
+<string name="fingerprint_not_recognized">"छ न शनाख्त गमिच"</string>
+</resources>

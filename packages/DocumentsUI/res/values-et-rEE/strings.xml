@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Puudutage üksikasjade vaatamiseks"</string>
     <string name="retry" msgid="7564024179122207376">"Proovi uuesti"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Neid faile ei kopeeritud: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Ei saa faili jagada"</string>
+     <string name="documents_deleting">"Dokumentide kustutamine"</string>
+     <string name="cannot_copyfolder_itself">"Kausta ei saa kopeerida tema enda sisse"</string>
+
+    <string name="error_permissions">"Rakendusel pole käitamiseks kriitilise tähtsusega lube. Kontrollige lubade seadeid."</string>
+     <string name="cannot_copy_drm">"DRM faile ei saa kopeerida"</string>
+     <string name="cannot_copy_downloading">"Ei saa kopeerida allalaetavaid faile"</string>
 </resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="wifi_fail_to_scan">"An kasa tacewa don samo hanyar sadarwa"</string>
+<string name="wifi_security_none">"Ko daya"</string>
+<string name="wifi_remembered">"An ajiye"</string>
+<string name="wifi_disabled_generic">"An kashe"</string>
+<string name="wifi_disabled_network_failure">"An kasa Saitawar IP"</string>
+<string name="wifi_disabled_wifi_failure">"An gaza haduwar WiFi"</string>
+<string name="wifi_disabled_password_failure">"Matsalar Bada izini"</string>
+<string name="wifi_not_in_range">"Ba cikin farfajiya"</string>
+<string name="wifi_no_internet">"Ba wani isa ga intanet da aka gano, ba zai sake haduwa ba automatikiyyan."</string>
+<string name="saved_network">"Wanda ya adana <xliff:g id="name">%1$s</xliff:g>"</string>
+<string name="connected_via_wfa">"An hada ta Wi\u2011Fi mataimaki"</string>
+<string name="connected_via_passpoint">"An jona ta cikin %1$s"</string>
+<string name="available_via_passpoint">"Ana samu ta cikin %1$s"</string>
+<string name="wifi_connected_no_internet">"An jona, babu intanet"</string>
+<string name="bluetooth_disconnected">"An cire hadin"</string>
+<string name="bluetooth_disconnecting">"Ana cire hadi..."</string>
+<string name="bluetooth_connecting">"Ana hadawa..."</string>
+<string name="bluetooth_connected">"An hada"</string>
+<string name="bluetooth_pairing">"Ana jerawa\u2026"</string>
+<string name="bluetooth_connected_no_headset">"An hada (babu waya)"</string>
+<string name="bluetooth_connected_no_a2dp">"An hada (babu taskar nishadi)"</string>
+<string name="bluetooth_connected_no_map">"An hada (ba damar isa ga sako)"</string>
+<string name="bluetooth_connected_no_headset_no_a2dp">"An hada (babu waya ko taskar nishadi)"</string>
+<string name="bluetooth_profile_a2dp">"Taskar nishadi"</string>
+<string name="bluetooth_profile_headset">"Waya"</string>
+<string name="bluetooth_profile_opp">"Canjin wuri"</string>
+<string name="bluetooth_profile_hid">"Na\'urar cudanya mutane"</string>
+<string name="bluetooth_profile_pan">"Damar samun intanet"</string>
+<string name="bluetooth_profile_pbap">"Musayar lambobin kira"</string>
+<string name="bluetooth_profile_pbap_summary">"Amfani don musayar lambobin kira"</string>
+<string name="bluetooth_profile_pan_nap">"Rarraba hadin intanet"</string>
+<string name="bluetooth_profile_map">"Isa ga sako"</string>
+<string name="bluetooth_profile_sap">"Damar shiga SIM"</string>
+<string name="bluetooth_a2dp_profile_summary_connected">"An hada ga watsa jiyuwa"</string>
+<string name="bluetooth_headset_profile_summary_connected">"An hada ga jiyuwa na waya"</string>
+<string name="bluetooth_opp_profile_summary_connected">"An hada ga mai hidimar canza fayil"</string>
+<string name="bluetooth_map_profile_summary_connected">"An hada ga taswira"</string>
+<string name="bluetooth_sap_profile_summary_connected">"An jona da SAP"</string>
+<string name="bluetooth_opp_profile_summary_not_connected">"Ba hada da sabar tiransifar fayil"</string>
+<string name="bluetooth_hid_profile_summary_connected">"An hada ga na\'urar shigar bayanai"</string>
+<string name="bluetooth_pan_user_profile_summary_connected">"An hada da na\'ura don samun intanet"</string>
+<string name="bluetooth_pan_nap_profile_summary_connected">"Ana rarraba hadin intanet na gida tare da na\'ura"</string>
+<string name="bluetooth_pan_profile_summary_use_for">"Amfani don damar intanet"</string>
+<string name="bluetooth_map_profile_summary_use_for">"Yi amfani don taswira"</string>
+<string name="bluetooth_sap_profile_summary_use_for">"Yi amfani don damar shiga SIM"</string>
+<string name="bluetooth_a2dp_profile_summary_use_for">"Yi amfani a sautin murya na taskar nishadi"</string>
+<string name="bluetooth_headset_profile_summary_use_for">"Yi amfani a sautin murya na waya"</string>
+<string name="bluetooth_opp_profile_summary_use_for">"Yi amfani don sauyin wurin fayil"</string>
+<string name="bluetooth_hid_profile_summary_use_for">"Yi amfani don bayanan HID"</string>
+<string name="bluetooth_pairing_accept">"Hada"</string>
+<string name="bluetooth_pairing_accept_all_caps">"Hada"</string>
+<string name="bluetooth_pairing_decline">"Soke"</string>
+<string name="bluetooth_pairing_will_share_phonebook">"Biyuntawa yana ba da damar isa ga lambobin kiranka da tarihin kira in aka hada."</string>
+<string name="bluetooth_pairing_error_message">"An sami matsalar hadawa da <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_pin_error_message">"An sami matsalar hadawa da <xliff:g id="device_name">%1$s</xliff:g> saboda PIN ko mabudin-shiga ba shi da ba daidai ba ne."</string>
+<string name="bluetooth_pairing_device_down_error_message">"Ba za a iya hada sadarwa da <xliff:g id="device_name">%1$s</xliff:g>."</string>
+<string name="bluetooth_pairing_rejected_error_message">"An ki karbar hadawa daga <xliff:g id="device_name">%1$s</xliff:g>."</string>
+    <string name="wifi_secured_first_item">"An ba da tsaro da <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_secured_second_item">", An ba da tsaro da <xliff:g>%1$s</xliff:g>"</string>
+     <string name="wifi_wps_available_first_item">"WPS ke akwai"</string>
+     <string name="wifi_wps_available_second_item">\u0020(WPS ke akwai)</string>
+
+</resources>

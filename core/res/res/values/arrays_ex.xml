@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SPRD: Add for SignalCluster colorful. @{ -->
+    <array name="sim_colors_light">
+        <item>@color/Green</item>
+        <item>@color/Blue</item>
+        <item>@color/Indigo</item>
+        <item>@color/Purple</item>
+        <item>@color/Pink</item>
+        <item>@color/Red</item>
+        <item>@color/Yellow</item>
+    </array>
+    <!-- @} -->
+</resources>

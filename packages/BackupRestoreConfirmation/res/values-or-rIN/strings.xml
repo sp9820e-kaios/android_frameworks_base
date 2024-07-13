@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="backup_confirm_title">"ସଂପୂର୍ଣ୍ଣ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ"</string>
+<string name="restore_confirm_title">"ସଂପୂର୍ଣ୍ଣ ପୁନର୍ସ୍ଥାପିତ"</string>
+<string name="backup_confirm_text">"ଏକ ସଂଯୋଗିତ ଡେସ୍କଟପ କମ୍ପୁଟରକୁ ସମସ୍ତ ତଥ୍ୟ ସଂପୂର୍ଣ୍ଣ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ କରିବା ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି । ଏହା ହେବାକୁ ଆପଣ ଅନୁମତି ଦେବେ କି\?\n\nଯଦି ଆପଣ ନିଜେ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ପାଇଁ ଅନୁରୋଧ କରି ନଥିଲେ, ତା\'ହେଲେ ସମ୍ପାଦନାକୁ ଆଗକୁ ବଢିବାକୁ ଦିଅନ୍ତୁ ନାହିଁ ।"</string>
+<string name="allow_backup_button_label">"ମୋର ତଥ୍ୟ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ କରନ୍ତୁ"</string>
+<string name="deny_backup_button_label">"ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ କରନ୍ତୁ ନାହିଁ"</string>
+<string name="restore_confirm_text">"ଏକ ସଂଯୋଗିତ ଡେସ୍କଟପ କମ୍ପୁଟରକୁ ସମସ୍ତ ତଥ୍ୟ ସଂପୂର୍ଣ୍ଣ ପୁନର୍ସ୍ଥାପିତ କରିବା ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି । ଏହା ହେବାକୁ ଆପଣ ଅନୁମତି ଦେବେ କି\?\n\nଯଦି ଆପଣ ନିଜେ ପୁନର୍ସ୍ଥାପିତ ପାଇଁ ଅନୁରୋଧ କରି ନଥିଲେ, ତା\'ହେଲେ ସମ୍ପାଦନାକୁ ଆଗକୁ ବଢିବାକୁ ଦିଅନ୍ତୁ ନାହିଁ । ଏହା ଉପକରଣରେ ଥିବା କୌଣସି ତଥ୍ୟର ବଦଳ କରିଦେବ!"</string>
+<string name="allow_restore_button_label">"ମୋର ତଥ୍ୟ ପୁନର୍ସ୍ଥାପିତ କରନ୍ତୁ"</string>
+<string name="deny_restore_button_label">"ପୁନର୍ସ୍ଥାପିତ କରନ୍ତୁ ନାହିଁ"</string>
+<string name="current_password_text">"ଦୟାକରି ଆପଣଙ୍କ ଏବର ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ  ପାସୱର୍ଡ ତଳେ ଏଣ୍ଟର କରନ୍ତୁ:"</string>
+<string name="device_encryption_restore_text">"ଦୟାକରି ଆପଣଙ୍କ ଉପକରଣର ସାଙ୍କେତିକତା ପାସୱର୍ଡ ତଳେ ଏଣ୍ଟର କରନ୍ତୁ:"</string>
+<string name="device_encryption_backup_text">"ଦୟାକରି ଆପଣଙ୍କ ଉପକରଣର ସାଙ୍କେତିକତା ପାସୱର୍ଡ ତଳେ ଏଣ୍ଟର କରନ୍ତୁ । ଏହା ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ପୁରୁଣା-ତଥ୍ୟ-ସଂଗ୍ରହାଳୟକୁ ମଧ୍ୟ ସାଙ୍କେତିକ କରିବା ପାଇଁ ବ୍ୟବହୃତ ହୋଇ ପାରିବ ।"</string>
+<string name="backup_enc_password_text">"ସଂପୂର୍ଣ୍ଣ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ତଥ୍ୟକୁ ସାଙ୍କେତିକ କରିବାରେ ବ୍ୟବହାର କରିବାକୁ ଦୟାକରି ଏକ ପାସୱର୍ଡ ଏଣ୍ଟର କରନ୍ତୁ । ଯଦି ଏହା ଖାଲି ଛଡ଼ାଯାଏ, ଆପଣଙ୍କ ଏବର ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ପାସୱର୍ଡ ବ୍ୟବହାର କରାଯିବ:"</string>
+<string name="backup_enc_password_optional">"ଯଦି ଆପଣ ସଂପୂର୍ଣ୍ଣ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ତଥ୍ୟକୁ ସାଙ୍କେତିକ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତଳେ ଏକ ପାସୱର୍ଡ ଏଣ୍ଟର କରନ୍ତୁ:"</string>
+<string name="backup_enc_password_required">"ଯେହେତୁ ଆପଣଙ୍କ ଉପକରଣ ସାଙ୍କେତିକ ହୋଇଛି, ଆପଣ ଆପଣଙ୍କ ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତକୁ ସାଙ୍କେତିକ କରିବା ଦରକାର । ଦୟାକରି ତଳେ ଏକ ପାସୱର୍ଡ ଏଣ୍ଟର କରନ୍ତୁ:"</string>
+<string name="restore_enc_password_text">"ଯଦି ପୁନର୍ସ୍ଥାପିତ ତଥ୍ୟ ସାଙ୍କେତିକ ହୋଇଯାଇଛି, ଦୟାକରି ତଳେ ଏକ ପାସୱର୍ଡ ଏଣ୍ଟର କରନ୍ତୁ:"</string>
+<string name="toast_backup_started">"ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ଆରମ୍ଭ ହେଉଛି..."</string>
+<string name="toast_backup_ended">"ଅନ୍ୟତ୍ର-ସଂରକ୍ଷିତ ସରିଲା"</string>
+<string name="toast_restore_started">"ପୁନର୍ସ୍ଥାପିତ ଆରମ୍ଭ ହେଉଛି..."</string>
+<string name="toast_restore_ended">"ପୁନର୍ସ୍ଥାପିତ ସରିଲା"</string>
+<string name="toast_timeout">"କାର୍ଯ୍ୟ ସମ୍ପାଦନ ଧାର୍ଯ୍ୟ ସମୟ ସରିଗଲା"</string>
+</resources>

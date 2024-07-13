@@ -24,12 +24,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.os.SystemProperties;
 import android.provider.Settings;
 
 import com.android.systemui.R;
@@ -55,6 +57,7 @@ public class LocationControllerImpl extends BroadcastReceiver implements Locatio
     private StatusBarManager mStatusBarManager;
 
     private boolean mAreActiveLocationRequests;
+    private static final boolean WCN_DISABLED = SystemProperties.get("ro.wcn").equals("disabled");
 
     private ArrayList<LocationSettingsChangeCallback> mSettingsChangeCallbacks =
             new ArrayList<LocationSettingsChangeCallback>();
@@ -111,6 +114,10 @@ public class LocationControllerImpl extends BroadcastReceiver implements Locatio
         // setting won't be fully enabled until the user accepts the agreement.
         int mode = enabled
                 ? Settings.Secure.LOCATION_MODE_HIGH_ACCURACY : Settings.Secure.LOCATION_MODE_OFF;
+        boolean hasGps = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+        if (enabled && !hasGps) {
+            mode = Settings.Secure.LOCATION_MODE_BATTERY_SAVING;
+        }
         // QuickSettings always runs as the owner, so specifically set the settings
         // for the current foreground user.
         return Settings.Secure

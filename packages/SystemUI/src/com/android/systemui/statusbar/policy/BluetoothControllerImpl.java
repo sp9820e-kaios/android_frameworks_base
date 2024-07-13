@@ -18,11 +18,15 @@ package com.android.systemui.statusbar.policy;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemProperties;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.settingslib.bluetooth.BluetoothCallback;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
 import com.android.settingslib.bluetooth.LocalBluetoothManager;
@@ -43,16 +47,25 @@ public class BluetoothControllerImpl implements BluetoothController, BluetoothCa
     private boolean mEnabled;
     private int mConnectionState = BluetoothAdapter.STATE_DISCONNECTED;
     private CachedBluetoothDevice mLastDevice;
+    private WifiManager mWifiManager;
+    private boolean supportBtWifiSoftApCoexit = true;
+    private PhoneStatusBar mBar;
+    private final Context mContext;
 
     private final H mHandler = new H();
 
     public BluetoothControllerImpl(Context context, Looper bgLooper) {
+        mContext = context;
         mLocalBluetoothManager = LocalBluetoothManager.getInstance(context, null);
         if (mLocalBluetoothManager != null) {
             mLocalBluetoothManager.getEventManager().setReceiverHandler(new Handler(bgLooper));
             mLocalBluetoothManager.getEventManager().registerCallback(this);
             onBluetoothStateChanged(
                     mLocalBluetoothManager.getBluetoothAdapter().getBluetoothState());
+        }
+        mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        if (SystemProperties.get("ro.btwifisoftap.coexist", "true").equals("false")) {
+            supportBtWifiSoftApCoexit = false;
         }
     }
 
@@ -120,6 +133,22 @@ public class BluetoothControllerImpl implements BluetoothController, BluetoothCa
     @Override
     public void setBluetoothEnabled(boolean enabled) {
         if (mLocalBluetoothManager != null) {
+            if (enabled) {
+             // SPRD: BT & WIFI SoftAP not coexist
+                if (!supportBtWifiSoftApCoexit) {
+                    if (mBar != null && mWifiManager.isSoftapEnablingOrEnabled()) {
+                        /* SPRD: bug497380 make the statusbar close when click Bluetooth.@{ */
+                        // SPRD: make the statusbar close when click Bluetooth.
+                        //mBar.animateCollapseQuickSettings();
+                        mHandler.sendEmptyMessage(H.MSG_SOFTAP_BT_COEXIST);
+//                        Toast.makeText(mContext,
+//                                com.android.systemui.R.string.bt_softap_cannot_coexist,
+//                                Toast.LENGTH_SHORT).show();
+                        /* @} */
+                        return;
+                    }
+                }
+            }
             mLocalBluetoothManager.getBluetoothAdapter().setBluetoothEnabled(enabled);
         }
     }
@@ -225,6 +254,8 @@ public class BluetoothControllerImpl implements BluetoothController, BluetoothCa
     private final class H extends Handler {
         private static final int MSG_PAIRED_DEVICES_CHANGED = 1;
         private static final int MSG_STATE_CHANGED = 2;
+        // SPRD: bug497380 make the statusbar close when click Bluetooth.
+        private static final int MSG_SOFTAP_BT_COEXIST = 3;
 
         @Override
         public void handleMessage(Message msg) {
@@ -235,6 +266,14 @@ public class BluetoothControllerImpl implements BluetoothController, BluetoothCa
                 case MSG_STATE_CHANGED:
                     fireStateChange();
                     break;
+                /* SPRD: bug497380 make the statusbar close when click Bluetooth.@{ */
+                case MSG_SOFTAP_BT_COEXIST:
+                    mBar.animateCollapseQuickSettings();
+                    Toast.makeText(mContext,
+                            com.android.systemui.R.string.bt_softap_cannot_coexist,
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            /* @} */
             }
         }
 
@@ -253,5 +292,10 @@ public class BluetoothControllerImpl implements BluetoothController, BluetoothCa
         private void fireStateChange(BluetoothController.Callback cb) {
             cb.onBluetoothStateChange(mEnabled);
         }
+    }
+
+    // SPRD:  make the statusbar close when click bluetooth.
+    public void setbar(PhoneStatusBar bar) {
+        mBar=bar;
     }
 }

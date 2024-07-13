@@ -528,7 +528,10 @@ public class Instrumentation {
          */
         public final Activity waitForActivity() {
             synchronized (this) {
-                while (mLastActivity == null) {
+                while (mLastActivity == null || mLastActivity.mFinished) {
+                    if(mLastActivity != null && mLastActivity.mFinished){
+                        Log.d(TAG,"mLastActivity = " + mLastActivity + " was already finished");
+                    }
                     try {
                         wait();
                     } catch (InterruptedException e) {

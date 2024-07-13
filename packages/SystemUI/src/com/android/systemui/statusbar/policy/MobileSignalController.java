@@ -25,14 +25,19 @@ import android.telephony.SignalStrength;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
+import android.telephony.VoLteServiceState;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.android.internal.annotations.VisibleForTesting;
+import com.android.internal.telephony.TeleUtils;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.cdma.EriInfo;
 import com.android.systemui.R;
+import com.android.systemui.SystemUiConfig;
 import com.android.systemui.statusbar.policy.NetworkController.IconState;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl.Config;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl.SubscriptionDefaults;
@@ -65,6 +70,19 @@ public class MobileSignalController extends SignalController<
     private SignalStrength mSignalStrength;
     private MobileIconGroup mDefaultIcons;
     private Config mConfig;
+    // SPRD: display systemui with sim color.
+    private SystemUiConfig mSystemUiConfig;
+    private boolean mShowSystemUIWithSimColor;
+    /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+    private boolean isRelianceBoard = SystemUIPluginsHelper.getInstance().isReliance();
+    private boolean isImsRegistered;
+    /* @} */
+    /* SPRD: add for BUG 474976 @{ */
+    private boolean mShowPlmn = false;
+    private boolean mShowSpn = false;
+    private String mPlmn = null;
+    private String mSpn = null;
+    /* @} */
 
     // TODO: Reduce number of vars passed in, if we have the NetworkController, probably don't
     // need listener lists anymore.
@@ -85,6 +103,11 @@ public class MobileSignalController extends SignalController<
         mNetworkNameSeparator = getStringIfExists(R.string.status_bar_network_name_separator);
         mNetworkNameDefault = getStringIfExists(
                 com.android.internal.R.string.lockscreen_carrier_default);
+        /* SPRD: display systemui with sim color {@ */
+        mSystemUiConfig = SystemUiConfig.getInstance(context);
+        mShowSystemUIWithSimColor = mSystemUiConfig.shouldShowColorfulSystemUI();
+        Log.d(mTag, "MobileSignalController, showSimColor: " + mShowSystemUIWithSimColor);
+        /* @} */
 
         mapIconSets();
 
@@ -104,6 +127,53 @@ public class MobileSignalController extends SignalController<
         updateTelephony();
     }
 
+    /* SPRD: modify by bug 474973 @{ */
+    public SpannableStringBuilder getLabel(SpannableStringBuilder currentLabel, boolean connected
+            , boolean isMobileLabel) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+
+        if (!mCurrentState.enabled) {
+            return ssb;
+        } else {
+            String mobileLabel = "";
+            //SPRD: ignore state of data connection or others,just show network name all the time
+            if (true || mCurrentState.dataConnected) {
+                mobileLabel = mCurrentState.networkName;
+            } else if (connected || mCurrentState.isEmergency) {
+                if (mCurrentState.connected || mCurrentState.isEmergency) {
+                    // The isEmergencyOnly test covers the case of a phone with no SIM
+                    mobileLabel = mCurrentState.networkName;
+                }
+            } else {
+                mobileLabel = mContext.getString(
+                        R.string.status_bar_settings_signal_meter_disconnected);
+            }
+
+            if (currentLabel.length() != 0) {
+                currentLabel = currentLabel.append(mNetworkNameSeparator);
+            }
+
+            /* SPRD: display systemui with sim color. {@ */
+            int color = mShowSystemUIWithSimColor ? mSubscriptionInfo.getIconTint() :
+                    SystemUIPluginsHelper.ABSENT_SIM_COLOR;
+            /* @} */
+
+            Log.d(mTag, "getLabel[" + mSubscriptionInfo.getSimSlotIndex() + "]: " +
+                    mobileLabel + " color = " + color);
+            ssb.append(mobileLabel).setSpan(new ForegroundColorSpan(color), 0,
+                    mobileLabel.length(), SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            // Now for things that should only be shown when actually using mobile data.
+            if (isMobileLabel) {
+                return currentLabel.append(ssb);
+            } else {
+                return currentLabel.append
+                        (mCurrentState.dataConnected ? mobileLabel : currentLabel);
+            }
+        }
+    }
+    /* @} */
+
     public int getDataContentDescription() {
         return getIcons().mDataContentDescription;
     }
@@ -112,6 +182,17 @@ public class MobileSignalController extends SignalController<
         mCurrentState.airplaneMode = airplaneMode;
         notifyListenersIfNecessary();
     }
+
+    /* SPRD: update icon tint for current subscription. {@ */
+    public void setIconTint(int color) {
+        mSubscriptionInfo.setIconTint(color);
+        notifyListeners();
+    }
+
+    public int getIconTint() {
+        return mSubscriptionInfo.getIconTint();
+    }
+    /* @} */
 
     @Override
     public void updateConnectivity(BitSet connectedTransports, BitSet validatedTransports) {
@@ -131,13 +212,15 @@ public class MobileSignalController extends SignalController<
      * Start listening for phone state changes.
      */
     public void registerListener() {
+        // SPRD: Add VoLte icon for bug 509601.
         mPhone.listen(mPhoneStateListener,
                 PhoneStateListener.LISTEN_SERVICE_STATE
                         | PhoneStateListener.LISTEN_SIGNAL_STRENGTHS
                         | PhoneStateListener.LISTEN_CALL_STATE
                         | PhoneStateListener.LISTEN_DATA_CONNECTION_STATE
                         | PhoneStateListener.LISTEN_DATA_ACTIVITY
-                        | PhoneStateListener.LISTEN_CARRIER_NETWORK_CHANGE);
+                        | PhoneStateListener.LISTEN_CARRIER_NETWORK_CHANGE
+                        | PhoneStateListener.LISTEN_VOLTE_STATE);
     }
 
     /**
@@ -181,18 +264,27 @@ public class MobileSignalController extends SignalController<
         }
 
         MobileIconGroup hGroup = TelephonyIcons.THREE_G;
-        if (mConfig.hspaDataDistinguishable) {
+        /* SPRD: add for H+ icons for bug494075 @{ */
+        MobileIconGroup hpGroup = TelephonyIcons.THREE_G;
+        if (SystemUIPluginsHelper.getInstance().
+                hspaDataDistinguishable(mContext,mSubscriptionInfo.getSimSlotIndex())) {
             hGroup = TelephonyIcons.H;
+            hpGroup = TelephonyIcons.HP;
         }
         mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_HSDPA, hGroup);
         mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_HSUPA, hGroup);
         mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_HSPA, hGroup);
-        mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_HSPAP, hGroup);
+        mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_HSPAP, hpGroup);
+        /* @} */
 
         if (mConfig.show4gForLte) {
             mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_LTE, TelephonyIcons.FOUR_G);
+            mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_LTE_CA,
+                    TelephonyIcons.FOUR_G_PLUS);
         } else {
             mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_LTE, TelephonyIcons.LTE);
+            mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_LTE_CA,
+                    TelephonyIcons.LTE);
         }
         mNetworkToIconLookup.put(TelephonyManager.NETWORK_TYPE_IWLAN, TelephonyIcons.WFC);
     }
@@ -205,10 +297,14 @@ public class MobileSignalController extends SignalController<
         String dataContentDescription = getStringIfExists(icons.mDataContentDescription);
 
         // Show icon in QS when we are connected or need to show roaming.
-        boolean showDataIcon = mCurrentState.dataConnected
-                || mCurrentState.iconGroup == TelephonyIcons.ROAMING;
+        // SPRD: modify for bug 517092
+        boolean showDataIcon = mCurrentState.dataConnected;
         IconState statusIcon = new IconState(mCurrentState.enabled && !mCurrentState.airplaneMode,
                 getCurrentIconId(), contentDescription);
+        /* SPRD: add for 4G and data connection quick setting @{ */
+        Log.d(mTag, " showDataIcon: " + showDataIcon);
+        showDataIcon = true;
+        /* @} */
 
         int qsTypeIcon = 0;
         IconState qsIcon = null;
@@ -226,13 +322,60 @@ public class MobileSignalController extends SignalController<
         boolean activityOut = mCurrentState.dataConnected
                         && !mCurrentState.carrierNetworkChangeMode
                         && mCurrentState.activityOut;
-        showDataIcon &= mCurrentState.isDefault
-                || mCurrentState.iconGroup == TelephonyIcons.ROAMING;
-        int typeIcon = showDataIcon ? icons.mDataType : 0;
-        mCallbackHandler.setMobileDataIndicators(statusIcon, qsIcon, typeIcon, qsTypeIcon,
-                activityIn, activityOut, dataContentDescription, description, icons.mIsWide,
-                mSubscriptionInfo.getSubscriptionId());
+        //SPRD: modify by bug474984
+        /* SPRD: Disappear the datatype icon when data disabled @{ */
+        int typeIcon = 0;
+        if (SystemUIPluginsHelper.getInstance().needShowDataTypeIcon()) {
+            typeIcon = (showDataIcon && hasService()) ? icons.mDataType : 0;
+        } else {
+            typeIcon = (showDataIcon && hasService() && mCurrentState.dataConnected)
+                    ? icons.mDataType : 0;
+        }
+        /* @} */
+        // SPRD: add for bug 517092
+        int roamIcon = (isRoaming() && hasService()) ? TelephonyIcons.ROAMING_ICON : 0;
+        int colorScheme = mSubscriptionInfo.getIconTint();
+        /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+        int imsregIcon = 0;
+        boolean isFourG = false;
+        Log.d(mTag, "isRelianceBoard = " + isRelianceBoard);
+        if (isRelianceBoard) {
+            isFourG = isFourGLTE();
+            Log.d(mTag, "isFourG = " + isFourG);
+            Log.d(mTag, "isImsRegistered = " + isImsRegistered);
+            if (hasService() && isFourGLTE() && isImsRegistered == true) {
+                imsregIcon = SystemUIPluginsHelper.getInstance().getSignalVoLTEIcon();
+                Log.d(mTag,"imsregIcon = " + imsregIcon);
+            }
+        }
+        /* @} */
+        //SPRD: modify by BUG 491086; modify by BUG 517092, add roamIcon
+        /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+        if (isRelianceBoard) {
+            mCallbackHandler.setMobileDataIndicators(statusIcon, qsIcon, typeIcon, qsTypeIcon,
+                    activityIn, activityOut, dataContentDescription, description, icons.mIsWide,
+                    mSubscriptionInfo.getSubscriptionId(), mCurrentState.dataConnected, colorScheme,
+                    roamIcon, imsregIcon, isFourG);
+        } else {
+            mCallbackHandler.setMobileDataIndicators(statusIcon, qsIcon, typeIcon, qsTypeIcon,
+                    activityIn, activityOut, dataContentDescription, description, icons.mIsWide,
+                    mSubscriptionInfo.getSubscriptionId(), mCurrentState.dataConnected,
+                    colorScheme, roamIcon);
+        }
+        /* @} */
     }
+
+    /* SPRD: modify by bug474984 @{ */
+    @Override
+    public int getCurrentIconId() {
+        int[][] sbIcons = SystemUIPluginsHelper.getInstance()
+                .getSignalStrengthIcons(mSubscriptionInfo.getSubscriptionId());
+        if (sbIcons != null) {
+            getIcons().mSbIcons = sbIcons;
+        }
+        return super.getCurrentIconId();
+    }
+    /* @} */
 
     @Override
     protected MobileState cleanState() {
@@ -280,6 +423,17 @@ public class MobileSignalController extends SignalController<
         }
     }
 
+    /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+    private boolean isFourGLTE() {
+        if (mServiceState != null) {
+            return mServiceState.getRilDataRadioTechnology()
+                    == ServiceState.RIL_RADIO_TECHNOLOGY_LTE;
+        } else {
+            return false;
+        }
+    }
+    /* @} */
+
     private boolean isCarrierNetworkChangeActive() {
         return mCurrentState.carrierNetworkChangeMode;
     }
@@ -325,13 +479,23 @@ public class MobileSignalController extends SignalController<
                     + " spn=" + spn + " dataSpn=" + dataSpn
                     + " showPlmn=" + showPlmn + " plmn=" + plmn);
         }
+        /* SPRD: add for BUG 474976 @{ */
+        mShowSpn = showSpn;
+        mShowPlmn = showPlmn;
+        mPlmn = plmn;
+        mSpn = spn;
+        /* @} */
         StringBuilder str = new StringBuilder();
         StringBuilder strData = new StringBuilder();
         if (showPlmn && plmn != null) {
+            plmn = SystemUIPluginsHelper.getInstance()
+                    .appendRatToNetworkName(mContext, mServiceState, plmn);
             str.append(plmn);
             strData.append(plmn);
         }
         if (showSpn && spn != null) {
+            spn = SystemUIPluginsHelper.getInstance()
+                    .appendRatToNetworkName(mContext, mServiceState, spn);
             if (str.length() != 0) {
                 str.append(mNetworkNameSeparator);
             }
@@ -353,6 +517,15 @@ public class MobileSignalController extends SignalController<
         } else {
             mCurrentState.networkNameData = mNetworkNameDefault;
         }
+        /* SPRD: modify by bug 474973 @{ */
+        int phoneId = mSubscriptionInfo.getSimSlotIndex();
+        // SPRD: modify by BUG 474976
+        String networkName = SystemUIPluginsHelper.getInstance().updateNetworkName(
+                mContext, showSpn, spn, showPlmn, plmn);
+        if (!TextUtils.isEmpty(networkName)) {
+            mCurrentState.networkName = networkName;
+        }
+        /* @} */
     }
 
     /**
@@ -383,8 +556,6 @@ public class MobileSignalController extends SignalController<
 
         if (isCarrierNetworkChangeActive()) {
             mCurrentState.iconGroup = TelephonyIcons.CARRIER_NETWORK_CHANGE;
-        } else if (isRoaming()) {
-            mCurrentState.iconGroup = TelephonyIcons.ROAMING;
         }
         if (isEmergencyOnly() != mCurrentState.isEmergency) {
             mCurrentState.isEmergency = isEmergencyOnly();
@@ -440,6 +611,42 @@ public class MobileSignalController extends SignalController<
                         + " dataState=" + state.getDataRegState());
             }
             mServiceState = state;
+            // SPRD: add for 4G and data connection quick setting
+            mDataNetType = state.getVoiceNetworkType();
+            /* SPRD: modify by BUG 474976 @{ */
+            /* SPRD: add for BUG 534387 @{ */
+            if (mServiceState != null) {
+                StringBuilder str = new StringBuilder();
+                String plmn = mPlmn;
+                String spn = mSpn;
+                if (mShowPlmn && plmn != null) {
+                    plmn = SystemUIPluginsHelper.getInstance()
+                            .appendRatToNetworkName(mContext, state, plmn);
+                    str.append(plmn);
+                }
+                if (mShowSpn && spn != null) {
+                    spn = SystemUIPluginsHelper.getInstance()
+                            .appendRatToNetworkName(mContext, state, spn);
+                    if (str.length() != 0) {
+                        str.append(mNetworkNameSeparator);
+                    }
+                    str.append(spn);
+                }
+                /* SPRD: modify by BUG 557211 @{ */
+                if (str.toString().length() != 0) {
+                    mCurrentState.networkName = str.toString();
+                }
+                /* @} */
+                Log.d(mTag, "onServiceStateChanged showSpn=" + mShowSpn
+                        + " spn=" + spn + " showPlmn=" + mShowPlmn + " plmn=" + plmn);
+                String networkName = SystemUIPluginsHelper.getInstance().updateNetworkName(
+                        mContext, mShowSpn, spn, mShowPlmn, plmn);
+                if (!TextUtils.isEmpty(networkName)) {
+                    mCurrentState.networkName = networkName;
+                }
+            }
+            /* @} */
+            /* @} */
             updateTelephony();
         }
 
@@ -450,7 +657,8 @@ public class MobileSignalController extends SignalController<
                         + " type=" + networkType);
             }
             mDataState = state;
-            mDataNetType = networkType;
+            // SPRD: modify for bug 511476
+            //mDataNetType = networkType;
             updateTelephony();
         }
 
@@ -471,6 +679,33 @@ public class MobileSignalController extends SignalController<
 
             updateTelephony();
         }
+
+        /* SPRD: Add VoLte icon for bug 509601. @{ */
+        public void onVoLteServiceStateChanged(VoLteServiceState serviceState) {
+            Log.d(mTag, "onVoLteServiceStateChanged: " + serviceState);
+            /* SPRD: Add for bug 545743. @{ */
+            boolean imsRegistered;
+            if (serviceState.getSrvccState()
+                    == VoLteServiceState.IMS_REG_STATE_REGISTERED) {
+                imsRegistered = true;
+            } else if (serviceState.getSrvccState()
+                    == VoLteServiceState.IMS_REG_STATE_NOT_EGISTERED) {
+                imsRegistered = false;
+            } else {
+                return;
+            }
+            /* @} */
+            Log.d(mTag, "imsRegistered: " + imsRegistered);
+            /* SPRD: Reliance UI spec 1.7. See bug #522899. @{ */
+            if (isRelianceBoard) {
+                isImsRegistered = (serviceState.getSrvccState()
+                        == VoLteServiceState.IMS_REG_STATE_REGISTERED);
+                notifyListeners();
+            }
+            /* @} */
+            mCallbackHandler.setVoLteIndicators(imsRegistered);
+        }
+        /* @} */
     };
 
     static class MobileIconGroup extends SignalController.IconGroup {

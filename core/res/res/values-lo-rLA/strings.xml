@@ -1143,12 +1143,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"ກັບຄືນ"</string>
     <string name="next_button_label" msgid="1080555104677992408">"ຕໍ່ໄປ"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"ຂ້າມ"</string>
-    <string name="no_matches" msgid="8129421908915840737">"ບໍ່ພົບຜົນການຊອກຫາ"</string>
     <string name="find_on_page" msgid="1946799233822820384">"ຊອກໃນໜ້າ"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> ໃນ <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 ກົງກັນ</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"ແລ້ວໆ"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"ກຳລັງລຶບ ບ່ອນຈັດເກັບຂໍ້ມູນ USB …"</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"ກຳລັງລຶບ​ SD card..."</string>
@@ -1516,4 +1511,26 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> ຖືກເລືອກ​ແລ້ວ</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> ຖືກເລືອກ​ແລ້ວ</item>
     </plurals>
+    <string name="tetheredPC_notification_title">""​ຟັງ​ຊັ່​ນUSB-ອິນ​ເຕີ​ເນັດ ເປີດ​ໃຊ້​ງານ​ແລ້ວ"​"</string>
+     <string name="ext_media_status_shared">"UMSແຊ​ຣ໌"</string>
+     <string name="sim_ready_title_for_usb">"ຄໍາເຕືອນ"</string>
+     <string name="sim_card_activation_warning">"ເພື່ອ​ປ້ອງ​ກັນ​ໂປຼ​ແກມ​ທີ່ບໍ່​ດີ​ເຂົ້າ​ມາ​ແຊກ​ແຊງ​ຈາກ​ບຸກ​ຄົນ​ທີ​ສາມ​ຫລັງ​ຈາກ​ໂມື​ຖື​ອອກ​ຈາກ​ໂຮງ​ງານ ກະ​ລຸ​ນາ​ໃສ່SIM/USIMເພື່ອ​ເປີດ​ໃຊ້​ງານ USB."</string>
+     <string name="usb_ok">"ການເຂົ້າໃຈ"</string>
+     <string name="usb_cdrom_notification_title">"ຄ້າຍໆ​ໂປຼ​ແກຼມ​ຄວບ​ຄຸມ​ຢູ່"</string>
+     <string name="usb_charge_only_notification">"ພຽງ​ການ​ເຊື່ອມ​ຕໍ່​ສາກ​ແບັດ"</string>
+     <string name="global_action_restart">"ຣີສະຕາດ"</string>
+     <string name="reboot_device_title">"ຣີສະຕາດ"</string>
+     <string name="global_reboot_close_apps">"ປິດ​ໂປຼ​ແກຼມ​ທັ່ງ​ໝົດ ແລະ ຣີ​ສ​ຕາດ​ມື​ຖື"</string>
+     <string name="reboot_device_confirm">"ຕົກ​ລົງ​ຣີ​ສະ​ຕາດ​ມື​ຖື​ຫຼືບໍ່?"</string>
+     <string name="station_state_msg">"%1$s ອັນ​ເຊື່ອມ​ຕໍ່​ແລ້ວ, %2$sອັນ​ຖືກ​ປິດ"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"ມື​ຖື​ຂອງ​ທ່ານ​ຈະ​ປິດ​ເຄື່ອງ​ຫລັງ​ຈາກ <xliff:g id="NUMBER">%d</xliff:g> ວິ​ນາ​ທີ"</item>
+<item quantity="other">"ມື​ຖື​ຂອງ​ທ່ານ​ຈະ​ປິດ​ເຄື່ອງ​ຫລັງ​ຈາກ <xliff:g id="NUMBER">%d</xliff:g> ວິ​ນາ​ທີ"</item>
+    </plurals>
+     <string name="phoneFixedNumber">"ເບີ​ຕັ້ງ​ໂຕະ"</string>
+     <string name="gps_time_sync_fail_str">"​ການ​ຮັບ​ເອົາ​ເວ​ລາ GPSລົ້ມ​ເຫລວ"</string>
+     <string name="disable_touch_mode_title">"ຖົງ​ປ້ອງ​ກັນ​ສະ​ພັດ​ຜິດ"</string>
+     <string name="disable_touch_mode_hint">"ຫ້າມ​ປົກ​ຄຸມ​ດ້ານ​ເທິງ​ຂອງ​ໂທ​ລະ​ສັບ"</string>
+     <string name="exit_disable_touch_mode_hint">"ກົດ​ປຸ່ມ​ພາວ​ເວີ້​ແລະ​ປຸ່ມ​ສຽງ​ຂື້ນ​ພ້ອມ​ກັນ​ເພື່ອ​​ບັງ​ຄັບອອກ"</string>
+
 </resources>

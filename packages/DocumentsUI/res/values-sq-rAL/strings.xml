@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Prek për të parë detajet"</string>
     <string name="retry" msgid="7564024179122207376">"Provo përsëri"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Këta skedarë nuk u kopjuan: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Nuk mund të ndahet skeda"</string>
+     <string name="documents_deleting">"Duke fshirë dokumentet"</string>
+     <string name="cannot_copyfolder_itself">"Nuk mund ta kopjoni folderin në veten e tij"</string>
+
+    <string name="error_permissions">"Aplikacioni nuk ka leje të rëndësishme të nevojshme për ekzekutimin. Kontrollo cilësimet e lejeve."</string>
+     <string name="cannot_copy_drm">"Nuk mund të kopjohen skedat DRM"</string>
+     <string name="cannot_copy_downloading">"Nuk mund të kopjohen skedat që po shkarkohen"</string>
 </resources>

@@ -16,14 +16,9 @@
 
 package android.widget;
 
-import java.text.BreakIterator;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-
 import android.R;
 import android.annotation.Nullable;
+import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.ClipData;
@@ -111,6 +106,12 @@ import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.GrowingArrayUtils;
 import com.android.internal.util.Preconditions;
 import com.android.internal.widget.EditableInputConnection;
+
+import java.text.BreakIterator;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -1004,8 +1005,7 @@ public class Editor {
         }
 
         if (!handled && mTextActionMode != null) {
-            // TODO: Fix dragging in extracted mode.
-            if (touchPositionIsInSelection() && !mTextView.isInExtractedMode()) {
+            if (touchPositionIsInSelection()) {
                 // Start a drag
                 final int start = mTextView.getSelectionStart();
                 final int end = mTextView.getSelectionEnd();
@@ -3084,13 +3084,20 @@ public class Editor {
                     // way to assign them a valid range after replacement
                     if (suggestionSpansStarts[i] <= spanStart &&
                             suggestionSpansEnds[i] >= spanEnd) {
-                        mTextView.setSpan_internal(suggestionSpans[i], suggestionSpansStarts[i],
-                                suggestionSpansEnds[i] + lengthDifference, suggestionSpansFlags[i]);
+                        // SPRD: add check for span range @{
+                        mTextView.setSpan_internal(suggestionSpans[i],
+                                suggestionSpansStarts[i],
+                                Math.min(suggestionSpansEnds[i] + lengthDifference, mTextView.length()),
+                                suggestionSpansFlags[i]);
+                        // @}
                     }
                 }
 
                 // Move cursor at the end of the replaced word
-                final int newCursorPosition = spanEnd + lengthDifference;
+                // SPRD: add check for span range @{
+                //final int newCursorPosition = spanEnd + lengthDifference;
+                final int newCursorPosition = Math.min(spanEnd + lengthDifference, mTextView.length());
+                // @}
                 mTextView.setCursorPosition_internal(newCursorPosition, newCursorPosition);
             }
 
@@ -4254,10 +4261,14 @@ public class Editor {
             positionAtCursorOffset(offset, false);
         }
 
+        /**
+         * @param offset Cursor offset. Must be in [-1, length].
+         * @param parentScrolled If the parent has been scrolled or not.
+         */
         @Override
         protected void positionAtCursorOffset(int offset, boolean parentScrolled) {
             super.positionAtCursorOffset(offset, parentScrolled);
-            mInWord = !getWordIteratorWithText().isBoundary(offset);
+            mInWord = (offset != -1) && !getWordIteratorWithText().isBoundary(offset);
         }
 
         @Override
@@ -4490,10 +4501,14 @@ public class Editor {
             positionAtCursorOffset(offset, false);
         }
 
+        /**
+         * @param offset Cursor offset. Must be in [-1, length].
+         * @param parentScrolled If the parent has been scrolled or not.
+         */
         @Override
         protected void positionAtCursorOffset(int offset, boolean parentScrolled) {
             super.positionAtCursorOffset(offset, parentScrolled);
-            mInWord = !getWordIteratorWithText().isBoundary(offset);
+            mInWord = (offset != -1) && !getWordIteratorWithText().isBoundary(offset);
         }
 
         @Override
@@ -4856,13 +4871,26 @@ public class Editor {
                         }
 
                         // Need to do this to display the handles.
-                        mStartHandle.showAtLocation(startOffset);
-                        mEndHandle.showAtLocation(endOffset);
-
-                        // No longer the first dragging motion, reset.
-                        if (!(mTextView.isInExtractedMode())) {
-                            startSelectionActionMode();
+                        /* SPRD: modify 20160503 Spreadtrum of 557735*/
+                        if (ActivityManager.isUserAMonkey()) {
+                            if (mStartHandle != null) {
+                                mStartHandle.showAtLocation(startOffset);
+                            } else {
+                                android.util.Log.d(TAG,"onTouchEvent mStartHandle null");
+                            }
+                            if (mEndHandle != null) {
+                                mEndHandle.showAtLocation(endOffset);
+                            } else {
+                                android.util.Log.d(TAG,"onTouchEvent mEndHandle null");
+                            }
+                        } else {
+                            mStartHandle.showAtLocation(startOffset);
+                            mEndHandle.showAtLocation(endOffset);
                         }
+                        /* @} */
+                        // No longer the first dragging motion, reset.
+                        startSelectionActionMode();
+
                         mDragAcceleratorActive = false;
                         mStartOffset = -1;
                         mSwitchedLines = false;

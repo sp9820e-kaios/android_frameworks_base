@@ -25,6 +25,13 @@ LOCAL_SHARED_LIBRARIES := \
     libgui \
     libtinyalsa
 
+# SPRD: add shutdown animation @{
+LOCAL_SHARED_LIBRARIES += \
+    libmedia
+
+base := $(LOCAL_PATH)/../..
+# @}
+
 LOCAL_MODULE:= bootanimation
 
 ifdef TARGET_32_BIT_SURFACEFLINGER

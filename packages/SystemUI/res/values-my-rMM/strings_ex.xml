@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ေပါ့ေတဘယ္လ္ Wi-Fi ေဟာ့စေပါ့ မိုဘိုင္းေဒတာခ်ိတ္ဆက္ရန္ လို, ထပ္ေဆာင္းေငြေပးရန္ လိုမည္."</string>
+<string name="softap_bt_cannot_coexist">"ဘလူးတူသ္ ရနိုင္ (သို႕) ဖြင့္ထားလွ်င္ , softap အလုပ္မလုပ္နိုင္, softap သံုးလိုလွ်င္, ေက်းဇူးျပဳ၍ ဘလူးတူသ္ ပိတ္ျပီးမျပီး ေသခ်ာ စစ္ပါ."</string>
+<string name="bt_softap_cannot_coexist">"softap ရနိုင္ (သို႕) ဖြင့္ထားလွ်င္ , ဘလူးတူသ္ အလုပ္မလုပ္နိုင္, ဘလူးတူသ္ သံုးလိုလွ်င္, ေက်းဇူးျပဳ၍ softap ပိတ္ျပီးမျပီး ေသခ်ာ စစ္ပါ."</string>
+<string name="lte_service_error_airplane">"ဖုန္းသည္ ေလယာဥ္မုဒ္တြင္ ရွိသည့္အခါ LTE ကုိ မသံုးႏုိင္ပါ။"</string>
+<string name="lte_service_error_incall">"ဖုန္းေခၚလွ်င္ LTE ၀န္ေဆာင္မႈ လွည့္မရနိုင္."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ဖြင့္ထားသည္"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ပိတ္ထားသည္"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ပြင့္"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ပိတ္"</string>
+<string name="toggle_data_error_airplane">"ေလယာဥ္ပ်ံသန္းအေနအထားတြင္ မိုဘိုင္းေဒတာ သံုးစြဲ၍မရနိုင္ပါ."</string>
+<string name="quick_settings_data_connection_label">"ေဒတာ"</string>
+<string name="accessibility_quick_settings_data_changed_on">"ေဒတာ ဖြင့္ျပီး"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ေဒတာ ပိတ္ျပီး"</string>
+<string name="accessibility_quick_settings_data_on">"ေဒတာ ဖြင့္"</string>
+<string name="accessibility_quick_settings_data_off">"ေဒတာ ပိတ္"</string>
+<string name="missing_sim_message">"SIMမရွိ"</string>
+</resources>

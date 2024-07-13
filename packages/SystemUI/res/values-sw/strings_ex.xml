@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Eneo tete la Wi-Fi linalobebeka linahitaji muunganisho wa tovuti wa rununu,yaweza kuleta gharama za ziada."</string>
+<string name="softap_bt_cannot_coexist">"Wakati bluetooth imewezeshwa au imewashwa, softpad  haiwezi fanya kazi, ikiwa unataka kutumia softpad, tafadhali hakikisha kuwa bluetooth imelemazwa."</string>
+<string name="bt_softap_cannot_coexist">"Wakati softap imewezeshwa au imewashwa, bluetooth  haiwezi fanya kazi, ikiwa unataka kutumia bluetooth, tafadhali hakikisha kuwa softap imelemazwa."</string>
+<string name="lte_service_error_airplane">"Hauwezi kutumia LTE wakati simu iko katika hali ya ndege".</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G imewashwa"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G imezimwa"</string>
+<string name="accessibility_quick_settings_lte_on">"4G inawaka"</string>
+<string name="accessibility_quick_settings_lte_off">"4G imezimwa"</string>
+<string name="toggle_data_error_airplane">Huwezi kutumia data za kimu ya kiganjani wakati simu iko kwenye mfumo wa ndege.</string>
+<string name="quick_settings_data_connection_label">"DATA"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Data imewashwa"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Data imezimwa"</string>
+<string name="accessibility_quick_settings_data_on">"Data imewezeshwa"</string>
+<string name="accessibility_quick_settings_data_off">"Data imelemazwa"</string>
+<string name="missing_sim_message">"Hakuna SIM"</string>
+    <string name="lte_service_error_incall">"Hauwezi  kubadili huduma ya LTE wakat unapiga simu."</string>
+
+</resources>

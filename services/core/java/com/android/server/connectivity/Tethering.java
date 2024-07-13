@@ -30,16 +30,19 @@ import android.hardware.usb.UsbManager;
 import android.net.ConnectivityManager;
 import android.net.INetworkStatsService;
 import android.net.InterfaceConfiguration;
+import android.net.IpPrefix;
 import android.net.LinkAddress;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.NetworkUtils;
 import android.net.RouteInfo;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.INetworkManagementService;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -64,6 +67,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -81,7 +85,7 @@ public class Tethering extends BaseNetworkObserver {
     private final static String TAG = "Tethering";
     private final static boolean DBG = true;
     private final static boolean VDBG = false;
-
+    private final static boolean HOTSPOT_ENABLED = SystemProperties.getInt("ro.hotspot.enabled", 1) == 1;
     // TODO - remove both of these - should be part of interface inspection/selection stuff
     private String[] mTetherableUsbRegexs;
     private String[] mTetherableWifiRegexs;
@@ -109,6 +113,17 @@ public class Tethering extends BaseNetworkObserver {
 
     private static final String USB_NEAR_IFACE_ADDR      = "192.168.42.129";
     private static final int USB_PREFIX_LENGTH        = 24;
+    private final static int RNDIS_SHARE_PC_INTERNET_NET_ID = 25; // sprd specify for rndis that share pc internet
+
+    private boolean mPCNetTethered = false;
+    private boolean mIsPCNetTethering = false;
+    private RouteInfo mTetherPCNetRouteInfo = null;
+    private static final String DEFAULT_PC_IFACE_ADDR      = "192.168.137.1";
+    private static final String DEFAULT_USB_NEAR_IFACE_ADDR      = "192.168.137.129";
+    private String mPCIfaceAddr = DEFAULT_PC_IFACE_ADDR;
+    private String mUSBNearIfaceAddr = DEFAULT_USB_NEAR_IFACE_ADDR;
+
+    private UsbEther mUsbEther = null;
 
     // USB is  192.168.42.1 and 255.255.255.0
     // Wifi is 192.168.43.1 and 255.255.255.0
@@ -122,6 +137,7 @@ public class Tethering extends BaseNetworkObserver {
         "192.168.44.2", "192.168.44.254", "192.168.45.2", "192.168.45.254",
         "192.168.46.2", "192.168.46.254", "192.168.47.2", "192.168.47.254",
         "192.168.48.2", "192.168.48.254", "192.168.49.2", "192.168.49.254",
+        "192.168.137.2", "192.168.137.254", "192.168.0.2", "192.168.0.254",
     };
 
     private String[] mDefaultDnsServers;
@@ -158,6 +174,10 @@ public class Tethering extends BaseNetworkObserver {
         filter.addAction(UsbManager.ACTION_USB_STATE);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
+        if(HOTSPOT_ENABLED){
+            filter.addAction(WifiManager.WIFI_AP_CONNECTION_CHANGED_ACTION);
+            filter.addAction(WifiManager.SOFTAP_BLOCKLIST_AVAILABLE_ACTION);
+        }
         mContext.registerReceiver(mStateReceiver, filter);
 
         filter = new IntentFilter();
@@ -179,6 +199,9 @@ public class Tethering extends BaseNetworkObserver {
         mDefaultDnsServers = new String[2];
         mDefaultDnsServers[0] = DNS_DEFAULT_SERVER1;
         mDefaultDnsServers[1] = DNS_DEFAULT_SERVER2;
+
+        // SPRD : USB-PC Revert Internet
+        mUsbEther = new UsbEther(looper, context, nmService);
     }
 
     // We can't do this once in the Tethering() constructor and cache the value, because the
@@ -379,7 +402,7 @@ public class Tethering extends BaseNetworkObserver {
     // to clarify what needs synchronized protection.
     private void sendTetherStateChangedBroadcast() {
         if (!getConnectivityManager().isTetheringSupported()) return;
-
+        if (getPCNetTether()) return;
         ArrayList<String> availableList = new ArrayList<String>();
         ArrayList<String> activeList = new ArrayList<String>();
         ArrayList<String> erroredList = new ArrayList<String>();
@@ -435,7 +458,11 @@ public class Tethering extends BaseNetworkObserver {
                 showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_general);
             } else {
                 /* We now have a status bar icon for WifiTethering, so drop the notification */
-                clearTetheredNotification();
+                if(HOTSPOT_ENABLED){
+                    showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_wifi);
+                }else{
+                    clearTetheredNotification();
+                }
             }
         } else if (bluetoothTethered) {
             showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_bluetooth);
@@ -444,7 +471,7 @@ public class Tethering extends BaseNetworkObserver {
         }
     }
 
-    private void showTetheredNotification(int icon) {
+    private synchronized void showTetheredNotification(int icon) {
         NotificationManager notificationManager =
                 (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager == null) {
@@ -453,11 +480,17 @@ public class Tethering extends BaseNetworkObserver {
 
         if (mLastNotificationId != 0) {
             if (mLastNotificationId == icon) {
-                return;
+                if (icon != com.android.internal.R.drawable.stat_sys_tether_wifi){
+                    return;
+                }
             }
-            notificationManager.cancelAsUser(null, mLastNotificationId,
-                    UserHandle.ALL);
-            mLastNotificationId = 0;
+            if (mLastNotificationId == com.android.internal.R.drawable.stat_sys_tether_wifi && icon == com.android.internal.R.drawable.stat_sys_tether_wifi) {
+                Log.d(TAG, " use last notification, only update summery,  mLastNotificationId = " + mLastNotificationId);
+            } else {
+                notificationManager.cancelAsUser(null, mLastNotificationId,
+                        UserHandle.ALL);
+                mLastNotificationId = 0;
+            }
         }
 
         Intent intent = new Intent();
@@ -468,9 +501,32 @@ public class Tethering extends BaseNetworkObserver {
                 null, UserHandle.CURRENT);
 
         Resources r = Resources.getSystem();
-        CharSequence title = r.getText(com.android.internal.R.string.tethered_notification_title);
-        CharSequence message = r.getText(com.android.internal.R.string.
-                tethered_notification_message);
+        CharSequence title;
+        CharSequence message;
+
+        if (getPCNetTether()) {
+            title = r.getText(com.android.internal.R.string.tetheredPC_notification_title);
+            message = r.getText(com.android.internal.R.string.
+                    tethered_notification_message);
+        } else {
+            title = r.getText(com.android.internal.R.string.tethered_notification_title);
+            message = r.getText(com.android.internal.R.string.
+                    tethered_notification_message);
+        }
+        if (HOTSPOT_ENABLED && icon == com.android.internal.R.drawable.stat_sys_tether_wifi) {
+            WifiManager mWifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+            int mConnectNum = 0;
+            List<String> mConnectedStationsDetail = mWifiManager.softApGetConnectedStationsDetail();
+            if (mConnectedStationsDetail != null && !mConnectedStationsDetail.isEmpty()) {
+                mConnectNum = mConnectedStationsDetail.size();
+            }
+            int mBlockedNum = 0;
+            List<String> mBlockedStationsDetail = mWifiManager.softApGetBlockedStationsDetail();
+            if (mBlockedStationsDetail != null && !mBlockedStationsDetail.isEmpty()) {
+                mBlockedNum = mBlockedStationsDetail.size();
+            }
+                message = String.format(mContext.getString(com.android.internal.R.string.station_state_msg), mConnectNum, mBlockedNum);
+        }
 
         if (mTetheredNotificationBuilder == null) {
             mTetheredNotificationBuilder = new Notification.Builder(mContext);
@@ -491,7 +547,7 @@ public class Tethering extends BaseNetworkObserver {
                 mTetheredNotificationBuilder.build(), UserHandle.ALL);
     }
 
-    private void clearTetheredNotification() {
+    private synchronized void clearTetheredNotification() {
         NotificationManager notificationManager =
             (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null && mLastNotificationId != 0) {
@@ -526,8 +582,29 @@ public class Tethering extends BaseNetworkObserver {
                 }
             } else if (action.equals(Intent.ACTION_CONFIGURATION_CHANGED)) {
                 updateConfiguration();
+            } else if (HOTSPOT_ENABLED && (action.equals(WifiManager.WIFI_AP_CONNECTION_CHANGED_ACTION)
+                     || action.equals(WifiManager.SOFTAP_BLOCKLIST_AVAILABLE_ACTION))) {
+                showTetherWifiNotification();
             }
         }
+    }
+
+    private void showTetherWifiNotification() {
+        if (!getConnectivityManager().isTetheringSupported()) return;
+
+        synchronized (mPublicSync) {
+            Set ifaces = mIfaces.keySet();
+            for (Object iface : ifaces) {
+                TetherInterfaceSM sm = mIfaces.get(iface);
+                if (sm != null && sm.isTethered()) {
+                    if (isUsb((String)iface) || isBluetooth((String)iface)) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_wifi);
     }
 
     private void tetherUsb(boolean enable) {
@@ -569,7 +646,8 @@ public class Tethering extends BaseNetworkObserver {
                 try {
                     ifcg = mNMService.getInterfaceConfig(iface);
                     if (ifcg != null) {
-                        InetAddress addr = NetworkUtils.numericToInetAddress(USB_NEAR_IFACE_ADDR);
+                        //InetAddress addr = NetworkUtils.numericToInetAddress(USB_NEAR_IFACE_ADDR);
+                        InetAddress addr = NetworkUtils.numericToInetAddress(mUSBNearIfaceAddr);
                         ifcg.setLinkAddress(new LinkAddress(addr, USB_PREFIX_LENGTH));
                         if (enabled) {
                             ifcg.setInterfaceUp();
@@ -967,7 +1045,15 @@ public class Tethering extends BaseNetworkObserver {
                 if (DBG) Log.d(TAG, "Tethered " + mIfaceName);
                 setAvailable(false);
                 setTethered(true);
+
                 sendTetherStateChangedBroadcast();
+            }
+            @Override
+            public void exit() {
+                //Bug#307632
+                mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_UNREQUESTED,
+                        TetherInterfaceSM.this);
+
             }
 
             private void cleanupUpstream() {
@@ -1014,8 +1100,9 @@ public class Tethering extends BaseNetworkObserver {
                                     ConnectivityManager.TETHER_ERROR_UNTETHER_IFACE_ERROR);
                             break;
                         }
-                        mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_UNREQUESTED,
-                                TetherInterfaceSM.this);
+                        //For Bug#307632, cmd is send in exit()
+                        //mTetherMasterSM.sendMessage(TetherMasterSM.CMD_TETHER_MODE_UNREQUESTED,
+                        //        TetherInterfaceSM.this);
                         if (message.what == CMD_TETHER_UNREQUESTED) {
                             if (mUsb) {
                                 if (!Tethering.this.configureUsbIface(false)) {
@@ -1104,6 +1191,10 @@ public class Tethering extends BaseNetworkObserver {
                 setAvailable(false);
                 setLastError(ConnectivityManager.TETHER_ERROR_NO_ERROR);
                 setTethered(false);
+                if (isUsb(mIfaceName)) {
+                    Log.d(TAG, "UnavailableState  disableTetherPCInternet ");
+                    disableTetherPCInternet();
+                }
                 sendTetherStateChangedBroadcast();
             }
             @Override
@@ -1161,6 +1252,7 @@ public class Tethering extends BaseNetworkObserver {
         private int mMobileApnReserved = ConnectivityManager.TYPE_NONE;
 
         private String mUpstreamIfaceName = null;
+        private String upV6Interface = null;
 
         private static final int UPSTREAM_SETTLE_TIME_MS     = 10000;
         private static final int CELL_CONNECTION_RENEW_MS    = 40000;
@@ -1279,9 +1371,52 @@ public class Tethering extends BaseNetworkObserver {
                 return true;
             }
 
-            protected void chooseUpstreamType(boolean tryCell) {
+            protected void addUpstreamV6Interface(String iface) {
+                Log.d(TAG, "adding v6 interface " + iface);
+                try {
+                    mNMService.addUpstreamV6Interface(iface);
+                } catch (Exception e) {
+                    Log.e(TAG, "Unable to append v6 upstream interface");
+                }
+            }
+
+            protected void removeUpstreamV6Interface(String iface) {
+
+                Log.d(TAG, "removing v6 interface " + iface);
+                try {
+                    mNMService.removeUpstreamV6Interface(iface);
+                } catch (Exception e) {
+                    Log.e(TAG, "Unable to remove v6 upstream interface");
+                }
+            }
+
+
+            boolean isIpv6Connected(LinkProperties linkProps) {
+                boolean ret = false;
+                Collection <InetAddress> addresses = null;
+
+                if (linkProps == null) {
+                    return false;
+                }
+                addresses = linkProps.getAddresses();
+                for (InetAddress addr: addresses) {
+                    if (addr instanceof java.net.Inet6Address) {
+                        java.net.Inet6Address i6addr = (java.net.Inet6Address) addr;
+                        if (!i6addr.isAnyLocalAddress() && !i6addr.isLinkLocalAddress() &&
+                                !i6addr.isLoopbackAddress() && !i6addr.isMulticastAddress()) {
+                            ret = true;
+                            break;
+                        }
+                    }
+                }
+                return ret;
+            }
+
+            protected int /*void*/ chooseUpstreamType(boolean tryCell) {
                 int upType = ConnectivityManager.TYPE_NONE;
                 String iface = null;
+                int upV6Type = ConnectivityManager.TYPE_NONE;
+                boolean findV4Iface = false;
 
                 updateConfiguration(); // TODO - remove?
 
@@ -1294,14 +1429,76 @@ public class Tethering extends BaseNetworkObserver {
                     }
 
                     for (Integer netType : mUpstreamIfaceTypes) {
+                        LinkProperties props = null;
+                        boolean isV6Connected = false;
+
                         NetworkInfo info =
                                 getConnectivityManager().getNetworkInfo(netType.intValue());
+                        if (info != null) {
+                            props = getConnectivityManager().getLinkProperties(info.getType());
+                            isV6Connected = isIpv6Connected(props);
+                        }
+
                         if ((info != null) && info.isConnected()) {
                             upType = netType.intValue();
+                            if (isV6Connected) {
+                                upV6Interface = props.getInterfaceName();
+                                addUpstreamV6Interface(upV6Interface);
+                                upV6Type = netType.intValue();
+                            }/* else if (props != null && props.hasExtraLink()) {
+                                LinkProperties extraprops = props.getExtraLink();
+
+                                isV6Connected = isIpv6Connected(extraprops);
+                                if (isV6Connected) {
+                                    upV6Interface = extraprops.getInterfaceName();
+                                    addUpstreamV6Interface(upV6Interface);
+                                    upV6Type = netType.intValue();
+                                }
+                            }*/
+
+                            findV4Iface = true;
+
                             break;
                         }
                     }
                 }
+
+                //we only find a v4 interface, try to find if there is a v6 interface
+                if (findV4Iface && upV6Type == ConnectivityManager.TYPE_NONE && upV6Interface == null) {
+                    Log.d(TAG, "chooseUpstreamType only find a v4 upType:" + upType + " try to find if there is a v6 interface");
+                    synchronized (mPublicSync) {
+
+                        for (Integer nettype : mUpstreamIfaceTypes) {
+                            LinkProperties v6props = null;
+                            boolean hasV6Addr = false;
+
+                            NetworkInfo netinfo =
+                                    getConnectivityManager().getNetworkInfo(nettype.intValue());
+                            if (netinfo != null && netinfo.isConnected()) {
+                                v6props = getConnectivityManager().getLinkProperties(netinfo.getType());
+                                hasV6Addr = isIpv6Connected(v6props);
+                                if (hasV6Addr) {
+                                    upV6Interface = v6props.getInterfaceName();
+                                    addUpstreamV6Interface(upV6Interface);
+                                    upV6Type = nettype.intValue();
+
+                                    break;
+                                }/* else if (v6props != null && v6props.hasExtraLink()) {
+                                    LinkProperties v6Extraprops = v6props.getExtraLink();
+                                    hasV6Addr = isIpv6Connected(v6Extraprops);
+                                    if (hasV6Addr) {
+                                        upV6Interface = v6Extraprops.getInterfaceName();
+                                        addUpstreamV6Interface(upV6Interface);
+                                        upV6Type = nettype.intValue();
+
+                                        break;
+                                    }
+                                }*/
+                            }
+                        }
+                    }
+                }
+
 
                 if (DBG) {
                     Log.d(TAG, "chooseUpstreamType(" + tryCell + "), preferredApn ="
@@ -1378,11 +1575,17 @@ public class Tethering extends BaseNetworkObserver {
                             mNMService.setDnsForwarders(network, dnsServers);
                         } catch (Exception e) {
                             Log.e(TAG, "Setting DNS forwarders failed!");
-                            transitionTo(mSetDnsForwardersErrorState);
+                            //transitionTo(mSetDnsForwardersErrorState);
+                            //For Bug#307632, just notify ERROR without entering SetDnsForwardersErrorState
+                            //because if enter SetDnsForwardersErrorState, it will not recovery again
+                            for (TetherInterfaceSM sm : mNotifyList) {
+                                sm.sendMessage(TetherInterfaceSM.CMD_SET_DNS_FORWARDERS_ERROR);
+                            }
                         }
                     }
                 }
                 notifyTetheredOfNewUpstreamIface(iface);
+                return upV6Type;
             }
 
             protected void notifyTetheredOfNewUpstreamIface(String ifaceName) {
@@ -1584,9 +1787,13 @@ public class Tethering extends BaseNetworkObserver {
                         break;
                     case CMD_UPSTREAM_CHANGED:
                         // need to try DUN immediately if Wifi goes down
+                        int upType = ConnectivityManager.TYPE_NONE;
                         mTryCell = !WAIT_FOR_NETWORK_TO_SETTLE;
-                        chooseUpstreamType(mTryCell);
-                        mTryCell = !mTryCell;
+                        upType = chooseUpstreamType(mTryCell);
+                        if(upType == ConnectivityManager.TYPE_NONE && upV6Interface != null) {
+                            removeUpstreamV6Interface(upV6Interface);
+                            upV6Interface = null;
+                        }
                         break;
                     case CMD_CELL_CONNECTION_RENEW:
                         // make sure we're still using a requested connection - may have found
@@ -1619,7 +1826,11 @@ public class Tethering extends BaseNetworkObserver {
                 switch (message.what) {
                     case CMD_TETHER_MODE_REQUESTED:
                         TetherInterfaceSM who = (TetherInterfaceSM)message.obj;
-                        who.sendMessage(mErrorNotification);
+                        //who.sendMessage(mErrorNotification);
+                        //Change for Bug#328526
+                        if (VDBG) Log.d(TAG, "Tether Mode requested by " + who + " recovery from ErrorState");
+                        mNotifyList.add(who);
+                        transitionTo(mTetherModeAliveState);
                         break;
                     default:
                        retValue = false;
@@ -1717,5 +1928,183 @@ public class Tethering extends BaseNetworkObserver {
         }
         pw.decreaseIndent();
         return;
+    }
+
+    public int disableTetherPCInternet(){
+        if (DBG) Log.d(TAG, "disableTetherPCInternet ");
+        mIsPCNetTethering = false;
+        String ifaceName = "rndis0";
+        if (!mPCNetTethered){
+            Log.d(TAG,"disableTetherPCInternet OK to do nothing, since tetherPC is not set");
+            return ConnectivityManager.TETHER_ERROR_NO_ERROR;
+        }
+        mPCNetTethered = false;
+
+        try{
+            if (mUsbEther != null) mUsbEther.setUsbEther(false, null, null, null);
+        }catch (Exception e) {
+            Log.e(TAG, "disableTetherPCInternet Exception", e);
+        }
+
+/***********************************************************************************
+        //remove route
+        try{
+            if (checkUsbIface()) {
+                mNMService.removeRoute(RNDIS_SHARE_PC_INTERNET_NET_ID, mTetherPCNetRouteInfo);
+            }
+            mTetherPCNetRouteInfo = null;
+        }catch (Exception e) {
+            Log.e(TAG, "disableTetherPCInternet Exception", e);
+            mTetherPCNetRouteInfo = null;
+        }
+
+        //remove rndis0 from physical network
+        try{
+            mNMService.removeInterfaceFromNetwork(ifaceName, RNDIS_SHARE_PC_INTERNET_NET_ID);
+        }catch (Exception e) {
+            Log.e(TAG, "disableTetherPCInternet Exception", e);
+        }
+
+        //remove physical network
+        try{
+            mNMService.removeNetwork(RNDIS_SHARE_PC_INTERNET_NET_ID);
+        }catch (Exception e) {
+            Log.e(TAG, "disableTetherPCInternet Exception", e);
+        }
+
+        //clear default network
+        try{
+            mNMService.clearDefaultNetId();
+        }catch (Exception e) {
+            Log.e(TAG, "disableTetherPCInternet Exception", e);
+        }
+*********************************************************************************/
+        return ConnectivityManager.TETHER_ERROR_NO_ERROR;
+    }
+
+    private boolean checkUsbIface() {
+        if (DBG) Log.d(TAG, "checkUsbIface");
+
+        // toggle the USB interfaces
+        String[] ifaces = new String[0];
+        try {
+            ifaces = mNMService.listInterfaces();
+        } catch (Exception e) {
+            Log.e(TAG, "Error listing Interfaces", e);
+            return false;
+        }
+        for (String iface : ifaces) {
+            if (isUsb(iface)) {
+                InterfaceConfiguration ifcg = null;
+                try {
+                    ifcg = mNMService.getInterfaceConfig(iface);
+                    if (ifcg != null) {
+                        Log.i(TAG, "checkUsbIface ok"+ifcg.toString());
+                        return true;
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error configuring interface " + iface, e);
+                    return false;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public int enableTetherPCInternet(String hostAddress){
+        String ifaceName = "rndis0";
+
+        if (mPCNetTethered){
+            Log.d(TAG,"enableTetherPCInternet OK to do nothing, since tetherPC is already set");
+            return ConnectivityManager.TETHER_ERROR_NO_ERROR;
+        }
+
+        if (DBG) Log.d(TAG, "hostAddress =  "+hostAddress);
+
+        if (hostAddress != null){
+            mPCIfaceAddr = hostAddress;
+            String[] tempNearAddr = mPCIfaceAddr.split("\\.");
+            mUSBNearIfaceAddr = "";
+            for(int i=0; i<(tempNearAddr.length-1); i++)  {
+                mUSBNearIfaceAddr += ( tempNearAddr[i] + ".");
+            }
+            mUSBNearIfaceAddr += "129";
+        }
+
+        if (DBG) Log.d(TAG, "mPCIfaceAddr = "+mPCIfaceAddr+" mUSBNearIfaceAddr= "+mUSBNearIfaceAddr);
+
+/*****************************************************************************
+        if (!checkUsbIface()) {
+            Log.d(TAG,"enableTetherPCInternet fail, usb interface is not available");
+            mIsPCNetTethering = true;
+            return ConnectivityManager.TETHER_ERROR_UNAVAIL_IFACE;
+        }
+*****************************************************************************/
+        if (DBG) Log.d(TAG, "enableTetherPCInternet mPCIfaceAddr = "+mPCIfaceAddr+" mUSBNearIfaceAddr= "+mUSBNearIfaceAddr);
+
+        try{
+            if (mUsbEther != null)
+                mUsbEther.setUsbEther(true, ifaceName, mUSBNearIfaceAddr, mPCIfaceAddr);
+        }catch (Exception e) {
+            Log.e(TAG, "disableTetherPCInternet Exception", e);
+        }
+
+/*****************************************************************************
+        InetAddress addr = NetworkUtils.numericToInetAddress(mPCIfaceAddr);
+        mTetherPCNetRouteInfo = new RouteInfo((IpPrefix) null, addr, ifaceName);
+
+        //create physical network
+        try{
+            mNMService.createPhysicalNetwork(RNDIS_SHARE_PC_INTERNET_NET_ID);
+        }catch (Exception e) {
+                Log.e(TAG, "enableTetherPCInternet Exception", e);
+        }
+
+        //to remove the rndis0 from local network
+        try{
+            mNMService.removeInterfaceFromNetwork(ifaceName, 99);
+        }catch (Exception e) {
+                Log.e(TAG, "enableTetherPCInternet Exception", e);
+        }
+
+        //add rndis0 to physical network created before
+        try{
+            mNMService.addInterfaceToNetwork(ifaceName, RNDIS_SHARE_PC_INTERNET_NET_ID);
+        }catch (Exception e) {
+                Log.e(TAG, "enableTetherPCInternet Exception", e);
+        }
+
+        //add route info
+        try{
+            mNMService.addRoute(RNDIS_SHARE_PC_INTERNET_NET_ID, mTetherPCNetRouteInfo);
+        }catch (Exception e) {
+                Log.e(TAG, "enableTetherPCInternet Exception", e);
+        }
+
+        //set to default network
+        try{
+            mNMService.setDefaultNetId(RNDIS_SHARE_PC_INTERNET_NET_ID);
+        }catch (Exception e) {
+                Log.e(TAG, "enableTetherPCInternet Exception", e);
+        }
+
+        //set dns server
+        try{
+            Collection<InetAddress> dnses = new ArrayList<InetAddress>();
+            dnses.add(addr);
+            mNMService.setDnsServersForNetwork(RNDIS_SHARE_PC_INTERNET_NET_ID, NetworkUtils.makeStrings(dnses),null);
+        }catch (Exception e) {
+                Log.e(TAG, "enableTetherPCInternet Exception", e);
+        }
+*****************************************************************************/
+        mPCNetTethered = true;
+        mIsPCNetTethering = false;
+        showTetheredNotification(com.android.internal.R.drawable.stat_sys_tether_usb);
+        return ConnectivityManager.TETHER_ERROR_NO_ERROR;
+    }
+
+    public boolean getPCNetTether() {
+        return (mPCNetTethered || mIsPCNetTethering);
     }
 }

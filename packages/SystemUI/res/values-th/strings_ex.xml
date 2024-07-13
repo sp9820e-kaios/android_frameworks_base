@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"ฮอตสปอตแบบพกพา Wi-Fi ต้องการเชื่อมต่อข้อมูลบนมือถืออาจมีค่าใช้จ่ายเพิ่มเติม."</string>
+<string name="softap_bt_cannot_coexist">"เปิดสปอตแบบพกพาบลูทูธ WLAN ใช้งานไม่ได้ถ้าคุณต้องการที่จะใช้ฮอตสปอตแบบพกพา WLAN ปิดบลูทูธ ."</string>
+<string name="bt_softap_cannot_coexist">"เมื่อสปอตแบบพกพา WLAN เพื่อเปิดบลูทูธ จะไม่สามารถใช้ได้ถ้าคุณต้องการที่จะใช้บลูทูธ ปิดฮอตสปอตแบบพกพา WLAN."</string>
+<string name="lte_service_error_airplane">"คุณไม่สามารถใช้ LTE เมื่อโทรศัพท์อยู่ในโหมดเครื่องบิน."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G เปิดแล้ว"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G ปิดแล้ว"</string>
+<string name="accessibility_quick_settings_lte_on">"4G เปิด"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ปิด"</string>
+<string name="toggle_data_error_airplane">"คุณไม่สามารถใช้ข้อมูลมือถือขณะที่โทรศัพท์อยู่ในโหมดเครื่องบิน"</string>
+<string name="quick_settings_data_connection_label">"ข้อมูล"</string>
+<string name="accessibility_quick_settings_data_changed_on">"เปิดข้อมูลอยู่"</string>
+<string name="accessibility_quick_settings_data_changed_off">"ปิดข้อมูลอยู่"</string>
+<string name="accessibility_quick_settings_data_on">"เปิดข้อมูล"</string>
+<string name="accessibility_quick_settings_data_off">"ปิดข้อมูล"</string>
+<string name="missing_sim_message">"ไม่มีSIM"</string>
+    <string name="lte_service_error_incall">"คุณไม่สามารถเปลี่ยนการให้บริการ LTE ในระหว่างการโทร."</string>
+
+</resources>

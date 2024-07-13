@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"અભિનંદન! સિસ્ટમ UI ટ્યૂનરને સેટિંગ્સમાં ઉમેરવામાં આવ્યું છે"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"સેટિંગ્સમાંથી દૂર કરો"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"સેટિંગ્સમાંથી સિસ્ટમ UI ટ્યૂનર દૂર કરી અને તેની તમામ સુવિધાઓનો ઉપયોગ કરવાનું બંધ કરીએ?"</string>
+    <string name="quick_settings_volume_label">"ઓડીયોપ્રોફાઇલ"</string>
+     <string name="assistant_key_home">હોમ</string>
+     <string name="assistant_key_search">"શોધ"</string>
+     <string name="assistant_key_menu">મેનુ</string>
+     <string name="assistant_key_back">પાછળ</string>
+
+    <string name="vibrate_hint">" ધ્રુજારી માટે ડાબી બાજુ સ્વાઇપ કરો"</string>
+     <string name="battery_overtage_title">સલામતી ચેતવણી</string>
+     <string name="battery_overtage_content">"ચાર્જીગ વોલ્ટેજ ખુબ વધુ છે!"</string>
+     <string name="battery_overtage_back">પાછળ</string>
+    <string name="recent_app_clean_finished_toast">"છુટુ કરવુ <xliff:g id="count">%1$s</xliff:g> મેમરી,<xliff:g id="count">%2$s</xliff:g> હવે ઉપલબ્ધ છે."</string>
+     <string name="label_tab_notifications">નોટીફાઇ</string>
+     <string name="label_tab_qs">"સ્વિચ કરો"</string>
+     <string name="label_screen_brightness">"પ્રદર્શન ચમક"</string>
+     <string name="label_star_unlock">"અનલોક કરવા માટે * ને થોડીક વાર દબાવી રાખો"</string>
+     <string name="speak_spec">"હ મ"</string>
 </resources>

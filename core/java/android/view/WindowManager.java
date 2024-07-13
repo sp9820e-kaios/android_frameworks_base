@@ -1134,6 +1134,15 @@ public interface WindowManager extends ViewManager {
         public int privateFlags;
 
         /**
+         * SPRD: Idle screen flag: if Home activity's TYPE_BASE_APPLICATON screen
+         * show, the value will be true, other situation will be false.
+         * To support STK Event_IdleScreenAvailable.
+         *
+         * @hide
+         */
+        public boolean idleScreenAvailable = false;
+
+        /**
          * Value for {@link #needsMenuKey} for a window that has not explicitly specified if it
          * needs {@link #NEEDS_MENU_SET_TRUE} or doesn't need {@link #NEEDS_MENU_SET_FALSE} a menu
          * key. For this case, we should look at windows behind it to determine the appropriate

@@ -443,6 +443,17 @@ public final class PowerManager {
         return SystemProperties.getBoolean("persist.power.usetwilightadj", false);
     }
 
+    /** SPRD add for keyboardButtonLight
+     * @hide
+     */
+    public void scheduleButtonLightTimeout(long now)
+    {
+        try {
+            mService.scheduleButtonLightTimeout(now);
+        } catch (RemoteException e) {
+        }
+    }
+
     /**
      * Creates a new wake lock with the specified level and flags.
      * <p>
@@ -585,6 +596,20 @@ public final class PowerManager {
         } catch (RemoteException e) {
         }
     }
+
+    /**
+     * Bug605470
+     * Used by Incall screen off timeout.
+     * flag:control the funtion
+     *{@hide}
+     */
+    public void setTimeoutLocked(int time,boolean flag) {
+        try {
+            mService.setTimeoutLocked(time, flag);
+       } catch (RemoteException e) {
+       }
+    }
+
 
    /**
      * Forces the device to go to sleep.
@@ -846,6 +871,26 @@ public final class PowerManager {
     public void reboot(String reason) {
         try {
             mService.reboot(false, reason, true);
+        } catch (RemoteException e) {
+        }
+    }
+    /**
+     * SPRD added for PowerOff Alarm
+     * @hide
+     */
+    public void shutdownForAlarm() {
+        try {
+           mService.shutdownForAlarm(false, true);
+        } catch (RemoteException e) {
+        }
+    }
+    /**
+     * SPRD added for PowerOff Alarm
+     * @hide
+     */
+    public void rebootAnimation() {
+        try {
+            mService.rebootAnimation();
         } catch (RemoteException e) {
         }
     }

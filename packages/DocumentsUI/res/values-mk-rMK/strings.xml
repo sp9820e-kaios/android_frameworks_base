@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Допрете за да ги погледнете деталите"</string>
     <string name="retry" msgid="7564024179122207376">"Обидете се повторно"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Датотекиве не се ископирани: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">Не може да се споделите датотека</string>
+     <string name="documents_deleting">"Бришење на документите"</string>
+     <string name="cannot_copyfolder_itself">"Не можете да ја копирате папката во самата себе"</string>
+
+    <string name="error_permissions">"Апликацијата нема критични дозволи што се потребни за да се извршува. Проверете ги поставките за дозволи."</string>
+     <string name="cannot_copy_drm">"Не може да копира DRM датотеки"</string>
+     <string name="cannot_copy_downloading">"Не може да копира преземачки датотеки"</string>
 </resources>

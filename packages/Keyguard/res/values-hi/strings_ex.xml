@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="kg_no_sim_message">"कोई सिम कार्ड नहीं है"</string>
+<string name="kg_emergency_call_no_service">कोई नेटवर्क उपलब्ध नहीं</string>
+<string name="kg_sim_pin_verify_success">" PIN सत्यापन सफल"</string>
+    <string name="kg_sim_pin_delete">मिटाएं</string>
+     <string name="kg_sim_pin_ok">ठीक है</string>
+
+</resources>

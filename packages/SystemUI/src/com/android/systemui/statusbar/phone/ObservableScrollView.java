@@ -71,7 +71,15 @@ public class ObservableScrollView extends ScrollView {
         mHandlingTouchEvent = true;
         mLastX = ev.getX();
         mLastY = ev.getY();
-        boolean result = super.onTouchEvent(ev);
+        /* SPRD: bug521204, catch IllegalArgumentException in MotionEvent @{ */
+        boolean result = false;
+        try {
+            result = super.onTouchEvent(ev);
+        } catch (IllegalArgumentException e){
+            android.util.Log.e("ObservableScrollView", "IllegalArgumentException in onTouchEvent");
+            e.printStackTrace();
+        }
+        /* @} */
         mHandlingTouchEvent = false;
         return result;
     }
@@ -81,7 +89,15 @@ public class ObservableScrollView extends ScrollView {
         mHandlingTouchEvent = true;
         mLastX = ev.getX();
         mLastY = ev.getY();
-        boolean result = super.onInterceptTouchEvent(ev);
+        /* SPRD: bug521204, catch IllegalArgumentException in MotionEvent @{ */
+        boolean result = false;
+        try {
+            result = super.onInterceptTouchEvent(ev);
+        } catch (IllegalArgumentException e){
+            android.util.Log.e("ObservableScrollView", "IllegalArgumentException in onInterceptTouchEvent");
+            e.printStackTrace();
+        }
+        /* @} */
         mHandlingTouchEvent = false;
         return result;
     }

@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Hongera! Kipokea Ishara cha System UI kimeongezwa kwenye Mipangilio"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Ondoa kwenye Mipangilio"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Je, ungependa kuondoa Kipokea ishara cha SystemUI kwenye Mipangilio na uache kutumia vipengele vyake vyote?"</string>
+    <string name="quick_settings_volume_label">"Profaili Ya Sauti"</string>
+     <string name="assistant_key_home">"Mwanzo"</string>
+     <string name="assistant_key_search">"Tafuta"</string>
+     <string name="assistant_key_menu">"Menyu"</string>
+     <string name="assistant_key_back">"Nyuma"</string>
+
+    <string name="vibrate_hint">"Bebesha kushoto kupata mtetemo "</string>
+     <string name="battery_overtage_title">"Ilani ya usalama"</string>
+     <string name="battery_overtage_content">""Volteji ya kuchaji ni kubwa mno!"</string>
+     <string name="battery_overtage_back">"Nyuma"</string>
 </resources>

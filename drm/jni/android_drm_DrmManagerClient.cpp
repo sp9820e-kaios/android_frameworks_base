@@ -18,6 +18,10 @@
 #define LOG_TAG "android_drm_DrmManagerClient"
 #include <utils/Log.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <jni.h>
 #include <JNIHelp.h>
 #include <ScopedLocalRef.h>
@@ -670,6 +674,76 @@ static jobject GetConvertedStatus(JNIEnv* env, DrmConvertedStatus* pDrmConverted
     return drmConvertedStatus;
 }
 
+jbyteArray android_drm_DrmManagerClient_pread (JNIEnv* env, jobject thiz, jint uniqueId, jobject handle, jint size, jint offset) {
+    jclass clazz = env->FindClass("android/drm/DecryptHandle");
+    jfieldID fieldId = env->GetFieldID(clazz, "mNativeContext", "J");
+    DecryptHandleWrapper* wrapper = (DecryptHandleWrapper*)env->GetLongField(handle, fieldId);
+    ALOGE("sunway: pread: decryptHandle id: %d", wrapper->handle->decryptId);
+    char buffer[size];
+    bzero(buffer, size);
+    int count = getDrmManagerClientImpl(env, thiz)->pread(uniqueId, wrapper->handle, buffer, size, offset);
+    if (count <=0) {
+	return NULL;
+    }
+    jbyteArray ret = env->NewByteArray(count);
+    if (ret == NULL) {
+	return NULL;
+    }
+    env->SetByteArrayRegion(ret, 0, count, (jbyte*)buffer);
+    return ret;
+}
+
+int android_drm_DrmManagerClient_setPlaybackStatus (JNIEnv* env, jobject thiz, jint uniqueId, jobject handle, jint status) {
+    jclass clazz = env->FindClass("android/drm/DecryptHandle");
+    jfieldID fieldId = env->GetFieldID(clazz, "mNativeContext", "J");
+    DecryptHandleWrapper* wrapper = (DecryptHandleWrapper*)env->GetLongField(handle, fieldId);
+    ALOGE("sunway: setPlaybackStatus: decryptHandle id: %d", wrapper->handle->decryptId);
+    return getDrmManagerClientImpl(env, thiz)->setPlaybackStatus(uniqueId, wrapper->handle, status, 0);
+}
+
+static jint android_drm_DrmManagerClient_closeDecryptSession(
+    JNIEnv* env, jobject thiz, jint uniqueId, jobject handler) {
+
+    jclass clazz = env->FindClass("android/drm/DecryptHandle");
+    jfieldID fieldId = env->GetFieldID(clazz, "mNativeContext", "J");
+    DecryptHandleWrapper* wrapper = (DecryptHandleWrapper*)env->GetLongField(handler, fieldId);
+    return getDrmManagerClientImpl(env, thiz)->closeDecryptSession(uniqueId, wrapper->handle);
+}
+    
+static jobject android_drm_DrmManagerClient_openDecryptSession (
+    JNIEnv* env, jobject thiz, jint uniqueId, jstring jpath, jstring jmimetype) {
+    char* mimeType = const_cast< char* > (env->GetStringUTFChars(jmimetype, NULL));
+    char* path = const_cast< char* > (env->GetStringUTFChars(jpath, NULL));
+    
+    int fd = ::open(path, O_RDONLY);
+    env->ReleaseStringUTFChars(jpath, path);
+    if (fd == -1) {
+		return NULL;
+    }
+    
+    sp<DecryptHandle> nativeHandle = getDrmManagerClientImpl(env, thiz)->openDecryptSession(uniqueId, fd, 0, 0, mimeType);
+    env->ReleaseStringUTFChars(jmimetype, mimeType);
+    ::close(fd);
+    
+    if (nativeHandle == NULL) {
+		return NULL;
+    }
+    
+    jclass clazz = env->FindClass("android/drm/DecryptHandle");
+    jmethodID ctorId = env->GetMethodID(clazz, "<init>", "()V");
+    jobject ret = env->NewObject(clazz, ctorId);
+    jfieldID fieldId = env->GetFieldID(clazz, "mNativeContext", "J");
+//    DecryptHandleWrapper* wrapper = new DecryptHandleWrapper();
+	sp<DecryptHandleWrapper> wrapper = new DecryptHandleWrapper();
+	if (wrapper.get()) {
+		wrapper->handle = nativeHandle;
+		wrapper->incStrong(ret);
+	}
+    env->SetLongField(ret, fieldId, reinterpret_cast<jlong>(wrapper.get()));
+    ALOGE("sunway: openDecryptSession: decryptHandle id: %d", nativeHandle->decryptId);
+    return ret;
+}
+
 static jobject android_drm_DrmManagerClient_convertData(
             JNIEnv* env, jobject thiz, jint uniqueId, jint convertId, jbyteArray inputData) {
     ALOGV("convertData Enter");
@@ -760,6 +834,14 @@ static JNINativeMethod nativeMethods[] = {
 
     {"_closeConvertSession", "(II)Landroid/drm/DrmConvertedStatus;",
                                     (void*)android_drm_DrmManagerClient_closeConvertSession},
+    {"_openDecryptSession", "(ILjava/lang/String;Ljava/lang/String;)Landroid/drm/DecryptHandle;",
+                                    (void*)android_drm_DrmManagerClient_openDecryptSession},
+    {"_closeDecryptSession", "(ILandroid/drm/DecryptHandle;)I",
+                                    (void*)android_drm_DrmManagerClient_closeDecryptSession},
+    {"_setPlaybackStatus", "(ILandroid/drm/DecryptHandle;I)I",
+                                    (void*)android_drm_DrmManagerClient_setPlaybackStatus},
+    {"_pread", "(ILandroid/drm/DecryptHandle;II)[B",
+                                    (void*)android_drm_DrmManagerClient_pread}
 };
 
 static int registerNativeMethods(JNIEnv* env) {

@@ -29,6 +29,7 @@ import android.view.WindowManagerGlobal;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
+import com.android.music.KeyguardMusicManager;
 import com.android.systemui.statusbar.CommandQueue;
 
 import static com.android.keyguard.KeyguardHostView.OnDismissAction;
@@ -76,6 +77,7 @@ public class StatusBarKeyguardViewManager {
     private boolean mDeviceWillWakeUp;
     private boolean mWakeAndUnlocking;
     private boolean mDeferScrimFadeOut;
+    private KeyguardMusicManager mKeyguardMusicManager;
 
     public StatusBarKeyguardViewManager(Context context, ViewMediatorCallback callback,
             LockPatternUtils lockPatternUtils) {
@@ -93,6 +95,7 @@ public class StatusBarKeyguardViewManager {
         mScrimController = scrimController;
         mBouncer = new KeyguardBouncer(mContext, mViewMediatorCallback, mLockPatternUtils,
                 mStatusBarWindowManager, container);
+        mKeyguardMusicManager = KeyguardMusicManager.getInstance(mContext, this);
     }
 
     /**
@@ -104,6 +107,7 @@ public class StatusBarKeyguardViewManager {
         mStatusBarWindowManager.setKeyguardShowing(true);
         mScrimController.abortKeyguardFadingOut();
         reset();
+        mKeyguardMusicManager.start();
     }
 
     /**
@@ -291,7 +295,7 @@ public class StatusBarKeyguardViewManager {
             executeAfterKeyguardGoneAction();
             updateStates();
         }
-
+        mKeyguardMusicManager.stop();
     }
 
     private void animateScrimControllerKeyguardFadingOut(long delay, long duration) {
@@ -495,4 +499,14 @@ public class StatusBarKeyguardViewManager {
             mPhoneStatusBar.getNavigationBarView().setWakeAndUnlocking(true);
         }
     }
+
+    /* SPRD: Bug 583693 PikeL Feature {@ */
+    public void hideSwtichPanel(boolean isHide) {
+        mPhoneStatusBar.hideSwtichTabButton(isHide);
+    }
+
+    public void hideNotifications(boolean isHide) {
+        mPhoneStatusBar.hideNotificationItems(isHide);
+    }
+    /* @} */
 }

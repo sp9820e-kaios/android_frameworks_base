@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="action_use_network">"इस्तमाल करिव नेटवर्क यिथकेथ  यि छु"</string>
+<string name="action_do_not_use_network">"म करिव इस्तमाल यि नेटवर्क"</string>
+<string name="action_bar_label">"साइन नेटवर्क कुन"</string>
+<string name="ssl_error_warning">"नेटवर्क युस तुही य्स्सन छिव जुडून तथ छि हेफाज़ति वजूहात"</string>
+<string name="ssl_error_example">"मसलन,गोडन्युक पेज हेकि न वाबस्त आसिथ हाय्मिच तन्ज़िमस सीथ."</string>
+<string name="ssl_error_continue">"जारी थायिव कुन्नि पेठ ब्राउज़र किन्"</string>
+</resources>

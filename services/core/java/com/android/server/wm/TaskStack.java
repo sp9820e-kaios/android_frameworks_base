@@ -308,7 +308,7 @@ public class TaskStack {
                 ++stackNdx;
             }
         }
-        if (DEBUG_TASK_MOVEMENT) Slog.d(TAG, "addTask: task=" + task + " toTop=" + toTop
+        if (DEBUG_TASK_MOVEMENT || WindowManagerService.mIsPrintLogs) Slog.d(TAG, "addTask: task=" + task + " toTop=" + toTop
                 + " pos=" + stackNdx);
         mTasks.add(stackNdx, task);
 
@@ -320,14 +320,14 @@ public class TaskStack {
     }
 
     void moveTaskToTop(Task task) {
-        if (DEBUG_TASK_MOVEMENT) Slog.d(TAG, "moveTaskToTop: task=" + task + " Callers="
+        if (DEBUG_TASK_MOVEMENT || WindowManagerService.mIsPrintLogs) Slog.d(TAG, "moveTaskToTop: task=" + task + " Callers="
                 + Debug.getCallers(6));
         mTasks.remove(task);
         addTask(task, true);
     }
 
     void moveTaskToBottom(Task task) {
-        if (DEBUG_TASK_MOVEMENT) Slog.d(TAG, "moveTaskToBottom: task=" + task);
+        if (DEBUG_TASK_MOVEMENT || WindowManagerService.mIsPrintLogs) Slog.d(TAG, "moveTaskToBottom: task=" + task);
         mTasks.remove(task);
         addTask(task, false);
     }
@@ -338,7 +338,7 @@ public class TaskStack {
      * @param task The Task to delete.
      */
     void removeTask(Task task) {
-        if (DEBUG_TASK_MOVEMENT) Slog.d(TAG, "removeTask: task=" + task);
+        if (DEBUG_TASK_MOVEMENT || WindowManagerService.mIsPrintLogs) Slog.d(TAG, "removeTask: task=" + task);
         mTasks.remove(task);
         if (mDisplayContent != null) {
             if (mTasks.isEmpty()) {

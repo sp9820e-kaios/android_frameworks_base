@@ -136,6 +136,9 @@ public class ZenFooter extends LinearLayout {
                 : ZenModeConfig.getConditionSummary(mContext, mConfig, mController.getCurrentUser(),
                         true /*shortVersion*/);
         Util.setText(mSummaryLine2, line2);
+        /* SPRD: Bug499210 The tip in clock's volume doesn't translate @{ */
+        mEndNowButton.setText(getResources().getString(R.string.volume_zen_end_now));
+        /*@} */
     }
 
     public void onConfigurationChanged() {

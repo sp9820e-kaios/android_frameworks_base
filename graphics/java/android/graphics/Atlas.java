@@ -16,6 +16,7 @@
 
 package android.graphics;
 
+import android.util.Log;
 /**
  * @hide
  */
@@ -38,6 +39,8 @@ public class Atlas {
      * Default flags: allow rotations and add padding.
      */
     public static final int FLAG_DEFAULTS = FLAG_ADD_PADDING;
+
+    static final String TAG = "GraphicsAtlas";
 
     /**
      * Each type defines a different packing algorithm that can
@@ -135,6 +138,9 @@ public class Atlas {
     }
 
     private static Policy findPolicy(Type type, int width, int height, int flags) {
+        /*
+         * SPRD: Bug 563756, Using JACK compiling the switch-case with enum type matches,
+         * and mutil-thread through it will cause problem, so change ways to if-else.
         switch (type) {
             case SliceMinArea:
                 return new SlicePolicy(width, height, flags,
@@ -150,6 +156,23 @@ public class Atlas {
                         new SlicePolicy.LongerFreeAxisSplitDecision());
         }
         return null;
+        */
+        if(type == Type.SliceMinArea){
+            return new SlicePolicy(width, height, flags,
+                new SlicePolicy.MinAreaSplitDecision());
+        } else if(type == Type.SliceMaxArea){
+            return new SlicePolicy(width, height, flags,
+                new SlicePolicy.MaxAreaSplitDecision());
+        } else if(type == Type.SliceShortAxis){
+            return new SlicePolicy(width, height, flags,
+                new SlicePolicy.ShorterFreeAxisSplitDecision());
+        } else if(type == Type.SliceLongAxis){
+            return new SlicePolicy(width, height, flags,
+                new SlicePolicy.LongerFreeAxisSplitDecision());
+        } else {
+            Log.i(TAG,"Error, Should Not Go Here!!!!, type = "+type);
+            return null;
+        }
     }
 
     /**

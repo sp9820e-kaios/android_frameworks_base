@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Toque para ver detalhes"</string>
     <string name="retry" msgid="7564024179122207376">"Tentar novamente"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Os seguintes ficheiros não foram copiados: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Não compartilha o arquivo"</string>
+     <string name="documents_deleting">"Deletando os documentos"</string>
+     <string name="cannot_copyfolder_itself">"Você não pode copiar pasta em si próprio"</string>
+
+    <string name="error_permissions">"A aplicação não tem autorizações críticas que são necessárias para ser executada. Verifique as definições das autorizações."</string>
+     <string name="cannot_copy_drm">"Não pode copiar DRM arquivos"</string>
+     <string name="cannot_copy_downloading">"Não pode copiar os arquivos de descarrega"</string>
 </resources>

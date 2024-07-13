@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="app_label">"Ma\'ajiyar dab\'i"</string>
+<string name="more_options_button">"Karin zabuka"</string>
+<string name="label_destination">"Wurin zuwa"</string>
+<string name="label_copies">"Kwafe-kwafe"</string>
+<string name="label_copies_summary">"Kwafe:"</string>
+<string name="label_paper_size">"Girman takarda"</string>
+<string name="label_paper_size_summary">"Girman takarda:"</string>
+<string name="label_color">"Kala"</string>
+<string name="label_duplex">"Mai bangarori biyu"</string>
+<string name="label_orientation">"Fahimtarwa"</string>
+<string name="label_pages">"Shafuka"</string>
+<string name="template_all_pages">"Duk <xliff:g id="page_count" example="100">%1$s</xliff:g>"</string>
+<string name="template_page_range">"Iyakar <xliff:g id="page_count" example="100">%1$s</xliff:g>"</string>
+<!-- SPRD: Multi language mode, character error  -->
+<string name="pages_range_example">"Misali. 1&#8212;5,8,11&#8212;13"</string>
+<string name="print_preview">"Gani kafin dab\'i"</string>
+<string name="install_for_print_preview">"Dasa mai duba PDF don gani"</string>
+<string name="printing_app_crashed">"Masarrafin dab\'i ya rushe"</string>
+<string name="generating_print_job">"Ana tsara aikin da za a dabba\'a"</string>
+<string name="save_as_pdf">"Adana kamar PDF"</string>
+<string name="all_printers">"Duk firintocinku&#8230;"</string>
+<string name="print_dialog">"Jerin tsarin bugawa"</string>
+<string name="current_page_template">"<xliff:g id="current_page">%1$d</xliff:g>/<xliff:g id="page_count">%2$d</xliff:g>"</string>
+<string name="page_description_template">"Shafi <xliff:g id="current_page" example="1">%1$d</xliff:g>na <xliff:g id="page_count" example="100">%2$d</xliff:g>"</string>
+<string name="summary_template">"A takaice, kwafe <xliff:g id="copies" example="1">%1$s</xliff:g>,girman takarda <xliff:g id="paper_size" example="A4">%2$s</xliff:g>"</string>
+<string name="expand_handle">"Buda mariki"</string>
+<string name="collapse_handle">"Auka mariki"</string>
+<string name="print_button">"Buga"</string>
+<string name="savetopdf_button">"Adana ga PDF"</string>
+<string name="print_options_expanded">"Zabin dab\'I an buda"</string>
+<string name="print_options_collapsed">"Zabin dab\'I an auka"</string>
+<string name="search">"Bincika"</string>
+<string name="all_printers_label">"Duk na\'urorin dab\'i</string>
+<string name="add_print_service_label">"Kara sabis"</string>
+<string name="print_search_box_shown_utterance">"An nuna akwatin Bincike"</string>
+<string name="print_search_box_hidden_utterance">"An boye akwatin bincike"</string>
+<string name="print_add_printer">"Kara na\'urar dab\'i"</string>
+<string name="print_select_printer">"Zabi na\'urar dab\'i"</string>
+<string name="print_forget_printer">"Manta na\'urar dab\'i"</string>
+<string name="choose_print_service">"Zabi hidimar dab\'in"</string>
+<string name="print_searching_for_printers">"Neman na\'urorin dab\'i"</string>
+<string name="print_no_printers">"Ba a ga na\'urorin dab\'i ba"</string>
+<string name="printing_notification_title_template">"ana dab\'i <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="cancelling_notification_title_template">"Ana sokewa <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="failed_notification_title_template">"Kuskuren na\'urar dab\'i <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="blocked_notification_title_template">"Na\'urar dab\'I an toshe <xliff:g id="print_job_name" example="foo.jpg">%1$s</xliff:g>"</string>
+<string name="cancel">"Soke"</string>
+<string name="restart">"Sake kunnawa"</string>
+<string name="no_connection_to_printer">"Babu mahadi ga na\'urar dab\'i"</string>
+<string name="reason_unknown">"Majahuli"</string>
+<string name="printer_unavailable">"<xliff:g id="print_job_name" example="Canon-123GHT">%1$s</xliff:g> &#8211; ba shi nan"</string>
+<string-array name="color_mode_labels">
+<item>"Baki &amp; Fari"</item>
+<item>"Kala"</item>
+</string-array>
+<string-array name="duplex_mode_labels">
+<item>"Ko daya"</item>
+<item>"Doguwar gaba"</item>
+<item>"Gajerar gaba"</item>
+</string-array>
+<string-array name="orientation_labels">
+<item>"Hoto"</item>
+<item>"Shimfida"</item>
+</string-array>
+<string name="print_write_error_message">"Bai iya rubutawa ga fayil ba"</string>
+<string name="print_error_default_message">"Afuwa, wannan bai yi ba. Sake gwadawa."</string>
+<string name="print_error_retry">"Kuma jarraba"</string>
+<string name="print_error_printer_unavailable">"Wannan Injin dab\'I ba shi yanzu."</string>
+<string name="print_preparing_preview">"Shirya duban fari\u2026"</string>
+</resources>

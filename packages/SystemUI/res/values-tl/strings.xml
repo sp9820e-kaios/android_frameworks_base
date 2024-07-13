@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Binabati kita! Naidagdag na ang Tuner ng System UI sa Mga Setting"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Alisin sa Mga Setting"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Alisin ang Tuner ng System UI sa Mga Setting at ihinto ang paggamit ng lahat ng feature nito?"</string>
+    <string name="quick_settings_volume_label">"TUNOGPROPAYL"</string>
+     <string name="assistant_key_home">"Home"</string>
+     <string name="assistant_key_search">"maghanap"</string>
+     <string name="assistant_key_menu">"Menu"</string>
+     <string name="assistant_key_back">"Bumalik"</string>
+
+    <string name="vibrate_hint">"Ipahid patungong kaliwa para mag-Baybreyt"</string>
+     <string name="battery_overtage_title">"Babala sa seguridad"</string>
+     <string name="battery_overtage_content">"Nagtsa-tsards na boltahe ay masyadong mataas!"</string>
+     <string name="battery_overtage_back">"Bumalik"</string>
 </resources>

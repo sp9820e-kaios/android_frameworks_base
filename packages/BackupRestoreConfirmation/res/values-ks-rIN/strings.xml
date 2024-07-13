@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="backup_confirm_title">"पूर्र: हेमायत"</string>
+<string name="restore_confirm_title">"पूर्र: दुबार "जमह"</string>
+<string name="backup_confirm_text">"पूर्र: हेमायत तमाम मवादुक जुद्मितस डेस्कटॉप कंप्यूटरस सीथ आय आज्ज़ी करनः . तुही छिवा य्स्सन इजाज़त दिउन यि गस्न्स\?\n\n अगर न तुही आज्ज़ी करिव हेमायत पानः,म दियिव इजाज़त यि काम गस्न्स."</string>
+<string name="allow_backup_button_label">"हेमायत करिव मेनिस मवादस"</string>
+<string name="deny_backup_button_label">"म करिव हेमायत"</string>
+<string name="restore_confirm_text">"अख पूर्र: दुबार वापसी तमाम मवादिच अकि जुद्मितडेस्कटॉप कंप्यूटर पेठ आव आज्ज़ी करनः.तुही छिवा य्स्सन इजाज़त दिउन यि गस्न्स\?\n\n अगर न तुही पान: आज्ज़ी करिव दुबार जमह करन्स,म दियिव इजाज़त यि काम गस्न्स.यि बदलाय मवाद युस मोकस आलस पेठ छु!"</string>
+<string name="allow_restore_button_label">"दुबार करिव जमह मिउन मवाद"</string>
+<string name="deny_restore_button_label">"म करिव दुबार जमह"</string>
+<string name="current_password_text">"मेहरबानी करित करिव दाखिल पनुन मौजोद हेमायती पासवर्ड बोनकन:"</string>
+<string name="device_encryption_restore_text">"मेहरबानी करित करिव दाखिल पनुन आल्ह एन्क्रिप्शन पासवर्ड बोनकन."</string>
+<string name="device_encryption_backup_text">"मेहरबानी करित करिव दाखिल पनुनआल्ह एन्क्रिप्शन बोनकन.यि हेकि बेय इस्तिमाल गस्सिथ हेमायत महफूज़ जाय एन्क्रिप्ट करन्स मंज़."</string>
+<string name="backup_enc_password_text">"मेहरबानी करित करिव दाखिल पासवर्ड इस्तमाल करनः खात्र पूर्र: हेमायत मव्वाद एन्क्रिप्ट बापथ.अगर यि खाली आव थावनः, तुहुंद मौजोद हेमायत पासवर्ड गसि इस्तमाल:"</string>
+<string name="backup_enc_password_optional">"अगर तुही य्स्सन छिव पूर्र: हेमायत मवाद एन्क्रिप्ट करुन,करिव दाखिल पासवर्ड बोनकन:"</string>
+<string name="backup_enc_password_required">"यनपेठ तुहुंद आल्ह गोव एन्क्रिप्ट, तुही पेय ज़रूरत पनुन हेमायत एन्क्रिप्ट करुन. मेहरबानी करित करिव दाखिल पासवर्ड बोनकन:"</string>
+<string name="restore_enc_password_text">""अगर दुबार जमह गमुत मवाद गसि एन्क्रिप्ट, मेहरबानी करिथ करिव दाखिल पासवर्ड बोनकन:" "</string>
+<string name="toast_backup_started">"हेमायत गय शुरू ..."</string>
+<string name="toast_backup_ended">"हेमायत गय ख़त्म"</string>
+<string name="toast_restore_started">"दुबार जमह गस्सुं गोव शुरू..."</string>
+<string name="toast_restore_ended">"दुबार जमह गसुन गोव ख़त्म"</string>
+<string name="toast_timeout">"काम कर्नुक वक़्त मक्लेओव"</string>
+</resources>

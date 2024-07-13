@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">""Мобильная точка доступа Wi-Fi требует открыть соединение для  передачи данных,это может повлечь за собой дополнительные расходы" "</string>
+<string name="softap_bt_cannot_coexist">"При активации режима Bluetooth программная точка доступа может не работать. Если вы хотите использовать программную точку доступа, пожалуйста, убедитесь, что режим Bluetooth отключён"</string>
+<string name="bt_softap_cannot_coexist">"При активации программной точки доступа режим Bluetooth  может не работать. Если вы хотите использовать режим Bluetooth, пожалуйста, убедитесь, что программная точка доступа отключена"</string>
+<string name="lte_service_error_airplane">"Вы не можете использовать LTE в режиме полета."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G включен"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G отключен"</string>
+<string name="accessibility_quick_settings_lte_on">"4G вкл"</string>
+<string name="accessibility_quick_settings_lte_off">"4G откл"</string>
+<string name="toggle_data_error_airplane">Вы не можете использовать Мобильные данные при режиме В самолете.</string>
+<string name="quick_settings_data_connection_label">ДАННЫЕ</string>
+<string name="accessibility_quick_settings_data_changed_on">"Передача данных включена".</string>
+<string name="accessibility_quick_settings_data_changed_off">"Передача данных выключена".</string>
+<string name="accessibility_quick_settings_data_on">"Передача данных включена".</string>
+<string name="accessibility_quick_settings_data_off">"Передача данных выключена".</string>
+<string name="missing_sim_message">Нет SIM </string>
+    <string name="lte_service_error_incall">"Вы не можете переключить услугу LTE во время разговора."</string>
+
+</resources>

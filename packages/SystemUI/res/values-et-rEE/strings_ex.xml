@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Kaasaskantav Wi-Fi hotspot vajab mobiilset andmeühendust, kaasneda võivad lisakulud."</string>
+<string name="softap_bt_cannot_coexist">"Kui bluetooth on lubatud või käivitamisel, ei saa softap\'i kasutada, kui sooovid kasutada softap\'i, tee kindlaks, et bluetooth on keelatud."</string>
+<string name="bt_softap_cannot_coexist">"Kui softap on lubatud või käivitamisel, ei saa bluetoothi kasutada, kui sooovid kasutada bluetoothi, tee kindlaks, et softap on keelatud."</string>
+<string name="lte_service_error_airplane">"Sa ei saa kasutada LTE kui telefon on lennurežiimis."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G sisse lülitatud"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G välja lülitatud"</string>
+<string name="accessibility_quick_settings_lte_on">"4G sees"</string>
+<string name="accessibility_quick_settings_lte_off">"4G väljas"</string>
+<string name="toggle_data_error_airplane">"Mobiiliandmeid ei saa kasutada kui lennufunktsioon on aktiveeritud."</string>
+<string name="quick_settings_data_connection_label">"Andmed"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Andmed sisselülitatud"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Andmed väljalülitatud"</string>
+<string name="accessibility_quick_settings_data_on">"Andmed sees"</string>
+<string name="accessibility_quick_settings_data_off">"Andmed väljas"</string>
+<string name="missing_sim_message">"SIM puudub"</string>
+    <string name="lte_service_error_incall">"Kõne ajal ei saa LTE teenust vahetada."</string>
+
+</resources>

@@ -19,6 +19,7 @@ package android.provider;
 import static android.provider.DocumentsContract.METHOD_CREATE_DOCUMENT;
 import static android.provider.DocumentsContract.METHOD_DELETE_DOCUMENT;
 import static android.provider.DocumentsContract.METHOD_RENAME_DOCUMENT;
+import static android.provider.DocumentsContract.METHOD_DELETE_DOCUMENTS_DONE;
 import static android.provider.DocumentsContract.buildDocumentUri;
 import static android.provider.DocumentsContract.buildDocumentUriMaybeUsingTree;
 import static android.provider.DocumentsContract.buildTreeDocumentUri;
@@ -256,6 +257,14 @@ public abstract class DocumentsProvider extends ContentProvider {
     @SuppressWarnings("unused")
     public void deleteDocument(String documentId) throws FileNotFoundException {
         throw new UnsupportedOperationException("Delete not supported");
+    }
+
+    /**
+     * add for notifying mediaprovider after file delelted
+     * @hide
+     */
+    @SuppressWarnings("unused")
+    public void deleteDocumentsDone() {
     }
 
     /**
@@ -626,6 +635,15 @@ public abstract class DocumentsProvider extends ContentProvider {
             return super.call(method, arg, extras);
         }
 
+        /**
+         * add for notifying mediaprovider after file delelted
+         */
+        final Bundle out = new Bundle();
+        if (METHOD_DELETE_DOCUMENTS_DONE.equals(method)){
+            deleteDocumentsDone();
+            return out;
+        }
+
         final Context context = getContext();
         final Uri documentUri = extras.getParcelable(DocumentsContract.EXTRA_URI);
         final String authority = documentUri.getAuthority();
@@ -637,7 +655,6 @@ public abstract class DocumentsProvider extends ContentProvider {
         }
         enforceTree(documentUri);
 
-        final Bundle out = new Bundle();
         try {
             if (METHOD_CREATE_DOCUMENT.equals(method)) {
                 enforceWritePermissionInner(documentUri, getCallingPackage(), null);
@@ -683,7 +700,6 @@ public abstract class DocumentsProvider extends ContentProvider {
 
                 // Document no longer exists, clean up any grants
                 revokeDocumentPermission(documentId);
-
             } else {
                 throw new UnsupportedOperationException("Method not supported " + method);
             }

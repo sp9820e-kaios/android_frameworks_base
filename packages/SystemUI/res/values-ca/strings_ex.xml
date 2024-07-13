@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"El punt portàtil de Wi-Fi necessita una connexió de dades mòbils, poden sorgir costos addicionals."</string>
+<string name="softap_bt_cannot_coexist">"Quan el Bluetooth està activat o s\'està encenent, el punt WLAN no funciona. Si voleu fer servir el punt WLAN assegureu-vos de que el Bluetooth estigui desactivat."</string>
+<string name="bt_softap_cannot_coexist">"Quan el punt WLAN està activat o s\'està encenent, el Bluetooth no funciona. Si voleu fer servir el Bluetooth assegureu-vos de que el punt WLAN estigui desactivat."</string>
+<string name="lte_service_error_airplane">"No podeu fer servir 4G quan el telèfon mòbil està en mode avió."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G encès"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G apagat"</string>
+<string name="accessibility_quick_settings_lte_on">"4G encès"</string>
+<string name="accessibility_quick_settings_lte_off">"4G apagat"</string>
+<string name="toggle_data_error_airplane">No podeu utilitzar les dades mòbils quan el telèfon està en mode avió.</string>
+<string name="quick_settings_data_connection_label">"Dades"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Activació de dades"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Desactivació de dades"</string>
+<string name="accessibility_quick_settings_data_on">"Dades activades"</string>
+<string name="accessibility_quick_settings_data_off">"Dades desactivades"</string>
+<string name="missing_sim_message">"NO HI HA TARGETA SIM"</string>
+    <string name="lte_service_error_incall">"No podeu canviar el servei LTE durant la trucada."</string>
+
+</resources>

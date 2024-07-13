@@ -76,9 +76,12 @@ import java.util.Random;
  */
 public class NetworkMonitor extends StateMachine {
     private static final boolean DBG = true;
+    private static final boolean RESET_DEFAULT_HTTP_RESPONSE = SystemProperties.getBoolean("reset_default_http_response", true);
+    //web autoauth
+    private static final int WIFI_WEB_AUTOAUTH = SystemProperties.getInt("persist.sys.autoauth.enable", 0);
     private static final String TAG = "NetworkMonitor";
     private static final String DEFAULT_SERVER = "connectivitycheck.gstatic.com";
-    private static final int SOCKET_TIMEOUT_MS = 10000;
+    private static final int SOCKET_TIMEOUT_MS = 2000; // android original 10000
     public static final String ACTION_NETWORK_CONDITIONS_MEASURED =
             "android.net.conn.NETWORK_CONDITIONS_MEASURED";
     public static final String EXTRA_CONNECTIVITY_TYPE = "extra_connectivity_type";
@@ -506,7 +509,11 @@ public class NetworkMonitor extends StateMachine {
             mToken = token;
             mWhat = what;
             mAction = action + "_" + mNetworkAgentInfo.network.netId + "_" + token;
-            mContext.registerReceiver(this, new IntentFilter(mAction));
+            //mContext.registerReceiver(this, new IntentFilter(mAction));
+            //web autoauth
+            final IntentFilter filter = new IntentFilter(mAction);
+            filter.addAction("sprd.net.wifi.PORTAL_AUTO_AUTHENTICATION_DONE");
+            mContext.registerReceiver(this, filter);
         }
         public PendingIntent getPendingIntent() {
             final Intent intent = new Intent(mAction);
@@ -516,6 +523,10 @@ public class NetworkMonitor extends StateMachine {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(mAction)) sendMessage(obtainMessage(mWhat, mToken));
+            //web autoauth
+            else if ("sprd.net.wifi.PORTAL_AUTO_AUTHENTICATION_DONE".equals(intent.getAction())) {
+                sendMessage(CMD_CAPTIVE_PORTAL_APP_FINISHED,APP_RETURN_WANTED_AS_IS);
+            }
         }
     }
 
@@ -545,6 +556,10 @@ public class NetworkMonitor extends StateMachine {
                     mNetworkAgentInfo.network.netId,
                     mLaunchCaptivePortalAppBroadcastReceiver.getPendingIntent());
             mConnectivityServiceHandler.sendMessage(message);
+            //web autoauth
+            if (WIFI_WEB_AUTOAUTH == 1) {
+                mContext.sendBroadcast(new Intent("sprd.net.wifi.PORTAL_AUTO_AUTHENTICATION"));
+            }
             // Retest for captive portal occasionally.
             sendMessageDelayed(CMD_CAPTIVE_PORTAL_RECHECK, 0 /* no UID */,
                     CAPTIVE_PORTAL_REEVALUATE_DELAY_MS);
@@ -639,6 +654,9 @@ public class NetworkMonitor extends StateMachine {
 
         HttpURLConnection urlConnection = null;
         int httpResponseCode = 599;
+        if (RESET_DEFAULT_HTTP_RESPONSE) {
+            httpResponseCode = 204;
+        }
         try {
             URL url = new URL("http", mServer, "/generate_204");
             // On networks with a PAC instead of fetching a URL that should result in a 204

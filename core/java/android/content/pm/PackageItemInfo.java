@@ -54,6 +54,10 @@ public class PackageItemInfo {
      */
     public int labelRes;
     
+    /* SPRD: update label and icon for app @{ */
+    public String labelName;
+    /* @} */
+
     /**
      * The string provided in the AndroidManifest file, if any.  You
      * probably don't want to use this.  You probably want
@@ -103,6 +107,9 @@ public class PackageItemInfo {
         if (name != null) name = name.trim();
         packageName = orig.packageName;
         labelRes = orig.labelRes;
+        /* SPRD: update label and icon for specific @{ */
+        labelName = orig.labelName;
+        /* @} */
         nonLocalizedLabel = orig.nonLocalizedLabel;
         if (nonLocalizedLabel != null) nonLocalizedLabel = nonLocalizedLabel.toString().trim();
         icon = orig.icon;
@@ -303,6 +310,9 @@ public class PackageItemInfo {
         dest.writeString(name);
         dest.writeString(packageName);
         dest.writeInt(labelRes);
+        /* SPRD: update label and icon for specific @{ */
+        dest.writeString(labelName);
+        /* @}*/
         TextUtils.writeToParcel(nonLocalizedLabel, dest, parcelableFlags);
         dest.writeInt(icon);
         dest.writeInt(logo);
@@ -315,6 +325,9 @@ public class PackageItemInfo {
         name = source.readString();
         packageName = source.readString();
         labelRes = source.readInt();
+        /* SPRD: update label and icon for specific @{ */
+        labelName = source.readString();
+        /* @} */
         nonLocalizedLabel
                 = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(source);
         icon = source.readInt();

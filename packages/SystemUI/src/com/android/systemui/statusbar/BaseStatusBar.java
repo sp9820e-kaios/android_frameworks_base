@@ -132,7 +132,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected static final int MSG_SHOW_NEXT_AFFILIATED_TASK = 1024;
     protected static final int MSG_SHOW_PREV_AFFILIATED_TASK = 1025;
 
-    protected static final boolean ENABLE_HEADS_UP = true;
+    /* SPRD: Bug 583693 PikeL don't support heads up notification {@ */
+    protected static final boolean ENABLE_HEADS_UP = false;
+    /* @} */
     // scores above this threshold should be displayed in heads up mode.
     protected static final int INTERRUPTION_THRESHOLD = 10;
     protected static final String SETTING_HEADS_UP_TICKER = "ticker_gets_heads_up";
@@ -144,6 +146,10 @@ public abstract class BaseStatusBar extends SystemUI implements
             "com.android.systemui.statusbar.banner_action_cancel";
     private static final String BANNER_ACTION_SETUP =
             "com.android.systemui.statusbar.banner_action_setup";
+    /* SPRD: Bug 583693 action to expand panel {@ */
+    private static final String ACTION_EXPAND_PANEL =
+            "android.intent.action.show.statusbar";
+    /* @} */
 
     protected CommandQueue mCommandQueue;
     protected IStatusBarService mBarService;
@@ -424,9 +430,16 @@ public abstract class BaseStatusBar extends SystemUI implements
 
                     );
                 }
+            /* SPRD: Bug 583693 PikeL Feature {@ */
+            } else if (ACTION_EXPAND_PANEL.equals(action)) {
+                onNotiBarClick();
             }
+            /* @} */
         }
     };
+
+    public void onNotiBarClick() {
+    }
 
     private final BroadcastReceiver mAllUsersReceiver = new BroadcastReceiver() {
         @Override
@@ -653,6 +666,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(BANNER_ACTION_CANCEL);
         filter.addAction(BANNER_ACTION_SETUP);
+        filter.addAction(ACTION_EXPAND_PANEL);
         mContext.registerReceiver(mBroadcastReceiver, filter);
 
         IntentFilter allUsersFilter = new IntentFilter();
@@ -1495,6 +1509,59 @@ public abstract class BaseStatusBar extends SystemUI implements
         return true;
     }
 
+    public void startPendingIntentDismissingKeyguard(final PendingIntent intent) {
+        if (!isDeviceProvisioned()) return;
+
+        final boolean keyguardShowing = mStatusBarKeyguardViewManager.isShowing();
+        final boolean afterKeyguardGone = intent.isActivity()
+                && PreviewInflater.wouldLaunchResolverActivity(mContext, intent.getIntent(),
+                mCurrentUserId);
+        dismissKeyguardThenExecute(new OnDismissAction() {
+            public boolean onDismiss() {
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (keyguardShowing && !afterKeyguardGone) {
+                                ActivityManagerNative.getDefault()
+                                        .keyguardWaitingForActivityDrawn();
+                            }
+
+                            // The intent we are sending is for the application, which
+                            // won't have permission to immediately start an activity after
+                            // the user switches to home.  We know it is safe to do at this
+                            // point, so make sure new activity switches are now allowed.
+                            ActivityManagerNative.getDefault().resumeAppSwitches();
+                        } catch (RemoteException e) {
+                        }
+
+                        try {
+                            intent.send();
+                        } catch (PendingIntent.CanceledException e) {
+                            // the stack trace isn't very helpful here.
+                            // Just log the exception message.
+                            Log.w(TAG, "Sending intent failed: " + e);
+
+                            // TODO: Dismiss Keyguard.
+                        }
+                        if (intent.isActivity()) {
+                            mAssistManager.hideAssist();
+                            overrideActivityPendingAppTransition(keyguardShowing
+                                    && !afterKeyguardGone);
+                        }
+                    }
+                }.start();
+
+                // close the shade if it was open
+                animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL,
+                        true /* force */, true /* delayed */);
+                visibilityChanged(false);
+
+                return true;
+            }
+        }, afterKeyguardGone);
+    }
+
     private final class NotificationClicker implements View.OnClickListener {
         public void onClick(final View v) {
             if (!(v instanceof ExpandableNotificationRow)) {
@@ -1633,10 +1700,11 @@ public abstract class BaseStatusBar extends SystemUI implements
         try {
             if (visibleToUser) {
                 boolean pinnedHeadsUp = mHeadsUpManager.hasPinnedHeadsUp();
+                //SPRD 520094 remove judgment of the keyguard state
                 boolean clearNotificationEffects =
-                    ((mShowLockscreenNotifications && mState == StatusBarState.KEYGUARD) ||
+                    /*((mShowLockscreenNotifications && mState == StatusBarState.KEYGUARD) ||*/
                             (!pinnedHeadsUp && (mState == StatusBarState.SHADE
-                                    || mState == StatusBarState.SHADE_LOCKED)));
+                                    || mState == StatusBarState.SHADE_LOCKED))/*)*/;
                 int notificationLoad = mNotificationData.getActiveNotifications().size();
                 if (pinnedHeadsUp && isPanelFullyCollapsed())  {
                     notificationLoad = 1;
@@ -1767,7 +1835,8 @@ public abstract class BaseStatusBar extends SystemUI implements
             if (onKeyguard) {
                 entry.row.setExpansionDisabled(true);
             } else {
-                entry.row.setExpansionDisabled(false);
+                /*SPRD bug 621329:Rollback open clear all notifcations.*/
+                entry.row.setExpansionDisabled(true);
                 if (!entry.row.isUserLocked()) {
                     boolean top = (i == 0);
                     entry.row.setSystemExpanded(top);
@@ -1900,7 +1969,9 @@ public abstract class BaseStatusBar extends SystemUI implements
             entry.icon.set(ic);
             inflateViews(entry, mStackScroller);
         }
-        updateHeadsUp(key, entry, shouldInterrupt, alertAgain);
+        //SPRD bug 615800:We don't show HeadsUp in pilel}
+        //updateHeadsUp(key, entry, shouldInterrupt, alertAgain);
+        //}
         mNotificationData.updateRanking(ranking);
         updateNotifications();
 

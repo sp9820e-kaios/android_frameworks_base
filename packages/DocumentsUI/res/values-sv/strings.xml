@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Tryck här om du vill veta mer"</string>
     <string name="retry" msgid="7564024179122207376">"Försök igen"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Följande filer kopierades inte: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">Kan inte dela filen</string>
+     <string name="documents_deleting">"Tar bort dokument"</string>
+     <string name="cannot_copyfolder_itself">"Mappen kan inte kopieras till sig själv"</string>
+
+    <string name="error_permissions">"Det saknas behörigheter som är avgörande för att appen ska fungera. Kontrollera behörighetsinställningarna."</string>
+     <string name="cannot_copy_drm">"Kan inte kopiera DRM-filer"</string>
+     <string name="cannot_copy_downloading">"Kan inte kopiera nedladdade filer"</string>
 </resources>

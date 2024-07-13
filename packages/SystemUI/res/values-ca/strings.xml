@@ -428,4 +428,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Enhorabona! El Configurador de la IU del sistema s\'ha afegit a Configuració."</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Treu de Configuració"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Vols treure el Configurador de la UI del sistema de Configuració i deixar d\'utilitzar-ne totes les funcions?"</string>
+    <string name="quick_settings_volume_label">"Perfil D'ÀUdio"</string>
+     <string name="assistant_key_home">"Inici"</string>
+     <string name="assistant_key_search">"Cerca"</string>
+     <string name="assistant_key_menu">"Menú"</string>
+     <string name="assistant_key_back">"Enrere"</string>
+
+    <string name="vibrate_hint">"Desplaceu a l\'esquerra per a activar Vibració"</string>
+     <string name="battery_overtage_title">"Advertiment de seguretat"</string>
+     <string name="battery_overtage_content">"El voltatge de càrrega és massa elevat!"</string>
+     <string name="battery_overtage_back">"Enrere"</string>
 </resources>

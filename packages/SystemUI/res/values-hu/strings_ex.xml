@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"A mobil Wi-Fi hotspothoz mobil adatkapcsolat szükséges, ez költségekkel járhat."</string>
+<string name="softap_bt_cannot_coexist">"Ha a bluetooth engedélyezett vagy be van kapcsolva, a softap működése nem lehetséges, ha használni kívánja a softap-ot, kapcsolja ki a bluetooth-t."</string>
+<string name="bt_softap_cannot_coexist">"Ha a softap engedélyezett vagy be van kapcsolva, a bluetooth működése nem lehetséges, ha használni kívánja a bluetooth-t, kapcsolja ki a softap-ot."</string>
+<string name="lte_service_error_airplane">"Az LTE nem használható, amikor a telefon repülőgépes módban van."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G bekapcsolva"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G kikapcsolva"</string>
+<string name="accessibility_quick_settings_lte_on">"4G be"</string>
+<string name="accessibility_quick_settings_lte_off">"4G ki"</string>
+<string name="toggle_data_error_airplane">Nem használhatja a mobiladatokat, amikor a telefon repülő módban van.</string>
+<string name="quick_settings_data_connection_label">"Adatok"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Adatforgalom bekapcsolva"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Adatforgalom kikapcsolva"</string>
+<string name="accessibility_quick_settings_data_on">"Adatforgalom bekapcsolva"</string>
+<string name="accessibility_quick_settings_data_off">"Adatforgalom kikapcsolva"</string>
+<string name="missing_sim_message">"NINCS SIM"</string>
+    <string name="lte_service_error_incall">"A hívás alatt nem kapcsolhatja be az LTE szolgáltatást."</string>
+
+</resources>

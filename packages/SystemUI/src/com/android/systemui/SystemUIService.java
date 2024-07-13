@@ -16,19 +16,49 @@
 
 package com.android.systemui;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
+import android.provider.Settings;
+import android.os.SystemProperties;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
+import com.android.systemui.statusbar.FloatKeyView;
+
 public class SystemUIService extends Service {
+
+    //SPRD: add for assistant touch
+    FloatKeyView mFloatKeyView;
 
     @Override
     public void onCreate() {
         super.onCreate();
         ((SystemUIApplication) getApplication()).startServicesIfNeeded();
+
+          if (SystemProperties.get("ro.product.assistanttouch").equals("")) {
+              //SPRD: add for assistant touch @{
+              mFloatKeyView = new FloatKeyView(this);
+              IntentFilter filter = new IntentFilter();
+              filter.addAction("com.android.systemui.FLOATKEY_ACTION_STOP");
+              filter.addAction("com.android.systemui.FLOATKEY_ACTION_START");
+              filter.addAction("com.android.systemui.FLOATKEY_ACTION_RESTART");
+              filter.addAction(Intent.ACTION_USER_SWITCHED);
+              this.registerReceiver(floatKeyReceiver, filter);
+              if (Settings.Secure.getInt(this.getContentResolver()
+                                         , Settings.Secure.ASSISTANT_ON, 0) != 0) {
+                  mFloatKeyView.addToWindow();
+              }
+              // @}
+          }
+
+
     }
 
     @Override
@@ -54,5 +84,35 @@ public class SystemUIService extends Service {
             }
         }
     }
+
+    /**
+     * SPRD: add for assistant touch
+     */
+    private final BroadcastReceiver floatKeyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mFloatKeyView == null)
+                return;
+            if (intent.getAction().equals(
+            "com.android.systemui.FLOATKEY_ACTION_STOP")) {
+                mFloatKeyView.removeFromWindow();
+            } else if (intent.getAction().equals(
+            "com.android.systemui.FLOATKEY_ACTION_START")) {
+                mFloatKeyView.addToWindow();
+            } else if (intent.getAction().equals(
+            "com.android.systemui.FLOATKEY_ACTION_RESTART")) {
+                mFloatKeyView.removeFromWindow();
+                mFloatKeyView.addToWindow();
+            } else if (intent.getAction().equals((Intent.ACTION_USER_SWITCHED))) {
+                if (Settings.Secure.getIntForUser(getContentResolver()
+                                           , Settings.Secure.ASSISTANT_ON, 0, ActivityManager.getCurrentUser()) != 0) {
+                    mFloatKeyView.addToWindow();
+                } else {
+                    mFloatKeyView.removeFromWindow();
+                }
+            }
+        }
+    };
+
 }
 

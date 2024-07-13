@@ -32,6 +32,7 @@ import android.os.IRemoteCallback;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.os.UserManager;
+import android.os.SystemProperties;
 import android.provider.Settings.Global;
 import android.telecom.TelecomManager;
 import android.util.Log;
@@ -64,6 +65,8 @@ public class PhoneStatusBarPolicy implements Callback {
     private static final String SLOT_VOLUME = "volume";
     private static final String SLOT_ALARM_CLOCK = "alarm_clock";
     private static final String SLOT_MANAGED_PROFILE = "managed_profile";
+
+    private final static boolean HOTSPOT_ENABLED = SystemProperties.getInt("ro.hotspot.enabled", 1) == 1;
 
     private final Context mContext;
     private final StatusBarManager mService;
@@ -106,6 +109,19 @@ public class PhoneStatusBarPolicy implements Callback {
             else if (action.equals(TelecomManager.ACTION_CURRENT_TTY_MODE_CHANGED)) {
                 updateTTY(intent);
             }
+            /* SPRD: Bug 474781 ADD headset icon in statusbar {@ */
+            else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+                updateHeadSet(intent);
+            }
+            /* @} */
+        }
+    };
+
+    private Runnable mRemoveCastIconRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (DEBUG) Log.v(TAG, "updateCast: hiding icon NOW");
+            mService.setIconVisibility(SLOT_CAST, false);
         }
     };
 
@@ -127,6 +143,8 @@ public class PhoneStatusBarPolicy implements Callback {
         filter.addAction(AudioManager.INTERNAL_RINGER_MODE_CHANGED_ACTION);
         filter.addAction(TelephonyIntents.ACTION_SIM_STATE_CHANGED);
         filter.addAction(TelecomManager.ACTION_CURRENT_TTY_MODE_CHANGED);
+        // SPRD: Bug 474781 ADD headset icon in statusbar
+        filter.addAction(Intent.ACTION_HEADSET_PLUG);
         mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
 
         // listen for user / profile change.
@@ -162,15 +180,21 @@ public class PhoneStatusBarPolicy implements Callback {
         mCast.addCallback(mCastCallback);
 
         // hotspot
-        mService.setIcon(SLOT_HOTSPOT, R.drawable.stat_sys_hotspot, 0,
-                mContext.getString(R.string.accessibility_status_bar_hotspot));
-        mService.setIconVisibility(SLOT_HOTSPOT, mHotspot.isHotspotEnabled());
-        mHotspot.addCallback(mHotspotCallback);
-
+        if (!HOTSPOT_ENABLED){
+            mService.setIcon(SLOT_HOTSPOT, R.drawable.stat_sys_hotspot, 0,
+                    mContext.getString(R.string.accessibility_status_bar_hotspot));
+            mService.setIconVisibility(SLOT_HOTSPOT, mHotspot.isHotspotEnabled());
+            mHotspot.addCallback(mHotspotCallback);
+        }
         // managed profile
         mService.setIcon(SLOT_MANAGED_PROFILE, R.drawable.stat_sys_managed_profile_status, 0,
                 mContext.getString(R.string.accessibility_managed_profile));
         mService.setIconVisibility(SLOT_MANAGED_PROFILE, false);
+
+        /* SPRD: Bug 474781 ADD headset icon in statusbar {@ */
+        mService.setIcon("headset", R.drawable.stat_sys_headset, 0, null);
+        mService.setIconVisibility("headset", false);
+        /* @} */
     }
 
     public void setZenMode(int zen) {
@@ -206,10 +230,33 @@ public class PhoneStatusBarPolicy implements Callback {
             }
             else if (IccCardConstants.INTENT_VALUE_LOCKED_ON_PUK.equals(lockedReason)) {
                 mSimState = IccCardConstants.State.PUK_REQUIRED;
-            }
-            else {
+            /** SPRD: modified for simlock status {@ */
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK.equals(lockedReason)) {
                 mSimState = IccCardConstants.State.NETWORK_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NS.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.NETWORK_SUBSET_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SP.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SERVICE_PROVIDER_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_CP.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.CORPORATE_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SIM.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SIM_LOCKED;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NETWORK_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.NETWORK_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_NS_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.NETWORK_SUBSET_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SP_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SERVICE_PROVIDER_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_CP_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.CORPORATE_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_SIM_PUK.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SIM_LOCKED_PUK;
+            } else if (IccCardConstants.INTENT_VALUE_LOCKED_FOREVER.equals(lockedReason)) {
+                mSimState = IccCardConstants.State.SIM_LOCKED_FOREVER;
+            } else {
+                mSimState = IccCardConstants.State.UNKNOWN;
             }
+            /** @} */
         } else {
             mSimState = IccCardConstants.State.UNKNOWN;
         }
@@ -328,11 +375,17 @@ public class PhoneStatusBarPolicy implements Callback {
             }
         }
         if (DEBUG) Log.v(TAG, "updateCast: isCasting: " + isCasting);
+        mHandler.removeCallbacks(mRemoveCastIconRunnable);
         if (isCasting) {
             mService.setIcon(SLOT_CAST, R.drawable.stat_sys_cast, 0,
                     mContext.getString(R.string.accessibility_casting));
+            mService.setIconVisibility(SLOT_CAST, true);
+        } else {
+            // don't turn off the screen-record icon for a few seconds, just to make sure the user
+            // has seen it
+            if (DEBUG) Log.v(TAG, "updateCast: hiding icon in 3 sec...");
+            mHandler.postDelayed(mRemoveCastIconRunnable, 3000);
         }
-        mService.setIconVisibility(SLOT_CAST, isCasting);
     }
 
     private void profileChanged(int userId) {
@@ -411,4 +464,19 @@ public class PhoneStatusBarPolicy implements Callback {
         mCurrentUserSetup = userSetup;
         updateAlarm();
     }
+
+    /* SPRD: Bug 474781 ADD headset icon in statusbar {@ */
+    private final void updateHeadSet(Intent intent) {
+        int state = intent.getIntExtra("state", -1);
+        int mic = intent.getIntExtra("microphone", -1);
+        boolean visiable = (state == 1) ? true : false;
+        Log.d(TAG, "headset state = " + state + ",mic = " + mic + ",visiable = " + visiable);
+        int iconId = R.drawable.stat_sys_headset;
+        if (mic == 1) {
+            iconId = R.drawable.stat_sys_headset_mic;
+        }
+        mService.setIcon("headset", iconId, 0, null);
+        mService.setIconVisibility("headset", visiable);
+    }
+    /* @} */
 }

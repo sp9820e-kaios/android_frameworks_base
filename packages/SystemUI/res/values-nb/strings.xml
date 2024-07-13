@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Gratulerer! System UI Tuner er lagt til i Innstillinger"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Fjern fra Innstillinger"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Vil du fjerne System UI Tuner fra Innstillinger og slutte å bruke alle de tilknyttede funksjonene?"</string>
+    <string name="quick_settings_volume_label">"Audioprofil"</string>
+     <string name="assistant_key_home">"Startside"</string>
+     <string name="assistant_key_search">"Søk"</string>
+     <string name="assistant_key_menu">"Meny"</string>
+     <string name="assistant_key_back">"Tilbake"</string>
+
+    <string name="vibrate_hint">"Sveip til venstre for Vibrering"</string>
+     <string name="battery_overtage_title">"Sikkerhetsadvarsel"</string>
+     <string name="battery_overtage_content">"Ladespenning er for høy!"</string>
+     <string name="battery_overtage_back">"Tilbake"</string>
 </resources>

@@ -81,6 +81,10 @@ public class ComponentInfo extends PackageItemInfo {
         }
         ApplicationInfo ai = applicationInfo;
         CharSequence label;
+        /* SPRD: update label and icon for specific @{ */
+        if((packageName.startsWith("com.android.stk")) && (labelName != null))
+            return labelName;
+        /* @} */
         if (labelRes != 0) {
             label = pm.getText(packageName, labelRes, ai);
             if (label != null) {

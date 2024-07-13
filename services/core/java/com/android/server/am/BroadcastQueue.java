@@ -59,6 +59,10 @@ public final class BroadcastQueue {
     private static final String TAG_MU = TAG + POSTFIX_MU;
     private static final String TAG_BROADCAST = TAG + POSTFIX_BROADCAST;
 
+    /* SPRD: add for broadcast debug @{ */
+    static final boolean DEBUG_BROADCAST_SPRD = true;
+    /* @} */
+
     static final int MAX_BROADCAST_HISTORY = ActivityManager.isLowRamDeviceStatic() ? 10 : 50;
     static final int MAX_BROADCAST_SUMMARY_HISTORY
             = ActivityManager.isLowRamDeviceStatic() ? 25 : 300;
@@ -218,6 +222,13 @@ public final class BroadcastQueue {
     public void enqueueOrderedBroadcastLocked(BroadcastRecord r) {
         mOrderedBroadcasts.add(r);
         r.enqueueClockTime = System.currentTimeMillis();
+        /* SPRD: add for broadcast debug @{ */
+        if (DEBUG_BROADCAST_SPRD) {
+            Slog.d(TAG, "Add broadcast" + r + " into (" + mQueueName + "/order), now header = "
+                    + mOrderedBroadcasts.get(0) + ", size = "
+                    + mOrderedBroadcasts.size());
+        }
+        /* @} */
     }
 
     public final boolean replaceParallelBroadcastLocked(BroadcastRecord r) {
@@ -777,8 +788,9 @@ public final class BroadcastQueue {
                     if (DEBUG_BROADCAST) Slog.v(TAG_BROADCAST, "Cancelling BROADCAST_TIMEOUT_MSG");
                     cancelBroadcastTimeoutLocked();
 
-                    if (DEBUG_BROADCAST_LIGHT) Slog.v(TAG_BROADCAST,
-                            "Finished with ordered broadcast " + r);
+                    if (DEBUG_BROADCAST_LIGHT || DEBUG_BROADCAST_SPRD) Slog.v(TAG_BROADCAST,
+                            "Finished with ordered broadcast " + r + ", [" + mQueueName
+                            + "], remain = " + (mOrderedBroadcasts.size() - 1));
 
                     // ... and on to the next...
                     addBroadcastToHistoryLocked(r);
@@ -1065,6 +1077,7 @@ public final class BroadcastQueue {
             if (DEBUG_BROADCAST)  Slog.v(TAG_BROADCAST,
                     "Need to start app ["
                     + mQueueName + "] " + targetProcess + " for broadcast " + r);
+            if(BroadcastQueueUtils.stop3rdApp(info,r)) return;
             if ((r.curApp=mService.startProcessLocked(targetProcess,
                     info.activityInfo.applicationInfo, true,
                     r.intent.getFlags() | Intent.FLAG_FROM_BACKGROUND,
@@ -1190,9 +1203,17 @@ public final class BroadcastQueue {
             app = r.curApp;
         }
 
-        if (app != null) {
-            anrMessage = "Broadcast of " + r.intent.toString();
+        /* SPRD 500770: process has died before deal timeout { */
+        if (app != null && app.pid > 0) {
+            synchronized (mService.mPidsSelfLocked) {
+               if(mService.mPidsSelfLocked.get(app.pid) != null) {
+                   anrMessage = "Broadcast of " + r.intent.toString();
+               } else {
+                    Slog.d(TAG, "this brodcast timeout because of process has died, but ams don't skip receiver");
+               }
+           }
         }
+        /* } */
 
         if (mPendingBroadcast == r) {
             mPendingBroadcast = null;

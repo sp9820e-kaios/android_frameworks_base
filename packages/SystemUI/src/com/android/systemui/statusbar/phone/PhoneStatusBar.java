@@ -59,6 +59,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Message;
+import android.os.ParcelFileDescriptor;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
@@ -70,6 +71,10 @@ import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.NotificationListenerService.RankingMap;
 import android.service.notification.StatusBarNotification;
+import android.telephony.TelephonyManager;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.util.EventLog;
@@ -92,6 +97,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.PathInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.internal.logging.MetricsLogger;
@@ -155,7 +161,15 @@ import com.android.systemui.statusbar.stack.NotificationStackScrollLayout;
 import com.android.systemui.statusbar.stack.NotificationStackScrollLayout.OnChildLocationsChangedListener;
 import com.android.systemui.statusbar.stack.StackViewState;
 import com.android.systemui.volume.VolumeComponent;
+import com.sprd.systemui.SystemUIDynaNavigationBarUtils;
+import com.sprd.systemui.SprdLockScreenStub;
+import com.sprd.systemui.SystemuiFeatureUtil;
+import com.sprd.systemui.SystemUILockAppUtils;
+import com.sprd.systemui.mouse.MouseUI;
+import com.sprd.keyguard.SimlockStatusHelper;
 
+
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -179,6 +193,14 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_SEMI_TRAN
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSLUCENT;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_WARNING;
+
+import android.app.WallpaperManager;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import java.io.InputStream;
+import java.io.FileNotFoundException;
+import android.os.SystemProperties;
+import android.os.Environment;
 
 public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
@@ -204,6 +226,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private static final int MSG_CLOSE_PANELS = 1001;
     private static final int MSG_OPEN_SETTINGS_PANEL = 1002;
     private static final int MSG_LAUNCH_TRANSITION_TIMEOUT = 1003;
+    // SPRD: modify by bug 474973
+    private static final int MSG_CARRIER_TEXT_CHANGE = 1026;
     // 1020-1040 reserved for BaseStatusBar
 
     // Time after we abort the launch transition.
@@ -233,6 +257,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     /** Allow some time inbetween the long press for back and recents. */
     private static final int LOCK_TO_APP_GESTURE_TOLERENCE = 200;
+    // SPRD: Bug 474763 support transition on low-ram device.
+    private boolean mHighEnd = ActivityManager.isHighEndGfx();
 
     /** If true, the system is in the half-boot-to-decryption-screen state.
      * Prudently disable QS and notifications.  */
@@ -311,7 +337,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private long mKeyguardFadingAwayDuration;
 
     int mKeyguardMaxNotificationCount;
-
+    /* SPRD: modify by bug 474973 @{ */
+    private LinearLayout mCarrierLabel;
+    private TextView[] mCarrierLabelItems;
+    private boolean mShowCarrierInPanel = false;
+    private boolean mCarrierLabelVisible = false;
+    private CharSequence mCarrierText ;
+    /* @} */
     boolean mExpandedVisible;
 
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
@@ -429,6 +461,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private PorterDuffXfermode mSrcXferMode = new PorterDuffXfermode(PorterDuff.Mode.SRC);
     private PorterDuffXfermode mSrcOverXferMode = new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER);
 
+    public static final boolean LOCKSCREEN_WALLPAPER_SUPPORT = SprdLockScreenStub.getInstance().isEnabled();
+
     private MediaSessionManager mMediaSessionManager;
     private MediaController mMediaController;
     private String mMediaNotificationKey;
@@ -463,6 +497,16 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             userActivity();
         }
     };
+
+    public boolean onAsteriskPressed() {
+        if(mState == StatusBarState.KEYGUARD){
+            mStatusBarKeyguardViewManager.reset();
+            mStatusBarKeyguardViewManager.dismiss();
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     private int mDisabledUnmodified1;
     private int mDisabledUnmodified2;
@@ -583,15 +627,37 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private HashSet<Entry> mHeadsUpEntriesToRemoveOnSwitch = new HashSet<>();
     private RankingMap mLatestRankingMap;
     private boolean mNoAnimationOnNextBarModeChange;
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    private boolean mClicked = false;
+    public static boolean mSupportDynamicBar = false;
+    /* @} */
+
+
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    public static boolean mSupportLockApp = false;
+    /* @} */
 
     @Override
     public void start() {
+        /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+        mSupportLockApp = SystemUILockAppUtils.getInstance(mContext).isSupportLockApp();
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        mSupportDynamicBar = "0".equals(android.os.SystemProperties.get("qemu.hw.mainkeys"))
+                && SystemUIDynaNavigationBarUtils.getInstance(mContext).isSupportDynaNaviBar();
+        /* @} */
+        /* SPRD: Bug 474763 support transition on low-ram device. @{ */
+        try {
+            mHighEnd = mContext.getResources()
+                    .getBoolean(com.android.internal.R.bool.config_force_use_color_view);
+        } catch (Resources.NotFoundException ex) {
+            Log.w(TAG, "com.android.internal.R.bool.config_force_use_color_view not found.");
+        }
+        /* @} */
         mDisplay = ((WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
         updateDisplaySize();
         mScrimSrcModeEnabled = mContext.getResources().getBoolean(
                 R.bool.config_status_bar_scrim_behind_use_src);
-
         super.start(); // calls createAndAddWindows()
 
         mMediaSessionManager
@@ -629,6 +695,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         notifyUserAboutHiddenNotifications();
 
         mScreenPinningRequest = new ScreenPinningRequest(mContext);
+        //SPRD support mouse scroll toast for pikel
+        MouseUI mouseUI = new MouseUI();
+        mouseUI.start(mContext);
     }
 
     // ================================================================================
@@ -668,7 +737,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 R.id.notification_panel);
         mNotificationPanel.setStatusBar(this);
 
-        if (!ActivityManager.isHighEndGfx()) {
+        // SPRD: Bug 474763 support transition on low-ram device.
+        if (!mHighEnd) {
             mStatusBarWindow.setBackground(null);
             mNotificationPanel.setBackground(new FastColorDrawable(context.getColor(
                     R.color.notification_panel_solid_background)));
@@ -691,8 +761,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             boolean showNav = mWindowManagerService.hasNavigationBar();
             if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
             if (showNav) {
-                mNavigationBarView =
-                    (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                if (mSupportDynamicBar) {
+                    mNavigationBarView =
+                        (NavigationBarView) View.inflate(context, R.layout.navigation_bar_enhance, null);
+                } else {
+                    mNavigationBarView =
+                            (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                }
 
                 mNavigationBarView.setDisabledFlags(mDisabled1);
                 mNavigationBarView.setBar(this);
@@ -758,7 +833,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mBackdrop = (BackDropView) mStatusBarWindow.findViewById(R.id.backdrop);
         mBackdropFront = (ImageView) mBackdrop.findViewById(R.id.backdrop_front);
         mBackdropBack = (ImageView) mBackdrop.findViewById(R.id.backdrop_back);
-
+        /** Bug #554542 add statusbar new feature. Can set keyguard background in wallpaper {@ **/
+        /* Bug #624613 pikel change wallpaper on lockscreen {@ */
+        if (LOCKSCREEN_WALLPAPER_SUPPORT) {
+            mBackdrop.setVisibility(View.VISIBLE);
+            mBackdropBack.setVisibility(View.VISIBLE);
+            mBackdropFront.setVisibility(View.INVISIBLE);
+        }
+        /* @} */
+        /** @} **/
         ScrimView scrimBehind = (ScrimView) mStatusBarWindow.findViewById(R.id.scrim_behind);
         ScrimView scrimInFront = (ScrimView) mStatusBarWindow.findViewById(R.id.scrim_in_front);
         View headsUpScrim = mStatusBarWindow.findViewById(R.id.heads_up_scrim);
@@ -771,7 +854,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mDozeScrimController = new DozeScrimController(mScrimController, context);
 
         mHeader = (StatusBarHeaderView) mStatusBarWindow.findViewById(R.id.header);
-        mHeader.setActivityStarter(this);
+        /* SPRD: Bug 583693 PikeL mHeader don't need this function for build {@ */
+        //mHeader.setActivityStarter(this);
+        /* @} */
         mKeyguardStatusBar = (KeyguardStatusBarView) mStatusBarWindow.findViewById(R.id.keyguard_header);
         mKeyguardStatusView = mStatusBarWindow.findViewById(R.id.keyguard_status_view);
         mKeyguardBottomArea =
@@ -813,6 +898,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNetworkController = new NetworkControllerImpl(mContext, mHandlerThread.getLooper());
         mHotspotController = new HotspotControllerImpl(mContext);
         mBluetoothController = new BluetoothControllerImpl(mContext, mHandlerThread.getLooper());
+        // SPRD: make the statusbar close when click bluetooth.
+        mBluetoothController.setbar(this);
+        // SPRD: make the statusbar close when click hotspot.
+        mHotspotController.setbar(this);
         mSecurityController = new SecurityControllerImpl(mContext);
         if (mContext.getResources().getBoolean(R.bool.config_showRotationLock)) {
             mRotationLockController = new RotationLockControllerImpl(mContext);
@@ -839,9 +928,61 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         signalClusterQs.setSecurityController(mSecurityController);
         signalClusterQs.setNetworkController(mNetworkController);
         final boolean isAPhone = mNetworkController.hasVoiceCallingFeature();
-        if (isAPhone) {
+        /* SPRD: Bug 583693 PikeL mHeader don't need this function {@ */
+        /*if (isAPhone) {
             mNetworkController.addEmergencyListener(mHeader);
+        }*/
+        /* @} */
+
+        /* SPRD: bug474973 modify for network name display @{ */
+        mCarrierLabel = (LinearLayout) mStatusBarWindow.findViewById(R.id.carrier_label_group_ex);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        /* SPRD: Bug 583693 hide SIM info in notification panel {@ */
+        //mShowCarrierInPanel = (mCarrierLabel != null);
+        /* @} */
+        Log.d(TAG, "carrierlabel=" + mCarrierLabel + " show=" + mShowCarrierInPanel);
+        if (mShowCarrierInPanel) {
+            mCarrierLabel.setVisibility(mCarrierLabelVisible ? View.VISIBLE : View.INVISIBLE);
+
+            final int phoneCount = TelephonyManager.from(mContext).getPhoneCount();
+            mCarrierLabelItems = new TextView[phoneCount];
+            for (int i = 0; i < phoneCount; i++) {
+                mCarrierLabelItems[i] = (TextView) inflater.inflate(R.layout.carrier_label_ex, null);
+                mCarrierLabel.addView(mCarrierLabelItems[i]);
+            }
+
+            mNetworkController.addCarrierLabel(new NetworkControllerImpl.CarrierLabelListener() {
+                @Override
+                public void setCarrierLabel(SpannableStringBuilder label) {
+                    Log.d(TAG, "label = " + label);
+                    ForegroundColorSpan[] spans = label.getSpans(
+                            0, label.length(), ForegroundColorSpan.class);
+                    for (int i = 0; i < phoneCount; i++) {
+                        mCarrierText = "";
+                        if (i < spans.length) {
+                            int startIndex = label.getSpanStart(spans[i]);
+                            int endIndex = label.getSpanEnd(spans[i]);
+                            mCarrierText = label.subSequence(startIndex, endIndex);
+                        }
+                        // SPRD: Modify bug #511349.
+                        int id = SimlockStatusHelper.getInstance().getSimLockStringId(i);
+                        if(id > 0) {
+                           if (mCarrierText.length() == 0) {
+                               mCarrierText = mContext.getResources().getString(id);
+                           } else {
+                               mCarrierText = mCarrierText + "|" + mContext.getResources().getString(id);
+                           }
+                        }
+                        Log.d(TAG, "mCarrierText = " + mCarrierText);
+                        // SPRD: Modify bug #511349 end.
+                        // SPRD: see bug #495447.
+                        mHandler.obtainMessage(MSG_CARRIER_TEXT_CHANGE, i, 0,
+                                mCarrierText).sendToTarget();
+                    }
+                }
+            });
         }
+        /* @} */
 
         mFlashlightController = new FlashlightController(mContext);
         mKeyguardBottomArea.setFlashlightController(mFlashlightController);
@@ -883,7 +1024,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         // User info. Trigger first load.
-        mHeader.setUserInfoController(mUserInfoController);
+        /* SPRD: Bug 583693 PikeL mHeader don't need this function for build {@ */
+        //mHeader.setUserInfoController(mUserInfoController);
+        /* @} */
         mKeyguardStatusBar.setUserInfoController(mUserInfoController);
         mKeyguardStatusBar.setUserSwitcherController(mUserSwitcherController);
         mUserInfoController.reloadUserInfo();
@@ -892,7 +1035,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         ((BatteryMeterView) mStatusBarView.findViewById(R.id.battery)).setBatteryController(
                 mBatteryController);
         mKeyguardStatusBar.setBatteryController(mBatteryController);
-        mHeader.setNextAlarmController(mNextAlarmController);
+        /* SPRD: Bug 583693 PikeL mHeader don't need this function for build {@ */
+        //mHeader.setNextAlarmController(mNextAlarmController);
+        /* @} */
 
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mBroadcastReceiver.onReceive(mContext,
@@ -925,6 +1070,48 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         return mStatusBarView;
     }
+
+    /* SPRD: modify by bug 474973 @{ */
+    public void updateCarrierLabelVisibility(boolean force) {
+        if (!mShowCarrierInPanel) return;
+
+        final boolean emergencyCallsShownElsewhere = true;
+        // SPRD: modify by BUG 504023
+        final boolean makeVisible = mExpandedVisible && mState == StatusBarState.SHADE;
+
+        if (force || mCarrierLabelVisible != makeVisible) {
+            mCarrierLabelVisible = makeVisible;
+            if (DEBUG) {
+                Log.d(TAG, "making carrier label " + (makeVisible?"visible":"invisible"));
+            }
+            mCarrierLabel.animate().cancel();
+            if (makeVisible) {
+                mCarrierLabel.setVisibility(View.VISIBLE);
+            }
+            /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+
+            // TODO: this code piece can be deleted
+            // it only to display carrier info. when click pull down/up notification button
+            if(mClicked && mSupportDynamicBar) {
+                return;
+            }
+            /* @} */
+            mCarrierLabel.animate()
+                .alpha(makeVisible ? 1f : 0f)
+                .setDuration(150)
+                .setListener(makeVisible ? null : new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (!mCarrierLabelVisible) {
+                            mCarrierLabel.setVisibility(View.INVISIBLE);
+                            mCarrierLabel.setAlpha(0f);
+                        }
+                    }
+                })
+                .start();
+        }
+    }
+    /* @} */
 
     private void clearAllNotifications() {
 
@@ -1136,8 +1323,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
                     | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
                 PixelFormat.TRANSLUCENT);
+        // SPRD: Bug 474763 support transition on low-ram device.
         // this will allow the navbar to run in an overlay on devices that support this
-        if (ActivityManager.isHighEndGfx()) {
+        if (mHighEnd) {
             lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
         }
 
@@ -1320,6 +1508,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // Let's do that now by advancing through toShow and mStackScroller in
         // lock-step, making sure mStackScroller matches what we see in toShow.
         int j = 0;
+        /* In mStackScroller, PhoneStatusBar inflate the following layouts:
+        805: R.layout.status_bar_notification_keyguard_overflow, mStackScroller, false);  in keyguard
+        811: R.layout.status_bar_notification_speed_bump, mStackScroller, false);   speed bump
+        814: R.layout.status_bar_no_notifications, mStackScroller, false); no notifications
+        817: R.layout.status_bar_notification_dismiss_all, mStackScroller, false); dissmiss all
+        */
         for (int i = 0; i < mStackScroller.getChildCount(); i++) {
             View child = mStackScroller.getChildAt(i);
             if (!(child instanceof ExpandableNotificationRow)) {
@@ -1343,10 +1537,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // clear the map again for the next usage
         mTmpChildOrderMap.clear();
 
+        /* SPRD: Bug 583693 hide layout "status_bar_notification_dismiss_all" {@ */
+        /* Bug #624613 pikel change wallpaper on lockscreen {@ */
         updateRowStates();
-        updateSpeedbump();
+        //updateSpeedbump();
         updateClearAll();
-        updateEmptyShadeView();
+        /* @} */
+        //updateEmptyShadeView();
+        /* @} */
 
         updateQsExpansionEnabled();
         mShadeUpdates.check();
@@ -1466,7 +1664,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     @Override
     protected void updateRowStates() {
         super.updateRowStates();
-        mNotificationPanel.notifyVisibleChildrenChanged();
+        /* SPRD: Bug 583693 hide id:reserve_notification_space in status_bar_expanded.xml{@ */
+        //mNotificationPanel.notifyVisibleChildrenChanged();
+        /* @} */
     }
 
     @Override
@@ -1732,6 +1932,79 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         } else {
             // need to hide the album art, either because we are unlocked or because
             // the metadata isn't there to support it
+            /** Bug #554542 add statusbar new feature. Can set keyguard background in wallpaper {@  **/
+            /* Bug #624613 pikel change wallpaper on lockscreen {@ */
+            if (LOCKSCREEN_WALLPAPER_SUPPORT) {
+                if (!hasArtwork && (mState == StatusBarState.KEYGUARD || mState == StatusBarState.SHADE_LOCKED))
+                {
+                    WallpaperManager wallpaperManager = WallpaperManager.getInstance(mContext.getApplicationContext());
+                    Drawable lockScreenWallpaper = null;
+                    try {
+                        File dir = Environment.getExternalStorageDirectory();
+                        File file = new File(dir, "lockscreen");
+                        lockScreenWallpaper = Drawable.createFromPath(file.getAbsolutePath());
+                    } catch (Exception e) {
+                        Log.e(TAG, "Set Lock screen: ", e);
+                    }
+                    if(lockScreenWallpaper == null){
+                        return;
+                    }
+                    if (DEBUG_MEDIA) {
+                        Log.v(TAG, "DEBUG_MEDIA Lock Screen, LOCKSCREEN_WALLPAPER_SUPPORT:  " + LOCKSCREEN_WALLPAPER_SUPPORT + " , lockScreenWallpaper: " + lockScreenWallpaper);
+                    }
+                    if (mBackdrop.getVisibility() != View.VISIBLE) {
+                        mBackdrop.setVisibility(View.VISIBLE);
+                        mBackdrop.setAlpha(1f);//Fix bug 591505, Splash launcher background before lock background showed
+                    }
+                    Drawable drawable = mBackdropBack.getDrawable();
+                    if (drawable == null)
+                    {
+                        mBackdropFront
+                                .setImageResource(com.android.internal.R.drawable.default_wallpaper);
+                    }
+                    else {
+                        mBackdropFront.setImageDrawable(drawable);
+                    }
+                    if (mScrimSrcModeEnabled) {
+                        mBackdropFront.getDrawable().mutate().setXfermode(mSrcOverXferMode);
+                    }
+                    mBackdropFront.setAlpha(1f);
+                    mBackdropFront.setVisibility(View.VISIBLE);
+                    if (DEBUG_MEDIA_FAKE_ARTWORK) {
+                        final int c = 0xFF000000 | (int) (Math.random() * 0xFFFFFF);
+                        Log.v(TAG, String.format("DEBUG_MEDIA: setting new color: 0x%08x", c));
+                        mBackdropBack.setBackgroundColor(0xFFFFFFFF);
+                        mBackdropBack.setImageDrawable(new ColorDrawable(c));
+                    } else {
+                        mBackdropBack.setImageDrawable(lockScreenWallpaper);
+                        mBackdropBack.setScaleY(1.0f);
+                    }
+                    if (mScrimSrcModeEnabled) {
+                        mBackdropBack.getDrawable().mutate().setXfermode(mSrcXferMode);
+                    }
+                    /** Fix bug 591505, Flash launcher background before lock background showed {@ **/
+                    mBackdrop.animate().cancel();
+                    if(mBackdrop.getVisibility() == View.GONE){
+                        mBackdrop.setVisibility(View.VISIBLE);
+                    }
+                    /** @} **/
+                    if (mBackdropFront.getVisibility() == View.VISIBLE) {
+                        if (DEBUG_MEDIA) {
+                            Log.v(TAG, "DEBUG_MEDIA: Crossfading album artwork from"
+                                    + mBackdropFront.getDrawable()
+                                    + " to "
+                                    + mBackdropBack.getDrawable());
+                        }
+                        mBackdropFront.animate()
+                                .setDuration(250)
+                                .alpha(0f).withEndAction(mHideBackdropFront);
+                    }
+                    return;
+                }
+            }
+            /* @} */
+            /** @} **/
+
             if (mBackdrop.getVisibility() != View.GONE) {
                 if (DEBUG_MEDIA) {
                     Log.v(TAG, "DEBUG_MEDIA: Fading out album artwork");
@@ -2043,6 +2316,22 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     public void setPanelExpanded(boolean isExpanded) {
         mStatusBarWindowManager.setPanelExpanded(isExpanded);
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        if(mSupportDynamicBar) {
+            if(mNavigationBarView != null && mNavigationBarView.getNotiBarButton() != null) {
+                if(isExpanded) {
+                    mNavigationBarView.getNotiBarButton().setImageResource(R.drawable.ic_sysbar_pull_up);
+                } else {
+                    mNavigationBarView.getNotiBarButton().setImageResource(R.drawable.ic_sysbar_pull_down);
+                }
+            }
+            // TODO: this code piece can be deleted
+            // it only to display carrier info. when click pull down/up notification button
+            if(mCarrierLabel != null) {
+                mClicked = false;
+            }
+        }
+        /* @} */
     }
 
     /**
@@ -2064,6 +2353,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 case MSG_LAUNCH_TRANSITION_TIMEOUT:
                     onLaunchTransitionTimeout();
                     break;
+                /* SPRD: modify by bug 474973 @{ */
+                case MSG_CARRIER_TEXT_CHANGE :
+                    int phoneId = m.arg1;
+                    CharSequence carrier = (CharSequence) m.obj;
+                    mCarrierLabelItems[phoneId].setText(carrier);
+                    if (TextUtils.isEmpty(carrier)) {
+                        mCarrierLabelItems[phoneId].setVisibility(View.GONE);
+                    } else {
+                        mCarrierLabelItems[phoneId].setVisibility(View.VISIBLE);
+                    }
+                    break;
+                /* @} */
             }
         }
     }
@@ -2252,6 +2553,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (!mStatusBarKeyguardViewManager.isShowing()) {
             WindowManagerGlobal.getInstance().trimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
         }
+        // SPRD: modify by bug 474973
+        updateCarrierLabelVisibility(true);
     }
 
     public boolean interceptTouchEvent(MotionEvent event) {
@@ -2884,10 +3187,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 notifyHeadsUpScreenOff();
                 finishBarAnimations();
                 resetUserExpandedStates();
+                mCastController.setDiscovering(false);
             }
             else if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 mScreenOn = true;
                 notifyNavigationBarScreenOn(true);
+                mCastController.setDiscovering(true);
             }
         }
     };
@@ -2950,6 +3255,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (DEBUG) {
             Log.v(TAG, "configuration changed: " + mContext.getResources().getConfiguration());
         }
+        Log.v(TAG, "PhoneStatusBar#configuration changed: " + mContext.getResources().getConfiguration());
         updateDisplaySize(); // populates mDisplayMetrics
 
         updateResources();
@@ -2970,6 +3276,17 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         resetUserSetupObserver();
         setControllerUsers();
         mAssistManager.onUserSwitched(newUserId);
+        updateQSTilesUser(newUserId);
+    }
+
+    /**
+     * SPRD:ADD bug 499802 update QSPanel user when user switched.
+     */
+    public void updateQSTilesUser(int newUserId) {
+        Log.d(TAG, "updateQSTilesUser userId : " + newUserId);
+        if (mQSPanel != null) {
+            mQSPanel.switchUser(newUserId);
+        }
     }
 
     private void setControllerUsers() {
@@ -3165,6 +3482,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     @Override
     public boolean shouldDisableNavbarGestures() {
         return !isDeviceProvisioned() || (mDisabled1 & StatusBarManager.DISABLE_SEARCH) != 0;
+    }
+
+    public void postStartActivityDismissingKeyguard(final PendingIntent intent) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                startPendingIntentDismissingKeyguard(intent);
+            }
+        });
     }
 
     public void postStartActivityDismissingKeyguard(final Intent intent, int delay) {
@@ -3555,6 +3881,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         updateMediaMetaData(false);
         mKeyguardMonitor.notifyKeyguardState(mStatusBarKeyguardViewManager.isShowing(),
                 mStatusBarKeyguardViewManager.isSecure());
+        // SPRD: modify by bug 474973
+        updateCarrierLabelVisibility(false);
     }
 
     private void updateDozingState() {
@@ -3598,11 +3926,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             return true;
         }
         if (mNotificationPanel.isQsExpanded()) {
-            if (mNotificationPanel.isQsDetailShowing()) {
-                mNotificationPanel.closeQsDetail();
-            } else {
-                mNotificationPanel.animateCloseQs();
-            }
+            /* SPRD: 593270 for closing notification panal {@ */
+            //if (mNotificationPanel.isQsDetailShowing()) {
+            //   mNotificationPanel.closeQsDetail();
+            //} else {
+            //    mNotificationPanel.animateCloseQs();
+            //}
+            animateCollapsePanels();
+            /* @} */
             return true;
         }
         if (mState != StatusBarState.KEYGUARD && mState != StatusBarState.SHADE_LOCKED) {
@@ -3697,7 +4028,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     public void onCameraHintStarted() {
-        mKeyguardIndicationController.showTransientIndication(R.string.camera_hint);
+        /* SPRD: Change the hint when click the Profile icon @{ */
+        if (!SystemuiFeatureUtil.getInstance().changeProfileHint(mKeyguardIndicationController)) {
+            mKeyguardIndicationController.showTransientIndication(R.string.camera_hint);
+        }
+        /* @} */
     }
 
     public void onVoiceAssistHintStarted() {
@@ -3912,9 +4247,20 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         super.hideRecents(triggeredFromAltTab, triggeredFromHomeKey);
     }
 
+    /* SPRD: Bug 475644 New feature of quick cleaning. @{ */
     @Override
     protected void toggleRecents() {
         // Toggle the recents visibility flag
+        /* SPRD: add for bug 446207,awake the dreams after toggling therecents. @{ */
+        awakenDreams();
+        /* @} */
+        mSystemUiVisibility ^= View.RECENT_APPS_VISIBLE;
+        notifyUiVisibilityChanged(mSystemUiVisibility);
+        super.toggleRecents();
+    }
+    /* @} */
+
+    public void toggleRecent() {
         mSystemUiVisibility ^= View.RECENT_APPS_VISIBLE;
         notifyUiVisibilityChanged(mSystemUiVisibility);
         super.toggleRecents();
@@ -4138,5 +4484,58 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
             }
         }
+    }
+
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    public void onNotiBarClick() {
+        // TODO: this code piece can be deleted
+        // it only to display carrier info. when click pull down/up notification button
+        /* SPRD: Bug 583693 hide SIM info in notification panel {@ */
+        if(mShowCarrierInPanel) {
+        /* @} */
+            mCarrierLabel.setVisibility(View.VISIBLE);
+            mCarrierLabel.setAlpha(1.0f);
+            mClicked = true;
+        }
+        /* SPRD: Bug 583693 hide SIM info in notification panel {@ */
+        if(mNotificationPanel.isFullyExpanded()) {
+            //animateCollapsePanels();
+            mNotificationPanel.instantCollapse(); //the two modification can't resolve the issue of notifications
+        } else {
+            //animateExpandSettingsPanelQuickly();
+            mNotificationPanel.instantExpand();
+        }
+
+        // QsContainer must be invisible, ensure QSPanel should be shown after reboot
+        mNotificationPanel.getQsContainer().setVisibility(View.INVISIBLE);
+        hideSwtichTabButton(false);
+        hideNotificationItems(false);
+        mNotificationPanel.getNotificationPanelButton().requestFocus();
+        /* @} */
+    }
+
+    public void animateExpandSettingsPanelQuickly() {
+        if (SPEW) Log.d(TAG, "animateExpand: mExpandedVisible=" + mExpandedVisible);
+        if (!panelsEnabled()) {
+            return;
+        }
+
+        // Settings are not available in setup
+        if (!mUserSetup) return;
+
+        mNotificationPanel.expandWithQsQuickly();
+
+        if (false) postStartTracing();
+    }
+    /* @} */
+
+    public void hideSwtichTabButton(boolean isHide) {
+        mNotificationPanel.getTabSwitchContainer().setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    public void hideNotificationItems(boolean isHide) {
+        mNotificationPanel.getNotificationStackScroller().setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+        mNotificationPanel.getNotificationScrollView().setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
+        mNotificationPanel.getQsPanelContainer().setVisibility(isHide ? View.INVISIBLE : View.VISIBLE);
     }
 }

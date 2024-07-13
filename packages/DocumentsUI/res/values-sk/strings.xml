@@ -75,4 +75,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Klepnutím zobrazíte podrobné informácie"</string>
     <string name="retry" msgid="7564024179122207376">"Skúsiť znova"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Tieto súbory neboli skopírované: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Nie je možné zdieľať súbor"</string>
+     <string name="documents_deleting">"Vymazanie dokumentov"</string>
+     <string name="cannot_copyfolder_itself">"Nemôžete kopírovať adresár do seba"</string>
+
+    <string name="error_permissions">"Aplikácia nemá dôležité povolenia potrebné na spustenie. Skontrolujte nastavenia povolení."</string>
+     <string name="cannot_copy_drm">"DRM súbory sa nedajú kopírovať"</string>
+     <string name="cannot_copy_downloading">"Preberané súbory sa nedajú kopírovať"</string>
 </resources>

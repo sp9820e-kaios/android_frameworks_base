@@ -279,6 +279,11 @@ public abstract class Connection extends Conferenceable {
     private static final boolean PII_DEBUG = Log.isLoggable(android.util.Log.DEBUG);
 
     /**
+     * @hide
+     * SPRD: Add for multi-part-call mode.
+     */
+    protected int mAnswerMode = MultiPartCallHelper.MPC_MODE_HF;
+    /**
      * Whether the given capabilities support the specified capability.
      *
      * @param capabilities A capability bit field.
@@ -1598,6 +1603,14 @@ public abstract class Connection extends Conferenceable {
                     "which is already associated with another ConnectionService.");
         } else {
             mConnectionService = connectionService;
+            /* SPRD: Add for VoLTE @{ */
+            if (mConnectionService != null && mConference != null &&
+                    mConnectionService.containsConference(mConference)) {
+                mConference.addConnection(this);
+                fireConferenceChanged();
+                Log.i(this,"Trying to fireConferenceChanged when setConnectionService."+mConference);
+            }
+            /* @} */
         }
     }
 
@@ -1754,6 +1767,18 @@ public abstract class Connection extends Conferenceable {
      */
     public void onAnswer() {
         onAnswer(VideoProfile.STATE_AUDIO_ONLY);
+    }
+
+    /**
+     * SPRD: Add for multi-part-call mode.
+     */
+    public void onAnswerMPC(int videoState, int mpcMode) {}
+
+    /**
+     * SPRD: Add for multi-part-call mode.
+     */
+    public void onAnswerMPC(int mpcMode) {
+        onAnswerMPC(VideoProfile.STATE_AUDIO_ONLY, mpcMode);
     }
 
     /**
@@ -1919,4 +1944,25 @@ public abstract class Connection extends Conferenceable {
             l.onConferenceStarted();
         }
     }
+
+    // ----------------------------------- SPRD ----------------------------------
+    /**
+     * @hide
+     * SPRD: Add for multi-part-call mode.
+     */
+    public void setAnswerMode (int mode) {
+        mAnswerMode = mode;
+    }
+    /**
+     * @hide
+     * SPRD: Add for multi-part-call mode.
+     */
+    public int getAnswerMode () {
+        return mAnswerMode;
+    }
+
+    /**
+     * SPRD: Porting Explicit Transfer Call
+     */
+    public void onTransferCall() {}
 }

@@ -2567,6 +2567,15 @@ public abstract class Context {
     public abstract String getSystemServiceName(Class<?> serviceClass);
 
     /**
+    * Use with {@link #getSystemService} to retrieve a
+    * {@link android.hardware.boardScore.BoardScoreService} for improving the performance of benchmark software.
+    *
+    * @see #getSystemService
+    * @see android.hardware.boardScore.BoardScoreService
+    */
+    public static final String BoardScore_SERVICE = "board_score";
+
+    /**
      * Use with {@link #getSystemService} to retrieve a
      * {@link android.os.PowerManager} for controlling power management,
      * including "wake locks," which let you keep the device on while
@@ -3177,6 +3186,13 @@ public abstract class Context {
     public static final String CONSUMER_IR_SERVICE = "consumer_ir";
 
     /**
+     * @see #getSystemService
+     * @see securityservice
+     * @hide
+     */
+    public static final String SECURITY_SERVICE = "security";
+
+    /**
      * {@link android.app.trust.TrustManager} for managing trust agents.
      * @see #getSystemService
      * @see android.app.trust.TrustManager
@@ -3241,6 +3257,12 @@ public abstract class Context {
      * @see android.media.projection.MediaProjectionManager
      */
     public static final String MEDIA_PROJECTION_SERVICE = "media_projection";
+
+	/**
+	* SPRD: add for heartbeat powerguru service
+	* @hide
+	*/
+	public static final String POWERGURU_SERVICE = "powerguru";
 
     /**
      * Use with {@link #getSystemService} to retrieve a

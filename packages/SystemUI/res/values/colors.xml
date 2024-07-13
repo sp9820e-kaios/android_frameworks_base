@@ -143,4 +143,18 @@
     <color name="volume_icon_color">#ffffffff</color>
     <color name="volume_settings_icon_color">#7fffffff</color>
     <color name="volume_slider_inactive">#FFB0BEC5</color><!-- blue grey 200 -->
+
+    <!-- SPRD: add for 4G and data connection quick setting @{ -->
+    <color name="custom_text_color">#FF212121</color>
+    <color name="custom_summary_color">#FF757575</color>
+    <!-- @} -->
+    <!-- SPRD: the preview of Camera show twice -->
+    <color name="mode_cover_default_color">#191919</color>
+    <!-- SPRD 583693/585904 New feature for PikeL, button effect -->
+    <color name="button_normal_state">#ffffffff</color>
+    <color name="qstile_normal_state">#00000000</color>
+    <color name="qstile_pressed_state">#727f85</color>
+    <color name="notification_backguard">#37464d</color>
+    <color name="button_focused_state">#4f5f67</color>
+    <!-- @} -->
 </resources>

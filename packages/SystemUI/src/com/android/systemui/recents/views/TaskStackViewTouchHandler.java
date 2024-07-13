@@ -473,4 +473,18 @@ class TaskStackViewTouchHandler implements SwipeHelper.Callback {
     public void onDragCancelled(View v) {
         // Do nothing
     }
+
+    /* SPRD: Bug 535096 new feature of lock recent apps @{ */
+    @Override
+    public void onLockIcon(View v) {
+        TaskView tv = (TaskView) v;
+        tv.onLockIcon();
+    }
+
+    @Override
+    public boolean isLockedIcon(View v) {
+        TaskView tv = (TaskView) v;
+        return tv.isLockedIcon();
+    }
+    /* @} */
 }

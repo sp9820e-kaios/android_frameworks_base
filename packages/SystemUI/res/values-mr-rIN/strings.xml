@@ -426,4 +426,20 @@
     <string name="tuner_toast" msgid="603429811084428439">"अभिनंदन! सिस्टीम UI ट्यूनर सेटिंग्जमध्‍ये जोडले गेले आहे"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"सेटिंग्ज मधून काढा"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"सेटिंग्ज मधून सिस्टीम UI ट्यूनर काढून त्याची सर्व वैशिष्ट्‍ये वापरणे थांबवायचे?"</string>
+    <string name="quick_settings_volume_label">"ऑडिओप्रोफाईल"</string>
+     <string name="assistant_key_home">"घर"</string>
+     <string name="assistant_key_search">"शोधा"</string>
+     <string name="assistant_key_menu">"मेन्यू"</string>
+     <string name="assistant_key_back">"मागे जा"</string>
+
+    <string name="vibrate_hint">"कंपनासाठी डावीकडे स्वाईप करा"</string>
+     <string name="battery_overtage_title">"सुरक्षा इशारा"</string>
+     <string name="battery_overtage_content">"चार्जिंग व्होलटेज खूप जास्त आहे."</string>
+     <string name="battery_overtage_back">"मागे जा"</string>
+    <string name="recent_app_clean_finished_toast">"सोडणे <xliff:g id="count">%1$s</xliff:g> स्मृती,<xliff:g id="count">%2$s</xliff:g>आता उपलब्ध आहेत ."</string>
+     <string name="label_tab_notifications">"नोंद घ्या"</string>
+     <string name="label_tab_qs">"स्विच"</string>
+     <string name="label_screen_brightness">"प्रदर्शन चमक"</string>
+     <string name="label_star_unlock">"* अनलॉक ला जोरात दाबा"</string>
+     <string name="speak_spec">""ह म" "</string>
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="bugreport_finished_title">"ବାଗ/ବିଚ୍ୟୁତି ରିପୋର୍ଟ ଅଧିକୃତ ହୋଇଛି"</string>
+<string name="bugreport_finished_text" product="watch">"ବାଗ/ବିଚ୍ୟୁତି ରିପୋର୍ଟ ଭାଗୀଦାରୀତା କରିବା ପାଇଁ ବଳକା ଥିବା ଝିକା"</string>
+<string name="bugreport_finished_text" product="default">""ବାଗ/ବିଚ୍ୟୁତି ରିପୋର୍ଟ ଭାଗୀଦାରୀତା କରିବାକୁ ସ୍ପର୍ଶ କାରନ୍ତୁ" "</string>
+<string name="bugreport_confirm">"ବ୍ୟକ୍ତିଗତ ଏବଂ ଗୋପନୀୟ ତଥ୍ୟ ସହ ସିଷ୍ଟମର ବିଭିନ୍ନ ଲଗ ଫାଇଲର ତଥ୍ୟ ବାଗ/ବିଚ୍ୟୁତି ରିପୋର୍ଟରେ ଥାଏ । କେବଳ ଆପଣ ବିଶ୍ଵାସ କରୁଥିବା ଏପ ଏବଂ ବ୍ୟକ୍ତିମାନଙ୍କ ସହ ବାଗ/ବିଚ୍ୟୁତି ରିପୋର୍ଟ ଭାଗିଦାରୀତା କରନ୍ତୁ ।"</string>
+<string name="bugreport_confirm_repeat">"ପରବର୍ତ୍ତୀ ଥର ଏହି ବାର୍ତ୍ତା ଦେଖାନ୍ତୁ"</string>
+<string name="bugreport_storage_title">"ବାଗ/ବିଚ୍ୟୁତି ରିପୋର୍ଟ ଗୁଡିକ"</string>
+</resources>

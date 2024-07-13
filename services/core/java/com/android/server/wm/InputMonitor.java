@@ -372,6 +372,9 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
     public long interceptKeyBeforeDispatching(
             InputWindowHandle focus, KeyEvent event, int policyFlags) {
         WindowState windowState = focus != null ? (WindowState) focus.windowState : null;
+        /* SPRD: add for STK 27.22.7.5.1 @{ */
+        mService.notifyStkUserActivity();
+        /* @} */
         return mService.mPolicy.interceptKeyBeforeDispatching(windowState, event, policyFlags);
     }
 
@@ -396,7 +399,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
      * Layer assignment is assumed to be complete by the time this is called.
      */
     public void setInputFocusLw(WindowState newWindow, boolean updateInputWindows) {
-        if (WindowManagerService.DEBUG_FOCUS_LIGHT || WindowManagerService.DEBUG_INPUT) {
+        if (WindowManagerService.DEBUG_FOCUS_LIGHT || WindowManagerService.DEBUG_INPUT || WindowManagerService.mIsPrintLogs) {
             Slog.d(WindowManagerService.TAG, "Input focus has changed to " + newWindow);
         }
 
@@ -432,7 +435,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
 
     public void pauseDispatchingLw(WindowToken window) {
         if (! window.paused) {
-            if (WindowManagerService.DEBUG_INPUT) {
+            if (WindowManagerService.DEBUG_INPUT || WindowManagerService.mIsPrintLogs) {
                 Slog.v(WindowManagerService.TAG, "Pausing WindowToken " + window);
             }
             
@@ -443,7 +446,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
     
     public void resumeDispatchingLw(WindowToken window) {
         if (window.paused) {
-            if (WindowManagerService.DEBUG_INPUT) {
+            if (WindowManagerService.DEBUG_INPUT || WindowManagerService.mIsPrintLogs) {
                 Slog.v(WindowManagerService.TAG, "Resuming WindowToken " + window);
             }
             
@@ -454,8 +457,10 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
     
     public void freezeInputDispatchingLw() {
         if (! mInputDispatchFrozen) {
-            if (WindowManagerService.DEBUG_INPUT) {
-                Slog.v(WindowManagerService.TAG, "Freezing input dispatching");
+            if (WindowManagerService.DEBUG_INPUT || WindowManagerService.mIsPrintLogs) {
+                //SPRD Change to Slog.d
+                //@orig Slog.v
+                Slog.d(WindowManagerService.TAG, "Freezing input dispatching");
             }
             
             mInputDispatchFrozen = true;
@@ -465,8 +470,10 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
     
     public void thawInputDispatchingLw() {
         if (mInputDispatchFrozen) {
-            if (WindowManagerService.DEBUG_INPUT) {
-                Slog.v(WindowManagerService.TAG, "Thawing input dispatching");
+            if (WindowManagerService.DEBUG_INPUT || WindowManagerService.mIsPrintLogs) {
+                //SPRD Change to Slog.d
+                //@orig Slog.v
+                Slog.d(WindowManagerService.TAG, "Thawing input dispatching");
             }
             
             mInputDispatchFrozen = false;
@@ -476,7 +483,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
     
     public void setEventDispatchingLw(boolean enabled) {
         if (mInputDispatchEnabled != enabled) {
-            if (WindowManagerService.DEBUG_INPUT) {
+            if (WindowManagerService.DEBUG_INPUT || WindowManagerService.mIsPrintLogs) {
                 Slog.v(WindowManagerService.TAG, "Setting event dispatching to " + enabled);
             }
             

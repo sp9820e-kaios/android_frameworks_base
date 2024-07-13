@@ -378,6 +378,16 @@ public interface WindowManagerPolicy {
         public boolean isAlive();
 
         /**
+         * SPRD: request to the hide the Surface of a window.
+         * @param hide set true to hide Surface and false to show
+         */
+        public void requestHideSurface(boolean hide);
+
+        /* SPRD: add for dynamic navigationbar @{ */
+        public void setLayoutNeeded(boolean needed);
+        /* @} */
+
+        /**
          * Check if window is on {@link Display#DEFAULT_DISPLAY}.
          * @return true if window is on default display.
          */
@@ -441,7 +451,11 @@ public interface WindowManagerPolicy {
         public void switchKeyboardLayout(int deviceId, int direction);
 
         public void shutdown(boolean confirm);
+        //SPRD: add shutdown reason for PhoneInfo feature
+        public void shutdown(boolean confirm, String reason);
         public void rebootSafeMode(boolean confirm);
+        //SPRD: add reboot reason for PhoneInfo feature
+        public void rebootSafeMode(boolean confirm, String reason);
 
         /**
          * Return the window manager lock needed to correctly call "Lw" methods.
@@ -1064,6 +1078,10 @@ public interface WindowManagerPolicy {
      * @return true if in keyguard is locked.
      */
     public boolean isKeyguardLocked();
+
+    /* SPRD: add dynamic navigationbar @{ */
+    public boolean isKeyguardShowingAndNotOccluded();
+    /* @} */
 
     /**
      * isKeyguardSecure

@@ -1157,14 +1157,7 @@
     <string name="back_button_label" msgid="2300470004503343439">"Zpět"</string>
     <string name="next_button_label" msgid="1080555104677992408">"Další"</string>
     <string name="skip_button_label" msgid="1275362299471631819">"Přeskočit"</string>
-    <string name="no_matches" msgid="8129421908915840737">"Žádné shody"</string>
     <string name="find_on_page" msgid="1946799233822820384">"Hledat na stránce"</string>
-    <plurals name="matches_found" formatted="false" msgid="1210884353962081884">
-      <item quantity="few"><xliff:g id="INDEX">%d</xliff:g> ze <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="many"><xliff:g id="INDEX">%d</xliff:g> z <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="other"><xliff:g id="INDEX">%d</xliff:g> z <xliff:g id="TOTAL">%d</xliff:g></item>
-      <item quantity="one">1 shoda</item>
-    </plurals>
     <string name="action_mode_done" msgid="7217581640461922289">"Hotovo"</string>
     <string name="progress_erasing" product="nosdcard" msgid="4521573321524340058">"Mazání úložiště USB..."</string>
     <string name="progress_erasing" product="default" msgid="6596988875507043042">"Mazání karty SD..."</string>
@@ -1552,4 +1545,31 @@
       <item quantity="other"><xliff:g id="COUNT_1">%1$d</xliff:g> položek</item>
       <item quantity="one"><xliff:g id="COUNT_0">%1$d</xliff:g> položka</item>
     </plurals>
+    <plurals name="matches_found">
+<item quantity="one">"1/1"</item>
+<item quantity="other">"<xliff:g id="index" example="2">%d</xliff:g>/<xliff:g id="total" example="1 37">%d</xliff:g>"</item>
+    </plurals>
+     <string name="tetheredPC_notification_title">"USB-vazba internetu aktivní"</string>
+     <string name="ext_media_status_shared">"UMS sdíleno"</string>
+     <string name="sim_ready_title_for_usb">Varování</string>
+     <string name="sim_card_activation_warning">"V případě nainstalovaných aplikací třetími stranami, prosím, zadejte SIM/USIM kartu pro aktivaci USB."</string>
+     <string name="usb_ok">OK</string>
+     <string name="usb_cdrom_notification_title">"Virtual Driver je zapnutý"</string>
+     <string name="usb_charge_only_notification">"Připojeno jen jako náplň"</string>
+     <string name="global_action_restart">"Restartovat"</string>
+     <string name="reboot_device_title">"Restartovat"</string>
+     <string name="global_reboot_close_apps">"Zavřete všechny aplikace a restartujte telefon"</string>
+     <string name="reboot_device_confirm">"Přejete si teď restartovat váš telefon ?"</string>
+     <plurals name="shutdown_after_seconds_plurals">
+<item quantity="one">"Telefon se vypne po <xliff:g id="NUMBER">%d</xliff:g> vteřinách"</item>
+<item quantity="other">"Telefon se po <xliff:g id="NUMBER">%d</xliff:g> sekundách vypne"</item>
+    </plurals>
+
+    <string name="station_state_msg">"%1$s připojené, %2$s blokované"</string>
+     <string name="phoneFixedNumber">"FDN"</string>
+     <string name="gps_time_sync_fail_str">"Nepovedlo se získat čas GPS"</string>
+     <string name="disable_touch_mode_title">"Dotek v kapse - vypnuto"</string>
+     <string name="disable_touch_mode_hint">"Nezakrývejte horní část telefonu"</string>
+     <string name="exit_disable_touch_mode_hint">"Režim můžete vypnout také zmáčknutím tláčítek vypnutí a zvýšení hlasitosti"</string>
+
 </resources>

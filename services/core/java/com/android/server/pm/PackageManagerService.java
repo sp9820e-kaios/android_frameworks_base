@@ -30,6 +30,7 @@ import static android.content.pm.PackageManager.FLAG_PERMISSION_REVOKE_ON_UPGRAD
 import static android.content.pm.PackageManager.FLAG_PERMISSION_SYSTEM_FIXED;
 import static android.content.pm.PackageManager.FLAG_PERMISSION_USER_FIXED;
 import static android.content.pm.PackageManager.FLAG_PERMISSION_USER_SET;
+import static android.content.pm.PackageManager.INSTALL_INTERNALSD;
 import static android.content.pm.PackageManager.INSTALL_EXTERNAL;
 import static android.content.pm.PackageManager.INSTALL_FAILED_ALREADY_EXISTS;
 import static android.content.pm.PackageManager.INSTALL_FAILED_CONFLICTING_PROVIDER;
@@ -87,6 +88,7 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.AppGlobals;
+import android.app.Application;
 import android.app.IActivityManager;
 import android.app.admin.IDevicePolicyManager;
 import android.app.backup.IBackupManager;
@@ -240,8 +242,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -283,19 +287,22 @@ adb shell am instrument -w -e class com.android.unit_tests.PackageManagerTests c
  */
 public class PackageManagerService extends IPackageManager.Stub {
     static final String TAG = "PackageManager";
+    /* SPRD: add log for debug @{ */
+    private static final boolean DEBUG = true;
+    /* @} */
     static final boolean DEBUG_SETTINGS = false;
     static final boolean DEBUG_PREFERRED = false;
     static final boolean DEBUG_UPGRADE = false;
     static final boolean DEBUG_DOMAIN_VERIFICATION = false;
     private static final boolean DEBUG_BACKUP = false;
-    private static final boolean DEBUG_INSTALL = false;
-    private static final boolean DEBUG_REMOVE = false;
+    private static final boolean DEBUG_INSTALL = false || DEBUG; // SPRD: false ——> false || DEBUG
+    private static final boolean DEBUG_REMOVE = false || DEBUG; // SPRD: false ——> false || DEBUG
     private static final boolean DEBUG_BROADCASTS = false;
     private static final boolean DEBUG_SHOW_INFO = false;
     private static final boolean DEBUG_PACKAGE_INFO = false;
     private static final boolean DEBUG_INTENT_MATCHING = false;
     private static final boolean DEBUG_PACKAGE_SCANNING = false;
-    private static final boolean DEBUG_VERIFY = false;
+    private static final boolean DEBUG_VERIFY = false || DEBUG; // SPRD: false ——> false || DEBUG
     private static final boolean DEBUG_DEXOPT = false;
     private static final boolean DEBUG_ABI_SELECTION = false;
 
@@ -339,7 +346,7 @@ public class PackageManagerService extends IPackageManager.Stub {
      * minute but we sometimes do very lengthy I/O operations on this thread,
      * such as installing multi-gigabyte applications, so ours needs to be longer.
      */
-    private static final long WATCHDOG_TIMEOUT = 1000*60*10;     // ten minutes
+    private static final long WATCHDOG_TIMEOUT = 1000*60*10*4;     // SPRD: ten minutes ——> forty minutes
 
     /**
      * Wall-clock timeout (in milliseconds) after which we *require* that an fstrim
@@ -440,6 +447,11 @@ public class PackageManagerService extends IPackageManager.Stub {
     // This is where all application persistent data goes for secondary users.
     final File mUserAppDataDir;
 
+    /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+    final File mPreloadInstallDir;
+    final File mDeleteRecord;
+    /* @} */
+
     /** The location for ASEC container files on internal storage. */
     final String mAsecInternalPath;
 
@@ -476,6 +488,8 @@ public class PackageManagerService extends IPackageManager.Stub {
     @GuardedBy("mPackages")
     final ArrayMap<String, PackageParser.Package> mPackages =
             new ArrayMap<String, PackageParser.Package>();
+
+    List<String> mOemPackageList = new ArrayList<String>();
 
     // Tracks available target package names -> overlay package paths.
     final ArrayMap<String, ArrayMap<String, PackageParser.Package>> mOverlays =
@@ -907,6 +921,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     static final int CHECK_PENDING_VERIFICATION = 16;
     static final int START_INTENT_FILTER_VERIFICATIONS = 17;
     static final int INTENT_FILTER_VERIFIED = 18;
+    static final int POST_UNINSTALL = 19;
 
     static final int WRITE_SETTINGS_DELAY = 10*1000;  // 10 seconds
 
@@ -1402,7 +1417,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                                         null, null, packageName, null, updateUsers);
 
                                 // treat asec-hosted packages like removable media on upgrade
-                                if (res.pkg.isForwardLocked() || isExternal(res.pkg)) {
+                                /* SPRD: support double sdcard
+                                 * Add support for install apk to internal sdcard @{
+                                 * @orig
+                                 * if (res.pkg.isForwardLocked() || isExternal(res.pkg)) {
+                                 */
+                                if (res.pkg.isForwardLocked() || isExternal(res.pkg) || isInternalSd(res.pkg)) {
+                                     /* @} */
                                     if (DEBUG_INSTALL) {
                                         Slog.i(TAG, "upgrading pkg " + res.pkg
                                                 + " is ASEC-hosted -> AVAILABLE");
@@ -1456,6 +1477,18 @@ public class PackageManagerService extends IPackageManager.Stub {
                     } else {
                         Slog.e(TAG, "Bogus post-install token " + msg.arg1);
                     }
+                    /* SPRD: add log for debug @{ */
+                    if (DEBUG) Log.d(TAG, "pms install end");
+                    /* @} */
+                } break;
+                case POST_UNINSTALL: {
+                    if (DEBUG_INSTALL) Log.v(TAG, "Handling post-uninstall");
+                    if (msg.obj != null) {
+                        InstallArgs args = (InstallArgs) msg.obj;
+                        synchronized (mInstallLock) {
+                          args.doPostDeleteLI(true);
+                        }
+                    }
                 } break;
                 case UPDATED_MEDIA_STATUS: {
                     if (DEBUG_SD_INSTALL) Log.i(TAG, "Got message UPDATED_MEDIA_STATUS");
@@ -1505,6 +1538,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                 } break;
                 case CHECK_PENDING_VERIFICATION: {
                     final int verificationId = msg.arg1;
+                    /* SPRD: add log for debug @{ */
+                    if (DEBUG) Log.d(TAG, "pms install verification : verificationId=" + verificationId);
+                    /* @} */
                     final PackageVerificationState state = mPendingVerification.get(verificationId);
 
                     if ((state != null) && !state.timeoutExtended()) {
@@ -1534,6 +1570,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                                     state.getInstallArgs().getUser());
                         }
 
+                        /* SPRD: add log for debug @{ */
+                        if (DEBUG) Log.d(TAG, "pms install verification end");
+                        /* @} */
                         processPendingInstall(args, ret);
                         mHandler.sendEmptyMessage(MCS_UNBIND);
                     }
@@ -1654,13 +1693,26 @@ public class PackageManagerService extends IPackageManager.Stub {
                     unloadPrivatePackages(vol);
                 }
             }
-
-            if (vol.type == VolumeInfo.TYPE_PUBLIC && vol.isPrimary()) {
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * @orig if (vol.type == VolumeInfo.TYPE_PUBLIC && vol.isPrimary()) {
+             */
+            if (vol.type == VolumeInfo.TYPE_PUBLIC && (Objects.equals(vol.linkName,"sdcard0")
+                   || Objects.equals(vol.linkName,"sdcard1"))) {
                 if (vol.state == VolumeInfo.STATE_MOUNTED) {
-                    updateExternalMediaStatus(true, false);
+                  if(isInternalSd(vol)){
+                     updateInternalSdMediaStatus(true, false);
+                  }else{
+                     updateExternalMediaStatus(true, false);
+                    }
                 } else if (vol.state == VolumeInfo.STATE_EJECTING) {
-                    updateExternalMediaStatus(false, false);
+                  if(isInternalSd(vol)){
+                        updateInternalSdMediaStatus(false, false);
+                    }else{
+                        updateExternalMediaStatus(false, false);
+                  }
                 }
+                /* @} */
             }
         }
 
@@ -1863,9 +1915,10 @@ public class PackageManagerService extends IPackageManager.Stub {
         mSystemPermissions = systemConfig.getSystemPermissions();
         mAvailableFeatures = systemConfig.getAvailableFeatures();
 
+        /* SPRD: Add for boot performance with multi-thread and preload scan{@
         synchronized (mInstallLock) {
         // writer
-        synchronized (mPackages) {
+        synchronized (mPackages) { @}*/
             mHandlerThread = new ServiceThread(TAG,
                     Process.THREAD_PRIORITY_BACKGROUND, true /*allowIo*/);
             mHandlerThread.start();
@@ -1879,7 +1932,10 @@ public class PackageManagerService extends IPackageManager.Stub {
             mAsecInternalPath = new File(dataDir, "app-asec").getPath();
             mUserAppDataDir = new File(dataDir, "user");
             mDrmAppPrivateInstallDir = new File(dataDir, "app-private");
-
+            /* SPRD: Add for boot performance with multi-thread and preload scan{@ */
+            mPreloadInstallDir = new File(Environment.getRootDirectory(), "preloadapp");
+            mDeleteRecord = new File(mAppInstallDir, ".delrecord");
+             /* @} */
             sUserManager = new UserManagerService(context, this,
                     mInstallLock, mPackages);
 
@@ -2042,7 +2098,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             mIsUpgrade = !Build.FINGERPRINT.equals(ver.fingerprint);
             // when upgrading from pre-M, promote system app permissions from install to runtime
             mPromoteSystemApps =
-                    mIsUpgrade && ver.sdkVersion <= Build.VERSION_CODES.LOLLIPOP_MR1;
+                    mIsUpgrade && ver.sdkVersion <= Build.VERSION_CODES.LOLLIPOP_MR1 +2;
 
             // save off the names of pre-existing system packages prior to scanning; we don't
             // want to automatically grant runtime permissions for new system apps
@@ -2070,31 +2126,105 @@ public class PackageManagerService extends IPackageManager.Stub {
                     | PackageParser.PARSE_IS_PRIVILEGED,
                     scanFlags | SCAN_NO_DEX, 0);
 
+            /* SPRD: Add for boot performance with multi-thread and preload scan {@*/
+            mAsecScanFlag = scanFlags & (~SCAN_DEFER_DEX);
             // Collected privileged system packages.
             final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
-            scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+            new Thread("scanPrivilegedAppDir"){
+                @Override
+                public void run() {
+                    long startTime = SystemClock.uptimeMillis();
+                    scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR
+                            | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+                    Slog.w(TAG, "scanPrivilegedAppDir done,cost "+((SystemClock.uptimeMillis()-startTime)/1000f)+" seconds");
+                    mConnectedSignal.countDown();
+
+                }
+            }.start();
 
             // Collect ordinary system packages.
             final File systemAppDir = new File(Environment.getRootDirectory(), "app");
-            scanDirLI(systemAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
-
+            new Thread("scanSystemAppDir-part0"){
+                @Override
+                public void run() {
+                    long startTime = SystemClock.uptimeMillis();
+                    scanPartDir(0,systemAppDir, PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    Slog.w(TAG, "scanSystemAppDir-part0 done,cost "+((SystemClock.uptimeMillis()-startTime)/1000f)+" seconds");
+                    mConnectedSignal.countDown();
+                }
+            }.start();
+            new Thread("scanSystemAppDir-part1"){
+                @Override
+                public void run() {
+                    long startTime = SystemClock.uptimeMillis();
+                    scanPartDir(1,systemAppDir, PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    Slog.w(TAG, "scanSystemAppDir-part1 done,cost "+((SystemClock.uptimeMillis()-startTime)/1000f)+" seconds");
+                    mConnectedSignal.countDown();
+                }
+            }.start();
             // Collect all vendor packages.
-            File vendorAppDir = new File("/vendor/app");
-            try {
+            final File vendorAppDir = new File("/vendor/app");
+            /*try {
                 vendorAppDir = vendorAppDir.getCanonicalFile();
             } catch (IOException e) {
                 // failed to look up canonical path, continue with original one
-            }
-            scanDirLI(vendorAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            }*/
+            new Thread("scanVendorAppDir"){
+                @Override
+                public void run() {
+                    long startTime = SystemClock.uptimeMillis();
+                    scanDirLI(vendorAppDir, PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    Slog.w(TAG, "scanVendorAppDir done,cost "+((SystemClock.uptimeMillis()-startTime)/1000f)+" seconds");
+                    mConnectedSignal.countDown();
+                }
+            }.start();
+
 
             // Collect all OEM packages.
             final File oemAppDir = new File(Environment.getOemDirectory(), "app");
-            scanDirLI(oemAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            new Thread("scanOemAppDir"){
+                @Override
+                public void run() {
+                    long startTime = SystemClock.uptimeMillis();
+                    scanDirLI(oemAppDir, PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+                    Slog.w(TAG, "scanOemAppDir done,cost "+((SystemClock.uptimeMillis()-startTime)/1000f)+" seconds");
+                    mConnectedSignal.countDown();
+                }
+            }.start();
+            waitForLatch(mConnectedSignal);
+            //If enable to switch image and already done
+            if ("true".equals(SystemProperties.get("persist.sys.regionconfig.enable", "false"))) {
+                // Collect all customization apks
+                String oriCountryApks = readFromFile("/productinfo/apklist.txt");
+                Log.d(TAG, "oriCountryApks: " + oriCountryApks);
+                int apkNum = 0;
+                if (!oriCountryApks.isEmpty()) {
+                    apkNum = oriCountryApks.split("\n").length;
+                }
+                Log.d(TAG, "apkNum: " + apkNum);
+                for (int i = 0; i < apkNum; i++) {
+                    String prebuildLoc = "";
+                    if (!oriCountryApks.isEmpty()) {
+                        String apkName = (oriCountryApks.split("\n"))[i].trim();
+                        prebuildLoc = "/vendor/assets/apks/" + apkName + "/" + apkName + ".apk";
+                        Log.d(TAG, "prebuildLog is " + prebuildLoc);
+                        final File regionAppDir = new File(prebuildLoc);
+                        try {
+                            scanPackageLI(regionAppDir, PackageParser.PARSE_IS_SYSTEM
+                                            | PackageParser.PARSE_IS_SYSTEM_DIR
+                                            | PackageParser.PARSE_MUST_BE_APK, scanFlags, 0, null);
+                        } catch (PackageManagerException e) {
+                            Log.d(TAG, "install app failed");
+                        }
+                    }
+                }
+            }
+            /* @} */
 
             if (DEBUG_UPGRADE) Log.v(TAG, "Running installd update commands");
             mInstaller.moveFiles();
@@ -2169,11 +2299,15 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (!mOnlyCore) {
                 EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_DATA_SCAN_START,
                         SystemClock.uptimeMillis());
+                /* SPRD: Add for boot performance with multi-thread and preload scan {@*/
                 scanDirLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0);
-
-                scanDirLI(mDrmAppPrivateInstallDir, PackageParser.PARSE_FORWARD_LOCK,
-                        scanFlags | SCAN_REQUIRE_KNOWN, 0);
-
+                final File vitalAppDir = new File(Environment.getRootDirectory(), "vital-app");
+                if(vitalAppDir.exists() && vitalAppDir.isDirectory()){
+                    scanDirLI(vitalAppDir, 0, scanFlags, 0);
+                   }
+                /*scanDirLI(mDrmAppPrivateInstallDir, PackageParser.PARSE_FORWARD_LOCK,
+                        scanFlags | SCAN_REQUIRE_KNOWN, 0);*/
+                 /* @} */
                 /**
                  * Remove disable package settings for any updated system
                  * apps that were removed via an OTA. If they're not a
@@ -2246,11 +2380,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
             }
             mExpectingBetter.clear();
-
+            /* SPRD: Add for boot performance with multi-thread and preload scan {@*/
+            synchronized (mPackages) {
             // Now that we know all of the shared libraries, update all clients to have
             // the correct library paths.
             updateAllSharedLibrariesLPw();
-
+            }
+            /* @} */
             for (SharedUserSetting setting : mSettings.getAllSharedUsersLPw()) {
                 // NOTE: We ignore potential failures here during a system scan (like
                 // the rest of the commands above) because there's precious little we
@@ -2258,10 +2394,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                 adjustCpuAbisForSharedUserLPw(setting.packages, null /* scanned package */,
                         false /* force dexopt */, false /* defer dexopt */);
             }
-
+            /* SPRD: Add for boot performance with multi-thread and preload scan {@*/
+            synchronized (mPackages) {
             // Now that we know all the packages we are keeping,
             // read and update their last usage times.
             mPackageUsage.readLP();
+            }
+            /* @} */
 
             EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SCAN_END,
                     SystemClock.uptimeMillis());
@@ -2281,7 +2420,11 @@ public class PackageManagerService extends IPackageManager.Stub {
                         + mSdkVersion + "; regranting permissions for internal storage");
                 updateFlags |= UPDATE_PERMISSIONS_REPLACE_PKG | UPDATE_PERMISSIONS_REPLACE_ALL;
             }
+            /* SPRD: Add for boot performance with multi-thread and preload scan {@*/
+            synchronized (mPackages) {
             updatePermissionsLPw(null, null, updateFlags);
+            }
+            /* @} */
             ver.sdkVersion = mSdkVersion;
 
             // If this is the first boot or an update from pre-M, and it is a normal
@@ -2332,9 +2475,12 @@ public class PackageManagerService extends IPackageManager.Stub {
             mIntentFilterVerifier = new IntentVerifierProxy(mContext,
                     mIntentFilterVerifierComponent);
 
+        /* SPRD: Add for boot performance with multi-thread and preload scan
         } // synchronized (mPackages)
-        } // synchronized (mInstallLock)
-
+        } // synchronized (mInstallLock) @}*/
+        /* SPRD: Add for boot performance with multi-thread and preload scan{@*/
+        mAsyncScanThread.start();
+         /* @} */
         // Now after opening every single application zip, make sure they
         // are all flushed.  Not really needed, but keeps things nice and
         // tidy.
@@ -2357,6 +2503,60 @@ public class PackageManagerService extends IPackageManager.Stub {
     @Override
     public boolean isUpgrade() {
         return mIsUpgrade;
+    }
+
+    /* SPRD: add feature for scan oem dir @{ */
+    private boolean isOemApp(String path) {
+        Log.d(TAG, "isOemApp path : " + path);
+        if (path.startsWith("/vendor/assets/apks/")) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isOemApp(ApplicationInfo info) {
+        if (info.sourceDir != null) {
+            return info.sourceDir.startsWith("/vendor/assets/apks/");
+        }
+        return false;
+    }
+
+    /**
+     * @hide
+     */
+    public List<String> getOemPackageList() {
+        return mOemPackageList;
+    }
+
+    /**
+    * @hide
+    */
+    public String readFromFile(String fileName) {
+        String res = "";
+        File file = new File(fileName);
+        if (file.exists()) {
+            FileInputStream fin = null;
+            try {
+                fin = new FileInputStream(fileName);
+                int length = fin.available();
+                byte[] buffer = new byte[length];
+                fin.read(buffer);
+                res = new String(buffer, "utf-8");
+                Log.d(TAG, "version:" + res);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally
+            {
+                try {
+                    if (fin != null){
+                        fin.close();
+                    }
+                } catch(IOException err) {
+                    err.printStackTrace();
+                }
+            }
+        }
+        return res;
     }
 
     private String getRequiredVerifierLPr() {
@@ -4548,7 +4748,11 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // Check for results in the current profile.
                 List<ResolveInfo> result = mActivities.queryIntent(
                         intent, resolvedType, flags, userId);
-
+                /* SPRD: update label and icon for app @{ */
+                if(result == null)
+                   return null;
+                filterSTK(result);
+                /* @} */
                 // Check for cross profile results.
                 xpResolveInfo = queryCrossProfileIntents(
                         matchingFilters, intent, resolvedType, flags, userId);
@@ -4593,6 +4797,29 @@ public class PackageManagerService extends IPackageManager.Stub {
             return new ArrayList<ResolveInfo>();
         }
     }
+
+    /* SPRD: update label and icon for app @{ */
+    private boolean isOpen = false;
+    private void filterSTK(List<ResolveInfo> list){
+            if(isOpen)return;
+            Iterator<ResolveInfo> infos = list.iterator();
+            ResolveInfo info = null;
+            while(infos.hasNext()){
+                info = infos.next();
+                if(info != null && info.activityInfo.packageName.startsWith("com.android.stk")){
+                    Log.w(TAG, "remove "+info.activityInfo.packageName);
+                    String packageName = info.activityInfo.packageName;
+                    String className = info.activityInfo.name;
+                    synchronized (mPackages) {
+                        PackageSetting pkgSetting = mSettings.mPackages.get(packageName);
+                        boolean res = pkgSetting.disableComponentLPw(className, 0);
+                        Log.d(TAG, "Disabled className=" + className + ", res=" + res);
+                    }
+                    infos.remove();
+                }
+            }
+    }
+    /* @} */
 
     private static class CrossProfileDomainInfo {
         /* ResolveInfo for IntentForwarderActivity to send the intent to the other profile */
@@ -5737,6 +5964,17 @@ public class PackageManagerService extends IPackageManager.Stub {
             throw PackageManagerException.from(e);
         }
 
+        /* SPRD: add feature for scan preload dir @{ */
+        if (isOemApp(scanFile.getParent())) {
+            mOemPackageList.add(pkg.packageName);
+        }
+        /* @} */
+
+        /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+        if(isPreloadOrVitalApp(scanFile.getParent()) && mDeleteRecord.exists()){
+            if(isDeleteApp(pkg.packageName))return pkg;
+        }
+        /* @} */
         PackageSetting ps = null;
         PackageSetting updatedPkg;
         // reader
@@ -6504,7 +6742,6 @@ public class PackageManagerService extends IPackageManager.Stub {
             throw new PackageManagerException(INSTALL_FAILED_INVALID_APK,
                     "Code and resource paths haven't been set correctly");
         }
-
         if ((parseFlags&PackageParser.PARSE_IS_SYSTEM) != 0) {
             pkg.applicationInfo.flags |= ApplicationInfo.FLAG_SYSTEM;
         } else {
@@ -6870,6 +7107,9 @@ public class PackageManagerService extends IPackageManager.Stub {
 
                 // If we have mismatched owners for the data path, we have a problem.
                 if (currentUid != pkg.applicationInfo.uid) {
+                    /* SPRD: add log for debug @{ */
+                    if (DEBUG) Log.d(TAG, "pms install mismatched uid : currentUid=" + currentUid + ", newUid=" + pkg.applicationInfo.uid);
+                    /* @} */
                     boolean recovered = false;
                     if (currentUid == 0) {
                         // The directory somehow became owned by root.  Wow.
@@ -6887,7 +7127,11 @@ public class PackageManagerService extends IPackageManager.Stub {
                         }
                     }
                     if (!recovered && ((parseFlags&PackageParser.PARSE_IS_SYSTEM) != 0
-                            || (scanFlags&SCAN_BOOTING) != 0)) {
+                            || (scanFlags&SCAN_BOOTING) != 0)
+                            /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+                            || currentUid > 0
+                            || isPreloadOrVitalApp(pkg.applicationInfo)) {
+                                /* @} */
                         // If this is a system app, we can at least delete its
                         // current data so the application will still work.
                         int ret = removeDataDirsLI(pkg.volumeUuid, pkgName);
@@ -7405,7 +7649,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // groups for legacy apps to prevent unexpected behavior. In particular,
                 // permissions for one app being granted to someone just becuase they happen
                 // to be in a group defined by another app (before this had no implications).
-                if (pkg.applicationInfo.targetSdkVersion > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                if (pkg.applicationInfo.targetSdkVersion > Build.VERSION_CODES.LOLLIPOP_MR1 +2) {
                     p.group = mPermissionGroups.get(p.info.group);
                     // Warn for a permission in an unknown group.
                     if (p.info.group != null && p.group == null) {
@@ -7553,6 +7797,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // This is a regular package, with one or more known overlay packages.
                 createIdmapsForPackageLI(pkg);
             }
+            /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+            mPreloadPkgList.add(pkg.applicationInfo.packageName);
+            mPreloadUidList.add(pkg.applicationInfo.uid);
+            /* @} */
         }
 
         return pkg;
@@ -7862,8 +8110,11 @@ public class PackageManagerService extends IPackageManager.Stub {
         info.nativeLibraryRootRequiresIsa = false;
         info.nativeLibraryDir = null;
         info.secondaryNativeLibraryDir = null;
-
-        if (isApkFile(codeFile)) {
+        /* SPRD: Add for boot performance with multi-thread and preload scan
+         * @orig if (isApkFile(codeFile)) {@
+          */
+        if (isApkFile(codeFile) || isPreloadOrVitalApp(codePath)) {
+          /* @} */
             // Monolithic install
             if (bundledApp) {
                 // If "/system/lib64/apkname" exists, assume that is the per-package
@@ -8380,7 +8631,6 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (DEBUG_INSTALL) {
                 Log.i(TAG, "Package " + pkg.packageName + " checking " + name + ": " + bp);
             }
-
             if (bp == null || bp.packageSetting == null) {
                 if (packageOfInterest == null || packageOfInterest.equals(pkg.packageName)) {
                     Slog.w(TAG, "Unknown permission " + name
@@ -8388,7 +8638,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
                 continue;
             }
-
             final String perm = bp.name;
             boolean allowedSig = false;
             int grant = GRANT_DENIED;
@@ -8411,7 +8660,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 } break;
 
                 case PermissionInfo.PROTECTION_DANGEROUS: {
-                    if (pkg.applicationInfo.targetSdkVersion <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    if (pkg.applicationInfo.targetSdkVersion <= Build.VERSION_CODES.LOLLIPOP_MR1+2) {
                         // For legacy apps dangerous permissions are install time ones.
                         grant = GRANT_INSTALL_LEGACY;
                     } else if (origPermissions.hasInstallPermission(bp.name)) {
@@ -8440,7 +8689,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
 
             if (DEBUG_INSTALL) {
-                Log.i(TAG, "Package " + pkg.packageName + " granting " + perm);
+                Log.i(TAG, "Package " + pkg.packageName + " granting " + perm+" grant "+grant);
             }
 
             if (grant != GRANT_DENIED) {
@@ -9553,6 +9802,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         final File originFile = new File(originPath);
         final OriginInfo origin = OriginInfo.fromUntrustedFile(originFile);
+        Slog.e(TAG, "installPackageAsUser: installFlags= "+ installFlags);
 
         final Message msg = mHandler.obtainMessage(INIT_COPY);
         msg.obj = new InstallParams(origin, null, observer, installFlags, installerPackageName,
@@ -10300,7 +10550,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                 if (Environment.isExternalStorageEmulated()) {
                     mounted = true;
                 } else {
-                    final String status = Environment.getExternalStorageState();
+                /* SPRD: support double sdcard
+                 * chanage interface, getExternalStorageState->getExternalStoragePathState
+                 */
+                final String status = Environment.getExternalStoragePathState();
                     mounted = (Environment.MEDIA_MOUNTED.equals(status)
                             || Environment.MEDIA_MOUNTED_READ_ONLY.equals(status));
                 }
@@ -10414,8 +10667,21 @@ public class PackageManagerService extends IPackageManager.Stub {
             this.existing = existing;
 
             if (cid != null) {
-                resolvedPath = PackageHelper.getSdDir(cid);
-                resolvedFile = new File(resolvedPath);
+                /*
+                * SPRD: support double sdcard add for sdcard hotplug @{
+                * orig
+                * resolvedPath = PackageHelper.getSdDir(cid);
+                * resolvedFile = new File(resolvedPath);
+                */
+                String sdDir = PackageHelper.getSdDir(cid);
+                if (!TextUtils.isEmpty(sdDir)) {
+                    resolvedPath = sdDir;
+                    resolvedFile = new File(resolvedPath);
+                } else {
+                    resolvedPath = null;
+                    resolvedFile = null;
+                }
+                /* @} */
             } else if (file != null) {
                 resolvedPath = file.getAbsolutePath();
                 resolvedFile = file;
@@ -10572,7 +10838,14 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             final boolean onSd = (installFlags & PackageManager.INSTALL_EXTERNAL) != 0;
             final boolean onInt = (installFlags & PackageManager.INSTALL_INTERNAL) != 0;
-
+              /*
+             * SPRD: support double sdcard
+             * Add support for install apk to internal sdcard
+               * @{
+               */
+            final boolean onIntSd = (installFlags & PackageManager.INSTALL_INTERNALSD) != 0;
+            Slog.e(TAG, "handleStartCopy: onSd = "+ onSd + " onInt = " + onInt + " onIntSd = " + onIntSd);
+              /* @} */
             PackageInfoLite pkgLite = null;
 
             if (onInt && onSd) {
@@ -10636,17 +10909,37 @@ public class PackageManagerService extends IPackageManager.Stub {
                     loc = installLocationPolicy(pkgLite);
                     if (loc == PackageHelper.RECOMMEND_FAILED_VERSION_DOWNGRADE) {
                         ret = PackageManager.INSTALL_FAILED_VERSION_DOWNGRADE;
-                    } else if (!onSd && !onInt) {
+                        /*
+                      * SPRD: support double sdcard
+                      * Add support for install apk to internal sdcard @{
+                      * @orig } else if (!onSd && !onInt) {
+                         */
+                    } else if (!onSd && !onInt && !onIntSd) {
+                       /* @} */
                         // Override install location with flags
                         if (loc == PackageHelper.RECOMMEND_INSTALL_EXTERNAL) {
                             // Set the flag to install on external media.
                             installFlags |= PackageManager.INSTALL_EXTERNAL;
                             installFlags &= ~PackageManager.INSTALL_INTERNAL;
+                        /*
+                         * SPRD: support double sdcard
+                         * Add support for install apk to internal sdcard
+                         * @{
+                         */
+                            installFlags &= ~PackageManager.INSTALL_INTERNALSD;
+                        } else if (loc == PackageHelper.RECOMMEND_INSTALL_INTERNALSD) {
+                            // Set the flag to install on internal sd media.
+                            installFlags |= PackageManager.INSTALL_INTERNALSD;
+                            installFlags &= ~PackageManager.INSTALL_INTERNAL;
+                            installFlags &= ~PackageManager.INSTALL_EXTERNAL;
+                        /* @} */
                         } else {
                             // Make sure the flag for installing on external
                             // media is unset
                             installFlags |= PackageManager.INSTALL_INTERNAL;
                             installFlags &= ~PackageManager.INSTALL_EXTERNAL;
+                            // SPRD: Support double sdcard add support for install apk to internal sdcard
+                            installFlags &= ~PackageManager.INSTALL_INTERNALSD;
                         }
                     }
                 }
@@ -10841,6 +11134,17 @@ public class PackageManagerService extends IPackageManager.Stub {
         return false;
     }
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    private static boolean installOnInternalSd(int installFlags) {
+        if ((installFlags & PackageManager.INSTALL_INTERNALSD) != 0) {
+            return true;
+        }
+        return false;
+    }
+    /* @} */
+
     /**
      * Used during creation of InstallArgs
      *
@@ -10854,7 +11158,13 @@ public class PackageManagerService extends IPackageManager.Stub {
     private InstallArgs createInstallArgs(InstallParams params) {
         if (params.move != null) {
             return new MoveInstallArgs(params);
-        } else if (installOnExternalAsec(params.installFlags) || params.isForwardLocked()) {
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * @orig
+             * if (installOnExternalAsec(params.installFlags) || params.isForwardLocked()) {
+             */
+        } else if (installOnExternalAsec(params.installFlags) || installOnInternalSd(params.installFlags) || params.isForwardLocked()) {
+            /* @} */
             return new AsecInstallArgs(params);
         } else {
             return new FileInstallArgs(params);
@@ -10868,7 +11178,13 @@ public class PackageManagerService extends IPackageManager.Stub {
     private InstallArgs createInstallArgsForExisting(int installFlags, String codePath,
             String resourcePath, String[] instructionSets) {
         final boolean isInAsec;
-        if (installOnExternalAsec(installFlags)) {
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         * @orig
+         * installOnExternalAsec(installFlags)
+         */
+        if (installOnExternalAsec(installFlags) || installOnInternalSd(installFlags) ) {
+             /* @} */
             /* Apps on SD card are always in ASEC containers. */
             isInAsec = true;
         } else if (installForwardLocked(installFlags)
@@ -10883,8 +11199,14 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         if (isInAsec) {
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * @orig
+             *  return new AsecInstallArgs(codePath, instructionSets,
+             *          installOnExternalAsec(installFlags), installForwardLocked(installFlags));
+             */
             return new AsecInstallArgs(codePath, instructionSets,
-                    installOnExternalAsec(installFlags), installForwardLocked(installFlags));
+                    installOnExternalAsec(installFlags), installForwardLocked(installFlags), installOnInternalSd(installFlags));
         } else {
             return new FileInstallArgs(codePath, resourcePath, instructionSets);
         }
@@ -10974,6 +11296,14 @@ public class PackageManagerService extends IPackageManager.Stub {
         protected boolean isExternalAsec() {
             return (installFlags & PackageManager.INSTALL_EXTERNAL) != 0;
         }
+
+        /* SPRD: suport double sdcard
+        * add for internal sdcard @{
+        */
+        protected boolean isInternal() {
+            return (installFlags & PackageManager.INSTALL_INTERNALSD) != 0;
+        }
+        /* @} */
 
         UserHandle getUser() {
             return user;
@@ -11204,7 +11534,18 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     private boolean isAsecExternal(String cid) {
         final String asecPath = PackageHelper.getSdFilesystem(cid);
-        return !asecPath.startsWith(mAsecInternalPath);
+        /* SPRD: support double sdcard add for sdcard hotplug @{ */
+        if (asecPath == null) {
+            Slog.e(TAG, "isAsecExternal() err, getSdFilesystem() == null");
+            return false;
+        }
+        /* @} */
+        /* SPRD: avoid asecPath NullException
+         * @orig
+         * return !asecPath.startsWith(mAsecInternalPath);
+         */
+        return asecPath!=null && !asecPath.startsWith(mAsecInternalPath);
+        /* @} */
     }
 
     private static void maybeThrowExceptionForMultiArchCopy(String message, int copyRet) throws
@@ -11249,11 +11590,22 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         /** Existing install */
+        /* SPRD: support double sdcard
+         * modify support for install apk to internal sdcard @{
+         * @orig
         AsecInstallArgs(String fullCodePath, String[] instructionSets,
                         boolean isExternal, boolean isForwardLocked) {
             super(OriginInfo.fromNothing(), null, null, (isExternal ? INSTALL_EXTERNAL : 0)
                     | (isForwardLocked ? INSTALL_FORWARD_LOCK : 0), null, null, null, null,
                     instructionSets, null, null);
+         */
+        AsecInstallArgs(String fullCodePath, String[] instructionSets,
+                        boolean isExternal, boolean isForwardLocked, boolean isInternalSd) {
+            super(OriginInfo.fromNothing(), null, null, (isExternal ? INSTALL_EXTERNAL : 0)
+                    | (isForwardLocked ? INSTALL_FORWARD_LOCK : 0)
+                    | (isInternalSd ? PackageManager.INSTALL_INTERNALSD : 0), null, null, null, null,
+                    instructionSets, null, null);
+            /* @} */
             // Hackily pretend we're still looking at a full code path
             if (!fullCodePath.endsWith(RES_FILE_NAME)) {
                 fullCodePath = new File(fullCodePath, RES_FILE_NAME).getAbsolutePath();
@@ -11266,13 +11618,32 @@ public class PackageManagerService extends IPackageManager.Stub {
             cid = subStr1.substring(sidx+1, eidx);
             setMountPath(subStr1);
         }
-
-        AsecInstallArgs(String cid, String[] instructionSets, boolean isForwardLocked) {
+        /* SPRD: support double sdcard
+         * modify support for install apk to internal sdcard @{
+         * @orig
+       AsecInstallArgs(String cid, String[] instructionSets, boolean isForwardLocked) {
             super(OriginInfo.fromNothing(), null, null, (isAsecExternal(cid) ? INSTALL_EXTERNAL : 0)
                     | (isForwardLocked ? INSTALL_FORWARD_LOCK : 0), null, null, null, null,
                     instructionSets, null, null);
+         */
+        AsecInstallArgs(String cid, String[] instructionSets, boolean isForwardLocked, boolean isInternalSd) {
+            super(OriginInfo.fromNothing(), null, null, (isAsecExternal(cid) ? INSTALL_EXTERNAL : 0)
+                    | (isForwardLocked ? INSTALL_FORWARD_LOCK : 0)
+                    | (isInternalSd ? PackageManager.INSTALL_INTERNALSD : 0), null, null, null, null,
+                    instructionSets, null, null);
+            /* @} */
             this.cid = cid;
+            /* SPRD: avoid NullPointerException @{
+             * @orig
             setMountPath(PackageHelper.getSdDir(cid));
+             */
+            String sdDir = PackageHelper.getSdDir(cid);
+            if (sdDir != null) {
+                setMountPath(sdDir);
+            } else {
+                Slog.w(TAG, "cid " + cid + " , it SdDir is null");
+            }
+            /* @} */
         }
 
         void createCopyFile() {
@@ -11403,6 +11774,12 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         private void setMountPath(String mountPath) {
+            /* SPRD: support double sdcard add for sdcard hotplug @{ */
+            if (mountPath == null) {
+                Slog.e(TAG, "setMountPath() err, mountPath == null");
+                return;
+            }
+            /* @} */
             final File mountFile = new File(mountPath);
 
             final File monolithicFile = new File(mountFile, RES_FILE_NAME);
@@ -12152,9 +12529,23 @@ public class PackageManagerService extends IPackageManager.Stub {
         final String installerPackageName = args.installerPackageName;
         final String volumeUuid = args.volumeUuid;
         final File tmpPackageFile = new File(args.getCodePath());
+        if (DEBUG_INSTALL) Slog.d(TAG, "installPackageLI: args.volumeUuid=" + args.volumeUuid);
         final boolean forwardLocked = ((installFlags & PackageManager.INSTALL_FORWARD_LOCK) != 0);
-        final boolean onExternal = (((installFlags & PackageManager.INSTALL_EXTERNAL) != 0)
-                || (args.volumeUuid != null));
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         * @orig final boolean onExternal = (((installFlags & PackageManager.INSTALL_EXTERNAL) != 0)
+                         || (args.volumeUuid != null));
+         */
+        final boolean onInternalSd = ((installFlags & PackageManager.INSTALL_INTERNALSD) != 0);
+        boolean onExternal1;
+        if(onInternalSd) {
+           onExternal1= false;
+        }else{
+        	onExternal1 = (((installFlags & PackageManager.INSTALL_EXTERNAL) != 0)
+        			|| (args.volumeUuid != null));
+        }
+        final boolean onExternal = onExternal1;
+        /* @} */
         boolean replace = false;
         int scanFlags = SCAN_NEW_INSTALL | SCAN_UPDATE_SIGNATURE;
         if (args.move != null) {
@@ -12168,14 +12559,26 @@ public class PackageManagerService extends IPackageManager.Stub {
         // Retrieve PackageSettings and parse package
         final int parseFlags = mDefParseFlags | PackageParser.PARSE_CHATTY
                 | (forwardLocked ? PackageParser.PARSE_FORWARD_LOCK : 0)
+                /* SPRD: support double sdcard
+         * modify support for install apk to internal sdcard @{
+         * @orig
                 | (onExternal ? PackageParser.PARSE_EXTERNAL_STORAGE : 0);
+         */
+                | (onExternal ? PackageParser.PARSE_EXTERNAL_STORAGE : 0) | (onInternalSd ? PackageParser.PARSE_ON_INTERNALSD : 0);
+        /* @} */
         PackageParser pp = new PackageParser();
         pp.setSeparateProcesses(mSeparateProcesses);
         pp.setDisplayMetrics(mMetrics);
 
         final PackageParser.Package pkg;
         try {
+            /* SPRD: add log for debug @{ */
+            if (DEBUG) Log.d(TAG, "pms install : parsePackage start");
+            /* @} */
             pkg = pp.parsePackage(tmpPackageFile, parseFlags);
+            /* SPRD: add log for debug @{ */
+            if (DEBUG) Log.d(TAG, "pms install : parsePackage end");
+            /* @} */
         } catch (PackageParserException e) {
             res.setError("Failed parse during installPackageLI", e);
             return;
@@ -12193,8 +12596,14 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         try {
+            /* SPRD: add log for debug @{ */
+            if (DEBUG) Log.d(TAG, "pms install : collectCertificates start");
+            /* @} */
             pp.collectCertificates(pkg, parseFlags);
             pp.collectManifestDigest(pkg);
+            /* SPRD: add log for debug @{ */
+            if (DEBUG) Log.d(TAG, "pms install : collectCertificates end");
+            /* @} */
         } catch (PackageParserException e) {
             res.setError("Failed collect during installPackageLI", e);
             return;
@@ -12251,8 +12660,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                     PackageParser.Package oldPackage = mPackages.get(pkgName);
                     final int oldTargetSdk = oldPackage.applicationInfo.targetSdkVersion;
                     final int newTargetSdk = pkg.applicationInfo.targetSdkVersion;
-                    if (oldTargetSdk > Build.VERSION_CODES.LOLLIPOP_MR1
-                            && newTargetSdk <= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    if (oldTargetSdk > Build.VERSION_CODES.LOLLIPOP_MR1+2
+                            && newTargetSdk <= Build.VERSION_CODES.LOLLIPOP_MR1+2) {
                         res.setError(PackageManager.INSTALL_FAILED_PERMISSION_MODEL_DOWNGRADE,
                                 "Package " + pkg.packageName + " new target SDK " + newTargetSdk
                                         + " doesn't support runtime permissions but the old"
@@ -12379,6 +12788,16 @@ public class PackageManagerService extends IPackageManager.Stub {
                             false /* defer */, false /* inclDependencies */);
             if (result == PackageDexOptimizer.DEX_OPT_FAILED) {
                 res.setError(INSTALL_FAILED_DEXOPT, "Dexopt failed for " + pkg.codePath);
+                return;
+            }
+        }
+        else if (pkg.applicationInfo.isExternalAsec() && Build.SUPPORTED_64_BIT_ABIS.length > 0) {
+            try {
+                derivePackageAbi(pkg, new File(pkg.codePath), args.abiOverride,
+                        true /* extract libs */);
+            } catch (PackageManagerException pme) {
+                Slog.e(TAG, "Error deriving application ABI", pme);
+                res.setError(INSTALL_FAILED_INTERNAL_ERROR, "Error deriving application ABI");
                 return;
             }
         }
@@ -12540,6 +12959,26 @@ public class PackageManagerService extends IPackageManager.Stub {
         return (ps.pkgFlags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0;
     }
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    private static boolean isInternalSd(PackageSetting ps) {
+        return (ps.pkgFlags & ApplicationInfo.FLAG_INTERNALSD_STORAGE) != 0;
+    }
+
+    private static boolean isInternalSd(PackageParser.Package pkg) {
+        return (pkg.applicationInfo.flags & ApplicationInfo.FLAG_INTERNALSD_STORAGE) != 0;
+    }
+
+    private static boolean isInternalSd(VolumeInfo vol) {
+       if(vol ==null || Environment.internalIsEmulated()){
+            return false;
+        }else{
+            Slog.w(TAG, "isInternalSd vol.linkName = " + vol.linkName + " Environment.internalIsEmulated() " + Environment.internalIsEmulated());
+            return !Environment.internalIsEmulated() && Objects.equals(vol.linkName, "sdcard0");
+        }
+    }
+    /* @} */
     private static boolean isExternal(ApplicationInfo info) {
         return (info.flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0;
     }
@@ -12574,6 +13013,13 @@ public class PackageManagerService extends IPackageManager.Stub {
         if (ps.isForwardLocked()) {
             installFlags |= PackageManager.INSTALL_FORWARD_LOCK;
         }
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         */
+        if (isInternalSd(ps)) {
+            installFlags |= PackageManager.INSTALL_INTERNALSD;
+        }
+        /* @} */
         return installFlags;
     }
 
@@ -12615,6 +13061,9 @@ public class PackageManagerService extends IPackageManager.Stub {
         Preconditions.checkNotNull(packageName);
         Preconditions.checkNotNull(observer);
         final int uid = Binder.getCallingUid();
+        /* SPRD: add log for debug @{ */
+        if (DEBUG) Log.d(TAG, "pms deletePackage start : pkg=" + packageName);
+        /* @} */
         if (UserHandle.getUserId(uid) != userId) {
             mContext.enforceCallingPermission(
                     android.Manifest.permission.INTERACT_ACROSS_USERS_FULL,
@@ -12665,6 +13114,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                         Log.i(TAG, "Observer no longer exists.");
                     } //end catch
                 } //end if
+                /* SPRD: add log for debug @{ */
+                if (DEBUG) Log.d(TAG, "pms deletePackage end : pkg=" + packageName);
+                /* @} */
             } //end run
         });
     }
@@ -12772,11 +13224,28 @@ public class PackageManagerService extends IPackageManager.Stub {
         Runtime.getRuntime().gc();
         // Delete the resources here after sending the broadcast to let
         // other processes clean up before deleting resources.
+        /* SPRD: move post delete to handler @{
+         * @orig
         if (info.args != null) {
             synchronized (mInstallLock) {
                 info.args.doPostDeleteLI(true);
             }
         }
+         */
+        if (info.args != null) {
+            if ((info.args.installFlags & PackageManager.INSTALL_EXTERNAL) != 0) {
+                if (DEBUG_REMOVE) Slog.d(TAG, "deletePackageX package " + packageName + " from External.");
+                final Message msg = mHandler.obtainMessage(POST_UNINSTALL);
+                msg.obj = info.args;
+                mHandler.sendMessage(msg);
+            } else {
+                if (DEBUG_REMOVE) Slog.d(TAG, "deletePackageX package " + packageName + " from Internal.");
+                synchronized (mInstallLock) {
+                    info.args.doPostDeleteLI(true);
+                }
+            }
+        }
+        /* @} */
 
         return res ? PackageManager.DELETE_SUCCEEDED : PackageManager.DELETE_FAILED_INTERNAL_ERROR;
     }
@@ -12935,7 +13404,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         if (DEBUG_REMOVE) Slog.d(TAG, "deleteSystemPackageLI: newPs=" + newPs
                 + " disabledPs=" + disabledPs);
-        if (disabledPs == null) {
+        if ((disabledPs == null)&&!(isOemApp(getApplicationInfo(newPs.name,flags,0)))) {
             Slog.w(TAG, "Attempt to delete unknown system package "+ newPs.name);
             return false;
         } else if (DEBUG_REMOVE) {
@@ -12951,7 +13420,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         // Delete the updated package
         outInfo.isRemovedPackageSystemUpdate = true;
-        if (disabledPs.versionCode < newPs.versionCode) {
+        if ((disabledPs != null) && disabledPs.versionCode < newPs.versionCode) {
             // Delete data for downgrades
             flags &= ~PackageManager.DELETE_KEEP_DATA;
         } else {
@@ -12973,13 +13442,17 @@ public class PackageManagerService extends IPackageManager.Stub {
         // Install the system package
         if (DEBUG_REMOVE) Slog.d(TAG, "Re-installing system package: " + disabledPs);
         int parseFlags = PackageParser.PARSE_MUST_BE_APK | PackageParser.PARSE_IS_SYSTEM;
-        if (locationIsPrivileged(disabledPs.codePath)) {
+        if ((disabledPs != null) && locationIsPrivileged(disabledPs.codePath)) {
             parseFlags |= PackageParser.PARSE_IS_PRIVILEGED;
         }
 
         final PackageParser.Package newPkg;
         try {
-            newPkg = scanPackageLI(disabledPs.codePath, parseFlags, SCAN_NO_PATHS, 0, null);
+            if (disabledPs != null) {
+                newPkg = scanPackageLI(disabledPs.codePath, parseFlags, SCAN_NO_PATHS, 0, null);
+            } else {
+                newPkg = null;
+            }
         } catch (PackageManagerException e) {
             Slog.w(TAG, "Failed to restore system package:" + newPs.name + ": " + e.getMessage());
             return false;
@@ -12987,31 +13460,33 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         // writer
         synchronized (mPackages) {
-            PackageSetting ps = mSettings.mPackages.get(newPkg.packageName);
+            if (newPkg != null) {
+                PackageSetting ps = mSettings.mPackages.get(newPkg.packageName);
 
-            // Propagate the permissions state as we do not want to drop on the floor
-            // runtime permissions. The update permissions method below will take
-            // care of removing obsolete permissions and grant install permissions.
-            ps.getPermissionsState().copyFrom(newPs.getPermissionsState());
-            updatePermissionsLPw(newPkg.packageName, newPkg,
-                    UPDATE_PERMISSIONS_ALL | UPDATE_PERMISSIONS_REPLACE_PKG);
+                // Propagate the permissions state as we do not want to drop on the floor
+                // runtime permissions. The update permissions method below will take
+                // care of removing obsolete permissions and grant install permissions.
+                ps.getPermissionsState().copyFrom(newPs.getPermissionsState());
+                updatePermissionsLPw(newPkg.packageName, newPkg,
+                        UPDATE_PERMISSIONS_ALL | UPDATE_PERMISSIONS_REPLACE_PKG);
 
-            if (applyUserRestrictions) {
-                if (DEBUG_REMOVE) {
-                    Slog.d(TAG, "Propagating install state across reinstall");
-                }
-                for (int i = 0; i < allUserHandles.length; i++) {
+                if (applyUserRestrictions) {
                     if (DEBUG_REMOVE) {
-                        Slog.d(TAG, "    user " + allUserHandles[i]
-                                + " => " + perUserInstalled[i]);
+                        Slog.d(TAG, "Propagating install state across reinstall");
                     }
-                    ps.setInstalled(perUserInstalled[i], allUserHandles[i]);
+                    for (int i = 0; i < allUserHandles.length; i++) {
+                        if (DEBUG_REMOVE) {
+                            Slog.d(TAG, "    user " + allUserHandles[i]
+                                    + " => " + perUserInstalled[i]);
+                        }
+                        ps.setInstalled(perUserInstalled[i], allUserHandles[i]);
 
-                    mSettings.writeRuntimePermissionsForUserLPr(allUserHandles[i], false);
+                        mSettings.writeRuntimePermissionsForUserLPr(allUserHandles[i], false);
+                    }
+                    // Regardless of writeSettings we need to ensure that this restriction
+                    // state propagation is persisted
+                    mSettings.writeAllUsersPackageRestrictionsLPr();
                 }
-                // Regardless of writeSettings we need to ensure that this restriction
-                // state propagation is persisted
-                mSettings.writeAllUsersPackageRestrictionsLPr();
             }
             // can downgrade to reader here
             if (writeSettings) {
@@ -13182,6 +13657,12 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (DEBUG_REMOVE) Slog.d(TAG, "Removing non-system package:" + ps.name);
             // Kill application pre-emptively especially for apps on sd.
             killApplication(packageName, ps.appId, "uninstall pkg");
+            /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+            if(ps.pkg != null && ps.pkg.baseCodePath != null){
+                String path = ps.pkg.baseCodePath.substring(0, ps.pkg.baseCodePath.lastIndexOf("/"));
+                if(isPreloadOrVitalApp(path)) delAppRecord(ps.pkg.packageName, flags);
+            }
+            /* @} */
             ret = deleteInstalledPackageLI(ps, deleteCodeAndResources, flags,
                     allUserHandles, perUserInstalled,
                     outInfo, writeSettings);
@@ -13211,7 +13692,10 @@ public class PackageManagerService extends IPackageManager.Stub {
         if (Environment.isExternalStorageEmulated()) {
             mounted = true;
         } else {
-            final String status = Environment.getExternalStorageState();
+            /* SPRD: support double sdcard
+             * change interface, getExternalStorageState->getExternalStoragePathState
+             */
+            final String status = Environment.getExternalStoragePathState();
 
             mounted = status.equals(Environment.MEDIA_MOUNTED)
                     || status.equals(Environment.MEDIA_MOUNTED_READ_ONLY);
@@ -13599,7 +14083,13 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (ps != null) {
                 libDirRoot = ps.legacyNativeLibraryPathString;
             }
-            if (p != null && (isExternal(p) || p.isForwardLocked())) {
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             * @orig
+             * if (p != null && (isExternal(p) || p.isForwardLocked())) {
+             */
+            if (p != null && (isExternal(p) || p.isForwardLocked() || isInternalSd(p))) {
+              /* @} */
                 final long token = Binder.clearCallingIdentity();
                 try {
                     String secureContainerId = cidFromCodePath(p.applicationInfo.getBaseCodePath());
@@ -13635,7 +14125,13 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         // Fix-up for forward-locked applications in ASEC containers.
-        if (!isExternal(p)) {
+        /* SPRD: support double sdcard
+        * Add support for install apk to internal sdcard @{
+        * @orig
+        * if (!isExternal(p)) {
+        */
+        if (!isExternal(p) && !isInternalSd(p)) {
+        /* @} */
             pStats.codeSize += pStats.externalCodeSize;
             pStats.externalCodeSize = 0L;
         }
@@ -14348,13 +14844,188 @@ public class PackageManagerService extends IPackageManager.Stub {
         setEnabledSetting(appPackageName, null, newState, flags, userId, callingPackage);
     }
 
+    /* SPRD: update label and icon for app @{ */
+    @Override
+    public void setComponentEnabledSettingForSetupMenu(ComponentName componentName,
+        int flags, int userId ,Intent attr){
+        Log.w("SetupMenu","setComponentEnabledSettingForSetupMenu" + componentName.toString());
+        if(attr != null){
+            updatePropertyForSetupMenu(componentName,attr);
+        }
+        setComponentEnabledSettingSetupMenu(componentName,flags,userId);
+    }
+    /* SPRD: update label and icon for app @{ */
+    private void setComponentEnabledSettingSetupMenu(ComponentName componentName,int flags, int userId) {
+        if (!sUserManager.exists(userId)) return;
+        String packege = componentName.getPackageName();
+        Log.w(TAG, packege+" == "+" == "+flags+" "+userId);
+        if(packege.startsWith("com.android.stk")){
+            isOpen = true;
+        }
+        setEnabledSettingForSetupMenu(componentName.getPackageName(),componentName.getClassName(), flags, userId, null);
+    }
+
+    /* @} */
+    /* SPRD: update label and icon for app @{ */
+    private void setEnabledSettingForSetupMenu(final String packageName, String className,
+            final int
+            flags, int userId, String callingPackage) {
+        PackageSetting pkgSetting;
+        final int uid = Binder.getCallingUid();
+        final int permission = mContext
+                .checkCallingOrSelfPermission(android.Manifest.permission.CHANGE_COMPONENT_ENABLED_STATE);
+        enforceCrossUserPermission(uid, userId, false, true, "set enabled");
+        final boolean allowedByPermission = (permission == PackageManager.PERMISSION_GRANTED);
+        boolean sendNow = false;
+        boolean isApp = (className == null);
+        String componentName = isApp ? packageName : className;
+        int packageUid = -1;
+        ArrayList<String> components;
+        // writer
+        synchronized (mPackages) {
+            pkgSetting = mSettings.mPackages.get(packageName);
+            if (pkgSetting == null) {
+                if (className == null) {
+                    throw new IllegalArgumentException("Unknown package: " + packageName);
+                }
+                throw new IllegalArgumentException("Unknown component: " + packageName + "/"
+                        + className);
+            }
+            // Allow root and verify that userId is not being specified by a different user
+            if (!allowedByPermission && !UserHandle.isSameApp(uid, pkgSetting.appId)) {
+                throw new SecurityException(
+                        "Permission Denial: attempt to change component state from pid="
+                                + Binder.getCallingPid() + ", uid=" + uid + ", package uid="
+                                + pkgSetting.appId);
+            }
+            // We're dealing with a component level state change
+            // First, verify that this is a valid class name.
+            PackageParser.Package pkg = pkgSetting.pkg;
+            if (pkg == null || className == null || !pkg.hasComponentClassName(className)) {
+                if (pkg != null && pkg.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN) {
+                    throw new IllegalArgumentException("Component class " + className
+                            + " does not exist in " + packageName);
+                } else {
+                    Slog.w(TAG, "Failed setComponentEnabledSetting: component class " + className
+                            + " does not exist in " + packageName);
+                }
+            }
+
+            mSettings.writePackageRestrictionsLPr(userId);
+            components = mPendingBroadcasts.get(userId, packageName);
+            final boolean newPackage = components == null;
+            if (newPackage) {
+                components = new ArrayList<String>();
+            }
+            if (!components.contains(componentName)) {
+                components.add(componentName);
+            }
+            if ((flags & PackageManager.DONT_KILL_APP) == 0) {
+                sendNow = true;
+                // Purge entry from pending broadcast list if another one exists already
+                // since we are sending one right away.
+                mPendingBroadcasts.remove(userId, packageName);
+            } else {
+                if (newPackage) {
+                    mPendingBroadcasts.put(userId, packageName, components);
+                }
+                if (!mHandler.hasMessages(SEND_PENDING_BROADCAST)) {
+                    // Schedule a message
+                    mHandler.sendEmptyMessageDelayed(SEND_PENDING_BROADCAST, BROADCAST_DELAY);
+                }
+            }
+        }
+
+        long callingId = Binder.clearCallingIdentity();
+        try {
+            if (sendNow) {
+                packageUid = UserHandle.getUid(userId, pkgSetting.appId);
+                sendPackageChangedBroadcast(packageName,
+                        (flags & PackageManager.DONT_KILL_APP) != 0, components, packageUid);
+            }
+        } finally {
+            Binder.restoreCallingIdentity(callingId);
+        }
+    }
+
+    /* @} */
+    /* SPRD: update label and icon for app @{ */
+    private void updatePropertyForSetupMenu(ComponentName componentName, Intent attr) {
+        String packageName = componentName.getPackageName();
+        Log.w("SetupMenu", " packagename is " + packageName);
+        if (packageName.startsWith("com.android.stk")) {
+            String labelName = null;
+            Object temp = attr.getExtra("setup.menu.labelName");
+            if (temp != null)
+                labelName = (String) temp;
+            Log.w("SetupMenu", " labelName is " + labelName);
+            PackageParser.Activity a = mActivities.mActivities.get(componentName);
+            if (a != null) {
+                if (labelName != null) {
+                    Log.w("SetupMenu", "setup labelName is " + labelName);
+                    a.info.labelName = labelName;
+                }
+            }
+            isOpen = true;
+        }
+    }
+
+    /* @} */
+    /* SPRD: update label and icon for app @{ */
+    @Override
+    public void setComponentEnabledSettingForSpecific(ComponentName componentName,
+            int newState, int flags, int userId ,Intent attr){
+          Log.w("set enable for specific apk ",componentName.toString());
+          if(attr != null){
+            updateProperty(componentName,attr);
+          }
+          setComponentEnabledSetting(componentName,newState,flags,userId);
+    }
+    /* @} */
     @Override
     public void setComponentEnabledSetting(ComponentName componentName,
             int newState, int flags, int userId) {
         if (!sUserManager.exists(userId)) return;
+        /* SPRD: update label and icon for app @{ */
+        String packege = componentName.getPackageName();
+        Log.w(TAG, packege+" == "+newState+" == "+flags+" "+userId);
+        if(packege.startsWith("com.android.stk")){
+            isOpen = true;
+        }
+        /* @} */
+        Log.d(TAG, "kings:packageName=" + componentName.getPackageName()
+                + ", className=" + componentName.getClassName());
         setEnabledSetting(componentName.getPackageName(),
                 componentName.getClassName(), newState, flags, userId, null);
     }
+    /* SPRD: update label and icon for app @{ */
+    private void updateProperty(ComponentName componentName,Intent attr){
+        String packageName = componentName.getPackageName();
+        if(packageName.startsWith("com.android.stk")){
+            int resIconID = 0,resLabelID = 0;
+            Object temp = attr.getExtra("gsm.stk.icon");
+            if(temp != null)
+                resIconID = (Integer)temp;
+            temp = attr.getExtra("gsm.stk.label");
+            if(temp != null)
+                resLabelID = (Integer)temp;
+            Log.w("resID icon/label ",resIconID+" ~ "+resLabelID);
+            PackageParser.Activity a = mActivities.mActivities.get(componentName);
+            if(a != null){
+                if(resIconID !=0 || resLabelID !=0){
+                    int length = a.intents.size();
+                    for(int i =0 ; i < length ; i++){
+                        PackageParser.ActivityIntentInfo intent = a.intents.get(i);
+                        intent.labelRes = resLabelID != 0 ? resLabelID : intent.labelRes;
+                        intent.icon = resIconID != 0 ? resIconID : intent.icon;
+                        a.info.icon = resIconID != 0 ? resIconID : a.info.icon;
+                    }
+                }
+            }
+            isOpen = true;
+        }
+    }
+    /* @} */
 
     private void setEnabledSetting(final String packageName, String className, int newState,
             final int flags, int userId, String callingPackage) {
@@ -15291,6 +15962,12 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     private boolean mMediaMounted = false;
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    private boolean mInternalSdMounted = false;
+    /* @} */
+
     static String getEncryptKey() {
         try {
             String sdEncKey = SystemKeyStore.getInstance().retrieveKeyHexString(
@@ -15348,6 +16025,42 @@ public class PackageManagerService extends IPackageManager.Stub {
         });
     }
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     * Update internal sdcard status on PackageManager.
+     */
+    public void updateInternalSdMediaStatus(final boolean mediaStatus, final boolean reportStatus) {
+        int callingUid = Binder.getCallingUid();
+        if (callingUid != 0 && callingUid != Process.SYSTEM_UID) {
+            throw new SecurityException("Media status can only be updated by the system");
+        }
+        // reader; this apparently protects mMediaMounted, but should probably
+        // be a different lock in that case.
+        synchronized (mPackages) {
+            Log.i(TAG, "Updating internal sdcard media status from "
+                    + (mMediaMounted ? "mounted" : "unmounted") + " to "
+                    + (mediaStatus ? "mounted" : "unmounted"));
+            if (DEBUG_SD_INSTALL)
+                Log.i(TAG, "updateInternalSdMediaStatus:: mediaStatus=" + mediaStatus
+                        + ", mMediaMounted=" + mMediaMounted);
+            if (mediaStatus == mInternalSdMounted) {
+                final Message msg = mHandler.obtainMessage(UPDATED_MEDIA_STATUS, reportStatus ? 1
+                        : 0, -1);
+                mHandler.sendMessage(msg);
+                return;
+            }
+            mInternalSdMounted = mediaStatus;
+        }
+        // Queue up an async operation since the package installation may take a
+        // little while.
+        mHandler.post(new Runnable() {
+            public void run() {
+                updateExternalMediaStatusInner(mediaStatus, reportStatus, true, true);
+            }
+        });
+    }
+    /* @} */
+
     /**
      * Called by MountService when the initial ASECs to scan are available.
      * Should block until all the ASEC containers are finished being scanned.
@@ -15360,18 +16073,42 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
     }
 
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    private void updateExternalMediaStatusInner(boolean isMounted, boolean reportStatus,
+            boolean externalStorage) {
+        updateExternalMediaStatusInner(isMounted, reportStatus, externalStorage, false);
+    }
+    /* @} */
+
     /*
      * Collect information of applications on external media, map them against
      * existing containers and update information based on current mount status.
      * Please note that we always have to report status if reportStatus has been
      * set to true especially when unloading packages.
      */
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     * @orig
+     * private void updateExternalMediaStatusInner(boolean isMounted, boolean reportStatus,
+     *     boolean externalStorage) {
+     */
     private void updateExternalMediaStatusInner(boolean isMounted, boolean reportStatus,
-            boolean externalStorage) {
+            boolean externalStorage, boolean isInternlaSd) {
         ArrayMap<AsecInstallArgs, String> processCids = new ArrayMap<>();
         int[] uidArr = EmptyArray.INT;
-
-        final String[] list = PackageHelper.getSecureContainerList();
+        /* SPRD: support double sdcard
+         * add for avoiding system dump when firing UMS @{
+         * @orig
+         * final String[] list = PackageHelper.getSecureContainerList();
+         */
+        final String[] list = PackageHelper.getSecureContainerList(externalStorage, isInternlaSd);
+        /* SPRD: support double sdcard
+         * Add support for install apk to internal sdcard @{
+         */
+        final boolean internalSdemulated = Environment.internalIsEmulated();
+        /* @} */
         if (ArrayUtils.isEmpty(list)) {
             Log.i(TAG, "No secure containers found");
         } else {
@@ -15404,15 +16141,35 @@ public class PackageManagerService extends IPackageManager.Stub {
                      * Skip packages that are not external if we're unmounting
                      * external storage.
                      */
-                    if (externalStorage && !isMounted && !isExternal(ps)) {
+                    /* SPRD: support double sdcard
+                     * Add support for install apk to internal sdcard @{
+                     * @orig
+                     * if (externalStorage && !isMounted && !isExternal(ps)) {
+                     *       continue;
+                     * }
+                     *
+                     * final AsecInstallArgs args = new AsecInstallArgs(cid,
+                     *       getAppDexInstructionSets(ps), ps.isForwardLocked());
+                     */
+                    if (!isInternlaSd && (isInternalSd(ps) || (externalStorage && !isMounted && !isExternal(ps)))) {
                         continue;
                     }
 
+                    if (isInternlaSd && (isExternal(ps) ||(!internalSdemulated && !isMounted && !isInternalSd(ps)))) {
+                        continue;
+                    }
                     final AsecInstallArgs args = new AsecInstallArgs(cid,
-                            getAppDexInstructionSets(ps), ps.isForwardLocked());
+                            getAppDexInstructionSets(ps), ps.isForwardLocked(), isInternalSd(ps));
+                    /* @} */
                     // The package status is changed only if the code path
                     // matches between settings and the container id.
-                    if (ps.codePathString != null
+                    /*
+                     * SPRD: support double sdcard add for sdcard hotplug @{
+                     * orig
+                     * if (ps.codePathString != null
+                     */
+                    if (ps.codePathString != null && !TextUtils.isEmpty(args.getCodePath())
+                    /* @} */
                             && ps.codePathString.startsWith(args.getCodePath())) {
                         if (DEBUG_SD_INSTALL) {
                             Log.i(TAG, "Container : " + cid + " corresponds to pkg : " + pkgName
@@ -15511,7 +16268,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                     continue;
                 }
                 // Check code path here.
-                if (codePath == null || !codePath.startsWith(args.getCodePath())) {
+                /*
+                 * SPRD: support double sdcard add for sdcard hotplug @{
+                 * orig
+                 * if (codePath == null || !codePath.startsWith(args.getCodePath())) {
+                 */
+                if (codePath == null || TextUtils.isEmpty(args.getCodePath()) || !codePath.startsWith(args.getCodePath())) {
+                /* @} */
                     Slog.e(TAG, "Container " + args.cid + " cachepath " + args.getCodePath()
                             + " does not match one in settings " + codePath);
                     continue;
@@ -15872,7 +16635,9 @@ public class PackageManagerService extends IPackageManager.Stub {
         final UserHandle user = new UserHandle(UserHandle.getCallingUserId());
         final StorageManager storage = mContext.getSystemService(StorageManager.class);
         final PackageManager pm = mContext.getPackageManager();
-
+        /* SPRD: add log for debug @{ */
+        if (DEBUG) Log.d(TAG, "pms movePackage start : pkg= " + packageName +" volumeUuid= " +volumeUuid);
+        /* @} */
         final boolean currentAsec;
         final String currentVolumeUuid;
         final File codeFile;
@@ -15894,17 +16659,28 @@ public class PackageManagerService extends IPackageManager.Stub {
                 throw new PackageManagerException(MOVE_FAILED_SYSTEM_PACKAGE,
                         "Cannot move system application");
             }
-
+            /* SPRD: add feature for scan preload and vital dir  @{ */
+            if(pkg.applicationInfo.sourceDir != null && (pkg.applicationInfo.sourceDir.startsWith("/system/preloadapp")
+                  || pkg.applicationInfo.sourceDir.startsWith("/system/vital-app"))){
+              Slog.w(TAG, "Cannot move preload application: " + pkg.applicationInfo.sourceDir);
+              throw new PackageManagerException(PackageManager.MOVE_FAILED_INTERNAL_ERROR,
+                      "Cannot move preload application");
+              }/* @} */
             if (pkg.applicationInfo.isExternalAsec()) {
                 currentAsec = true;
                 currentVolumeUuid = StorageManager.UUID_PRIMARY_PHYSICAL;
+             /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+               */
+             }else if(pkg.applicationInfo.isInternalSd()){
+                 currentAsec = true;
+                 currentVolumeUuid = storage.findVolumeById((storage.getStorageVolume(Environment.getInternalStoragePath()).getId())).fsUuid;
             } else if (pkg.applicationInfo.isForwardLocked()) {
                 currentAsec = true;
                 currentVolumeUuid = "forward_locked";
             } else {
                 currentAsec = false;
                 currentVolumeUuid = ps.volumeUuid;
-
                 final File probe = new File(pkg.codePath);
                 final File probeOat = new File(probe, "oat");
                 if (!probe.isDirectory() || !probeOat.isDirectory()) {
@@ -15957,7 +16733,20 @@ public class PackageManagerService extends IPackageManager.Stub {
             installFlags = INSTALL_EXTERNAL;
             moveCompleteApp = false;
             measurePath = storage.getPrimaryPhysicalVolume().getPath();
-        } else {
+            /* SPRD: support double sdcard
+             * Add support for install apk to internal sdcard @{
+             */
+        } else if ((storage.findVolumeByUuid(volumeUuid) !=null && Objects.equals(storage.findVolumeByUuid(volumeUuid).linkName, "sdcard0") && Environment.internalIsEmulated())//move to Tcard
+               || (storage.findVolumeByUuid(volumeUuid) !=null && Objects.equals(storage.findVolumeByUuid(volumeUuid).linkName, "sdcard1") && !Environment.internalIsEmulated())){
+            installFlags = INSTALL_EXTERNAL;
+            moveCompleteApp = false;
+            measurePath = storage.findVolumeByUuid(volumeUuid).getPath();
+        } else if ((Objects.equals(storage.findVolumeByUuid(volumeUuid).linkName, "sdcard0") && !Environment.internalIsEmulated())){//move to internalsd
+             installFlags = INSTALL_INTERNALSD;
+             moveCompleteApp = false;
+             measurePath = storage.findVolumeByUuid(volumeUuid).getPath();
+              /* @} */
+        }else {
             final VolumeInfo volume = storage.findVolumeByUuid(volumeUuid);
             if (volume == null || volume.getType() != VolumeInfo.TYPE_PRIVATE
                     || !volume.isMountedWritable()) {
@@ -15983,7 +16772,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         if (DEBUG_INSTALL) Slog.d(TAG, "Measured code size " + stats.codeSize + ", data size "
-                + stats.dataSize);
+                + stats.dataSize + ", measurePath " + measurePath);
 
         final long startFreeBytes = measurePath.getFreeSpace();
         final long sizeBytes;
@@ -15992,13 +16781,15 @@ public class PackageManagerService extends IPackageManager.Stub {
         } else {
             sizeBytes = stats.codeSize;
         }
-
-        if (sizeBytes > storage.getStorageBytesUntilLow(measurePath)) {
+        /* SPRD: when first boot system_server can't get storage info
+         * @orig if (sizeBytes > storage.getStorageBytesUntilLow(measurePath)) {
+         * @{ */
+        if (!(isFirstBoot() && Objects.equals(Environment.getExternalStoragePath(), measurePath)) && (sizeBytes > storage.getStorageBytesUntilLow(measurePath))) {
             unfreezePackage(packageName);
             throw new PackageManagerException(MOVE_FAILED_INTERNAL_ERROR,
                     "Not enough free space to move");
         }
-
+        /* @} */
         mMoveCallbacks.notifyStatusChanged(moveId, 10);
 
         final CountDownLatch installedLatch = new CountDownLatch(1);
@@ -16059,7 +16850,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
             }.start();
-
             final String dataAppName = codeFile.getName();
             move = new MoveInfo(moveId, currentVolumeUuid, volumeUuid, packageName,
                     dataAppName, appId, seinfo);
@@ -16101,6 +16891,33 @@ public class PackageManagerService extends IPackageManager.Stub {
         storage.setPrimaryStorageUuid(volumeUuid, callback);
         return realMoveId;
     }
+
+    /* SPRD: add for emulated storage */
+    public int movePrimaryEmulatedStorage(String volumeUuid) throws RemoteException {
+        mContext.enforceCallingOrSelfPermission(android.Manifest.permission.MOVE_PACKAGE, null);
+
+        final int realMoveId = mNextMoveId.getAndIncrement();
+        final Bundle extras = new Bundle();
+        extras.putString(VolumeRecord.EXTRA_FS_UUID, volumeUuid);
+        mMoveCallbacks.notifyCreated(realMoveId, extras);
+
+        final IPackageMoveObserver callback = new IPackageMoveObserver.Stub() {
+            @Override
+            public void onCreated(int moveId, Bundle extras) {
+                // Ignored
+            }
+
+            @Override
+            public void onStatusChanged(int moveId, int status, long estMillis) {
+                mMoveCallbacks.notifyStatusChanged(realMoveId, status, estMillis);
+            }
+        };
+
+        final StorageManager storage = mContext.getSystemService(StorageManager.class);
+        storage.setPrimaryEmulatedStorageUuid(volumeUuid, callback);
+        return realMoveId;
+    }
+    /* @} */
 
     @Override
     public int getMoveStatus(int moveId) {
@@ -16673,4 +17490,209 @@ public class PackageManagerService extends IPackageManager.Stub {
                     "Cannot call " + tag + " from UID " + callingUid);
         }
     }
+    /* SPRD: Add for boot performance with multi-thread and preload scan @{*/
+    private final CountDownLatch mConnectedSignal = new CountDownLatch(5);
+    private  void waitForLatch(CountDownLatch latch) {
+        for (;;) {
+            try {
+                if (latch.await(5000, TimeUnit.MILLISECONDS)) {
+                    Slog.e(TAG, "waitForLatch done!" );
+                    return;
+                } else {
+                    Slog.e(TAG, "Thread " + Thread.currentThread().getName()
+                            + " still waiting for ready...");
+                }
+            } catch (InterruptedException e) {
+                Slog.e(TAG, "Interrupt while waiting for preload class to be ready.");
+            }
+        }
+    }
+    private int mAsecScanFlag ;
+    private ArrayList<String> mPreloadPkgList = new ArrayList<String>();
+    private ArrayList<Integer> mPreloadUidList = new ArrayList<Integer>();
+    Thread mAsyncScanThread = new Thread() {
+        @Override
+        public void run() {
+            File preloadInstallDir = new File(mPreloadInstallDir.getPath());
+            File drmAppPrivateInstallDir = new File(
+                    mDrmAppPrivateInstallDir.getPath());
+            Slog.d(TAG, "preInstallDir start");
+            mPreloadPkgList.clear();
+            mPreloadUidList.clear();
+
+            scanDirLI(preloadInstallDir, 0, mAsecScanFlag, 0);
+            Slog.d(TAG, "preInstallDir done");
+            scanDirLI(drmAppPrivateInstallDir, PackageParser.PARSE_FORWARD_LOCK,
+                  mAsecScanFlag | SCAN_REQUIRE_KNOWN, 0);
+            Slog.d(TAG, "DrmAppPrivateInstallDir done");
+
+            synchronized (mPackages) {
+                updateAllSharedLibrariesLPw();
+
+                final boolean regrantPermissions = mSettings.getInternalVersion().sdkVersion != mSdkVersion;
+                mSettings.getInternalVersion().sdkVersion = mSdkVersion;
+                updatePermissionsLPw(
+                        null,
+                        null,
+                        UPDATE_PERMISSIONS_ALL
+                                | (regrantPermissions ? (UPDATE_PERMISSIONS_REPLACE_PKG | UPDATE_PERMISSIONS_REPLACE_ALL)
+                                        : 0));
+                mSettings.writeLPr();
+            }
+            // Send a broadcast to let everyone know we are done processing
+            int uidArr[] = new int[mPreloadUidList.size()];
+
+            if (mPreloadPkgList.size() > 0) {
+                // Send broadcasts here
+                Bundle extras = new Bundle();
+                extras.putStringArray(Intent.EXTRA_CHANGED_PACKAGE_LIST,
+                        mPreloadPkgList.toArray(new String[mPreloadPkgList.size()]));
+                if (uidArr != null) {
+                    extras.putIntArray(Intent.EXTRA_CHANGED_UID_LIST, uidArr);
+                }
+                sendPackageBroadcast(
+                        Intent.ACTION_EXTERNAL_APPLICATIONS_AVAILABLE, null,
+                        extras, null, null, null);
+            }
+            Runtime.getRuntime().gc();
+        }
+    };
+
+    private boolean isPreloadOrVitalApp(String path){
+        Slog.i(TAG, "preloadOrVital path : " + path);
+        if(path.startsWith("/system/preloadapp") || path.startsWith("/system/vital-app"))
+              return true;
+        return false;
+   }
+
+    private boolean isPreloadOrVitalApp(ApplicationInfo info) {
+        if(info.sourceDir != null) {
+            return info.sourceDir.startsWith("/system/preloadapp/")
+                    || info.sourceDir.startsWith("/system/vital-app");
+        }
+        return false;
+    }
+    private boolean isDeleteApp(String packageName){
+        BufferedReader br = null;
+        try{
+          br = new BufferedReader(new FileReader(mDeleteRecord));
+          String lineContent = null;
+          while( (lineContent = br.readLine()) != null){
+              if(packageName.equals(lineContent)){
+                   return true;
+              }
+          }
+        }catch(IOException e){
+           Log.e(TAG, " isDeleteApp IOException");
+        }finally{
+           try{
+              if(br != null)
+                br.close();
+           }catch(IOException e){
+               Log.e(TAG, " isDeleteApp Close ... IOException");
+           }
+        }
+        return false;
+    }
+
+    private boolean delAppRecord(String packageName,int parseFlags){
+      FileWriter writer = null;
+      try{
+         writer = new FileWriter(mDeleteRecord, true);
+         writer.write(packageName +"\n");
+         writer.flush();
+      }catch(IOException e){
+           Log.e(TAG, "preloadapp unInstall record:  IOException");
+      }finally{
+           try{
+            if(writer != null)
+                writer.close();
+           }catch(IOException e){}
+      }
+       return true;
+    }
+
+    private void scanPartDir(int part, File dir, int flags, int scanMode,
+            long currentTime) {
+        String[] files = dir.list();
+        if (files == null) {
+            Log.d(TAG, "No files in app dir " + dir);
+            return;
+        }
+        if (DEBUG_PACKAGE_SCANNING) {
+            Log.d(TAG, "Scanning preload app dir " + dir + " scanMode="
+                    + scanMode + " flags=0x" + Integer.toHexString(flags));
+        }
+        int i = part == 0 ? 0 : files.length / 2 + 1;
+        int max = part == 0 ? files.length / 2 : files.length - 1;
+        for (; i <= max; i++) {
+            File file = new File(dir, files[i]);
+/*            if (!isPackageFilename(files[i])) {
+                // Ignore entries which are not apk's
+                continue;
+            }*/
+            try{
+                scanPackageLI(file, flags
+                        | PackageParser.PARSE_MUST_BE_APK, scanMode, currentTime,null);
+            } catch (PackageManagerException e) {
+                Slog.w(TAG, "Failed to parse " + file + ": " + e.getMessage());
+
+                // Delete invalid userdata apps
+                if ((flags & PackageParser.PARSE_IS_SYSTEM) == 0 &&
+                        e.error == PackageManager.INSTALL_FAILED_INVALID_APK) {
+                    logCriticalInfo(Log.WARN, "Deleting invalid package at " + file);
+                    if (file.isDirectory()) {
+                        FileUtils.deleteContents(file);
+                    }
+                    file.delete();
+                }
+            }
+        }
+    }
+    private boolean isPackageFilename(String name) {
+        return name != null && name.endsWith(".apk");
+    }
+    /* @} */
+
+    /*
+     * SPRD: add for backupApp
+     * @{
+     */
+    @Override
+    public int backupAppData(String pkgName, String destDir) {
+        if(pkgName == null || destDir == null) {
+            throw new IllegalArgumentException("pkgName: " + pkgName + " or destDir: " + destDir + " is null");
+        }
+        int ret;
+        synchronized (mPackages) {
+            PackageParser.Package pkg = mPackages.get(pkgName);
+            if(pkg == null) {
+                return PackageManager.BACKUPAPP_PKG_DONINSTALL;
+            }
+        }
+            int callUid = Binder.getCallingUid();
+            ret = mInstaller.backupApp(pkgName, destDir, callUid, callUid);
+        return ret;
+    }
+
+    @Override
+    public int restoreAppData(String sourceDir, String pkgName) {
+        if(sourceDir == null || pkgName == null) {
+            throw new IllegalArgumentException("sourceDir: " + sourceDir + " or pkgName: " + pkgName + " is null");
+        }
+        int ret;
+        PackageParser.Package pkg;
+        synchronized (mPackages) {
+             pkg = mPackages.get(pkgName);
+            if(pkg == null) {
+                return PackageManager.BACKUPAPP_PKG_DONINSTALL;
+            }
+        }
+        ret = mInstaller.restoreApp(sourceDir, pkgName, pkg.applicationInfo.uid, pkg.applicationInfo.uid);
+        mInstaller.restoreconData(pkg.volumeUuid, pkg.packageName, pkg.applicationInfo.seinfo, pkg.applicationInfo.uid);
+        return ret;
+    }
+    /*
+     * @}
+     */
 }

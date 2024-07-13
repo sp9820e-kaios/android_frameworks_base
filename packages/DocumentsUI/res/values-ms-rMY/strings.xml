@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Sentuh untuk melihat butiran"</string>
     <string name="retry" msgid="7564024179122207376">"Cuba semula"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Fail ini tidak disalin: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Boleh Tidak boleh berkongsi fail"</string>
+     <string name="documents_deleting">"Memadam dokumen"</string>
+     <string name="cannot_copyfolder_itself">"Anda tidak boleh menyalin folder ke dalam folder itu sendiri"</string>
+
+    <string name="error_permissions">"Apl ini tiada kebenaran kritikal yang diperlukan untuk berfungsi. Sila semak tetapan kebenaran anda."</string>
+     <string name="cannot_copy_drm">"Tidak boleh menyalin fail DRM"</string>
+     <string name="cannot_copy_downloading">"Tidak boleh menyalin fail muat turun"</string>
 </resources>

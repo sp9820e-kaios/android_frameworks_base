@@ -18,6 +18,7 @@ package android.net.wifi;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -116,6 +117,14 @@ public class WifiSsid implements Parcelable {
                                 val = Integer.parseInt(asciiEncoded.substring(i, i + 2), HEX_RADIX);
                             } catch (NumberFormatException e) {
                                 val = -1;
+                            } catch (StringIndexOutOfBoundsException e) {
+                                // TODO: handle exception
+                                Log.e(TAG, "asciiEncoded = " + asciiEncoded + ", index = " + i);
+                                val = Character.digit(asciiEncoded.charAt(i), HEX_RADIX);
+                                if (val < 0) break;
+                                octets.write(val);
+                                i++;
+                                break;
                             }
                             if (val < 0) {
                                 val = Character.digit(asciiEncoded.charAt(i), HEX_RADIX);
@@ -166,6 +175,13 @@ public class WifiSsid implements Parcelable {
         // for a hidden access point. Make sure we maintain the previous
         // behavior of returning empty string for this case.
         if (octets.size() <= 0 || isArrayAllZeroes(ssidBytes)) return "";
+
+        try {
+            return WifiSsidConverter.toString(ssidBytes);
+        } catch (Exception e) {
+            Log.e(TAG, "Try GB2312 fail: " + e);
+        }
+
         // TODO: Handle conversion to other charsets upon failure
         Charset charset = Charset.forName("UTF-8");
         CharsetDecoder decoder = charset.newDecoder()

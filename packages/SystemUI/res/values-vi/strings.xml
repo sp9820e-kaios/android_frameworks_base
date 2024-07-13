@@ -426,4 +426,14 @@
     <string name="tuner_toast" msgid="603429811084428439">"Xin chúc mừng! Bộ điều hướng giao diện người dùng hệ thống đã được thêm vào Cài đặt"</string>
     <string name="remove_from_settings" msgid="8389591916603406378">"Xóa khỏi Cài đặt"</string>
     <string name="remove_from_settings_prompt" msgid="6069085993355887748">"Xóa Bộ điều hướng giao diện người dùng hệ thống khỏi Cài đặt và ngừng sử dụng tất cả tính năng của ứng dụng này?"</string>
+    <string name="quick_settings_volume_label">"HỒ SƠ ÂM THANH"</string>
+     <string name="assistant_key_home">"Màn hình chính"</string>
+     <string name="assistant_key_search">"Tìm kiếm"</string>
+     <string name="assistant_key_menu">"Trình đơn"</string>
+     <string name="assistant_key_back">"Quay lại"</string>
+
+    <string name="vibrate_hint">"Trượt sang trái để bật Rung"</string>
+     <string name="battery_overtage_title">"Cảnh báo bảo mật"</string>
+     <string name="battery_overtage_content">"Điện áp sạc quá cao!"</string>
+     <string name="battery_overtage_back">"Quay lại"</string>
 </resources>

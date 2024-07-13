@@ -71,4 +71,11 @@
     <string name="notification_touch_for_details" msgid="4483108577842961665">"Chạm để xem chi tiết"</string>
     <string name="retry" msgid="7564024179122207376">"Thử lại"</string>
     <string name="copy_failure_alert_content" msgid="3715575000297709082">"Những tệp này chưa được sao chép: <xliff:g id="LIST">%1$s</xliff:g>"</string>
+    <string name="shared_error">"Không thể chia sẻ tập tin"</string>
+     <string name="documents_deleting">"Xóa tài liệu"</string>
+     <string name="cannot_copyfolder_itself">"Bạn không thể sao chép thư mục trong chính nó"</string>
+
+    <string name="error_permissions">"Ứng dụng không có quyền quan trọng cần thiết để chạy. Hãy kiểm tra cài đặt quyền của bạn."</string>
+     <string name="cannot_copy_drm">"Không thể sao chép tập tin DRM"</string>
+     <string name="cannot_copy_downloading">"Không thể sao chép các tập tin đang tải"</string>
 </resources>

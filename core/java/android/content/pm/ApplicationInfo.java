@@ -298,6 +298,12 @@ public class ApplicationInfo extends PackageItemInfo implements Parcelable {
      */
     public static final int FLAG_SUPPORTS_XLARGE_SCREENS = 1<<19;
     
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{
+     */
+    public static final int FLAG_INTERNALSD_STORAGE = 1<<30;
+    /* @} */
+
     /**
      * Value for {@link #flags}: true when the application has requested a
      * large heap for its processes.  Corresponds to
@@ -983,7 +989,14 @@ public class ApplicationInfo extends PackageItemInfo implements Parcelable {
         return TextUtils.isEmpty(volumeUuid)
                 && (flags & ApplicationInfo.FLAG_EXTERNAL_STORAGE) != 0;
     }
-
+    /* SPRD: support double sdcard
+     * Add support for install apk to internal sdcard @{);
+     */
+    /** @hide */
+    public boolean isInternalSd() {
+        return (flags & ApplicationInfo.FLAG_INTERNALSD_STORAGE) != 0;
+    }
+    /* @} */
     /**
      * @hide
      */

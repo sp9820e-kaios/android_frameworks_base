@@ -22,6 +22,7 @@ import static javax.microedition.khronos.egl.EGL10.*;
 import android.app.ActivityManager;
 import android.app.WallpaperManager;
 import android.content.ComponentCallbacks2;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -75,10 +76,20 @@ public class ImageWallpaper extends WallpaperService {
         super.onCreate();
         mWallpaperManager = (WallpaperManager) getSystemService(WALLPAPER_SERVICE);
 
-        //noinspection PointlessBooleanExpression,ConstantConditions
+        // noinspection PointlessBooleanExpression,ConstantConditions
         if (FIXED_SIZED_SURFACE && USE_OPENGL) {
             if (!isEmulator()) {
-                mIsHwAccelerated = ActivityManager.isHighEndGfx();
+                /* SPRD: make the NotificationPanel could shows thransparent. @{
+                mIsHwAccelerated = ActivityManager.isHighEndGfx();*/
+                mIsHwAccelerated = true;
+                /* SPRD: Bug 474763 support transition on low-ram device. @{ */
+                try {
+                    mIsHwAccelerated = getResources()
+                            .getBoolean(com.android.internal.R.bool.config_force_use_color_view);
+                } catch (Resources.NotFoundException ex) {
+                    Log.w(TAG, "com.android.internal.R.bool.config_force_use_color_view not found.");
+                }
+                /* @} */
             }
         }
     }

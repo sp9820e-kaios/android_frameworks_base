@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string name="softap_need_mobile_data_enabled">"Pārvietojamai Wi-Fi karstvietai nepieciešams mobilo datu savienojums, var radīt papildus izmaksas."</string>
+<string name="softap_bt_cannot_coexist">"Kad bluetooth ir iespējots vai tiek iespējots, softap nevar strādāt, ja vēlaties izmantot softap, lūdzu, pārliecinieties, ka bluetooth ir atspējots."</string>
+<string name="bt_softap_cannot_coexist">"Kad softap ir iespējots vai tiek iespējots, bluetooth nevar strādāt, ja vēlaties izmantot bluetooth, lūdzu, pārliecinieties, ka softap ir atspējots."</string>
+<string name="lte_service_error_airplane">"Jūs nevarat izmantot LTE, kamēr telefons ir lidmašīnas režīmā."</string>
+<string name="accessibility_quick_settings_lte_changed_on">"4G ieslēgts"</string>
+<string name="accessibility_quick_settings_lte_changed_off">"4G izslēgts"</string>
+<string name="accessibility_quick_settings_lte_on">"4G ieslēgts"</string>
+<string name="accessibility_quick_settings_lte_off">"4G izslēgts"</string>
+<string name="toggle_data_error_airplane">"Jūs nevarat izmantot mobilos datus, kameēr telefons ir lidmanšīnas režīmā."</string>
+<string name="quick_settings_data_connection_label">"Dati"</string>
+<string name="accessibility_quick_settings_data_changed_on">"Datu savienojums ieslēgts"</string>
+<string name="accessibility_quick_settings_data_changed_off">"Datu savienojums izslēgts"</string>
+<string name="accessibility_quick_settings_data_on">"Datu savienojums ieslēgts"</string>
+<string name="accessibility_quick_settings_data_off">"Datu savienojums izslēgts"</string>
+<string name="missing_sim_message">"NAV SIM"</string>
+    <string name="lte_service_error_incall">"Jūs nevarat pārslēgt LTE pakalpojumu zvana laikā."</string>
+
+</resources>

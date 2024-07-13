@@ -43,24 +43,29 @@ static struct {
     jfieldID y;
 } gPointClassInfo;
 
-static Mutex sLock;
+Mutex sLock;
 
-static int sUnmatchedInitRequestCount = 0;
+int sUnmatchedInitRequestCount = 0;
 
+#include <utils/Log.h>
 static void initializeLibraryIfNeeded() {
     Mutex::Autolock _l(sLock);
+    ALOGD("[PDFRENDER]-------------------------- %s Enter Count:%d", __FUNCTION__, sUnmatchedInitRequestCount);
     if (sUnmatchedInitRequestCount == 0) {
         FPDF_InitLibrary();
     }
     sUnmatchedInitRequestCount++;
+    ALOGD("[PDFRENDER]-------------------------- %s Exit Count:%d", __FUNCTION__, sUnmatchedInitRequestCount);
 }
 
 static void destroyLibraryIfNeeded() {
     Mutex::Autolock _l(sLock);
+    ALOGD("[PDFRENDER]-------------------------- %s Enter Count:%d", __FUNCTION__, sUnmatchedInitRequestCount);
     sUnmatchedInitRequestCount--;
     if (sUnmatchedInitRequestCount == 0) {
        FPDF_DestroyLibrary();
     }
+    ALOGD("[PDFRENDER]-------------------------- %s Exit Count:%d", __FUNCTION__, sUnmatchedInitRequestCount);
 }
 
 static int getBlock(void* param, unsigned long position, unsigned char* outBuffer,

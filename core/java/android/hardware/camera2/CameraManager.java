@@ -20,6 +20,7 @@ import android.annotation.RequiresPermission;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.Context;
+import android.hardware.Camera;
 import android.hardware.ICameraService;
 import android.hardware.ICameraServiceListener;
 import android.hardware.CameraInfo;
@@ -37,7 +38,8 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.util.Log;
 import android.util.ArrayMap;
-
+import android.os.Parcel;
+import android.os.SystemProperties;
 import java.util.ArrayList;
 
 /**
@@ -310,6 +312,17 @@ public final class CameraManager {
                 ICameraDeviceCallbacks callbacks = deviceImpl.getCallbacks();
                 int id = Integer.parseInt(cameraId);
                 try {
+                    if(SystemProperties.get("service.project.sec").equals("1")){
+                        int userId = Binder.getCallingUid();
+                        int permission = 1 ;
+                        permission = Binder.dojudge(userId, "camera.camera",8,0,null);
+                        if ( permission > 0){
+                            Log.e(TAG,"openCameraDeviceUserAsync allow");
+                        }else{
+                            Log.e(TAG,"openCameraDeviceUserAsync reject");
+                            return null;
+                        }
+                    } 
                     if (supportsCamera2ApiLocked(cameraId)) {
                         // Use cameraservice's cameradeviceclient implementation for HAL3.2+ devices
                         ICameraService cameraService = CameraManagerGlobal.get().getCameraService();
@@ -655,7 +668,13 @@ public final class CameraManager {
                 }
 
                 if (isDeviceSupported) {
-                    deviceIdList.add(String.valueOf(i));
+                    /*
+                     * SPRD Bug:For cts & 3rd party app. Hide the private cameras. @{
+                     */
+                    if (i < Camera.getNumberOfCameras()) {
+                        deviceIdList.add(String.valueOf(i));
+                    }
+                    /* @} */
                 } else {
                     Log.w(TAG, "Error querying camera device " + i + " for listing.");
                 }
@@ -944,6 +963,12 @@ public final class CameraManager {
 
         private void postSingleUpdate(final AvailabilityCallback callback, final Handler handler,
                 final String id, final int status) {
+            /*
+             * SPRD Bug:For cts & 3rd party app. Hide the private cameras. @{
+             */
+            if (Integer.parseInt(id) >= Camera.getNumberOfCameras())
+                return;
+            /* @} */
             if (isAvailable(status)) {
                 handler.post(
                     new Runnable() {

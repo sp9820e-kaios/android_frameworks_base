@@ -24,8 +24,10 @@ import android.animation.ValueAnimator;
 import android.app.ActivityManagerNative;
 import android.app.StatusBarManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -54,6 +56,8 @@ import com.android.systemui.statusbar.policy.KeyButtonView;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import android.provider.Settings;
 
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;
@@ -146,6 +150,28 @@ public class NavigationBarView extends LinearLayout {
         }
     };
 
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    private final OnClickListener mNotiBarClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(mBar != null) {
+                mBar.onNotiBarClick();
+            }
+        }
+    };
+
+    private final OnClickListener mHideBarClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+//           Settings.Global.putInt(mContext.getContentResolver(), "hided", 1);
+//           /*getWindow().getDecorView().*/setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            Intent intent = new Intent("com.action.hide_navigationbar");
+            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+            mContext.sendBroadcast(intent);
+         }
+    };
+    /* @} */
+
     private class H extends Handler {
         public void handleMessage(Message m) {
             switch (m.what) {
@@ -168,6 +194,16 @@ public class NavigationBarView extends LinearLayout {
             }
         }
     }
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    private int mLastNavBarMode;
+    private PhoneStatusBar mBar;
+    private final ContentObserver mNavigationSettingsObserver = new ContentObserver(new Handler()) {
+        @Override
+        public void onChange(boolean selfChange) {
+            updateNavigationbarViews();
+        }
+    };
+    /* @} */
 
     public NavigationBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -193,13 +229,36 @@ public class NavigationBarView extends LinearLayout {
         if (root != null) {
             root.setDrawDuringWindowsAnimating(true);
         }
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        if(PhoneStatusBar.mSupportDynamicBar) {
+            mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor("navigationbar_config"),
+                    true,
+                    mNavigationSettingsObserver);
+        }
+        /* @} */
     }
+
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if(PhoneStatusBar.mSupportDynamicBar) {
+            mContext.getContentResolver().unregisterContentObserver(mNavigationSettingsObserver);
+        }
+    }
+    /* @} */
 
     public BarTransitions getBarTransitions() {
         return mBarTransitions;
     }
 
     public void setBar(PhoneStatusBar phoneStatusBar) {
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        if(PhoneStatusBar.mSupportDynamicBar) {
+            mBar = phoneStatusBar;
+        }
+        /* @} */
         mTaskSwitchHelper.setBar(phoneStatusBar);
     }
 
@@ -253,6 +312,16 @@ public class NavigationBarView extends LinearLayout {
     public View getImeSwitchButton() {
         return mCurrentView.findViewById(R.id.ime_switcher);
     }
+
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    public View getHideBarButton() {
+        return mCurrentView.findViewById(R.id.hide_bar_btn);
+    }
+
+    public KeyButtonView getNotiBarButton() {
+        return (KeyButtonView)mCurrentView.findViewById(R.id.pull_notification_bar);
+    }
+    /* @} */
 
     private void getIcons(Resources res) {
         mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
@@ -445,6 +514,26 @@ public class NavigationBarView extends LinearLayout {
 
         getImeSwitchButton().setOnClickListener(mImeSwitcherClickListener);
 
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        if(PhoneStatusBar.mSupportDynamicBar) {
+            getHideBarButton().setOnClickListener(mHideBarClickListener);
+            getNotiBarButton().setOnClickListener(mNotiBarClickListener);
+            mLastNavBarMode = Settings.System.getInt(mContext.getContentResolver(), "navigationbar_config", 0);
+            Log.d(TAG, "NavigationVarView#onFinishInflate, mLastNavBarMode: " + mLastNavBarMode);
+            if ((mLastNavBarMode & 0x10) != 0) {
+                getHideBarButton().setVisibility(View.VISIBLE);
+            } else {
+                getHideBarButton().setVisibility(View.INVISIBLE);
+            }
+
+            if ((mLastNavBarMode & 0x0F) == 2 || (mLastNavBarMode & 0x0F) == 3) {
+                getNotiBarButton().setVisibility(View.VISIBLE);
+            } else {
+                getNotiBarButton().setVisibility(View.GONE);
+            }
+        }
+        /* @} */
+
         updateRTLOrder();
     }
 
@@ -457,11 +546,43 @@ public class NavigationBarView extends LinearLayout {
         for (int i=0; i<4; i++) {
             mRotatedViews[i].setVisibility(View.GONE);
         }
+
         mCurrentView = mRotatedViews[rot];
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        Log.d(TAG, "NavigationBarView#reorient, rot: "+rot, new Exception());
+        if(PhoneStatusBar.mSupportDynamicBar) {
+            int mode = Settings.System.getInt(mContext.getContentResolver(), "navigationbar_config", 0);
+
+            if ((mode & 0x10) != 0) {
+                getHideBarButton().setVisibility(View.VISIBLE);
+            } else {
+                getHideBarButton().setVisibility(View.INVISIBLE);
+            }
+
+            if ((mode & 0x0F) == 2 || (mode & 0x0F) == 3) {
+                getNotiBarButton().setVisibility(View.VISIBLE);
+            } else {
+                getNotiBarButton().setVisibility(View.GONE);
+            }
+            // TODO: here maybe enhanced later, because only one can be implement... this logic is ok?
+            if(rot == 0 || rot ==2) {
+                swapChildrenOrderIfVertical1(mRotatedViews[0].findViewById(R.id.nav_buttons), 0x0F & mode);
+            } else {
+                swapChildrenOrderIfVertical2(mRotatedViews[1].findViewById(R.id.nav_buttons), 0x0F & mode);
+            }
+        }
+        /* @} */
         mCurrentView.setVisibility(View.VISIBLE);
         setLayoutTransitionsEnabled(mLayoutTransitionsEnabled);
 
         getImeSwitchButton().setOnClickListener(mImeSwitcherClickListener);
+
+        /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+        if(PhoneStatusBar.mSupportDynamicBar) {
+            getHideBarButton().setOnClickListener(mHideBarClickListener);
+            getNotiBarButton().setOnClickListener(mNotiBarClickListener);
+        }
+        /* @} */
 
         mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
 
@@ -558,6 +679,8 @@ public class NavigationBarView extends LinearLayout {
      * @param group The LinearLayout to swap the children from.
      */
     private void swapChildrenOrderIfVertical(View group) {
+        Log.d(TAG, "NavigationBarView#swapChildrenOrderIfVertical is called", new Exception());
+
         if (group instanceof LinearLayout) {
             LinearLayout linearLayout = (LinearLayout) group;
             if (linearLayout.getOrientation() == VERTICAL) {
@@ -573,6 +696,118 @@ public class NavigationBarView extends LinearLayout {
             }
         }
     }
+
+    /* SPRD: Bug 535100 new feature of dynamic navigationbar @{ */
+    private void swapChildrenOrderIfVertical1(View group, int mode) {
+        if (group instanceof LinearLayout) {
+            LinearLayout linearLayout = (LinearLayout) group;
+            int childCount = linearLayout.getChildCount();
+            ArrayList<View> childList = new ArrayList<>(childCount);
+            for (int i = 0; i < childCount; i++) {
+                childList.add(linearLayout.getChildAt(i));
+            }
+            linearLayout.removeAllViews();
+
+            for (int i = 0; i < childCount; i++) {
+                if (mode == 0 || mode == 2) {
+                    if (i == 1) {
+                        linearLayout.addView(getViewWithId(childList, R.id.back));
+                    } else if (i == 3) {
+                        linearLayout.addView(getViewWithId(childList, R.id.recent_apps));
+                    } else {
+                        linearLayout.addView(childList.get(i));
+                    }
+                } else {
+                    if (i == 1) {
+                        linearLayout.addView(getViewWithId(childList, R.id.recent_apps));
+                    } else if (i == 3) {
+                        linearLayout.addView(getViewWithId(childList, R.id.back));
+                    } else {
+                        linearLayout.addView(childList.get(i));
+                    }
+                }
+            }
+        }
+    }
+
+    private void swapChildrenOrderIfVertical2(View group, int mode) {
+        if (group instanceof LinearLayout) {
+            LinearLayout linearLayout = (LinearLayout) group;
+            int childCount = linearLayout.getChildCount();
+            ArrayList<View> childList = new ArrayList<>(childCount);
+            for (int i = 0; i < childCount; i++) {
+                childList.add(linearLayout.getChildAt(i));
+            }
+
+            linearLayout.removeAllViews();
+            for (int i = 0; i < childCount; i++) {
+                if (mode == 0 || mode == 2) {
+                    if (i == 4) {
+                        linearLayout.addView(getViewWithId(childList, R.id.back));
+                    } else if (i == 2) {
+                        linearLayout.addView(getViewWithId(childList, R.id.recent_apps));
+                    } else {
+                        linearLayout.addView(childList.get(i));
+                    }
+                } else {
+                    if (i == 4) {
+                        linearLayout.addView(getViewWithId(childList, R.id.recent_apps));
+                    } else if (i == 2) {
+                        linearLayout.addView(getViewWithId(childList, R.id.back));
+                    } else {
+                        linearLayout.addView(childList.get(i));
+                    }
+                }
+            }
+        }
+    }
+
+    private View getViewWithId(ArrayList<View> list, int id) {
+        int size = list.size();
+        if (size <= 0) {
+            return null;
+        }
+
+        for (int i = 0; i < size; i++) {
+            if(list.get(i).getId() == id) return list.get(i);
+        }
+        return null;
+    }
+
+    public void updateNavigationbarViews() {
+        int mode = Settings.System.getInt(mContext.getContentResolver(), "navigationbar_config", 0);
+        if (!isAttachedToWindow()) return;
+
+        boolean style = (mLastNavBarMode&0x0F) != (mode&0x0F);
+
+        boolean hide = (mLastNavBarMode&0xF0) != (mode&0xF0);
+        
+        Log.d(TAG, "updateNavigationbarViews, mode: "+ mode + "; mLastNavBarMode: " + mLastNavBarMode 
+                + "; style: " + style + "; hide: "+hide);
+        if(hide) {
+            if ((mode & 0x10) != 0) {
+                getHideBarButton().setVisibility(View.VISIBLE);
+            } else {
+                getHideBarButton().setVisibility(View.INVISIBLE);
+            }
+        }
+
+        if(style) {
+            if ((mode & 0x0F) == 2 || (mode & 0x0F) == 3) {
+                getNotiBarButton().setVisibility(View.VISIBLE);
+            } else {
+                getNotiBarButton().setVisibility(View.GONE);
+            }
+        }
+        
+        if(style) {
+            swapChildrenOrderIfVertical1(mRotatedViews[0].findViewById(R.id.nav_buttons), 0x0F&mode);
+            swapChildrenOrderIfVertical2(mRotatedViews[1].findViewById(R.id.nav_buttons), 0x0F&mode);
+        }
+        
+        mLastNavBarMode = mode;
+    }
+    /* @} */
 
     /*
     @Override

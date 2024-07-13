@@ -1149,6 +1149,21 @@ public class Process {
         public boolean usingWrapper;
     }
 
+    /* SPRD: add for performance optimization of services restarting { */
+    /**
+     * Gets the available memory could be used, in b.
+     *
+     * @return available memory could be used in b,
+     *  or 0 if error occur
+     * @hide
+     */
+    public static final long getAvailMemory() {
+        long freeMem = getFreeMemory();
+        return freeMem >= 0 ? freeMem : 0;
+    }
+    /* }*/
+
+
     /**
      * Kill all processes in a process group started for the given
      * pid.

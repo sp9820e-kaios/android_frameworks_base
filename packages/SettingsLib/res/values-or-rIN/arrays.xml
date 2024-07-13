@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<string-array name="wifi_status">
+<item></item>
+<item>"...କ୍ରମବୀକ୍ଷଣ/ସ୍କେନ କରୁଛି"</item>
+<item>"ସଂଯୋଗ କରୁଛି"</item>
+<item>"...ପ୍ରତିପାଦିତ କରୁଛି"</item>
+<item>"...ଠାରୁ IP ଠିକଣା ପାଉଛି"</item>
+<item>"ସଂଯୋଗ ହୋଇଯାଇଛି"</item>
+<item>"ନିଲମ୍ବନ କରାଯାଇଛି"</item>
+<item>"...ବିଛିନ୍ନ ହେଉଛି"</item>
+<item>"ବିଛିନ୍ନ ହୋଇଛି"</item>
+<item>"ଅସଫଳ"</item>
+<item>"ଅବରୋଧିତ"</item>
+<item>"ଅସ୍ଥାୟୀ ଭାବେ ଦୁର୍ବଳ ସଂଯୋଗ ବର୍ଜନ କରୁଛି"</item>
+</string-array>
+<string-array name="wifi_status_with_ssid">
+<item></item>
+<item>"...କ୍ରମବୀକ୍ଷଣ/ସ୍କେନ କରୁଛି"</item>
+<item>"କୁ ସଂଯୋଗ ହୋଉଛି <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"ସହ ପ୍ରତିପାଦିତ କରୁଛି <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"ଠାରୁ IP ଠିକଣା ପାଉଛି <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"କୁ ସଂଯୋଗ ହୋଇଛି <xliff:g id="network_name">%1$s</xliff:g>"</item>
+<item>"ନିଲମ୍ବନ କରାଯାଇଛି"</item>
+<item>"ଠାରୁ ବିଛିନ୍ନ ହୋଇଛି <xliff:g id="network_name">%1$s</xliff:g>..."</item>
+<item>"ବିଛିନ୍ନ ହୋଇଛି"</item>
+<item>"ଅସଫଳ"</item>
+<item>"ଅବରୋଧିତ"</item>
+<item>"ଅସ୍ଥାୟୀ ଭାବେ ଦୁର୍ବଳ ସଂଯୋଗ ବର୍ଜନ କରୁଛି"</item>
+</string-array>
+</resources>

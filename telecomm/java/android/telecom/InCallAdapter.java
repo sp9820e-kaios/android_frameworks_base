@@ -50,8 +50,22 @@ public final class InCallAdapter {
      * @param videoState The video state in which to answer the call.
      */
     public void answerCall(String callId, int videoState) {
+        // SPRD: Modify for multi-part-call mode.
+        answerCall(callId, videoState, MultiPartCallHelper.MPC_MODE_HF);
+    }
+
+    /**
+     * SPRD Add for multi-part-call mode.
+     *
+     * Instructs Telecom to answer the specified call.
+     *
+     * @param callId The identifier of the call to answer.
+     * @param videoState The video state in which to answer the call.
+     * @param mpcMode The way to answer the call.
+     */
+    public void answerCall(String callId, int videoState, int mpcMode) {
         try {
-            mAdapter.answerCall(callId, videoState);
+            mAdapter.answerMPCCall(callId, videoState, mpcMode);
         } catch (RemoteException e) {
         }
     }
@@ -270,6 +284,17 @@ public final class InCallAdapter {
     public void turnProximitySensorOff(boolean screenOnImmediately) {
         try {
             mAdapter.turnOffProximitySensor(screenOnImmediately);
+        } catch (RemoteException ignored) {
+        }
+    }
+
+    //--------------------------------- SPRD -------------------------------------
+    /**
+     * SPRD: Porting Explicit Transfer Call
+     */
+    public void explicitCallTransfer(String callId) {
+        try {
+            mAdapter.explicitCallTransfer(callId);
         } catch (RemoteException ignored) {
         }
     }

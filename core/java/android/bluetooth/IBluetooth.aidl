@@ -36,6 +36,10 @@ interface IBluetooth
     boolean enableNoAutoConnect();
     boolean disable();
 
+    boolean isRadioEnabled();
+    boolean enableRadio();
+    boolean disableRadio();
+
     String getAddress();
     ParcelUuid[] getUuids();
     boolean setName(in String name);
